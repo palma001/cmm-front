@@ -7,12 +7,15 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
+    "build": "quasar build --mode pwa",
+    "start": "node server.js",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
     "core-js": "^3.6.5",
+    "express": "^4.17.1",
     "quasar": "^1.0.0",
     "vue-i18n": "^8.0.0"
   },
