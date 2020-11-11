@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Sistema contable
+          Bais
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
