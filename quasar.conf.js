@@ -117,8 +117,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Quasar App',
-        short_name: 'Quasar App',
+        name: 'Bais',
+        short_name: 'Bais',
         description: 'software accounting software',
         display: 'standalone',
         orientation: 'portrait',
@@ -184,7 +184,7 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'contabilitate'
+        appId: 'bais'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

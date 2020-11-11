@@ -40,16 +40,16 @@ export default {
        */
       columns: [
         {
-          name: 'nombre',
+          name: 'name',
           label: 'Nombre',
-          field: 'nombre',
+          field: 'name',
           align: 'left',
           sortable: true
         },
         {
-          name: 'apellido',
+          name: 'lastname',
           label: 'Apellido',
-          field: 'apellido',
+          field: 'lastname',
           align: 'left'
         }
       ]
@@ -60,9 +60,10 @@ export default {
   },
   methods: {
     loadUser () {
-      this.$services.getData(['ficde', 'usuarios'])
-        .then(({ res }) => {
-          this.list = res.data.data
+      this.$mockData.getData('users', 5)
+        .then(({ response }) => {
+          this.list = response.data.content
+          console.log(this.list)
         })
     }
   }

@@ -1,8 +1,8 @@
 {
-  "name": "contabilitate",
+  "name": "Bais",
   "version": "0.0.1",
   "description": "software accounting software",
-  "productName": "Quasar App",
+  "productName": "Bais",
   "author": "Luis Palma <palmaluis1997@gmail.com>",
   "private": true,
   "scripts": {
