@@ -1,70 +1,39 @@
 <template>
   <div>
-    <template>
-      <div class="q-pa-md">
-        <q-table
-          title="Usuarios"
-          :data="list"
-          :columns="columns"
-          row-key="nombre"
-        >
-          <template v-slot:top-right>
-            <q-input filled dense debounce="300" v-model="filter" placeholder="Search">
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-      </q-table>
-      </div>
-    </template>
+    <q-btn color="primary" label="Tomar Foto" @click="captureImage" />
+
+    <img :src="imageSrc">
   </div>
 </template>
+
 <script>
+// outside of the default export,
+// we need to listen to the event for ourselves:
+document.addEventListener('deviceready', () => {
+  // it's only now that we are sure
+  // the event has triggered
+}, false)
+
 export default {
   data () {
     return {
-      /**
-       * Filters table
-       * @type {String}
-       */
-      filter: '',
-      /**
-       * Data table
-       * @type{Array}
-       */
-      list: [],
-      /**
-       * Columns table
-       * @type{Array}
-       */
-      columns: [
-        {
-          name: 'name',
-          label: 'Nombre',
-          field: 'name',
-          align: 'left',
-          sortable: true
-        },
-        {
-          name: 'lastname',
-          label: 'Apellido',
-          field: 'lastname',
-          align: 'left'
-        }
-      ]
+      imageSrc: ''
     }
   },
-  created () {
-    this.loadUser()
-  },
+
   methods: {
-    loadUser () {
-      this.$mockData.getData('users', 5)
-        .then(({ response }) => {
-          this.list = response.data.content
-          console.log(this.list)
-        })
+    captureImage () {
+      navigator.camera.getPicture(
+        data => { // on success
+          this.imageSrc = `data:image/jpeg;base64,${data}`
+        },
+        (e) => { // on fail
+          this.$q.notify(e)
+        },
+        {
+          // camera options
+        }
+      )
     }
   }
 }
