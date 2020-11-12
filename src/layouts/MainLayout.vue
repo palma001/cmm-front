@@ -30,11 +30,25 @@
         >
           Essential Links
         </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item
+          clickable
+          v-if="this.$q.platform.is.mobile"
+        >
+          <q-item-section @click="changeRoute('products')">
+            <q-item-label>Productos</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item
+          clickable
+          v-if="this.$q.platform.is.desktop"
+        >
+          <q-item-section @click="changeRoute('pwa')">
+            <q-item-label>Pwa</q-item-label>
+            <q-item-label caption>
+              pwa
+            </q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -45,24 +59,38 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
 
 const linksData = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
+    title: 'PWA',
+    caption: 'pwa',
     icon: 'school',
-    link: 'https://quasar.dev'
+    link: 'pwa'
+  },
+  {
+    title: 'Cordova',
+    caption: 'cordova',
+    icon: 'school',
+    link: 'cordova'
   }
 ]
 
 export default {
   name: 'MainLayout',
-  components: { EssentialLink },
   data () {
     return {
       leftDrawerOpen: false,
       essentialLinks: linksData
+    }
+  },
+  methods: {
+    /**
+     * Change route
+     * @param  {String} data name route
+     */
+    changeRoute (data) {
+      console.log()
+      this.$router.push({ name: data })
     }
   }
 }
