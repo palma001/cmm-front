@@ -83,19 +83,13 @@
     </q-dialog>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-fab color="purple" icon="keyboard_arrow_up" direction="up" label="Opciones" label-position="left" external-label>
-        <q-fab-action color="amber" size="md" @click="captureImage" icon="qr_code" glossy label="Scanner" label-position="left" external-label/>
+        <q-fab-action color="amber" v-if="validateDivice('mobile')"  @click="captureImage" icon="qr_code" glossy label="Scanner" label-position="left" external-label/>
       </q-fab>
     </q-page-sticky>
   </div>
 </template>
 
 <script>
-// outside of the default export,
-// we need to listen to the event for ourselves:
-document.addEventListener('deviceready', () => {
-  // it's only now that we are sure
-  // the event has triggered
-}, false)
 
 export default {
   data () {
@@ -106,21 +100,27 @@ export default {
        */
       allProducts: [],
 
+      /**
+       * One products
+       * @type {Object} one product
+       */
       productScaner: null,
 
+      /**
+       * Status Card product
+       * @type {Boolean} status card
+       */
       card: false
     }
   },
   created () {
-    this.saberDondeEstoy()
     this.getAllProducts()
   },
   methods: {
-
-    saberDondeEstoy () {
-      this.imageSrc = 'hola'
-    },
-
+    /**
+     * Get all products
+     *
+     */
     getAllProducts () {
       this.$mockData.getData('products')
         .then(({ response }) => {
@@ -136,24 +136,36 @@ export default {
      */
 
     getOneProduct (data) {
-      this.productScaner = this.allProducts.filter(element => {
-        return Number(element.code) === Number(data.text)
-      })[0]
+      if (data) {
+        this.productScaner = this.allProducts.filter(element => {
+          return Number(element.code) === Number(data.text)
+        })[0]
 
-      if (!this.productScaner) {
-        alert('Producto no encontrado')
-      } else {
-        this.card = true
+        if (!this.productScaner) {
+          alert('Producto no encontrado')
+        } else {
+          this.card = true
+        }
       }
     },
+
+    /**
+     * Call scanner
+     *
+     */
 
     captureImage () {
       cordova.plugins.barcodeScanner.scan(
         (result) => { this.getOneProduct(result) },
-        function (error) {
-          alert('No se pudo escanear: ' + error)
-        }
+        (error) => { alert('No se pudo escanear: ' + error) }
       )
+    },
+    /**
+     * Validate divice
+     * @param  {String} validate divice
+     */
+    validateDivice (divice) {
+      return this.$q.platform.is[divice]
     }
   }
 }

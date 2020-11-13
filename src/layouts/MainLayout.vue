@@ -1,96 +1,44 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
-
-        <q-toolbar-title>
-          Bais
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      content-class="bg-grey-1"
-    >
-      <q-list>
-        <q-item-label
-          header
-          class="text-grey-8"
-        >
-          Essential Links
-        </q-item-label>
-        <q-item
-          clickable
-          v-if="this.$q.platform.is.mobile"
-        >
-          <q-item-section @click="changeRoute('products')">
-            <q-item-label>Productos</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item
-          clickable
-          v-if="this.$q.platform.is.desktop"
-        >
-          <q-item-section @click="changeRoute('pwa')">
-            <q-item-label>Pwa</q-item-label>
-            <q-item-label caption>
-              pwa
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-drawer>
-
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <LayoutComponent
+    titleApp="Menu Bais"
+    titleMenu="Opciones"
+    :data="modules"
+  />
 </template>
 
 <script>
 
-const linksData = [
-  {
-    title: 'PWA',
-    caption: 'pwa',
-    icon: 'school',
-    link: 'pwa'
-  },
-  {
-    title: 'Cordova',
-    caption: 'cordova',
-    icon: 'school',
-    link: 'cordova'
-  }
-]
+import LayoutComponent from 'components/LayoutComponent.vue'
 
 export default {
   name: 'MainLayout',
+  components: { LayoutComponent },
+
   data () {
     return {
-      leftDrawerOpen: false,
-      essentialLinks: linksData
+      /**
+       * Data menu
+       *
+       * @type {Array} data menu
+       */
+      modules: []
     }
   },
+
+  created () {
+    this.getAllModules()
+  },
+
   methods: {
     /**
-     * Change route
-     * @param  {String} data name route
+     * Get all products
+     *
      */
-    changeRoute (data) {
-      console.log()
-      this.$router.push({ name: data })
+    getAllModules () {
+      this.$mockData.getData('modules')
+        .then(({ response }) => {
+          this.modules = response.data.content
+        })
     }
   }
 }

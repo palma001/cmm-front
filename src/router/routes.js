@@ -1,17 +1,31 @@
 
 const routes = [
   {
-    path: '/',
+    path: '/products',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue'), name: 'products' }
+      { path: 'products', component: () => import('pages/Index.vue'), name: 'products' }
     ]
   },
   {
-    path: '/pwa',
+    path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'pwa', component: () => import('pages/PWA.vue') }
+      { path: '', name: '', component: () => import('pages/PWA.vue') }
+    ]
+  },
+  {
+    path: '/company',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'company', component: () => import('pages/PWA.vue') }
+    ]
+  },
+  {
+    path: '/users',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'users', component: () => import('pages/PWA.vue') }
     ]
   },
 
