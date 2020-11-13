@@ -35,8 +35,8 @@
             <q-item-section
               @click="changeRoute(list.route)"
             >
-              <q-item-label>
-                {{ list.name }}
+              <q-item-label class="text-capitalize">
+                {{  $t(`modules.${list.name}`) }}
               </q-item-label>
             </q-item-section>
           </q-item>

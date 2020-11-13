@@ -1,19 +1,25 @@
 export const modules = [
   {
-    name: 'Products',
+    name: 'products',
     route: 'products',
     icon: '',
-    devices: ['mobile']
+    devices: ['mobile', 'desktop']
   },
   {
-    name: 'Users',
+    name: 'users',
     route: 'users',
     icon: '',
     devices: ['mobile', 'desktop']
   },
   {
-    name: 'Company',
+    name: 'company',
     route: 'company',
+    icon: '',
+    devices: ['mobile', 'desktop']
+  },
+  {
+    name: 'modules',
+    route: 'modules',
     icon: '',
     devices: ['mobile', 'desktop']
   }

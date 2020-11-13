@@ -28,6 +28,13 @@ const routes = [
       { path: '', name: 'users', component: () => import('pages/PWA.vue') }
     ]
   },
+  {
+    path: '/modules',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'modules', component: () => import('pages/Module.vue') }
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it
