@@ -1,14 +1,14 @@
 <template>
   <div class="q-pa-md row items-start q-gutter-md">
     <div class="row">
-      <div class="col">
+      <div class="col-xl-12 col-lg-12 col-md-12 q-pa-sm">
         <div class="text-h5">
           Lista de producto
         </div>
       </div>
     </div>
-    <div class="row" v-for="product in allProducts" :key="product.id">
-      <div class="col-md-12">
+    <div class="row">
+      <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-xs-12 q-mt-md q-pa-sm" v-for="product in allProducts" :key="product.id">
         <q-card class="my-card">
           <q-card-section horizontal>
             <q-img

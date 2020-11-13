@@ -3,7 +3,7 @@ export const modules = [
     name: 'Products',
     route: 'products',
     icon: '',
-    devices: ['mobile', 'desktop']
+    devices: ['mobile']
   },
   {
     name: 'Users',
