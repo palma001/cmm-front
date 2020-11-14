@@ -109,9 +109,6 @@ export default {
   computed: {
     paginationConfig () {
       return this.optionPagination
-    },
-    pagesNumber () {
-      return Math.ceil(this.data.length / this.paginationConfig.rowsPerPage)
     }
   },
   created () {
