@@ -16,13 +16,21 @@ export const translateLabel = function (value) {
 }
 
 /**
+ * ucwords text
+ * @param  {String} value text ucwords
+ * @return {String}       text ucwords
+ */
+export const ucwords = function (value) {
+  return value.toLowerCase().charAt(0).toUpperCase() + value.slice(1)
+}
+/**
  * Assign data to each selects
  * @param {Array} currentDataConfig
  * @param {String} propTag
  * @param {String} propData
  * @param {Array} list
  */
-const assignRelationalData = (currentDataConfig, propTag, propData, list) => {
+function assignRelationalData (currentDataConfig, propTag, propData, list) {
   currentDataConfig.forEach(config => {
     config.children.forEach(child => {
       if (child.edition.propTag === propTag) {
@@ -68,8 +76,10 @@ export const setRelationalData = (
     })
   }
 }
+
 export const methods = {
   translateEntity,
   translateLabel,
-  setRelationalData
+  setRelationalData,
+  ucwords
 }

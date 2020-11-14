@@ -9,8 +9,7 @@ export const moduleConfig = [
           align: 'left',
           field: row => row.name,
           sortable: true,
-          visible: true,
-          class: 'text-capitalize'
+          visible: true
         }
       },
       {
@@ -19,8 +18,7 @@ export const moduleConfig = [
           align: 'left',
           field: row => row.name,
           sortable: true,
-          visible: true,
-          class: 'text-capitalize'
+          visible: true
         }
       }
     ]

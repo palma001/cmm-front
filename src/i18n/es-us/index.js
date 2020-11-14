@@ -2,6 +2,9 @@
 // so you can safely delete all default props below
 
 export default {
+  template: {
+    search: 'busqueda'
+  },
   users: {
     users: 'usuarios'
   },
@@ -11,6 +14,7 @@ export default {
     company: 'empresas',
     modules: 'modulos',
     name: 'nombre',
-    route: 'ruta'
+    route: 'ruta',
+    listModule: 'lista de modulos'
   }
 }

@@ -1,35 +1,50 @@
 <template>
-  <div  style="width: 100%">
+  <div style="width: 100%">
     <q-table
-      style="width: 100%"
       :data="data"
       :columns="columnData"
-      :per-page="20"
-      :pagination.sync="optionPagination"
-      :loading="loading">
-     <template v-slot:loading>
+      :title="ucwords($t(`${module}.${title}`))"
+      :pagination="paginationConfig"
+      :loading="loading"
+    >
+      <template v-slot:loading>
         <q-inner-loading showing color="primary" />
       </template>
+      <!-- @update:pagination ="rowsPerPage"> -->
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            :class="col.class"
-          >
+            :class="col.class">
             {{
-              (col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`)
+              ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`))
             }}
           </q-th>
         </q-tr>
+      </template>
+      <template v-slot:top-right>
+        <q-input dense debounce="300" v-model="filter" :placeholder="ucwords($t('template.search'))">
+          <template v-slot:append>
+            <q-icon v-if="filter !== ''" name="close" @click="filter = ''" class="cursor-pointer" />
+            <q-icon name="search" />
+          </template>
+        </q-input>
       </template>
     </q-table>
   </div>
 </template>
 <script>
+import { mixins } from '../mixins'
 export default {
+  name: 'DataTable',
+  mixins: [mixins.containerMixin],
   props: {
+    /**
+     * Loading status
+     * @type {Boolean} status
+     */
     loading: {
       type: Boolean,
       required: false
@@ -40,6 +55,15 @@ export default {
      * @type {String} module name
      */
     module: {
+      type: String,
+      required: false
+    },
+    /**
+     * The table title
+     *
+     * @type {String} table title
+     */
+    title: {
       type: String,
       required: false
     },
@@ -73,6 +97,8 @@ export default {
   },
   data () {
     return {
+      current: 3,
+      filter: '',
       /**
        * Content the column
        * @type {Array}
@@ -80,10 +106,21 @@ export default {
       columnData: []
     }
   },
+  computed: {
+    paginationConfig () {
+      return this.optionPagination
+    },
+    pagesNumber () {
+      return Math.ceil(this.data.length / this.paginationConfig.rowsPerPage)
+    }
+  },
   created () {
     this.setHeaders()
   },
   methods: {
+    rowsPerPage (event) {
+      console.log(event)
+    },
     /**
      * setHeaders gets headers of table
      */

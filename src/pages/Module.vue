@@ -1,13 +1,9 @@
 <template>
   <q-page class="flex-start q-pa-md">
     <div class="row">
-      <div class="col-xl-12 col-lg-12 col-md-12 q-pa-sm">
-        <div class="text-h5 text-capitalize">
-          {{ $t('modules.modules') }}
-        </div>
-      </div>
       <DataTable
         module="modules"
+        title="listModule"
         :loading="loading"
         :column="moduleConfig"
         :data="modules"
@@ -19,9 +15,11 @@
 <script>
 import DataTable from 'components/DataTable.vue'
 import { moduleConfig } from '../config-file/module/moduleConfig'
+import { mixins } from '../mixins'
 export default {
   name: 'Module',
   components: { DataTable },
+  mixins: [mixins.containerMixin],
   data () {
     return {
       /**
@@ -44,7 +42,11 @@ export default {
        * @type {Object} Option paginate
        */
       pagination: {
-        rowsPerPage: 20
+        sortBy: 'desc',
+        descending: false,
+        page: 1,
+        rowsPerPage: 5
+        // rowsNumber: xx if getting data from a server
       }
     }
   },
