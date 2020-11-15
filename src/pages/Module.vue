@@ -8,6 +8,8 @@
         :column="moduleConfig"
         :data="modules"
         :optionPagination="pagination"
+        @on-load-data="sortingTable"
+        @search-data="eventSearch"
       />
     </div>
   </q-page>
@@ -45,8 +47,17 @@ export default {
         sortBy: 'desc',
         descending: false,
         page: 1,
-        rowsPerPage: 5
+        rowsPerPage: 5,
+        search: {}
         // rowsNumber: xx if getting data from a server
+      },
+      /**
+       * Paramaters for search
+       * @type {Array}
+       */
+      search: {
+        name: '',
+        route: ''
       }
     }
   },
@@ -58,13 +69,30 @@ export default {
      * Get modules
      *
      */
-    getModules () {
+    getModules (params) {
       this.loading = true
       this.$mockData.getData('modules')
         .then(({ response }) => {
           this.modules = response.data.content
           this.loading = false
+          this.pagination = params
         })
+    },
+
+    sortingTable (data) {
+      this.getModules(data)
+    },
+    /**
+     * eventSearch searches data in microservices
+     * @param  {String} data data search
+     */
+    eventSearch (data) {
+      for (const field in this.search) {
+        this.search[field] = data
+      }
+      this.pagination.page = 1
+      this.pagination.search = this.search
+      this.getModules(this.pagination)
     }
   }
 }

@@ -6,6 +6,7 @@
       :title="ucwords($t(`${module}.${title}`))"
       :pagination="paginationConfig"
       :loading="loading"
+      @update:pagination="setPagination"
     >
       <template v-slot:loading>
         <q-inner-loading showing color="primary" />
@@ -17,7 +18,8 @@
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            :class="col.class">
+            :class="col.class"
+          >
             {{
               ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`))
             }}
@@ -25,7 +27,7 @@
         </q-tr>
       </template>
       <template v-slot:top-right>
-        <q-input dense debounce="300" v-model="filter" :placeholder="ucwords($t('template.search'))">
+        <q-input dense debounce="300" @input="search" v-model="filter" :placeholder="ucwords($t('template.search'))">
           <template v-slot:append>
             <q-icon v-if="filter !== ''" name="close" @click="filter = ''" class="cursor-pointer" />
             <q-icon name="search" />
@@ -97,7 +99,6 @@ export default {
   },
   data () {
     return {
-      current: 3,
       filter: '',
       /**
        * Content the column
@@ -115,8 +116,12 @@ export default {
     this.setHeaders()
   },
   methods: {
-    rowsPerPage (event) {
-      console.log(event)
+    /**
+     * Set data pagination emit event
+     * @param  {Object} data value pagination
+     */
+    setPagination (data) {
+      this.$emit('on-load-data', data)
     },
     /**
      * setHeaders gets headers of table
@@ -129,6 +134,14 @@ export default {
           }
         })
       })
+    },
+    /**
+     * search emit event for search
+     * @param  {String} data value of search input
+     */
+    search (data) {
+      this.paginationConfig.page = 1
+      this.$emit('search-data', data)
     }
   }
 }
