@@ -1,68 +1,44 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
-
-        <q-toolbar-title>
-          Bais
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      content-class="bg-grey-1"
-    >
-      <q-list>
-        <q-item-label
-          header
-          class="text-grey-8"
-        >
-          Essential Links
-        </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
-
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <LayoutComponent
+    titleApp="Menu Bais"
+    titleMenu="Opciones"
+    :data="modules"
+  />
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
 
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  }
-]
+import LayoutComponent from 'components/LayoutComponent.vue'
 
 export default {
   name: 'MainLayout',
-  components: { EssentialLink },
+  components: { LayoutComponent },
+
   data () {
     return {
-      leftDrawerOpen: false,
-      essentialLinks: linksData
+      /**
+       * Data menu
+       *
+       * @type {Array} data menu
+       */
+      modules: []
+    }
+  },
+
+  created () {
+    this.getAllModules()
+  },
+
+  methods: {
+    /**
+     * Get all products
+     *
+     */
+    getAllModules () {
+      this.$mockData.getData('modules')
+        .then(({ response }) => {
+          this.modules = response.data.content
+        })
     }
   }
 }
