@@ -7,7 +7,7 @@ export const permissionConfig = [
         tabulated: {
           name: 'acronym',
           align: 'left',
-          field: row => row.name,
+          field: row => row.acronym,
           sortable: true,
           visible: true
         }

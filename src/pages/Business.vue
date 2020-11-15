@@ -73,6 +73,7 @@ export default {
       this.loading = true
       this.$mockData.getData('business')
         .then(({ response }) => {
+          console.log(response)
           this.business = response.data.content
           this.loading = false
           this.pagination = params

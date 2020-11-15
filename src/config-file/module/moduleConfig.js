@@ -16,7 +16,7 @@ export const moduleConfig = [
         tabulated: {
           name: 'route',
           align: 'left',
-          field: row => row.name,
+          field: row => row.route,
           sortable: true,
           visible: true
         }

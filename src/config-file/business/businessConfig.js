@@ -7,7 +7,7 @@ export const businessConfig = [
         tabulated: {
           name: 'document',
           align: 'left',
-          field: row => row.name,
+          field: row => row.document,
           sortable: true,
           visible: true
         }
@@ -25,7 +25,7 @@ export const businessConfig = [
         tabulated: {
           name: 'address',
           align: 'left',
-          field: row => row.name,
+          field: row => row.address,
           sortable: true,
           visible: true
         }
@@ -34,7 +34,7 @@ export const businessConfig = [
         tabulated: {
           name: 'number_phone',
           align: 'left',
-          field: row => row.name,
+          field: row => row.number_phone,
           sortable: true,
           visible: true
         }
