@@ -22,5 +22,11 @@ export const modules = [
     route: 'modules',
     icon: '',
     devices: ['mobile', 'desktop']
+  },
+  {
+    name: 'users',
+    route: 'users',
+    icon: '',
+    devices: ['mobile', 'desktop']
   }
 ]

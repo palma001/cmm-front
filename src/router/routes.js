@@ -10,7 +10,7 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: '', component: () => import('pages/PWA.vue') }
+      { path: '', name: '', component: () => import('pages/Index.vue') }
     ]
   },
   {
@@ -21,10 +21,10 @@ const routes = [
     ]
   },
   {
-    path: '/',
+    path: '/users',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'users', component: () => import('pages/PWA.vue') }
+      { path: '', name: 'users', component: () => import('pages/User.vue') }
     ]
   },
   {

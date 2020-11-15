@@ -8,7 +8,13 @@ export default {
 
   // users
   users: {
-    users: 'usuarios'
+    users: 'usuarios',
+    document: 'documento',
+    first_name: 'nombre',
+    last_name: 'apellido',
+    number_phone: 'telefono',
+    listUser: 'lista de usuarios',
+    email: 'correo'
   },
 
   // modules
