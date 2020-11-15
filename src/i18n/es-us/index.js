@@ -13,8 +13,14 @@ export default {
     users: 'usuarios',
     company: 'empresas',
     modules: 'modulos',
+    permissions: 'permissions',
     name: 'nombre',
     route: 'ruta',
     listModule: 'lista de modulos'
+  },
+  permissions: {
+    acronym: 'acrónimo',
+    name: 'nombre',
+    listPermission: 'lista de permisos'
   }
 }

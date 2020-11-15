@@ -50,7 +50,7 @@
 </template>
 
 <script>
-
+import { Loading, QSpinnerGears } from 'quasar'
 export default {
   name: 'LayoutComponent',
 
@@ -87,15 +87,31 @@ export default {
 
   data () {
     return {
-    /**
-     * Status menu
-     *
-     * @type {Bollean} status menu
-     */
+      visible: true,
+      /**
+       * Status menu
+       *
+       * @type {Bollean} status menu
+       */
       leftDrawerOpen: false
     }
   },
+  created () {
+    this.loadingPage()
+  },
   methods: {
+    loadingPage () {
+      Loading.show({
+        spinner: QSpinnerGears,
+        spinnerColor: 'primary',
+        backgroundColor: 'white',
+        spinnerSize: 100
+      })
+
+      setTimeout(() => {
+        Loading.hide()
+      }, 3000)
+    },
     /**
      * Change route
      * @param  {String} data name route

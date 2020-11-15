@@ -1,4 +1,3 @@
-
 const routes = [
   {
     path: '/products',
@@ -33,6 +32,13 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', name: 'modules', component: () => import('pages/Module.vue') }
+    ]
+  },
+  {
+    path: '/permissions',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'permissions', component: () => import('pages/Permission.vue') }
     ]
   },
 

@@ -2,11 +2,11 @@
   <q-page class="flex-start q-pa-md">
     <div class="row">
       <DataTable
-        module="modules"
-        title="listModule"
+        module="permissions"
+        title="listPermission"
         :loading="loading"
-        :column="moduleConfig"
-        :data="modules"
+        :column="permissionConfig"
+        :data="permissions"
         :optionPagination="pagination"
         @on-load-data="sortingTable"
         @search-data="eventSearch"
@@ -16,10 +16,10 @@
 </template>
 <script>
 import DataTable from 'components/DataTable.vue'
-import { moduleConfig } from '../config-file/module/moduleConfig'
+import { permissionConfig } from '../config-file/permission/permissionConfig'
 import { mixins } from '../mixins'
 export default {
-  name: 'Module',
+  name: 'Permission',
   components: { DataTable },
   mixins: [mixins.containerMixin],
   data () {
@@ -28,12 +28,12 @@ export default {
        * Config module
        * @type {Array} config module
        */
-      moduleConfig: moduleConfig,
+      permissionConfig: permissionConfig,
       /**
-       * All modules
-       * @type {Array} modules
+       * All Permissions
+       * @type {Array} Permissions
        */
-      modules: [],
+      permissions: [],
       /**
        * Loading status
        * @type {Boolean} status
@@ -47,7 +47,7 @@ export default {
         sortBy: 'desc',
         descending: false,
         page: 1,
-        rowsPerPage: 5,
+        rowsPerPage: 25,
         search: {}
         // rowsNumber: xx if getting data from a server
       },
@@ -62,18 +62,18 @@ export default {
     }
   },
   created () {
-    this.getModules()
+    this.getPermissions()
   },
   methods: {
     /**
-     * Get modules
+     * Get Permissions
      *
      */
-    getModules (params) {
+    getPermissions (params) {
       this.loading = true
-      this.$mockData.getData('modules')
+      this.$mockData.getData('permissions')
         .then(({ response }) => {
-          this.modules = response.data.content
+          this.permissions = response.data.content
           this.loading = false
           this.pagination = params
         })
@@ -84,7 +84,7 @@ export default {
      * @param  {Object} data data paginate
      */
     sortingTable (data) {
-      this.getModules(data)
+      this.getPermissions(data)
     },
     /**
      * eventSearch searches data in microservices
@@ -96,7 +96,7 @@ export default {
       }
       this.pagination.page = 1
       this.pagination.search = this.search
-      this.getModules(this.pagination)
+      this.getPermissions(this.pagination)
     }
   }
 }
