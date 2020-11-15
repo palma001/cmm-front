@@ -14,10 +14,10 @@ const routes = [
     ]
   },
   {
-    path: '/company',
+    path: '/business',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'company', component: () => import('pages/PWA.vue') }
+      { path: '', name: 'business', component: () => import('pages/Business.vue') }
     ]
   },
   {

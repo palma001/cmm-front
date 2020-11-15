@@ -2,6 +2,7 @@ import { users } from './data/users'
 import { products } from './data/products'
 import { modules } from './data/modules'
 import { permissions } from './data/permissions'
+import { business } from './data/business'
 
 const mockData = {
   getData (data, params) {
@@ -69,6 +70,24 @@ const mockData = {
                   content: permissions,
                   metadata: {
                     totalElements: permissions.length,
+                    number: params, // server data
+                    size: 3 // server data
+                  }
+                }
+              }
+            })
+          }, 2000)
+        })
+      }
+      case 'business': {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve({
+              response: {
+                data: {
+                  content: business,
+                  metadata: {
+                    totalElements: business.length,
                     number: params, // server data
                     size: 3 // server data
                   }

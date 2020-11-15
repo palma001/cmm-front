@@ -2,11 +2,11 @@
   <q-page class="flex-start q-pa-md">
     <div class="row">
       <DataTable
-        module="modules"
-        title="listModule"
+        module="business"
+        title="listBusiness"
         :loading="loading"
-        :column="moduleConfig"
-        :data="modules"
+        :column="businessConfig"
+        :data="business"
         :optionPagination="pagination"
         @on-load-data="sortingTable"
         @search-data="eventSearch"
@@ -16,10 +16,10 @@
 </template>
 <script>
 import DataTable from 'components/DataTable.vue'
-import { moduleConfig } from '../config-file/module/moduleConfig'
+import { businessConfig } from '../config-file/business/businessConfig'
 import { mixins } from '../mixins'
 export default {
-  name: 'Module',
+  name: 'Busines',
   components: { DataTable },
   mixins: [mixins.containerMixin],
   data () {
@@ -28,12 +28,12 @@ export default {
        * Config module
        * @type {Array} config module
        */
-      moduleConfig: moduleConfig,
+      businessConfig: businessConfig,
       /**
-       * All modules
-       * @type {Array} modules
+       * All Business
+       * @type {Array} Business
        */
-      modules: [],
+      business: [],
       /**
        * Loading status
        * @type {Boolean} status
@@ -62,18 +62,18 @@ export default {
     }
   },
   created () {
-    this.getModules()
+    this.getBusiness()
   },
   methods: {
     /**
-     * Get modules
+     * Get Business
      *
      */
-    getModules (params) {
+    getBusiness (params) {
       this.loading = true
-      this.$mockData.getData('modules')
+      this.$mockData.getData('business')
         .then(({ response }) => {
-          this.modules = response.data.content
+          this.business = response.data.content
           this.loading = false
           this.pagination = params
         })
@@ -84,7 +84,7 @@ export default {
      * @param  {Object} data data paginate
      */
     sortingTable (data) {
-      this.getModules(data)
+      this.getBusiness(data)
     },
     /**
      * eventSearch searches data in microservices
@@ -96,7 +96,7 @@ export default {
       }
       this.pagination.page = 1
       this.pagination.search = this.search
-      this.getModules(this.pagination)
+      this.getBusiness(this.pagination)
     }
   }
 }

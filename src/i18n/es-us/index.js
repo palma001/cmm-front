@@ -3,24 +3,39 @@
 
 export default {
   template: {
-    search: 'busqueda'
+    search: 'buscar'
   },
+
+  // users
   users: {
     users: 'usuarios'
   },
+
+  // modules
   modules: {
     products: 'productos',
     users: 'usuarios',
-    company: 'empresas',
+    business: 'empresas',
     modules: 'modulos',
-    permissions: 'permissions',
+    permissions: 'permisos',
     name: 'nombre',
     route: 'ruta',
     listModule: 'lista de modulos'
   },
+
+  // permissions
   permissions: {
     acronym: 'acrónimo',
     name: 'nombre',
     listPermission: 'lista de permisos'
+  },
+
+  // business
+  business: {
+    document: 'documento',
+    name: 'nombre',
+    address: 'dirección',
+    number_phone: 'telefono',
+    listBusiness: 'lista de empresas'
   }
 }
