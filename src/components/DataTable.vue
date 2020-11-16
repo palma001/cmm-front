@@ -29,7 +29,6 @@
       <template v-slot:top-right>
         <q-input dense debounce="300" @input="search" v-model="filter" :placeholder="ucwords($t('template.search'))">
           <template v-slot:append>
-            <q-icon v-if="filter !== ''" name="close" @click="filter = ''" class="cursor-pointer" />
             <q-icon name="search" />
           </template>
         </q-input>
