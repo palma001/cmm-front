@@ -34,5 +34,11 @@ export const modules = [
     route: 'branch-offices',
     icon: '',
     devices: ['mobile', 'desktop']
+  },
+  {
+    name: 'roles',
+    route: 'roles',
+    icon: '',
+    devices: ['mobile', 'desktop']
   }
 ]

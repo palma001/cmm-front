@@ -48,6 +48,13 @@ const routes = [
       { path: '', name: 'branch-offices', component: () => import('pages/BranchOffice.vue') }
     ]
   },
+  {
+    path: '/roles',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'roles', component: () => import('pages/Role.vue') }
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it
