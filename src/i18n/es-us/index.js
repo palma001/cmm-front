@@ -26,7 +26,8 @@ export default {
     permissions: 'permisos',
     name: 'nombre',
     route: 'ruta',
-    listModule: 'lista de modulos'
+    listModule: 'lista de modulos',
+    'branch-offices': 'sucursales'
   },
 
   // permissions
@@ -43,5 +44,14 @@ export default {
     address: 'dirección',
     number_phone: 'telefono',
     listBusiness: 'lista de empresas'
+  },
+
+  // business
+  'branch-offices': {
+    document: 'documento',
+    name: 'nombre',
+    address: 'dirección',
+    number_phone: 'telefono',
+    listBranchOffice: 'lista de sucursales'
   }
 }
