@@ -3,6 +3,7 @@ import { products } from './data/products'
 import { modules } from './data/modules'
 import { permissions } from './data/permissions'
 import { business } from './data/business'
+import { branchOffice } from './data/branchOffice'
 
 const mockData = {
   getData (data, params) {
@@ -88,6 +89,24 @@ const mockData = {
                   content: business,
                   metadata: {
                     totalElements: business.length,
+                    number: params, // server data
+                    size: 3 // server data
+                  }
+                }
+              }
+            })
+          }, 2000)
+        })
+      }
+      case 'branch-offices': {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve({
+              response: {
+                data: {
+                  content: branchOffice,
+                  metadata: {
+                    totalElements: branchOffice.length,
                     number: params, // server data
                     size: 3 // server data
                   }
