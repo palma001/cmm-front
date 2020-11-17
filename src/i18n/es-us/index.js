@@ -24,6 +24,7 @@ export default {
     business: 'empresas',
     modules: 'modulos',
     permissions: 'permisos',
+    roles: 'roles',
     name: 'nombre',
     route: 'ruta',
     listModule: 'lista de modulos',
@@ -35,6 +36,14 @@ export default {
     acronym: 'acrónimo',
     name: 'nombre',
     listPermission: 'lista de permisos'
+  },
+
+  // roles
+  roles: {
+    acronym: 'acrónimo',
+    name: 'nombre',
+    listRoles: 'lista de roles',
+    description: 'descripción'
   },
 
   // business
