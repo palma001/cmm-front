@@ -34,7 +34,7 @@ export const userConfig = [
         tabulated: {
           name: 'email',
           align: 'left',
-          field: row => row.last_name,
+          field: row => row.email,
           sortable: true,
           visible: true
         }
