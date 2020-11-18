@@ -5,6 +5,15 @@ export const branchOfficeConfig = [
     children: [
       {
         tabulated: {
+          name: 'business',
+          align: 'left',
+          field: row => row.business.name,
+          sortable: true,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
           name: 'document',
           align: 'left',
           field: row => row.document,

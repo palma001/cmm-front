@@ -63,6 +63,7 @@ export default {
     name: 'nombre',
     address: 'dirección',
     number_phone: 'telefono',
-    listBranchOffice: 'lista de sucursales'
+    listBranchOffice: 'lista de sucursales',
+    business: 'empresa'
   }
 }
