@@ -28,6 +28,7 @@ export default {
     roles: 'roles',
     name: 'nombre',
     route: 'ruta',
+    category_module: 'Categoria',
     listModule: 'lista de modulos',
     'branch-offices': 'sucursales'
   },

@@ -20,6 +20,15 @@ export const moduleConfig = [
           sortable: true,
           visible: true
         }
+      },
+      {
+        tabulated: {
+          name: 'category_module',
+          align: 'left',
+          field: row => row.category_module.name,
+          sortable: true,
+          visible: true
+        }
       }
     ]
   }
