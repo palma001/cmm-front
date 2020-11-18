@@ -3,7 +3,8 @@
 
 export default {
   template: {
-    search: 'buscar'
+    search: 'buscar',
+    security: 'seguridad'
   },
 
   // users
