@@ -22,26 +22,39 @@
       show-if-above
       bordered
       content-class="bg-grey-1">
-      <div
-        v-for="list in data"
-        :key="list.id">
-        <q-list
-          v-for="(divice, index) in list.devices"
-          :key="index"
-        >
-          <q-item
-            v-if="validateDivice(divice)"
-            clickable>
-            <q-item-section
-              @click="changeRoute(list.route)"
-            >
-              <q-item-label class="text-capitalize">
-                {{  $t(`modules.${list.name}`) }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </div>
+      <q-expansion-item
+        expand-separator
+        default-opened
+        v-for="category_module in data"
+        :key="category_module.id"
+        :icon="category_module.icon"
+        :label="ucwords($t(`template.${category_module.name}`))"
+      >
+        <div
+          v-for="list in category_module.modules"
+          :key="list.id">
+          <q-list
+            v-for="(divice, index) in list.devices"
+            :key="index"
+          >
+            <q-item
+              v-if="validateDivice(divice)"
+              clickable
+              class="q-ml-lg">
+              <q-item-section avatar v-if="list.icon">
+                <q-icon :name="list.icon" />
+              </q-item-section>
+              <q-item-section
+                @click="changeRoute(list.route)"
+              >
+                <q-item-label>
+                  {{  ucwords($t(`modules.${list.name}`)) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+      </q-expansion-item>
     </q-drawer>
     <q-page-container>
       <router-view />
@@ -51,9 +64,10 @@
 
 <script>
 import { Loading, QSpinnerGears } from 'quasar'
+import { mixins } from '../mixins'
 export default {
   name: 'LayoutComponent',
-
+  mixins: [mixins.containerMixin],
   props: {
 
     /**

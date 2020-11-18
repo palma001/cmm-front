@@ -35,7 +35,7 @@ export default {
      *
      */
     getAllModules () {
-      this.$mockData.getData('modules')
+      this.$mockData.getData('category-modules')
         .then(({ response }) => {
           this.modules = response.data.content
         })

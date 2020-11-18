@@ -5,6 +5,7 @@ import { permissions } from './data/permissions'
 import { business } from './data/business'
 import { branchOffice } from './data/branchOffice'
 import { roles } from './data/roles'
+import { categoryModules } from './data/categoryModules'
 
 const mockData = {
   getData (data, params) {
@@ -126,6 +127,24 @@ const mockData = {
                   content: roles,
                   metadata: {
                     totalElements: roles.length,
+                    number: params, // server data
+                    size: 3 // server data
+                  }
+                }
+              }
+            })
+          }, 2000)
+        })
+      }
+      case 'category-modules': {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve({
+              response: {
+                data: {
+                  content: categoryModules,
+                  metadata: {
+                    totalElements: categoryModules.length,
                     number: params, // server data
                     size: 3 // server data
                   }
