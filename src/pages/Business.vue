@@ -1,6 +1,7 @@
 <template>
   <q-page class="flex-start q-pa-md">
     <div class="row">
+      <q-btn color="primary" icon="check" label="OK" v-if="can(this, 'business', 'create')"/>
       <DataTable
         module="business"
         title="listBusiness"
@@ -24,6 +25,11 @@ export default {
   mixins: [mixins.containerMixin],
   data () {
     return {
+      /**
+       * Permissions module
+       * @type {Object} Permissions
+       */
+      permissions: {},
       /**
        * Config module
        * @type {Array} config module
@@ -69,11 +75,10 @@ export default {
      * Get Business
      *
      */
-    getBusiness (params) {
+    async getBusiness (params) {
       this.loading = true
       this.$mockData.getData('business')
         .then(({ response }) => {
-          console.log(response)
           this.business = response.data.content
           this.loading = false
           this.pagination = params
