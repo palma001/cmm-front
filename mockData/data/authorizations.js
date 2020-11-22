@@ -8,7 +8,6 @@ export const authorizations = [
       update: true,
       delete: true,
       forceDelete: false
-
     }
   },
   {
@@ -20,7 +19,6 @@ export const authorizations = [
       updated: true,
       delete: true,
       forceDelete: false
-
     }
   },
   {
@@ -32,7 +30,6 @@ export const authorizations = [
       updated: true,
       delete: true,
       forceDelete: false
-
     }
   },
   {
@@ -44,7 +41,6 @@ export const authorizations = [
       updated: true,
       delete: true,
       forceDelete: false
-
     }
   },
   {
@@ -56,7 +52,6 @@ export const authorizations = [
       updated: true,
       delete: true,
       forceDelete: false
-
     }
   },
   {
@@ -68,7 +63,6 @@ export const authorizations = [
       updated: true,
       delete: true,
       forceDelete: false
-
     }
   }
 ]
