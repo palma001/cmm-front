@@ -12,7 +12,7 @@ export const categoryModules = [
       {
         name: 'permissions',
         route: 'permissions',
-        icon: '',
+        icon: 'clock',
         devices: ['mobile', 'desktop']
       },
       {

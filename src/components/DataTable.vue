@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%">
-    <q-table
+    <q-table class="primary"
       :data="data"
       :columns="columnData"
       :title="ucwords($t(`${module}.${title}`))"
