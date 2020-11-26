@@ -55,6 +55,13 @@ const routes = [
       { path: '', name: 'roles', component: () => import('pages/Role.vue') }
     ]
   },
+  {
+    path: '/add',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', name: 'add', component: () => import('pages/AddModule.vue') }
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it

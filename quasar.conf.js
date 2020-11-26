@@ -170,7 +170,7 @@ module.exports = function (/* ctx */) {
       // On the other hand, the following completely
       // disables Quasar's back button management.
       // Requires Quasar v1.14.1+
-        backButton: true/false
+      backButton: true/false
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/developing-capacitor-apps/configuring-capacitor
