@@ -6,6 +6,7 @@ import { business } from './data/business'
 import { branchOffice } from './data/branchOffice'
 import { roles } from './data/roles'
 import { categoryModules } from './data/categoryModules'
+import { authorizations } from './data/authorizations'
 
 const mockData = {
   getData (data, params) {
@@ -145,6 +146,24 @@ const mockData = {
                   content: categoryModules,
                   metadata: {
                     totalElements: categoryModules.length,
+                    number: params, // server data
+                    size: 3 // server data
+                  }
+                }
+              }
+            })
+          }, 2000)
+        })
+      }
+      case 'authorizations': {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve({
+              response: {
+                data: {
+                  content: authorizations,
+                  metadata: {
+                    totalElements: authorizations.length,
                     number: params, // server data
                     size: 3 // server data
                   }

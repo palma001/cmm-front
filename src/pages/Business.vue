@@ -28,6 +28,11 @@ export default {
   data () {
     return {
       /**
+       * Permissions module
+       * @type {Object} Permissions
+       */
+      permissions: {},
+      /**
        * Config module
        * @type {Array} config module
        */
@@ -72,11 +77,10 @@ export default {
      * Get Business
      *
      */
-    getBusiness (params) {
+    async getBusiness (params) {
       this.loading = true
       this.$mockData.getData('business')
         .then(({ response }) => {
-          console.log(response)
           this.business = response.data.content
           this.loading = false
           this.pagination = params

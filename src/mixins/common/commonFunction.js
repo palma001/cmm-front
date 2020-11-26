@@ -77,9 +77,23 @@ export const setRelationalData = (
   }
 }
 
+export const can = (self, module, permission) => {
+  self.$mockData.getData('authorizations')
+    .then(({ response }) => {
+      self.permissions = response.data.content.filter(permission => {
+        return permission.name === module
+      })[0]
+    })
+
+  if (self.permissions.permissions) {
+    return self.permissions.permissions[permission]
+  }
+}
+
 export const methods = {
   translateEntity,
   translateLabel,
   setRelationalData,
-  ucwords
+  ucwords,
+  can
 }
