@@ -1,4 +1,4 @@
-# Quasar App (contabilitate)
+# Quasar App (Bais)
 
 software accounting software
 
