@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex-start q-pa-md">
-        <div align="right">
-      <q-btn color="primary" glossy  size="12px" label="Agragar Modulo" />
+    <div align="right">
+      <q-btn color="primary" glossy  size="12px" label="Agragar Modulo"/>
     </div>
     <div class="row q-mt-md">
       <DataTable

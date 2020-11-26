@@ -50,15 +50,14 @@
           </div>
         </q-card-section>
 
-        <q-card-actions align="center">
+        <q-card-actions align="right">
           <q-btn label="Cancelar"
-            color="primary"
+            color="negative"
             v-close-popup
             glossy
             size="12px" />
           <q-btn label="Guardar"
             color="primary"
-            v-close-popup
             glossy
             size="12px" />
         </q-card-actions>
@@ -76,6 +75,7 @@ export default {
   mixins: [mixins.containerMixin],
   data () {
     return {
+      text: '',
       addModule: false,
       /**
        * Config module
