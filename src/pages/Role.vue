@@ -19,59 +19,18 @@
     </div>
     <q-dialog v-model="addModule"
       persistent>
-      <q-card>
-        <q-card-section class="text-primary text-h6">Agregar Módulo
-          <div class="row">
-            <div class="col-12">
-              <q-input v-model="text"
-                label="Registro 1"
-                expanded/>
-            </div>
-            <div class="col-12">
-              <q-input v-model="text"
-                label="Registro 2"
-                expanded/>
-            </div>
-            <div class="col-12">
-              <q-input v-model="text"
-                label="Registro 3"
-                expanded/>
-            </div>
-            <div class="col-12">
-              <q-input v-model="text"
-                label="Registro 4"
-                expanded/>
-              <div class="col-12">
-                <q-input v-model="text"
-                  label="Registro 5"
-                  expanded/>
-              </div>
-            </div>
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn label="Cancelar"
-            color="negative"
-            v-close-popup
-            glossy
-            size="12px" />
-          <q-btn label="Guardar"
-            color="primary"
-            glossy
-            size="12px" />
-        </q-card-actions>
-      </q-card>
+        <DynamicForm/>
     </q-dialog>
   </q-page>
 </template>
 <script>
 import DataTable from 'components/DataTable.vue'
+import DynamicForm from 'components/DynamicForm.vue'
 import { roleConfig } from '../config-file/role/roleConfig'
 import { mixins } from '../mixins'
 export default {
   name: 'Role',
-  components: { DataTable },
+  components: { DataTable, DynamicForm },
   mixins: [mixins.containerMixin],
   data () {
     return {
