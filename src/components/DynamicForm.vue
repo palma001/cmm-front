@@ -187,7 +187,6 @@ export default {
             if (prop.addible && prop.addible.addible) {
               const propTag = prop.addible.propTag
               prop.addible.component.props.value = (prop.addible.component.props.defaultValue) ? prop.addible.component.props.defaultValue : self.objectToBind[propTag]
-              console.log(self.objectToBind)
               return createElement(
                 'div', {
                   class: {
@@ -200,11 +199,7 @@ export default {
                     {
                       props: {
                         ...prop.addible.component.props,
-                        label: (() => {
-                          if (prop.addible.visibleLabel) {
-                            return self.$t(propTag)
-                          }
-                        })()
+                        label: prop.addible.visibleLabel ? self.$t(propTag) : ''
                       },
                       class: {
                         ...prop.addible.component.class
@@ -220,6 +215,9 @@ export default {
                         },
                         select: function (value) {
                           self.objectToBind[propTag] = value
+                        },
+                        blur: function (value) {
+                          console.log(value)
                         }
                       }
                     }
@@ -230,6 +228,7 @@ export default {
           })
         )
       })
+      debugger
       return inputs
     }
   },
