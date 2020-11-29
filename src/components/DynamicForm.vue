@@ -66,7 +66,22 @@ export default {
             children: [
               {
                 addible: {
-                  propTag: 'name',
+                  propTag: 'registros',
+                  addible: true,
+                  type: 'String',
+                  visibleLabel: true,
+                  component: {
+                    name: 'q-input',
+                    props: {
+                      type: 'text',
+                      expanded: true
+                    }
+                  }
+                }
+              },
+              {
+                addible: {
+                  propTag: 'lastname',
                   addible: true,
                   type: 'String',
                   visibleLabel: true,
@@ -94,7 +109,7 @@ export default {
     /**
      * Description
      */
-    createContainer (createElement, configButtons, self) {
+    createButtons (createElement, configButtons, self) {
       const container = []
       container.push(
         createElement('q-card-actions',
@@ -107,7 +122,27 @@ export default {
             configButtons.map(button => {
               return createElement('q-btn',
                 {
-                  props: button.props
+                  props: {
+                    ...button.props
+                  },
+                  on: {
+                    click: function () {
+                      switch (button.action.toLowerCase()) {
+                        case 'add':
+                          self.addData()
+                          break
+                        case 'cancel':
+                          self.cancel()
+                          break
+                        case 'restore':
+                          self.restore()
+                          break
+                        default:
+                          self.other(button.action)
+                          break
+                      }
+                    }
+                  }
                 },
                 self.$t(`roles.${button.name}`)
               )
@@ -116,6 +151,30 @@ export default {
         )
       )
       return container
+    },
+    /**
+     * Add data
+     */
+    addData () {
+      this.$emit('save', this.objectToBind)
+    },
+    /**
+     * Add data
+     */
+    cancel () {
+      this.$emit('cancel', this.objectToBind)
+    },
+    /**
+     * Add data
+     */
+    restore () {
+      this.$emit('cancel', this.objectToBind)
+    },
+    /**
+     * Add data
+     */
+    other (action) {
+      this.$emit(action, this.objectToBind)
     },
     /**
      * Description
@@ -128,6 +187,7 @@ export default {
             if (prop.addible && prop.addible.addible) {
               const propTag = prop.addible.propTag
               prop.addible.component.props.value = (prop.addible.component.props.defaultValue) ? prop.addible.component.props.defaultValue : self.objectToBind[propTag]
+              console.log(self.objectToBind)
               return createElement(
                 'div', {
                   class: {
@@ -145,6 +205,22 @@ export default {
                             return self.$t(propTag)
                           }
                         })()
+                      },
+                      class: {
+                        ...prop.addible.component.class
+                      },
+                      attrs: {
+                        name: propTag,
+                        ...prop.addible.component.attrs
+                      },
+                      on: {
+                        input: function (value) {
+                          self.objectToBind[propTag] = value
+                          self.createInput(createElement, config, self)
+                        },
+                        select: function (value) {
+                          self.objectToBind[propTag] = value
+                        }
                       }
                     }
                   )
@@ -164,23 +240,14 @@ export default {
         createElement('q-card-section',
           {
             props: {
-              right: true
+              align: 'right'
             }
           },
           [
-            createElement('div',
-              {
-                class: {
-                  row: true
-                }
-              },
-              [
-                self.createInput(createElement, self.config, self)
-              ]
-            )
+            self.createInput(createElement, self.config, self)
           ]
         ),
-        self.createContainer(createElement, self.buttons, self)
+        self.createButtons(createElement, self.buttons, self)
       ]
     )
   }

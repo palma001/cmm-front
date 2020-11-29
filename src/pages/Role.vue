@@ -17,9 +17,10 @@
         @on-load-data="sortingTable"
         @search-data="eventSearch" />
     </div>
-    <q-dialog v-model="addModule"
-      persistent>
-        <DynamicForm/>
+    <q-dialog v-model="addModule">
+      <DynamicForm
+        @save="save"
+      />
     </q-dialog>
   </q-page>
 </template>
@@ -77,6 +78,9 @@ export default {
     this.getRoles()
   },
   methods: {
+    save (data) {
+      console.log(data)
+    },
     /**
      * Get Role
      *
