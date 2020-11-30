@@ -2,9 +2,11 @@
   <q-page class="flex-start q-pa-md">
     <div align="right">
       <q-btn color="primary"
+        icon="add"
         glossy
+        dense
         size="12px"
-        label="Agragar Modulo"
+        label="Agregar Modulo"
         @click="addModule = true" />
     </div>
     <div class="row q-mt-md">
@@ -55,10 +57,14 @@
             color="primary"
             v-close-popup
             glossy
+            dense
+            icon="close"
             size="12px" />
           <q-btn label="Guardar"
             color="primary"
             v-close-popup
+            icon="save"
+            dense
             glossy
             size="12px" />
         </q-card-actions>

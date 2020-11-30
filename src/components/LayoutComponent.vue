@@ -2,14 +2,12 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar class="glossy">
-        <q-btn
-          flat
+        <q-btn flat
           dense
           round
           icon="menu"
           aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
+          @click="leftDrawerOpen = !leftDrawerOpen" />
 
         <q-toolbar-title>
           {{ titleApp }}
@@ -17,38 +15,33 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
+    <q-drawer v-model="leftDrawerOpen"
       show-if-above
       bordered
       content-class="bg-grey-1">
-      <q-expansion-item
-        expand-separator
+      <q-expansion-item class="text-primary" expand-separator
         default-opened
         v-for="category_module in data"
         :key="category_module.id"
         :icon="category_module.icon"
-        :label="ucwords($t(`template.${category_module.name}`))"
-      >
-        <div
-          v-for="list in category_module.modules"
+        :label="ucwords($t(`template.${category_module.name}`))">
+        <div v-for="list in category_module.modules"
           :key="list.id">
-          <q-list
-            v-for="(divice, index) in list.devices"
-            :key="index"
-          >
-            <q-item
-              v-if="validateDivice(divice)"
+          <q-list v-for="(divice, index) in list.devices"
+            :key="index">
+            <q-item v-if="validateDivice(divice)"
               clickable
-              class="q-ml-lg">
-              <q-item-section avatar v-if="list.icon">
+              v-ripple
+              class="q-ml-lg"
+              :active="active"
+              active-class="text-secondary">
+              <q-item-section avatar
+                v-if="list.icon">
                 <q-icon :name="list.icon" />
               </q-item-section>
-              <q-item-section
-                @click="changeRoute(list.route)"
-              >
+              <q-item-section @click="changeRoute(list.route)">
                 <q-item-label>
-                  {{  ucwords($t(`modules.${list.name}`)) }}
+                  {{ ucwords($t(`modules.${list.name}`)) }}
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -101,6 +94,7 @@ export default {
 
   data () {
     return {
+      active: true,
       visible: true,
       /**
        * Status menu
@@ -143,3 +137,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.my-menu-link {
+  background-color: #efebe4;
+  color: #f5ad23;
+}
+</style>
