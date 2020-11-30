@@ -1,6 +1,11 @@
 <script>
+import BInput from './BInput'
+
 export default {
   name: 'DynamicForm',
+  components: {
+    BInput
+  },
   props: {
     /*
      * Action Button
@@ -71,7 +76,7 @@ export default {
                   type: 'String',
                   visibleLabel: true,
                   component: {
-                    name: 'q-input',
+                    name: 'b-input',
                     props: {
                       type: 'text',
                       expanded: true
@@ -86,7 +91,7 @@ export default {
                   type: 'String',
                   visibleLabel: true,
                   component: {
-                    name: 'q-input',
+                    name: 'b-input',
                     props: {
                       type: 'text',
                       expanded: true
@@ -211,13 +216,10 @@ export default {
                       on: {
                         input: function (value) {
                           self.objectToBind[propTag] = value
-                          self.createInput(createElement, config, self)
+                          // self.createInput(createElement, config, self)
                         },
                         select: function (value) {
                           self.objectToBind[propTag] = value
-                        },
-                        blur: function (value) {
-                          console.log(value)
                         }
                       }
                     }
@@ -228,7 +230,6 @@ export default {
           })
         )
       })
-      debugger
       return inputs
     }
   },
