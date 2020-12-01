@@ -17,7 +17,7 @@ export default {
         return [
           {
             name: 'cancel',
-            action: 'add',
+            action: 'cancel',
             label: true,
             icon: {
               icon: 'plus'
@@ -30,7 +30,7 @@ export default {
           },
           {
             name: 'restore',
-            action: 'add',
+            action: 'restore',
             label: true,
             icon: {
               icon: 'plus'
@@ -173,7 +173,7 @@ export default {
      * Add data
      */
     restore () {
-      this.$emit('cancel', this.objectToBind)
+      this.$emit('restore', this.objectToBind)
     },
     /**
      * Add data
