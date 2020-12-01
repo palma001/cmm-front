@@ -104,12 +104,13 @@ export default {
                     name: 'b-input',
                     props: {
                       type: 'text',
-                      expanded: true,
-                      width: '90%'
+                      rounded: true,
+                      outlined: true,
+                      dense: true
                     },
                     class: {
                       'col-sm-12': true,
-                      'col-md-6': true
+                      'col-md-5': true
                     },
                     directives: [
                       {
@@ -132,7 +133,9 @@ export default {
                     name: 'b-input',
                     props: {
                       type: 'text',
-                      width: '90%'
+                      rounded: true,
+                      outlined: true,
+                      dense: true
                     },
                     class: {
                       'col-sm-12': true,
@@ -163,7 +166,7 @@ export default {
         createElement('q-card-actions',
           {
             props: {
-              align: 'right'
+              align: 'center'
             }
           },
           [
@@ -354,16 +357,35 @@ export default {
         createElement('q-card-section',
           {
             class: {
-              'text-h6': true
+              'text-h6': true,
+              'items-center': true,
+              row: true
             }
           },
-          self.ucwords(`${self.$t(`${self.module}.add`)}`)
+          [
+            self.ucwords(`${self.$t(`${self.module}.add`)}`),
+            createElement('q-space'),
+            createElement('q-btn', {
+              props: {
+                icon: 'close',
+                flat: true,
+                round: true,
+                dense: true
+              },
+              on: {
+                click: () => {
+                  self.cancel()
+                }
+              }
+            })
+          ]
         ),
         createElement('q-separator'),
         createElement('q-card-section',
           {
             class: {
-              col: true
+              col: true,
+              scroll: true
             }
           },
           [
@@ -372,8 +394,8 @@ export default {
                 ref: 'form',
                 class: {
                   row: true,
-                  'items-start': true,
-                  'justify-between': true
+                  'justify-evenly': true,
+                  'q-gutter-x-xs': true
                 }
               },
               [

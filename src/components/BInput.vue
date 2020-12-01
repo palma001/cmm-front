@@ -5,6 +5,11 @@
     :label="label"
     :type="type"
     :error="error"
+    :filled="filled"
+    :rounded="rounded"
+    :standout="standout"
+    :outlined="outlined"
+    :dense="dense"
     @input="input"
   />
 </template>
@@ -30,6 +35,26 @@ export default {
       required: true
     },
     error: {
+      type: Boolean,
+      default: false
+    },
+    rounded: {
+      type: Boolean,
+      default: false
+    },
+    outlined: {
+      type: Boolean,
+      default: false
+    },
+    standout: {
+      type: Boolean,
+      default: false
+    },
+    filled: {
+      type: Boolean,
+      default: false
+    },
+    dense: {
       type: Boolean,
       default: false
     }

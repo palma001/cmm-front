@@ -21,10 +21,12 @@
       v-model="addModule"
       full-height
       position="right"
+      persistent
     >
       <DynamicForm
         module="roles"
         @save="save"
+        @cancel="cancel"
       />
     </q-dialog>
   </q-page>
@@ -83,6 +85,9 @@ export default {
     this.getRoles()
   },
   methods: {
+    cancel () {
+      this.addModule = false
+    },
     save (data) {
       console.log(data)
     },
