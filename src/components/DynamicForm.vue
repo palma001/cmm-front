@@ -80,7 +80,16 @@ export default {
                     props: {
                       type: 'text',
                       expanded: true
-                    }
+                    },
+                    directives: [
+                      {
+                        name: 'validate',
+                        value: {
+                          required: true,
+                          numeric: true
+                        }
+                      }
+                    ]
                   }
                 }
               },
@@ -107,7 +116,8 @@ export default {
   },
   data () {
     return {
-      objectToBind: {}
+      objectToBind: {},
+      invalidateKey: false
     }
   },
   methods: {
@@ -204,7 +214,9 @@ export default {
                     {
                       props: {
                         ...prop.addible.component.props,
-                        label: prop.addible.visibleLabel ? self.$t(propTag) : ''
+                        label: prop.addible.visibleLabel ? self.$t(propTag) : '',
+                        errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
+                        error: this.errors.has(propTag)
                       },
                       class: {
                         ...prop.addible.component.class
@@ -213,6 +225,7 @@ export default {
                         name: propTag,
                         ...prop.addible.component.attrs
                       },
+                      ref: propTag,
                       on: {
                         input: function (value) {
                           self.objectToBind[propTag] = value
@@ -221,7 +234,15 @@ export default {
                         select: function (value) {
                           self.objectToBind[propTag] = value
                         }
-                      }
+                      },
+                      directives: (function () {
+                        if (prop.addible.component.directives) {
+                          const directives = [
+                            ...prop.addible.component.directives
+                          ]
+                          return directives
+                        }
+                      })()
                     }
                   )
                 ]
@@ -231,6 +252,32 @@ export default {
         )
       })
       return inputs
+    },
+    /**
+     * Validations the errors
+     * @param  {String} propTag data fromulary
+     * @return {String} errors
+     */
+    errorValidation (propTag) {
+      if (this.errors.has(propTag) || !this.invalidateKey) {
+        console.log(this.errors.first(propTag))
+        return this.errors.first(propTag)
+      } else {
+        return this.messageErrorPrimary(propTag)
+      }
+    },
+
+    /**
+     * Message primary key
+     * @param  {String} propTag
+     * @return {String} message the error
+     */
+    messageErrorPrimary (propTag) {
+      if (this.invalidateKey && propTag === this.primaryKey[0]) {
+        return this.$t('invalidatePrimaryKey', 'message')
+      } else {
+        return ''
+      }
     }
   },
   render: function (createElement) {

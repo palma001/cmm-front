@@ -1,5 +1,12 @@
 <template>
-  <q-input v-model="valueProp" :label="label" :type="type" @input="input"/>
+  <q-input
+    v-model="valueProp"
+    :error-message="errorMessageProp"
+    :label="label"
+    :type="type"
+    :error="error"
+    @input="input"
+  />
 </template>
 
 <script>
@@ -10,6 +17,10 @@ export default {
       required: true,
       default: ''
     },
+    errorMessage: {
+      type: String,
+      default: ''
+    },
     label: {
       type: String,
       required: true
@@ -17,16 +28,24 @@ export default {
     type: {
       type: String,
       required: true
+    },
+    error: {
+      type: Boolean,
+      default: false
     }
   },
   data: () => {
     return {
-      valueProp: ''
+      valueProp: '',
+      errorMessageProp: ''
     }
   },
   watch: {
     value () {
       this.valueProp = this.value
+    },
+    errorMessage () {
+      this.errorMessageProp = this.errorMessage
     }
   },
   methods: {
