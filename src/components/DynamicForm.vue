@@ -110,7 +110,7 @@ export default {
                     },
                     class: {
                       'col-sm-12': true,
-                      'col-md-5': true
+                      'col-md-12': true
                     },
                     directives: [
                       {
@@ -139,7 +139,7 @@ export default {
                     },
                     class: {
                       'col-sm-12': true,
-                      'col-md-6': true
+                      'col-md-12': true
                     }
                   }
                 }
