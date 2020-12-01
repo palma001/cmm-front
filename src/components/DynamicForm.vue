@@ -58,6 +58,30 @@ export default {
       }
     },
     /*
+     * Name module
+     * @type {String} module
+     */
+    module: {
+      type: String,
+      require: true
+    },
+    /*
+     * Name primeries key
+     * @type {Array} primeries key
+     */
+    primaryKey: {
+      type: Array,
+      required: false
+    },
+    /*
+     * Name microservice
+     * @type {String} microservice
+     */
+    microservices: {
+      type: String,
+      required: false
+    },
+    /*
      * Config inputs
      * @type {Array} config inpts
      */
@@ -85,8 +109,7 @@ export default {
                       {
                         name: 'validate',
                         value: {
-                          required: true,
-                          numeric: true
+                          required: true
                         }
                       }
                     ]
@@ -102,8 +125,7 @@ export default {
                   component: {
                     name: 'b-input',
                     props: {
-                      type: 'text',
-                      expanded: true
+                      type: 'text'
                     }
                   }
                 }
@@ -171,7 +193,12 @@ export default {
      * Add data
      */
     addData () {
-      this.$emit('save', this.objectToBind)
+      this.validateBeforeSubmit()
+        .then(res => {
+          if (res && !this.invalidateKey) {
+            this.$emit('save', this.objectToBind)
+          }
+        })
     },
     /**
      * Add data
@@ -183,10 +210,31 @@ export default {
      * Add data
      */
     restore () {
-      this.$emit('restore', this.objectToBind)
+      this.objectToBind = {}
+      this.$validator.reset()
+      this.invalidateKey = false
     },
     /**
-     * Add data
+     * Get validation primary key
+     * @type {Object} data get
+     *
+     */
+    getPrimaryKey (data) {
+      this.$services.getDataParams(
+        [this.microservices, this.module],
+        data[this.primaryKey[0]])
+        .then(res => {
+          if (res.res.status === 200) {
+            this.invalidateKey = true
+            this.errorValidation(this.primaryKey[0])
+          } else {
+            this.invalidateKey = false
+          }
+        })
+    },
+    /**
+     * Other Actions
+     * @type {String} action
      */
     other (action) {
       this.$emit(action, this.objectToBind)
@@ -212,6 +260,7 @@ export default {
                   createElement(
                     prop.addible.component.name,
                     {
+                      ref: propTag,
                       props: {
                         ...prop.addible.component.props,
                         label: prop.addible.visibleLabel ? self.$t(propTag) : '',
@@ -225,7 +274,6 @@ export default {
                         name: propTag,
                         ...prop.addible.component.attrs
                       },
-                      ref: propTag,
                       on: {
                         input: function (value) {
                           self.objectToBind[propTag] = value
@@ -260,13 +308,24 @@ export default {
      */
     errorValidation (propTag) {
       if (this.errors.has(propTag) || !this.invalidateKey) {
-        console.log(this.errors.first(propTag))
         return this.errors.first(propTag)
       } else {
         return this.messageErrorPrimary(propTag)
       }
     },
-
+    /**
+     * Verify formulary error
+     * @param {String} event form to change
+     */
+    validateBeforeSubmit () {
+      return this.$validator.validateAll()
+        .then((result) => {
+          return result
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
     /**
      * Message primary key
      * @param  {String} propTag
@@ -291,7 +350,14 @@ export default {
             }
           },
           [
-            self.createInput(createElement, self.config, self)
+            createElement('q-form',
+              {
+                ref: 'form'
+              },
+              [
+                self.createInput(createElement, self.config, self)
+              ]
+            )
           ]
         ),
         self.createButtons(createElement, self.buttons, self)
