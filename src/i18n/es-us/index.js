@@ -6,7 +6,10 @@ export default {
   lastname: 'apellido',
   template: {
     search: 'buscar',
-    security: 'seguridad'
+    security: 'seguridad',
+    add: 'agregar',
+    restore: 'restaurar',
+    cancel: 'cancelar'
   },
 
   // users
@@ -48,7 +51,7 @@ export default {
     name: 'nombre',
     listRoles: 'lista de roles',
     description: 'descripción',
-    add: 'agregar',
+    add: 'agregar rol',
     restore: 'restaurar',
     cancel: 'cancelar'
   },

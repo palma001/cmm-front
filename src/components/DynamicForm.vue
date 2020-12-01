@@ -1,11 +1,12 @@
 <script>
 import BInput from './BInput'
-
+import { mixins } from '../mixins'
 export default {
   name: 'DynamicForm',
   components: {
     BInput
   },
+  mixins: [mixins.containerMixin],
   props: {
     /*
      * Action Button
@@ -103,7 +104,12 @@ export default {
                     name: 'b-input',
                     props: {
                       type: 'text',
-                      expanded: true
+                      expanded: true,
+                      width: '90%'
+                    },
+                    class: {
+                      'col-sm-12': true,
+                      'col-md-6': true
                     },
                     directives: [
                       {
@@ -125,7 +131,12 @@ export default {
                   component: {
                     name: 'b-input',
                     props: {
-                      type: 'text'
+                      type: 'text',
+                      width: '90%'
+                    },
+                    class: {
+                      'col-sm-12': true,
+                      'col-md-6': true
                     }
                   }
                 }
@@ -152,7 +163,7 @@ export default {
         createElement('q-card-actions',
           {
             props: {
-              right: true
+              align: 'right'
             }
           },
           [
@@ -251,49 +262,40 @@ export default {
               const propTag = prop.addible.propTag
               prop.addible.component.props.value = (prop.addible.component.props.defaultValue) ? prop.addible.component.props.defaultValue : self.objectToBind[propTag]
               return createElement(
-                'div', {
+                prop.addible.component.name,
+                {
+                  ref: propTag,
+                  props: {
+                    ...prop.addible.component.props,
+                    label: prop.addible.visibleLabel ? self.ucwords(self.$t(propTag)) : '',
+                    errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
+                    error: this.errors.has(propTag)
+                  },
                   class: {
-                    'col-12': true
-                  }
-                },
-                [
-                  createElement(
-                    prop.addible.component.name,
-                    {
-                      ref: propTag,
-                      props: {
-                        ...prop.addible.component.props,
-                        label: prop.addible.visibleLabel ? self.$t(propTag) : '',
-                        errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
-                        error: this.errors.has(propTag)
-                      },
-                      class: {
-                        ...prop.addible.component.class
-                      },
-                      attrs: {
-                        name: propTag,
-                        ...prop.addible.component.attrs
-                      },
-                      on: {
-                        input: function (value) {
-                          self.objectToBind[propTag] = value
-                          // self.createInput(createElement, config, self)
-                        },
-                        select: function (value) {
-                          self.objectToBind[propTag] = value
-                        }
-                      },
-                      directives: (function () {
-                        if (prop.addible.component.directives) {
-                          const directives = [
-                            ...prop.addible.component.directives
-                          ]
-                          return directives
-                        }
-                      })()
+                    ...prop.addible.component.class
+                  },
+                  attrs: {
+                    name: propTag,
+                    ...prop.addible.component.attrs
+                  },
+                  on: {
+                    input: function (value) {
+                      self.objectToBind[propTag] = value
+                      // self.createInput(createElement, config, self)
+                    },
+                    select: function (value) {
+                      self.objectToBind[propTag] = value
                     }
-                  )
-                ]
+                  },
+                  directives: (function () {
+                    if (prop.addible.component.directives) {
+                      const directives = [
+                        ...prop.addible.component.directives
+                      ]
+                      return directives
+                    }
+                  })()
+                }
               )
             }
           })
@@ -342,17 +344,37 @@ export default {
   render: function (createElement) {
     const self = this
     return createElement('q-card',
+      {
+        class: {
+          column: true,
+          'full-height': true
+        }
+      },
       [
         createElement('q-card-section',
           {
-            props: {
-              align: 'right'
+            class: {
+              'text-h6': true
+            }
+          },
+          self.ucwords(`${self.$t(`${self.module}.add`)}`)
+        ),
+        createElement('q-separator'),
+        createElement('q-card-section',
+          {
+            class: {
+              col: true
             }
           },
           [
             createElement('q-form',
               {
-                ref: 'form'
+                ref: 'form',
+                class: {
+                  row: true,
+                  'items-start': true,
+                  'justify-between': true
+                }
               },
               [
                 self.createInput(createElement, self.config, self)
@@ -360,6 +382,7 @@ export default {
             )
           ]
         ),
+        createElement('q-separator'),
         self.createButtons(createElement, self.buttons, self)
       ]
     )

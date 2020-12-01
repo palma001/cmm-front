@@ -4,7 +4,7 @@
       <q-btn color="primary"
         glossy
         size="12px"
-        label="Agragar Modulo"
+        label="Agragar Rol"
         @click="addModule = true" />
     </div>
     <div class="row q-mt-md">
@@ -17,8 +17,13 @@
         @on-load-data="sortingTable"
         @search-data="eventSearch" />
     </div>
-    <q-dialog v-model="addModule">
+    <q-dialog
+      v-model="addModule"
+      full-height
+      position="right"
+    >
       <DynamicForm
+        module="roles"
         @save="save"
       />
     </q-dialog>
