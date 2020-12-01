@@ -395,7 +395,7 @@ export default {
                 class: {
                   row: true,
                   'justify-evenly': true,
-                  'q-gutter-x-xs': true
+                  'q-gutter-sm': true
                 }
               },
               [
