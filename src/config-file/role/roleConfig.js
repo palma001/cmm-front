@@ -24,6 +24,7 @@ export const roleConfig = [
               dense: true
             },
             class: {
+              'col-xs-12': true,
               'col-sm-12': true,
               'col-md-12': true
             },
@@ -59,6 +60,7 @@ export const roleConfig = [
               dense: true
             },
             class: {
+              'col-xs-12': true,
               'col-sm-12': true,
               'col-md-12': true
             },
@@ -94,6 +96,7 @@ export const roleConfig = [
               dense: true
             },
             class: {
+              'col-xs-12': true,
               'col-sm-12': true,
               'col-md-12': true
             },
