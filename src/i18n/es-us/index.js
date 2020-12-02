@@ -51,8 +51,9 @@ export default {
     name: 'nombre',
     listRoles: 'lista de roles',
     description: 'descripción',
-    add: 'agregar rol',
+    add: 'agregar',
     restore: 'restaurar',
+    reset: 'reiniciar',
     cancel: 'cancelar'
   },
 

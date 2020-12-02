@@ -19,40 +19,52 @@ export default {
           {
             name: 'cancel',
             action: 'cancel',
-            label: true,
-            icon: {
-              icon: 'plus'
-            },
+            label: false,
             props: {
-              color: 'red',
+              icon: 'highlight_off',
+              color: 'negative',
               glossy: true,
               size: '12px'
+            },
+            tooltip: {
+              text: 'cancel',
+              props: {
+                'content-class': 'bg-negative'
+              }
             }
           },
           {
-            name: 'restore',
-            action: 'restore',
-            label: true,
-            icon: {
-              icon: 'plus'
-            },
+            name: 'reset',
+            action: 'reset',
+            label: false,
             props: {
-              color: 'warning',
+              icon: 'restore',
+              color: 'positive',
               glossy: true,
               size: '12px'
+            },
+            tooltip: {
+              text: 'reset',
+              props: {
+                'content-class': 'bg-positive'
+              }
             }
           },
           {
             name: 'add',
             action: 'add',
-            label: true,
-            icon: {
-              icon: 'plus'
-            },
+            label: false,
             props: {
               color: 'primary',
               glossy: true,
-              size: '12px'
+              size: '12px',
+              icon: 'add_circle'
+            },
+            tooltip: {
+              text: 'add',
+              props: {
+                'content-class': 'bg-primary'
+              }
             }
           }
         ]
@@ -96,7 +108,7 @@ export default {
             children: [
               {
                 addible: {
-                  propTag: 'registros',
+                  propTag: 'firstname',
                   addible: true,
                   type: 'String',
                   visibleLabel: true,
@@ -104,7 +116,6 @@ export default {
                     name: 'b-input',
                     props: {
                       type: 'text',
-                      rounded: true,
                       outlined: true,
                       dense: true
                     },
@@ -133,14 +144,21 @@ export default {
                     name: 'b-input',
                     props: {
                       type: 'text',
-                      rounded: true,
                       outlined: true,
                       dense: true
                     },
                     class: {
                       'col-sm-12': true,
                       'col-md-12': true
-                    }
+                    },
+                    directives: [
+                      {
+                        name: 'validate',
+                        value: {
+                          required: true
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -185,8 +203,8 @@ export default {
                         case 'cancel':
                           self.cancel()
                           break
-                        case 'restore':
-                          self.restore()
+                        case 'reset':
+                          self.reset()
                           break
                         default:
                           self.other(button.action)
@@ -195,13 +213,36 @@ export default {
                     }
                   }
                 },
-                self.$t(`roles.${button.name}`)
+                [
+                  this.crateTooltipsButtons(createElement, button, self),
+                  (button.label) ? self.$t(`roles.${button.name}`) : ''
+                ]
               )
             })
           ]
         )
       )
       return container
+    },
+    /**
+     * Create Tooltips buttons
+     * @param {Object} instance
+     * @param {Object} config button
+     */
+    crateTooltipsButtons (createElement, button, self) {
+      if (button.tooltip) {
+        return createElement('q-tooltip',
+          {
+            class: {
+              ...button.tooltip.class
+            },
+            props: {
+              ...button.tooltip.props
+            }
+          },
+          self.ucwords(self.$t(`${self.module}.${button.tooltip.text}`))
+        )
+      }
     },
     /**
      * Add data
@@ -215,15 +256,15 @@ export default {
         })
     },
     /**
-     * Add data
+     * Cancel action
      */
     cancel () {
       this.$emit('cancel', this.objectToBind)
     },
     /**
-     * Add data
+     * Reset data
      */
-    restore () {
+    reset () {
       this.objectToBind = {}
       this.$validator.reset()
       this.invalidateKey = false
@@ -270,7 +311,7 @@ export default {
                   ref: propTag,
                   props: {
                     ...prop.addible.component.props,
-                    label: prop.addible.visibleLabel ? self.ucwords(self.$t(propTag)) : '',
+                    label: prop.addible.visibleLabel ? self.ucwords(self.$t(`${self.module}.${propTag}`)) : '',
                     errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
                     error: this.errors.has(propTag)
                   },
@@ -349,8 +390,7 @@ export default {
     return createElement('q-card',
       {
         class: {
-          column: true,
-          'full-height': true
+          column: true
         }
       },
       [

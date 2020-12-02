@@ -25,6 +25,8 @@
     >
       <DynamicForm
         module="roles"
+        :buttons="buttonsRole"
+        :config="roleConfig"
         @save="save"
         @cancel="cancel"
       />
@@ -34,7 +36,7 @@
 <script>
 import DataTable from 'components/DataTable.vue'
 import DynamicForm from 'components/DynamicForm.vue'
-import { roleConfig } from '../config-file/role/roleConfig'
+import { roleConfig, buttonsRole } from '../config-file/role/roleConfig'
 import { mixins } from '../mixins'
 export default {
   name: 'Role',
@@ -45,10 +47,15 @@ export default {
       text: '',
       addModule: false,
       /**
-       * Config module
-       * @type {Array} config module
+       * Config role
+       * @type {Array} config role
        */
       roleConfig: roleConfig,
+      /**
+       * Button role
+       * @type {Array} config role
+       */
+      buttonsRole: buttonsRole,
       /**
        * All Role
        * @type {Array} Role
@@ -88,9 +95,6 @@ export default {
     cancel () {
       this.addModule = false
     },
-    save (data) {
-      console.log(data)
-    },
     /**
      * Get Role
      *
@@ -99,12 +103,26 @@ export default {
       this.loading = true
       this.$mockData.getData('roles')
         .then(({ response }) => {
-          this.role = response.data.content
+          this.role = response.data.content.reverse()
           this.loading = false
           this.pagination = params
         })
     },
 
+    /**
+     * Get Role
+     *
+     */
+    async save (data) {
+      await this.$mockData.postData('roles', data)
+      this.getRoles(this.pagination)
+      this.$q.notify({
+        position: 'top-left',
+        message: 'Agregado exitosamente!',
+        color: 'teal',
+        icon: 'thumb_up'
+      })
+    },
     /**
      * Sort and paginate table
      * @param  {Object} data data paginate
