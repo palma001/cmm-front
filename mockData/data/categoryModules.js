@@ -14,6 +14,12 @@ export const categoryModules = [
         route: 'business',
         icon: '',
         devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'branch-offices',
+        route: 'branch-offices',
+        icon: '',
+        devices: ['mobile', 'desktop']
       }
     ]
   },
@@ -36,12 +42,6 @@ export const categoryModules = [
       {
         name: 'users',
         route: 'users',
-        icon: '',
-        devices: ['mobile', 'desktop']
-      },
-      {
-        name: 'branch-offices',
-        route: 'branch-offices',
         icon: '',
         devices: ['mobile', 'desktop']
       },
