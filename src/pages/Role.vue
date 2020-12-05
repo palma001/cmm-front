@@ -4,7 +4,7 @@
       <q-btn color="primary"
         glossy
         size="12px"
-        label="Agragar Modulo"
+        label="Agragar Rol"
         @click="addModule = true" />
     </div>
     <div class="row q-mt-md">
@@ -17,71 +17,47 @@
         @on-load-data="sortingTable"
         @search-data="eventSearch" />
     </div>
-    <q-dialog v-model="addModule"
-      persistent>
-      <q-card>
-        <q-card-section class="text-primary text-h6">Agregar Módulo
-          <div class="row">
-            <div class="col-12">
-              <q-input v-model="text"
-                label="Registro 1"
-                expanded/>
-            </div>
-            <div class="col-12">
-              <q-input v-model="text"
-                label="Registro 2"
-                expanded/>
-            </div>
-            <div class="col-12">
-              <q-input v-model="text"
-                label="Registro 3"
-                expanded/>
-            </div>
-            <div class="col-12">
-              <q-input v-model="text"
-                label="Registro 4"
-                expanded/>
-              <div class="col-12">
-                <q-input v-model="text"
-                  label="Registro 5"
-                  expanded/>
-              </div>
-            </div>
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn label="Cancelar"
-            color="negative"
-            v-close-popup
-            glossy
-            size="12px" />
-          <q-btn label="Guardar"
-            color="primary"
-            glossy
-            size="12px" />
-        </q-card-actions>
-      </q-card>
+    <q-dialog
+      v-model="addModule"
+      full-height
+      position="right"
+      persistent
+    >
+      <DynamicForm
+        module="roles"
+        :loading="loadingAdd"
+        :buttons="buttonsRole"
+        :config="roleConfig"
+        @save="save"
+        @cancel="cancel"
+      />
     </q-dialog>
   </q-page>
 </template>
 <script>
 import DataTable from 'components/DataTable.vue'
-import { roleConfig } from '../config-file/role/roleConfig'
+import DynamicForm from 'components/DynamicForm.vue'
+import { roleConfig, buttonsRole } from '../config-file/role/roleConfig'
 import { mixins } from '../mixins'
 export default {
   name: 'Role',
-  components: { DataTable },
+  components: { DataTable, DynamicForm },
   mixins: [mixins.containerMixin],
   data () {
     return {
+      loadingAdd: false,
       text: '',
       addModule: false,
       /**
-       * Config module
-       * @type {Array} config module
+       * Config role
+       * @type {Array} config role
        */
       roleConfig: roleConfig,
+      /**
+       * Button role
+       * @type {Array} config role
+       */
+      buttonsRole: buttonsRole,
       /**
        * All Role
        * @type {Array} Role
@@ -118,6 +94,9 @@ export default {
     this.getRoles()
   },
   methods: {
+    cancel () {
+      this.addModule = false
+    },
     /**
      * Get Role
      *
@@ -126,12 +105,28 @@ export default {
       this.loading = true
       this.$mockData.getData('roles')
         .then(({ response }) => {
-          this.role = response.data.content
+          this.role = response.data.content.reverse()
           this.loading = false
           this.pagination = params
         })
     },
 
+    /**
+     * Get Role
+     *
+     */
+    async save (data, self) {
+      this.loadingAdd = true
+      await this.$mockData.postData('roles', data)
+      this.loadingAdd = false
+      this.getRoles(this.pagination)
+      this.$q.notify({
+        position: 'top-left',
+        message: 'Agregado exitosamente!',
+        color: 'teal',
+        icon: 'thumb_up'
+      })
+    },
     /**
      * Sort and paginate table
      * @param  {Object} data data paginate

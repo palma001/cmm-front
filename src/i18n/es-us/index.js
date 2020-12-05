@@ -2,9 +2,15 @@
 // so you can safely delete all default props below
 
 export default {
+  registros: 'Registro',
+  lastname: 'apellido',
   template: {
     search: 'buscar',
-    security: 'seguridad'
+    security: 'seguridad',
+    add: 'agregar',
+    restore: 'restaurar',
+    cancel: 'cancelar',
+    organization: 'organización'
   },
 
   // users
@@ -45,7 +51,11 @@ export default {
     acronym: 'acrónimo',
     name: 'nombre',
     listRoles: 'lista de roles',
-    description: 'descripción'
+    description: 'descripción',
+    add: 'agregar',
+    restore: 'restaurar',
+    reset: 'reiniciar',
+    cancel: 'cancelar'
   },
 
   // business

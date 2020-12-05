@@ -22,7 +22,8 @@ module.exports = function (/* ctx */) {
 
       'i18n',
       'services',
-      'socket'
+      'socket',
+      'vee-validate'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -77,6 +78,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
+      host: '127.0.0.1',
       https: false,
       port: 8080,
       open: true // opens browser window automatically
@@ -102,7 +104,8 @@ module.exports = function (/* ctx */) {
 
       // Quasar plugins
       plugins: [
-        'Notify'
+        'Notify',
+        'Loading'
       ]
     },
 

@@ -174,6 +174,24 @@ const mockData = {
         })
       }
     }
+  },
+  postData (module, data) {
+    switch (module) {
+      case 'roles': {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            roles.push(data)
+            resolve({
+              response: {
+                data: {
+                  content: data
+                }
+              }
+            })
+          }, 2000)
+        })
+      }
+    }
   }
 }
 const install = function (Vue, options) {

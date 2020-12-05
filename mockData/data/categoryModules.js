@@ -6,18 +6,30 @@ export const categoryModules = [
   //   devices: ['mobile', 'desktop']
   // },
   {
+    name: 'organization',
+    icon: '',
+    modules: [
+      {
+        name: 'business',
+        route: 'business',
+        icon: '',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'branch-offices',
+        route: 'branch-offices',
+        icon: '',
+        devices: ['mobile', 'desktop']
+      }
+    ]
+  },
+  {
     name: 'security',
-    icon: 'clock',
+    icon: '',
     modules: [
       {
         name: 'permissions',
         route: 'permissions',
-        icon: 'clock',
-        devices: ['mobile', 'desktop']
-      },
-      {
-        name: 'business',
-        route: 'business',
         icon: '',
         devices: ['mobile', 'desktop']
       },
@@ -30,12 +42,6 @@ export const categoryModules = [
       {
         name: 'users',
         route: 'users',
-        icon: '',
-        devices: ['mobile', 'desktop']
-      },
-      {
-        name: 'branch-offices',
-        route: 'branch-offices',
         icon: '',
         devices: ['mobile', 'desktop']
       },
