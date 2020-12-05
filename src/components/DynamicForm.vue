@@ -277,8 +277,11 @@ export default {
      */
     reset () {
       this.objectToBind = {}
-      this.$validator.reset()
       this.invalidateKey = false
+      this.loadingAdd = true
+      setTimeout(() => {
+        this.loadingAdd = false
+      }, 500)
     },
     /**
      * Get validation primary key
