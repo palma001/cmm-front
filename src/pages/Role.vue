@@ -25,6 +25,7 @@
     >
       <DynamicForm
         module="roles"
+        :loading="loadingAdd"
         :buttons="buttonsRole"
         :config="roleConfig"
         @save="save"
@@ -44,6 +45,7 @@ export default {
   mixins: [mixins.containerMixin],
   data () {
     return {
+      loadingAdd: false,
       text: '',
       addModule: false,
       /**
@@ -113,8 +115,10 @@ export default {
      * Get Role
      *
      */
-    async save (data) {
+    async save (data, self) {
+      this.loadingAdd = true
       await this.$mockData.postData('roles', data)
+      this.loadingAdd = false
       this.getRoles(this.pagination)
       this.$q.notify({
         position: 'top-left',

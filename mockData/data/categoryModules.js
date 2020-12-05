@@ -6,18 +6,24 @@ export const categoryModules = [
   //   devices: ['mobile', 'desktop']
   // },
   {
+    name: 'organization',
+    icon: '',
+    modules: [
+      {
+        name: 'business',
+        route: 'business',
+        icon: '',
+        devices: ['mobile', 'desktop']
+      }
+    ]
+  },
+  {
     name: 'security',
-    icon: 'clock',
+    icon: '',
     modules: [
       {
         name: 'permissions',
         route: 'permissions',
-        icon: 'clock',
-        devices: ['mobile', 'desktop']
-      },
-      {
-        name: 'business',
-        route: 'business',
         icon: '',
         devices: ['mobile', 'desktop']
       },

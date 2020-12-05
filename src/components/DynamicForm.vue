@@ -8,6 +8,10 @@ export default {
   },
   mixins: [mixins.containerMixin],
   props: {
+    loading: {
+      type: Boolean,
+      require: false
+    },
     /*
      * Action Button
      * @type {Array} config buttons
@@ -171,7 +175,14 @@ export default {
   data () {
     return {
       objectToBind: {},
+      loadingAdd: false,
       invalidateKey: false
+    }
+  },
+  watch: {
+    loading () {
+      this.objectToBind = {}
+      this.loadingAdd = this.loading
     }
   },
   methods: {
@@ -198,7 +209,7 @@ export default {
                     click: function () {
                       switch (button.action.toLowerCase()) {
                         case 'add':
-                          self.addData()
+                          self.addData(self)
                           break
                         case 'cancel':
                           self.cancel()
@@ -247,11 +258,11 @@ export default {
     /**
      * Add data
      */
-    addData () {
-      this.validateBeforeSubmit()
+    addData (self) {
+      self.validateBeforeSubmit()
         .then(res => {
-          if (res && !this.invalidateKey) {
-            this.$emit('save', this.objectToBind)
+          if (res && !self.invalidateKey) {
+            self.$emit('save', self.objectToBind)
           }
         })
     },
@@ -299,52 +310,54 @@ export default {
      */
     createInput (createElement, config, self) {
       const inputs = []
-      config.map(confi => {
-        inputs.push(
-          confi.children.map(prop => {
-            if (prop.addible && prop.addible.addible) {
-              const propTag = prop.addible.propTag
-              prop.addible.component.props.value = (prop.addible.component.props.defaultValue) ? prop.addible.component.props.defaultValue : self.objectToBind[propTag]
-              return createElement(
-                prop.addible.component.name,
-                {
-                  ref: propTag,
-                  props: {
-                    ...prop.addible.component.props,
-                    label: prop.addible.visibleLabel ? self.ucwords(self.$t(`${self.module}.${propTag}`)) : '',
-                    errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
-                    error: this.errors.has(propTag)
-                  },
-                  class: {
-                    ...prop.addible.component.class
-                  },
-                  attrs: {
-                    name: propTag,
-                    ...prop.addible.component.attrs
-                  },
-                  on: {
-                    input: function (value) {
-                      self.objectToBind[propTag] = value
-                      // self.createInput(createElement, config, self)
+      if (!self.loadingAdd) {
+        config.map(confi => {
+          inputs.push(
+            confi.children.map(prop => {
+              if (prop.addible && prop.addible.addible) {
+                const propTag = prop.addible.propTag
+                prop.addible.component.props.value = (prop.addible.component.props.defaultValue) ? prop.addible.component.props.defaultValue : self.objectToBind[propTag]
+                return createElement(
+                  prop.addible.component.name,
+                  {
+                    ref: propTag,
+                    props: {
+                      ...prop.addible.component.props,
+                      label: prop.addible.visibleLabel ? self.ucwords(self.$t(`${self.module}.${propTag}`)) : '',
+                      errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
+                      error: this.errors.has(propTag)
                     },
-                    select: function (value) {
-                      self.objectToBind[propTag] = value
-                    }
-                  },
-                  directives: (function () {
-                    if (prop.addible.component.directives) {
-                      const directives = [
-                        ...prop.addible.component.directives
-                      ]
-                      return directives
-                    }
-                  })()
-                }
-              )
-            }
-          })
-        )
-      })
+                    class: {
+                      ...prop.addible.component.class
+                    },
+                    attrs: {
+                      name: propTag,
+                      ...prop.addible.component.attrs
+                    },
+                    on: {
+                      input: function (value) {
+                        self.objectToBind[propTag] = value
+                        // self.createInput(createElement, config, self)
+                      },
+                      select: function (value) {
+                        self.objectToBind[propTag] = value
+                      }
+                    },
+                    directives: (function () {
+                      if (prop.addible.component.directives) {
+                        const directives = [
+                          ...prop.addible.component.directives
+                        ]
+                        return directives
+                      }
+                    })()
+                  }
+                )
+              }
+            })
+          )
+        })
+      }
       return inputs
     },
     /**
@@ -383,6 +396,28 @@ export default {
       } else {
         return ''
       }
+    },
+    /**
+     * Loading state
+     * @type {createELement} create element
+     * @type {Instance} slef
+     */
+    loadingBar (createElement, self) {
+      return createElement('q-inner-loading',
+        {
+          props: {
+            showing: this.loadingAdd
+          }
+        },
+        [
+          createElement('q-spinner-gears', {
+            props: {
+              color: 'primary',
+              size: '60px'
+            }
+          })
+        ]
+      )
     }
   },
   render: function (createElement) {
@@ -391,6 +426,10 @@ export default {
       {
         class: {
           column: true
+        },
+        style: {
+          'max-width': '450px',
+          'min-width': '450px'
         }
       },
       [
@@ -445,7 +484,8 @@ export default {
           ]
         ),
         createElement('q-separator'),
-        self.createButtons(createElement, self.buttons, self)
+        self.createButtons(createElement, self.buttons, self),
+        self.loadingBar(createElement, self)
       ]
     )
   }

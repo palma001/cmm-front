@@ -9,7 +9,8 @@ export default {
     security: 'seguridad',
     add: 'agregar',
     restore: 'restaurar',
-    cancel: 'cancelar'
+    cancel: 'cancelar',
+    organization: 'organización'
   },
 
   // users
