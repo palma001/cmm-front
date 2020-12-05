@@ -340,7 +340,6 @@ export default {
                     on: {
                       input: function (value) {
                         self.objectToBind[propTag] = value
-                        // self.createInput(createElement, config, self)
                       },
                       select: function (value) {
                         self.objectToBind[propTag] = value
@@ -416,7 +415,7 @@ export default {
           createElement('q-spinner-gears', {
             props: {
               color: 'primary',
-              size: '60px'
+              size: '70px'
             }
           })
         ]
@@ -428,11 +427,8 @@ export default {
     return createElement('q-card',
       {
         class: {
-          column: true
-        },
-        style: {
-          'max-width': '450px',
-          'min-width': '450px'
+          column: true,
+          'my-card': true
         }
       },
       [
@@ -494,3 +490,23 @@ export default {
   }
 }
 </script>
+<style lang="stylus" scoped>
+  .my-card
+    @media (min-width: $breakpoint-xs-min)
+      min-width : 280px;
+
+    @media (min-width: $breakpoint-sm-min)
+      min-width : 450px;
+    @media (max-width: $breakpoint-sm-max)
+      max-width : 450px;
+
+    @media (min-width: $breakpoint-md-min)
+      min-width : 450px
+    @media (max-width: $breakpoint-md-max)
+      max-width : 450px;
+
+    @media (min-width: $breakpoint-lg-min)
+      min-width : 450px;
+    @media (max-width: $breakpoint-lg-max)
+      max-width : 450px;
+</style>
