@@ -10,8 +10,7 @@ export default {
     add: 'agregar',
     restore: 'restaurar',
     cancel: 'cancelar',
-    organization: 'organización'
-    security: 'seguridad',
+    organization: 'organización',
     actions: 'acciones'
   },
 
