@@ -2,9 +2,9 @@
   <q-input
     v-model="valueProp"
     :error-message="errorMessageProp"
+    :error="error"
     :label="label"
     :type="type"
-    :error="error"
     :filled="filled"
     :rounded="rounded"
     :standout="standout"
@@ -26,6 +26,10 @@ export default {
       type: String,
       default: ''
     },
+    error: {
+      type: Boolean,
+      default: false
+    },
     label: {
       type: String,
       required: true
@@ -33,10 +37,6 @@ export default {
     type: {
       type: String,
       required: true
-    },
-    error: {
-      type: Boolean,
-      default: false
     },
     rounded: {
       type: Boolean,

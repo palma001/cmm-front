@@ -1,10 +1,12 @@
 <script>
 import BInput from './BInput'
+import BSearchSelect from './BSearchSelect'
 import { mixins } from '../mixins'
 export default {
   name: 'DynamicForm',
   components: {
-    BInput
+    BInput,
+    BSearchSelect
   },
   mixins: [mixins.containerMixin],
   props: {
@@ -342,6 +344,7 @@ export default {
                         self.objectToBind[propTag] = value
                       },
                       select: function (value) {
+                        console.log(value)
                         self.objectToBind[propTag] = value
                       }
                     },
