@@ -10,8 +10,8 @@ export const categoryModules = [
     icon: '',
     modules: [
       {
-        name: 'permissions',
-        route: 'permissions',
+        name: 'business',
+        route: 'business',
         icon: '',
         devices: ['mobile', 'desktop']
       },
