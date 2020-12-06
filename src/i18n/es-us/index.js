@@ -4,7 +4,8 @@
 export default {
   template: {
     search: 'buscar',
-    security: 'seguridad'
+    security: 'seguridad',
+    actions: 'acciones'
   },
 
   // users

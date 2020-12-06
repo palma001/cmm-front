@@ -20,6 +20,9 @@
             :class="col.class">
             {{ ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`)) }}
           </q-th>
+          <q-th align="left">
+             {{ ucwords($t('template.actions')) }}
+          </q-th>
         </q-tr>
       </template>
       <template v-slot:top-right>
@@ -35,119 +38,21 @@
       </template>
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td auto-width>
-            <q-btn size="sm"
-              color="primary"
-              dense
-              round
-              @click="props.expand = !props.expand"
-              icon="fullscreen" />
-          </q-td>
           <q-td v-for="col in props.cols"
             :key="col.name"
             :props="props">
             {{ col.value }}
           </q-td>
+          <q-td>
+            <q-btn size="sm"
+              color="primary"
+              dense
+              round
+              icon="fullscreen"
+              @click="viewDetails(props.row)"
+            />
+          </q-td>
         </q-tr>
-        <q-dialog v-model="props.expand">
-          <q-card>
-            <q-bar class="bg-white">
-              <q-title class="text-primary text-bold text-h6">Nombre fila módulo</q-title>
-              <q-space />
-              <q-btn class="text-primary"
-                flat
-                dense
-                round
-                size="12px"
-                icon="close"
-                v-close-popup>
-              </q-btn>
-            </q-bar>
-            <q-card-section>
-              <div class="row">
-                <div class="col-12">
-                  <q-field borderless
-                    dense>
-                    <template v-slot:control>
-                      <div class="self-center full-width no-outline"
-                        tabindex="0">Información del registro</div>
-                    </template>
-                  </q-field>
-                </div>
-                <div class="col-12">
-                  <q-field borderless
-                    dense>
-                    <template v-slot:control>
-                      <div class="self-center full-width no-outline"
-                        tabindex="0">Información del registro</div>
-                    </template>
-                  </q-field>
-                </div>
-                <div class="col-12">
-                  <q-field borderless
-                    dense>
-                    <template v-slot:control>
-                      <div class="self-center full-width no-outline"
-                        tabindex="0">Información del registro</div>
-                    </template>
-                  </q-field>
-                </div>
-                <div class="col-12">
-                  <q-field borderless
-                    dense>
-                    <template v-slot:control>
-                      <div class="self-center full-width no-outline"
-                        tabindex="0">Información del registro</div>
-                    </template>
-                  </q-field>
-                </div>
-              </div>
-            </q-card-section>
-
-            <q-card-actions align="center">
-              <q-btn label="Editar"
-                color="warning"
-                v-close-popup
-                icon="edit"
-                dense
-                glossy
-                size="12px" />
-              <q-btn label="Eliminar"
-                color="negative"
-                v-close-popup
-                icon="delete"
-                dense
-                glossy
-                size="12px"
-                @click="confirm = true" />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-        <q-dialog v-model="confirm"
-          persistent>
-          <q-card>
-            <q-card-section class="row items-center">
-              <span class="q-ml-sm text-subtitle1">¿Esta seguro que desea eliminar el "nombre del módulo"?</span>
-            </q-card-section>
-
-            <q-card-actions align="center">
-              <q-btn label="Cancelar"
-                color="primary"
-                v-close-popup
-                icon="close"
-                dense
-                glossy
-                size="12px" />
-              <q-btn label="Aceptar"
-                color="primary"
-                v-close-popup
-                icon="done"
-                dense
-                glossy
-                size="12px" />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
       </template>
     </q-table>
   </div>
@@ -232,6 +137,13 @@ export default {
     this.setHeaders()
   },
   methods: {
+    /**
+     * Details data
+     * @param  {Object} data
+     */
+    viewDetails (data) {
+      this.$emit('view-details', data)
+    },
     /**
      * Set data pagination emit event
      * @param  {Object} data value pagination
