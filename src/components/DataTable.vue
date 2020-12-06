@@ -128,7 +128,7 @@ export default {
     setHeaders () {
       this.column.map(element => {
         element.children.map(tag => {
-          if (tag.tabulated.visible) {
+          if (tag.tabulated && tag.tabulated.visible) {
             this.columnData.push(tag.tabulated)
           }
         })
