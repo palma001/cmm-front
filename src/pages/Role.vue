@@ -2,7 +2,9 @@
   <q-page class="flex-start q-pa-md">
     <div align="right">
       <q-btn color="primary"
+        icon="add"
         glossy
+        dense
         size="12px"
         label="Agragar Rol"
         @click="addModule = true" />

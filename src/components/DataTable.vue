@@ -6,32 +6,53 @@
       :title="ucwords($t(`${module}.${title}`))"
       :pagination="paginationConfig"
       :loading="loading"
-      @update:pagination="setPagination"
-    >
+      @update:pagination="setPagination">
       <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
+        <q-inner-loading showing
+          color="primary" />
       </template>
       <!-- @update:pagination ="rowsPerPage"> -->
       <template v-slot:header="props">
         <q-tr :props="props">
-          <q-th
-            v-for="col in props.cols"
+          <q-th v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            :class="col.class"
-          >
-            {{
-              ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`))
-            }}
+            :class="col.class">
+            {{ ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`)) }}
+          </q-th>
+          <q-th align="left">
+             {{ ucwords($t('template.actions')) }}
           </q-th>
         </q-tr>
       </template>
       <template v-slot:top-right>
-        <q-input dense debounce="300" @input="search" v-model="filter" :placeholder="ucwords($t('template.search'))">
+        <q-input dense
+          debounce="300"
+          @input="search"
+          v-model="filter"
+          :placeholder="ucwords($t('template.search'))">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
         </q-input>
+      </template>
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td v-for="col in props.cols"
+            :key="col.name"
+            :props="props">
+            {{ col.value }}
+          </q-td>
+          <q-td>
+            <q-btn size="sm"
+              color="primary"
+              dense
+              round
+              icon="fullscreen"
+              @click="viewDetails(props.row)"
+            />
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
   </div>
@@ -98,6 +119,7 @@ export default {
   },
   data () {
     return {
+      confirm: false,
       filter: '',
       /**
        * Content the column
@@ -115,6 +137,13 @@ export default {
     this.setHeaders()
   },
   methods: {
+    /**
+     * Details data
+     * @param  {Object} data
+     */
+    viewDetails (data) {
+      this.$emit('view-details', data)
+    },
     /**
      * Set data pagination emit event
      * @param  {Object} data value pagination

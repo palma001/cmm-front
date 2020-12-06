@@ -11,6 +11,8 @@ export default {
     restore: 'restaurar',
     cancel: 'cancelar',
     organization: 'organización'
+    security: 'seguridad',
+    actions: 'acciones'
   },
 
   // users
