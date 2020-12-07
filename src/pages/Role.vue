@@ -17,7 +17,8 @@
         :data="role"
         :optionPagination="pagination"
         @on-load-data="sortingTable"
-        @search-data="eventSearch" />
+        @search-data="eventSearch"
+        @view-details="viewPanel"/>
     </div>
     <q-dialog
       v-model="addModule"
@@ -34,32 +35,54 @@
         @cancel="cancel"
       />
     </q-dialog>
+    <q-dialog
+      v-model="editModule"
+      full-height
+      position="right"
+    >
+      <DynamicFormEdition
+        module="roles"
+        :loading="loadingAdd"
+        :buttons="buttonsRole"
+        :config="roleConfig"
+        :propsPanelEdition="propsPanelEdition"
+        @update="update"
+        @cancel="cancel"
+      />
+    </q-dialog>
   </q-page>
 </template>
 <script>
 import DataTable from 'components/DataTable.vue'
 import DynamicForm from 'components/DynamicForm.vue'
-import { roleConfig, buttonsRole } from '../config-file/role/roleConfig'
+import DynamicFormEdition from 'components/DynamicFormEdition.vue'
+import { roleConfig, buttonsRole, propsPanelEdition } from '../config-file/role/roleConfig'
 import { mixins } from '../mixins'
 export default {
   name: 'Role',
-  components: { DataTable, DynamicForm },
+  components: { DataTable, DynamicForm, DynamicFormEdition },
   mixins: [mixins.containerMixin],
   data () {
     return {
       loadingAdd: false,
       text: '',
       addModule: false,
+      editModule: false,
       /**
        * Config role
        * @type {Array} config role
        */
-      roleConfig: roleConfig,
+      roleConfig,
+      /**
+       * Props edition panel role
+       * @type {Object} config edition panel  role
+       */
+      propsPanelEdition,
       /**
        * Button role
        * @type {Array} config role
        */
-      buttonsRole: buttonsRole,
+      buttonsRole,
       /**
        * All Role
        * @type {Array} Role
@@ -98,6 +121,17 @@ export default {
   methods: {
     cancel () {
       this.addModule = false
+      this.editModule = false
+    },
+    update (data) {
+      console.log(data)
+    },
+    viewPanel (data) {
+      this.editModule = true
+      setTimeout(() => {
+        this.propsPanelEdition.data = data
+        console.log(data, this.propsPanelEdition)
+      }, 200)
     },
     /**
      * Get Role

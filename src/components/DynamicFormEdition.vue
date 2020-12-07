@@ -3,7 +3,7 @@ import BInput from './BInput'
 import BSearchSelect from './BSearchSelect'
 import { mixins } from '../mixins'
 export default {
-  name: 'DynamicForm',
+  name: 'DynamicFormEdition',
   components: {
     BInput,
     BSearchSelect
@@ -13,6 +13,14 @@ export default {
     loading: {
       type: Boolean,
       require: false
+    },
+    /**
+     * Props configurations
+     * @type {Object}
+     */
+    propsPanelEdition: {
+      type: Object,
+      required: true
     },
     /*
      * Action Button
@@ -211,7 +219,7 @@ export default {
                     click: function () {
                       switch (button.action.toLowerCase()) {
                         case 'add':
-                          self.addData(self)
+                          self.update(self)
                           break
                         case 'cancel':
                           self.cancel()
@@ -260,13 +268,27 @@ export default {
     /**
      * Add data
      */
-    addData (self) {
+    update (self) {
       self.validateBeforeSubmit()
         .then(res => {
           if (res && !self.invalidateKey) {
-            self.$emit('save', self.objectToBind)
+            const data = self.objectToBindS(self.propsPanelEdition.data, self.objectToBind)
+            self.$emit('update', data)
           }
         })
+    },
+    /**
+     * Assign data object
+     * @param  {Object} dataOld data selected
+     * @param  {Object} value data
+     * @return {Object} new data
+     */
+    objectToBindS (dataOld, value) {
+      const transform = {}
+      for (const datasOld in dataOld) {
+        transform[datasOld] = (value[datasOld]) ? value[datasOld] : dataOld[datasOld]
+      }
+      return transform
     },
     /**
      * Cancel action
@@ -319,9 +341,9 @@ export default {
         config.map(confi => {
           inputs.push(
             confi.children.map(prop => {
-              if (prop.actionable && prop.actionable.addible) {
+              if (prop.actionable && prop.actionable.editable) {
                 const propTag = prop.actionable.propTag
-                prop.actionable.component.props.value = (prop.actionable.component.props.defaultValue) ? prop.actionable.component.props.defaultValue : self.objectToBind[propTag]
+                prop.actionable.component.props.value = (typeof self.propsPanelEdition.data[propTag] !== 'boolean') ? self.propsPanelEdition.data[propTag] : String(self.propsPanelEdition.data[propTag])
                 return createElement(
                   prop.actionable.component.name,
                   {
@@ -344,7 +366,6 @@ export default {
                         self.objectToBind[propTag] = value
                       },
                       select: function (value) {
-                        console.log(value)
                         self.objectToBind[propTag] = value
                       }
                     },

@@ -11,9 +11,10 @@ export const roleConfig = [
           sortable: true,
           visible: true
         },
-        addible: {
+        actionable: {
           propTag: 'acronym',
           addible: true,
+          editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -40,52 +41,52 @@ export const roleConfig = [
         }
       },
 
-      {
-        addible: {
-          propTag: 'user',
-          addible: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [
-                {
-                  name: 'hola',
-                  id: 'como estas1'
-                },
-                {
-                  name: 'bien',
-                  id: 'como estas2'
-                },
-                {
-                  name: 'y tu',
-                  id: 'como estas3'
-                }
-              ],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              outlined: true,
-              dense: true,
-              clearable: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
+      // {
+      //   addible: {
+      //     propTag: 'user',
+      //     addible: true,
+      //     type: 'String',
+      //     visibleLabel: true,
+      //     component: {
+      //       name: 'b-search-select',
+      //       props: {
+      //         data: [
+      //           {
+      //             name: 'hola',
+      //             id: 'como estas1'
+      //           },
+      //           {
+      //             name: 'bien',
+      //             id: 'como estas2'
+      //           },
+      //           {
+      //             name: 'y tu',
+      //             id: 'como estas3'
+      //           }
+      //         ],
+      //         dataValue: 'id',
+      //         dataLabel: 'name',
+      //         behavior: 'menu',
+      //         outlined: true,
+      //         dense: true,
+      //         clearable: true
+      //       },
+      //       class: {
+      //         'col-xs-12': true,
+      //         'col-sm-12': true,
+      //         'col-md-12': true
+      //       },
+      //       directives: [
+      //         {
+      //           name: 'validate',
+      //           value: {
+      //             required: true
+      //           }
+      //         }
+      //       ]
+      //     }
+      //   }
+      // },
       {
         tabulated: {
           name: 'name',
@@ -94,9 +95,10 @@ export const roleConfig = [
           sortable: true,
           visible: true
         },
-        addible: {
+        actionable: {
           propTag: 'name',
           addible: true,
+          editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -130,9 +132,10 @@ export const roleConfig = [
           sortable: true,
           visible: true
         },
-        addible: {
+        actionable: {
           propTag: 'description',
           addible: true,
+          editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -215,3 +218,7 @@ export const buttonsRole = [
     }
   }
 ]
+
+export const propsPanelEdition = {
+  data: {}
+}
