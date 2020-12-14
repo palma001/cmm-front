@@ -758,7 +758,7 @@ export default {
             vendedor_id: this.session_id,
             monto: Number(data.monto) ?? 0,
             descripcion: data.descripcion ?? '',
-            arqueo_id: 28
+            arqueo_id: 206
           }
         }
       }).then(({ data }) => {
