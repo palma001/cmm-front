@@ -24,7 +24,7 @@
                     :offset="[10, 10]"
                     content-style="font-size: 13px"
                   >
-                    {{ ucwords('billing.history') }}
+                    {{ ucwords($t('billing.history')) }}
                   </q-tooltip>
                 </q-btn>
                 <q-btn
