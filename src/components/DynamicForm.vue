@@ -183,7 +183,8 @@ export default {
   },
   watch: {
     loading () {
-      this.reset()
+      this.objectToBind = {}
+      this.loadingAdd = this.loading
     }
   },
   methods: {

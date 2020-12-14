@@ -41,7 +41,7 @@
                     :offset="[10, 10]"
                     content-style="font-size: 13px"
                   >
-                    {{ ucwords('billing.entryAndExitOfMoney') }}
+                    {{ ucwords($t('billing.entryAndExitOfMoney')) }}
                   </q-tooltip>
                 </q-btn>
                 <q-btn
@@ -780,6 +780,7 @@ export default {
      * Get arching active
      */
     async getArchingActive () {
+      this.visible = true
       const { data } = await this.$apollo.query(
         {
           query: GET_ARCHING,
@@ -799,6 +800,7 @@ export default {
           fetchPolicy: 'no-cache'
         }
       )
+      this.visible = false
       if (data.arqueos.length > 0) {
         this.arching_id = data.arqueos[0].id
         this.loadCreate()
