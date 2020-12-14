@@ -1,0 +1,1095 @@
+<template>
+  <q-page padding @keyup.113="saveSale">
+    <q-card class="my-card">
+      <q-card-section class="q-pb-sm">
+        <div class="row">
+          <div class="col-12">
+            <div class="row justify-between">
+              <div class="col-auto">
+                <p class="text-h5">
+                  Nueva venta
+                </p>
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-4 col-sm-5 col-xs-6 q-pa-sm q-gutter-sm text-right">
+                <q-btn
+                  size="sm"
+                  color="primary"
+                  class="q-mt-sm"
+                  icon="list">
+                  <q-tooltip
+                    anchor="bottom middle"
+                    transition-show="flip-right"
+                    transition-hide="flip-left"
+                    :offset="[10, 10]"
+                    content-style="font-size: 13px"
+                  >
+                    Historial de ventas
+                  </q-tooltip>
+                </q-btn>
+                <q-btn
+                  style="background: goldenrod; color: white"
+                  class="q-mt-sm"
+                  size="sm"
+                  icon="attach_money"
+                  @click="addEntryAndExitOfMoney = true"
+                >
+                  <q-tooltip
+                    anchor="bottom middle"
+                    transition-show="flip-right"
+                    transition-hide="flip-left"
+                    :offset="[10, 10]"
+                    content-style="font-size: 13px"
+                  >
+                    Entrada de dinero
+                  </q-tooltip>
+                </q-btn>
+                <q-btn
+                  color="negative"
+                  class="q-mt-sm"
+                  size="sm"
+                  icon="close"
+                  @click="closeBoxCut = true">
+                  <q-tooltip
+                    anchor="bottom middle"
+                    transition-show="flip-right"
+                    transition-hide="flip-left"
+                    :offset="[10, 10]"
+                    content-style="font-size: 13px"
+                  >
+                    Cerrar caja
+                  </q-tooltip>
+                </q-btn>
+              </div>
+            </div>
+          </div>
+        </div>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        <div class="row justify-between q-col-gutter-sm">
+          <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+            <q-select
+              autocomplete="off"
+              use-input
+              hide-selected
+              fill-input
+              dense
+              outlined
+              clearable
+              input-debounce="0"
+              name="client"
+              v-model="billing.client"
+              v-validate="'required'" data-vv-as="field"
+              :error-message="errorValidation('client')"
+              :error="errors.has('client')"
+              :label="ucwords($t('billing.cliente'))"
+              :options="clients"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              input-debounce="0"
+              name="typeSale"
+              ref="typeSaleRef"
+              v-model="billing.typeSale"
+              v-validate="'required'"
+              data-vv-as="field"
+              :label="ucwords($t('billing.typeOfSale'))"
+              :options="typeSales"
+              :error-message="errorValidation('typeSale')"
+              :error="errors.has('typeSale')"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              input-debounce="0"
+              name="typeOfVoucher"
+              autocomplete="off"
+              ref="typeOfVoucherRef"
+              v-model="billing.typeOfVoucher"
+              v-validate="'required'"
+              data-vv-as="field"
+              :label="ucwords($t('billing.typeOfVoucher'))"
+              :options="typeOfVouchers"
+              :error-message="errorValidation('typeOfVoucher')"
+              :error="errors.has('typeOfVoucher')"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+            <q-select
+              outlined
+              v-model="billing.box"
+              disable
+              dense
+              :label="ucwords($t('billing.box'))"
+              :options="[billing.box]"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+            <q-input
+              v-model="billing.dateBilling"
+              outlined
+              dense
+              type="date"
+            />
+          </div>
+        </div>
+      </q-card-section>
+      <q-card-section class="q-pt-md">
+        <div class="row justify-between q-col-gutter-sm">
+          <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+            <product-list
+              label="articulo"
+              value="id"
+              autofocus
+              ref="codigo"
+              :data="products"
+              @errorSearch="errorSearch"
+              @selected="setTable"
+              @showLists="getProducts"
+            />
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+            <q-input
+              v-model="amount"
+              outlined
+              dense
+              type="number"
+              label="Cantidad"
+            />
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+            <q-input
+              label="Stock"
+              v-model="stock"
+              outlined
+              dense
+              disable
+            />
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+            <q-input
+              v-model="priceOfSale"
+              outlined
+              dense
+              type="number"
+              label="Precio de venta"
+            />
+          </div>
+        </div>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        <q-splitter
+          v-model="splitterModel"
+          separator-style="width: 0px"
+          :horizontal="$q.screen.lt.sm"
+        >
+          <template v-slot:before>
+            <div class="q-pa-xs">
+              <q-table
+                row-key="name"
+                wrap-cells
+                virtual-scroll
+                :data="dataProduct"
+                :columns="columns"
+                :rows-per-page-options="[50]"
+              >
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td>
+                      <q-btn size="xs" color="negative" icon="close" @click="deleteProduct(props.row)"/>
+                    </q-td>
+                    <q-td key="articulo" :props="props">
+                      {{ props.row.articulo }}
+                    </q-td>
+                    <q-td key="cantidad" :props="props">
+                      {{ props.row.cantidad }}
+                      <q-popup-edit v-model.number="props.row.cantidad">
+                        <q-input type="number" v-model.number="props.row.cantidad" dense autofocus @input="recalculate(props.row)"/>
+                      </q-popup-edit>
+                    </q-td>
+                    <q-td key="precio" :props="props">
+                      {{ props.row.precio }}
+                      <q-popup-edit v-model.number="props.row.precio">
+                        <q-input type="number" v-model.number="props.row.precio" dense autofocus @input="recalculate(props.row)"/>
+                      </q-popup-edit>
+                    </q-td>
+                    <q-td key="descuento" :props="props">
+                      {{ props.row.descuento }}
+                      <q-popup-edit v-model.number="props.row.descuento">
+                        <q-input type="number" v-model.number="props.row.descuento" dense autofocus @input="recalculate(props.row)"/>
+                      </q-popup-edit>
+                    </q-td>
+                    <q-td key="subtotal" :props="props">
+                      {{ props.row.subtotal }}
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </div>
+          </template>
+          <template v-slot:after>
+            <div class="q-pa-xs">
+              <q-card>
+                <q-card-section style="background: goldenrod; color: white" class="q-pt-xs q-pb-xs">
+                  <div class="text-h6 text-right">Total: {{ totalSale }} $</div>
+                </q-card-section>
+                <q-card-section class="q-pt-md q-pb-md">
+                  <div class="row justify-between q-gutter-xs">
+                    <div class="col-12">
+                      <q-input
+                        v-model="paidSale.debito"
+                        outlined
+                        dense
+                        type="number"
+                        label="Debito"
+                        name="debito"
+                        data-vv-as="debito"
+                        v-validate="{
+                          required: billing.typeSale.value === 'venta' && !paidSale.credito && !paidSale.efectivo
+                        }"
+                        :error-message="errorValidation('debito')"
+                        :error="errors.has('debito')"
+                        @keyup.enter="saveSale"
+                      />
+                    </div>
+                    <div class="col-12">
+                      <q-input
+                        v-model="paidSale.credito"
+                        outlined
+                        dense
+                        type="number"
+                        label="Credito"
+                        name="credito"
+                        data-vv-as="credito"
+                        v-validate="{
+                          required: billing.typeSale.value === 'venta' && !paidSale.debito && !paidSale.efectivo
+                        }"
+                        :error-message="errorValidation('credito')"
+                        :error="errors.has('credito')"
+                        @keyup.enter="saveSale"
+                      />
+                    </div>
+                    <div class="col-5">
+                      <q-input
+                        v-model="paidSale.porcentaje"
+                        outlined
+                        dense
+                        type="number"
+                        label="Porcentaje de credito"
+                        @keyup.enter="saveSale"
+                      />
+                    </div>
+                    <div class="col-6">
+                      <q-input
+                        v-model="paidSale.montoPorcentaje"
+                        outlined
+                        dense
+                        disable
+                        type="number"
+                        label="Dinero del porcentaje"
+                        @keyup.enter="saveSale"
+                      />
+                    </div>
+                    <div class="col-12 q-mt-md">
+                      <q-input
+                        v-model="paidSale.efectivo"
+                        outlined
+                        dense
+                        type="number"
+                        label="Efectivo"
+                        name="efectivo"
+                        data-vv-as="efectivo"
+                        v-validate="{
+                          required: billing.typeSale.value === 'venta' && !paidSale.debito && !paidSale.credito
+                        }"
+                        :error-message="errorValidation('efectivo')"
+                        :error="errors.has('efectivo')"
+                        @keyup.enter="saveSale"
+                      />
+                    </div>
+                    <div class="col-5">
+                      <q-btn class="full-width" color="negative" icon="close" @click="emptyInputBilling">
+                        <q-tooltip
+                          anchor="bottom middle"
+                          transition-show="flip-right"
+                          transition-hide="flip-left"
+                          :offset="[10, 10]"
+                          content-style="font-size: 13px"
+                        >
+                          Cancelar factura
+                        </q-tooltip>
+                      </q-btn>
+                    </div>
+                    <div class="col-5">
+                      <q-btn
+                        color="primary"
+                        class="full-width"
+                        icon="check"
+                        @click="saveSale"
+                      >
+                        <q-tooltip
+                          anchor="bottom middle"
+                          transition-show="flip-right"
+                          transition-hide="flip-left"
+                          content-style="font-size: 13px"
+                          :offset="[10, 10]"
+                        >
+                          Guardar Factura
+                        </q-tooltip>
+                      </q-btn>
+                    </div>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </template>
+        </q-splitter>
+      </q-card-section>
+    </q-card>
+    <q-dialog
+      v-model="addBoxCut"
+      full-height
+      position="right"
+      persistent
+    >
+      <DynamicForm
+        module="boxCut"
+        :loading="loadingAdd"
+        :buttons="buttonsBoxCut"
+        :config="boxCutConfig"
+        @save="saveBoxCut"
+        @cancel="cancel"
+      />
+    </q-dialog>
+
+    <q-dialog
+      v-model="addEntryAndExitOfMoney"
+      full-height
+      position="right"
+      persistent
+    >
+      <DynamicForm
+        module="entryAndExitOfMoney"
+        :loading="loadingAddEntryAndExitOfMoney"
+        :buttons="buttonsEntryAndExitOfMoney"
+        :config="entryAndExitOfMoney"
+        @save="saveEntryAndExitOfMoney"
+        @cancel="cancelEntryAndExitOfMoney"
+      />
+    </q-dialog>
+    <b-confirm-alert
+      color="negative"
+      icon="close"
+      :show="closeBoxCut"
+      :message="$t('billing.confirmCloseBox')"
+      @confirm="closeBox"
+      @cancel="closeBoxCut = false"
+    />
+    <q-inner-loading :showing="visible">
+      <q-spinner-gears size="100px" color="primary"/>
+    </q-inner-loading>
+  </q-page>
+</template>
+
+<script>
+import { ALL_CLIENT } from '../Graphql/Client/getAllClient'
+import { ALL_PRODUCT } from '../Graphql/Product/getAllProduct'
+import { SAVE_BILLING } from '../Graphql/Billing/billingMutations'
+import { GET_CORTE_CAJA_ACTIVE } from '../Graphql/BoxCut/boxCutQueries'
+import { OPEN_BOX_CUT, CLOSE_BOX_CUT } from '../Graphql/BoxCut/boxCutMutations'
+import ProductList from '../components/ProductList'
+import { mixins } from '../mixins'
+import DynamicForm from '../components/DynamicForm'
+import BConfirmAlert from '../components/BConfirmAlert'
+import { boxCutConfig, buttonsBoxCut, boxCutServices } from '../config-file/boxCut/boxCutConfig'
+import { entryAndExitOfMoney, buttonsEntryAndExitOfMoney } from '../config-file/entryAndExitOfMoney/entryAndExitOfMoney'
+import { ENTRY_AND_EXIT_OF_MONEY } from '../Graphql/EntryAndExitOfMoney/entryAndExitOfMoneyMutations'
+export default {
+  name: 'Billing',
+  mixins: [mixins.containerMixin],
+  components: {
+    ProductList,
+    DynamicForm,
+    BConfirmAlert
+  },
+  data () {
+    return {
+      /**
+       * Status dialog add entry and exit of money
+       * @type {Boolean} status dialog
+       */
+      addEntryAndExitOfMoney: false,
+      /**
+       * Status add entry and exit of money
+       * @type {Boolean} status dialog
+       */
+      loadingAddEntryAndExitOfMoney: false,
+      /**
+       * Config entry and exitOfMoney
+       * @type {Array} config add dymanic
+       */
+      entryAndExitOfMoney,
+      /**
+       * Config buttons entry and exitOfMoney
+       * @type {Array} buttons add dymanic
+       */
+      buttonsEntryAndExitOfMoney,
+      /**
+       * Close box
+       * @type {Boolean} status dialog
+       */
+      closeBoxCut: false,
+      /**
+       * Loading add cut box
+       * @type {Boolean} status form
+       */
+      loadingAdd: false,
+      /**
+       * Box config file
+       * @type {Array} box config
+       */
+      boxCutConfig,
+      /**
+       * Config buttons
+       * @type {Array} buttons add dymanic
+       */
+      buttonsBoxCut,
+      /**
+       * Status dialog add cut box
+       * @type {Boolean} status form
+       */
+      addBoxCut: false,
+      /**
+       * User Session
+       * @type {Number} id user session
+       */
+      session_id: this.$store.state.login.id,
+      /**
+       * Visible loading page
+       * @type {Boolean} status loading page
+       */
+      visible: false,
+      /**
+       * Total sale
+       * @type {Number} total sale
+       */
+      totalSale: 0,
+      /**
+       * Width init splitter
+       * @type {Number} % width init
+       */
+      splitterModel: 70, // start at 50%
+      /**
+       * Model paid sale
+       * @type {Object} model paid sale
+       */
+      paidSale: {
+        debito: null,
+        credito: null,
+        efectivo: null,
+        porcentaje: null,
+        montoPorcentaje: null
+      },
+      /**
+       * Columns Table
+       * @type {Array} column array
+       */
+      columns: [
+        {
+          name: 'Opciones',
+          headerClasses: 'bg-primary text-white',
+          classes: 'bg-grey-2 ellipsis',
+          align: 'left',
+          label: 'Opciones',
+          field: 'opciones'
+        },
+        {
+          name: 'articulo',
+          align: 'left',
+          headerClasses: 'bg-primary text-white',
+          label: 'Artículos',
+          field: 'articulo',
+          sortable: true
+        },
+        {
+          name: 'cantidad',
+          label: 'Cantidad',
+          field: 'cantidad',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'precio',
+          label: 'Precio',
+          field: 'precio',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'descuento',
+          label: 'Descuento',
+          field: 'descuento',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'subtotal',
+          label: 'Subtotal',
+          field: 'subtotal',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        }
+      ],
+      /**
+       * Billing Model
+       * @type {Object} billing model
+       */
+      billing: {
+        client: null,
+        dateBilling: null,
+        typeOfVoucher: 'Ticket',
+        typeSale: {
+          value: 'venta',
+          label: 'Venta'
+        },
+        box: {
+          label: null,
+          value: null
+        }
+      },
+      /**
+       * Client List
+       * @type {Array} Client List
+       */
+      clients: [],
+      /**
+       * Product List
+       * @type {Array} Product List
+       */
+      products: [],
+      /**
+       * Inventories product selected
+       * @type {Number} stock product selected
+       */
+      stock: 0,
+      /**
+       * Amount product
+       * @type {Number} amuntproduct
+       */
+      amount: 1,
+      /**
+       * Price product
+       * @type {Number} price product
+       */
+      priceOfSale: null,
+      /**
+       * Data product billing
+       * @type {Array} data billing
+       */
+      dataProduct: [],
+      /**
+       * Descount product
+       * @type {Number} descount product
+       */
+      discount: 0,
+      /**
+       * Type of sales
+       * @type {Array} type of sales
+       */
+      typeSales: [
+        {
+          value: 'venta',
+          label: 'Venta'
+        },
+        {
+          value: 'pedido',
+          label: 'Pedido'
+        },
+        {
+          value: 'cuenta corriente',
+          label: 'Cuenta Corriente'
+        }
+      ],
+      /**
+       * Type of vouchers
+       * @type {Array} type of vouchers
+       */
+      typeOfVouchers: ['Ticket', 'Factura A', 'Factura B'],
+      /**
+       * Model details sales
+       * @type {Array} model details sale
+       */
+      modelDetailsSale: [
+        'cantidad',
+        'descuento',
+        'detallable_type',
+        'detallable_id',
+        'precio'
+      ],
+      /**
+       * RelationalData description
+       * @type {Object}
+       */
+      boxCutServices
+    }
+  },
+  created () {
+    this.loadCreate()
+    this.$root.$on('logout', this.closeBox)
+  },
+  methods: {
+    /**
+     * Save entry and exit of money
+     * @param {Object} data form entry and exit of money
+     */
+    saveEntryAndExitOfMoney (data) {
+      this.loadingAddEntryAndExitOfMoney = true
+      this.$apollo.mutate({
+        mutation: ENTRY_AND_EXIT_OF_MONEY,
+        variables: {
+          entryAndExitOfMoney: {
+            monto: Number(data.monto),
+            descripcion: data.descripcion,
+            payable_id: this.billing.box.value,
+            payable_type: 'SisNacho\\CorteCaja',
+            user_created_id: this.session_id,
+            tipo_operacion: data.tipo_operacion.value
+          }
+        }
+      })
+        .then(({ data }) => {
+          this.loadingAddEntryAndExitOfMoney = false
+          this.notify(this, 'entryAndExitOfMoney.entryAndExitOfMoneySuccess', 'positive', 'mood')
+        })
+        .catch(() => {
+          this.loadingAddEntryAndExitOfMoney = false
+          this.notify(this, 'template.error', 'negative', 'waring')
+        })
+    },
+    /**
+     * Close form entry and exit of money
+     */
+    cancelEntryAndExitOfMoney () {
+      this.addEntryAndExitOfMoney = false
+    },
+    /**
+     * Load data
+    */
+    loadCreate () {
+      this.getCorteCaja()
+      this.getCLients()
+      this.getProducts()
+      this.setRelationalData(this.boxCutServices, [], this)
+    },
+    /**
+     * Close box
+     */
+    closeBox () {
+      this.$apollo.mutate({
+        mutation: CLOSE_BOX_CUT,
+        variables: {
+          id: this.billing.box.value
+        }
+      })
+        .then(({ data }) => {
+          this.getCorteCaja()
+          this.closeBoxCut = false
+          this.notify(this, 'boxCut.boxCloseSuccess', 'positive', 'mood')
+        })
+        .catch(err => {
+          this.notify(this, err.message, 'negative', 'warning')
+          this.closeBoxCut = false
+        })
+    },
+    /**
+     * Open Box cut
+     * @param {Object} data form box cut
+     */
+    saveBoxCut (data) {
+      this.loadingAdd = true
+      this.$apollo.mutate({
+        mutation: OPEN_BOX_CUT,
+        variables: {
+          boxCut: {
+            caja_id: data.caja_id ? data.caja_id.value : null,
+            vendedor_id: this.session_id,
+            monto: Number(data.monto) ?? 0,
+            descripcion: data.descripcion ?? '',
+            arqueo_id: 28
+          }
+        }
+      }).then(({ data }) => {
+        this.billing.box.label = data.abrirCorte.caja.nombre_caja
+        this.billing.box.value = data.abrirCorte.id
+        this.$q.sessionStorage.set('box_cut_id', data.abrirCorte.id)
+        this.addBoxCut = false
+        this.loadingAdd = false
+        this.notify(this, 'boxCut.boxOpenSuccess', 'positive', 'mood')
+      })
+        .catch(err => {
+          this.notify(this, this.$t(`boxCut.${this.errorRequest(err.message)}`), 'negative', 'mood')
+          this.loadingAdd = false
+        })
+    },
+    /**
+     * Cancel box cut
+     * @param {Object} data form box cut
+     */
+    cancel (data) {
+      this.$router.push({ name: 'products' })
+    },
+    /**
+     * Get Corte caja
+     */
+    getCorteCaja () {
+      this.$apollo.query(
+        {
+          query: GET_CORTE_CAJA_ACTIVE,
+          variables: {
+            user_session_id: this.session_id
+          },
+          fetchPolicy: 'no-cache'
+        }
+      )
+        .then(({ data }) => {
+          this.billing.box.label = data.verificarCorte.caja.nombre_caja
+          this.billing.box.value = data.verificarCorte.id
+        })
+        .catch(() => {
+          this.addBoxCut = true
+        })
+    },
+    /**
+     * Set Data in table
+     * @param {Object} val value product
+     */
+    setTable (val) {
+      if (this.validateArray(this.dataProduct, val)) {
+        this.addAmountProduct(this.dataProduct, val)
+      } else {
+        this.pushArray(this.dataProduct, val)
+      }
+      this.totalCalculate()
+    },
+    /**
+     * Set data in table product
+     * @param {Array} array list porduct
+     * @param {Object} val product
+     */
+    pushArray (array, val) {
+      this.stock = val.tipo === 1 ? val.stock : 5000000
+      const id = val.tipo === 1 ? val.detalleIngreso[0].id : val.id
+      array.push({
+        id: id,
+        articulo: val.label,
+        cantidad: this.amount,
+        precio: this.priceOfSale ?? this.setPriceSale(val),
+        descuento: this.discount,
+        subtotal: this.amount * (this.priceOfSale ?? this.setPriceSale(val)),
+        detallable_type: (val.tipo === 1) ? 'DetalleIngreso' : 'Articulo',
+        detallable_id: id
+      })
+    },
+    /**
+     * Set factura price
+     * @param {Object} product product seleted
+     */
+    setPriceSale (product) {
+      if (Number(product.tipo) === 2) {
+        return product.precio_venta
+      }
+
+      if (Number(product.tipo) === 1 && product.detalleIngreso.length > 0) {
+        return product.detalleIngreso[0].precio_venta
+      }
+    },
+    /**
+     * Save sale
+     */
+    saveSale () {
+      this.validateBeforeSubmit()
+        .then(res => {
+          if (res) {
+            if (this.validateSaveBilling()) {
+              this.visible = true
+              this.$apollo.mutate({
+                mutation: SAVE_BILLING,
+                variables: {
+                  billing: {
+                    corte_caja_id: this.billing.box.value,
+                    cliente_id: this.billing.client.value,
+                    user_created_id: this.session_id,
+                    tipo_operacion: this.billing.typeSale.value,
+                    tipo_comprobante: this.billing.typeOfVoucher,
+                    created_at: this.billing.dateBilling,
+                    detalleFactura: this.setModelDetailsSale(this.dataProduct),
+                    pagoFactura: {
+                      debito: this.paidSale.debito,
+                      credito: this.paidSale.credito,
+                      efectivo: this.paidSale.efectivo
+                    }
+                  }
+                }
+              }).then(({ data }) => {
+                this.emptyInputBilling()
+                this.loadCreate()
+                this.visible = false
+                this.notify(this, 'billing.saveSuccess', 'positive', 'mood')
+              })
+                .catch(err => {
+                  this.visible = false
+                  this.notify(this, err.message, 'positive', 'mood')
+                })
+            }
+          }
+        })
+    },
+    /**
+     * Validate details billing before save
+     */
+    validateSaveBilling () {
+      const totalPaid = Number(this.paidSale.debito) + Number(this.paidSale.credito) + Number(this.paidSale.efectivo)
+
+      if (this.dataProduct.length <= 0) {
+        this.notify(this, 'billing.errorInDataProduct', 'negative', 'warning')
+        return false
+      }
+
+      if (totalPaid < this.totalSale && this.billing.typeSale.value === 'venta') {
+        this.notify(this, 'billing.errorTotal', 'negative', 'warning')
+        return false
+      }
+
+      return true
+    },
+    /**
+     * Reset inputs billing
+     */
+    emptyInputBilling () {
+      this.dataProduct = []
+      this.billing.client = null
+      this.billing.dateBilling = null
+      this.billing.typeSale = {
+        label: 'Venta',
+        value: 'venta'
+      }
+      this.stock = null
+      this.amount = 1
+      this.priceOfSale = null
+      this.totalSale = 0
+      this.paidSale = {
+        debito: null,
+        credito: null,
+        efectivo: null
+      }
+      this.$refs.codigo.focus()
+      setTimeout(() => {
+        this.$validator.reset()
+      }, 100)
+    },
+    /**
+     * Print product error
+     * @param {Number} code product code
+     */
+    errorSearch (code) {
+      this.$q.notify({
+        message: `(${code}) - ${this.ucwords(this.$t('template.errorSearchProduct'))}`,
+        color: 'negative',
+        position: 'top',
+        icon: 'warning'
+      })
+    },
+    /**
+     * Set model detalis sale
+     * @param {Array} dataDetailsSale sale details
+     */
+    setModelDetailsSale (dataDetailsSale) {
+      return dataDetailsSale.map(data => {
+        const newModel = {}
+        this.modelDetailsSale.forEach(model => {
+          if (data[model]) {
+            newModel[model] = data[model]
+          }
+        })
+        return newModel
+      })
+    },
+    /**
+     * Format number less than ten
+     * @param {Number} number number format
+     * @return {Number} number formated
+     */
+    formatOnCero (number) {
+      if (number < 10) {
+        return `0${number}`
+      }
+      return number
+    },
+    /**
+     * Validations the errors
+     * @param  {String} propTag data fromulary
+     * @return {String} errors
+     */
+    errorValidation (propTag) {
+      if (this.errors.has(propTag)) {
+        return this.errors.first(propTag)
+      }
+    },
+    /**
+     * Verify formulary error
+     * * @return {String} errors
+     */
+    validateBeforeSubmit () {
+      return this.$validator.validateAll()
+        .then((result) => {
+          return result
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    /**
+     * Validate array in product table
+     * @param {Array} data the product table
+     * @param {Object} index product table index
+     */
+    validateArray (data, index) {
+      const validDate = data.filter((product) => product.id === index.id)
+      return (validDate.length === 0) ? null : true
+    },
+    /**
+     * Add product price in table
+     * @param {Array} product table
+     * @param {Object} index product table index
+     */
+    addAmountProduct (product, index) {
+      product.map(product => {
+        if (product.id === index.id) {
+          product.cantidad = Number(product.cantidad) + Number(this.amount) ?? Number(product.cantidad)
+          this.recalculate(product)
+          return product
+        }
+      })
+    },
+    /**
+     * All CLient
+     */
+    getCLients () {
+      this.$apollo.query(
+        {
+          query: ALL_CLIENT,
+          variables: {
+            empresa_id: 1
+          },
+          fetchPolicy: 'no-cache'
+        }
+      )
+        .then(({ data }) => {
+          this.clients = data.clientes.map(client => {
+            client.label = client.full_name
+            client.value = client.id
+            return client
+          })
+        })
+    },
+    /**
+     * All Products
+     */
+    getProducts () {
+      this.$apollo.query(
+        {
+          query: ALL_PRODUCT,
+          variables: {
+            empresa_id: 1
+          },
+          fetchPolicy: 'no-cache'
+        }
+      )
+        .then(({ data }) => {
+          this.products = data.articulos.map(product => {
+            product.label = product.articulo
+            product.value = product.id
+            return product
+          })
+        })
+    },
+    /**
+     * Delete product
+     * @param {Object} data data product
+     */
+    deleteProduct (data) {
+      this.dataProduct.map((product, index) => {
+        if (product.id === data.id) {
+          this.dataProduct.splice(index, 1)
+        }
+      })
+    },
+    /**
+     * Recalcute table subtotal
+     */
+    recalculate (data) {
+      this.dataProduct.map(product => {
+        if (product.id === data.id) {
+          product.subtotal = (data.cantidad * data.precio) - data.descuento
+          return product
+        }
+      })
+      this.totalCalculate()
+    },
+    /**
+     * Calculate billing total
+     */
+    totalCalculate () {
+      let total = 0
+      this.dataProduct.forEach(element => {
+        total = Number(total) + Number(element.subtotal)
+      })
+      this.totalSale = total
+    }
+  }
+}
+</script>
