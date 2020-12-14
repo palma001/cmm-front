@@ -19,7 +19,8 @@ export default {
     messageSistem: 'mensaje del sistema',
     darkMode: 'modo oscuro',
     active: 'activar',
-    desactive: 'desactivar'
+    desactive: 'desactivar',
+    error: 'algo salio mal!'
   },
 
   // users

@@ -679,7 +679,6 @@ export default {
   },
   created () {
     this.loadCreate()
-    this.$root.$on('logout', this.closeBox)
   },
   methods: {
     /**
@@ -702,12 +701,12 @@ export default {
         }
       })
         .then(({ data }) => {
-          this.loadingAddEntryAndExitOfMoney = false
           this.notify(this, 'entryAndExitOfMoney.entryAndExitOfMoneySuccess', 'positive', 'mood')
+          this.loadingAddEntryAndExitOfMoney = false
         })
         .catch(() => {
+          this.notify(this, 'template.error', 'negative', 'warning')
           this.loadingAddEntryAndExitOfMoney = false
-          this.notify(this, 'template.error', 'negative', 'waring')
         })
     },
     /**
