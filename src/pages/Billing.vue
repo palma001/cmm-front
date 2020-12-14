@@ -57,7 +57,7 @@
                     :offset="[10, 10]"
                     content-style="font-size: 13px"
                   >
-                    {{ ucwords('billing.closeBox') }}
+                    {{ ucwords($t('billing.closeBox')) }}
                   </q-tooltip>
                 </q-btn>
               </div>
