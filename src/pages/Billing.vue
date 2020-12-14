@@ -7,7 +7,7 @@
             <div class="row justify-between">
               <div class="col-auto">
                 <p class="text-h5">
-                  Nueva venta
+                  {{ ucwords($t('billing.newBilling')) }}
                 </p>
               </div>
               <div class="col-xl-2 col-lg-2 col-md-4 col-sm-5 col-xs-6 q-pa-sm q-gutter-sm text-right">
@@ -15,7 +15,8 @@
                   size="sm"
                   color="primary"
                   class="q-mt-sm"
-                  icon="list">
+                  icon="list"
+                  @click="getBillings">
                   <q-tooltip
                     anchor="bottom middle"
                     transition-show="flip-right"
@@ -23,7 +24,7 @@
                     :offset="[10, 10]"
                     content-style="font-size: 13px"
                   >
-                    Historial de ventas
+                    {{ ucwords('billing.history') }}
                   </q-tooltip>
                 </q-btn>
                 <q-btn
@@ -40,7 +41,7 @@
                     :offset="[10, 10]"
                     content-style="font-size: 13px"
                   >
-                    Entrada de dinero
+                    {{ ucwords('billing.entryAndExitOfMoney') }}
                   </q-tooltip>
                 </q-btn>
                 <q-btn
@@ -56,7 +57,7 @@
                     :offset="[10, 10]"
                     content-style="font-size: 13px"
                   >
-                    Cerrar caja
+                    {{ ucwords('billing.closeBox') }}
                   </q-tooltip>
                 </q-btn>
               </div>
@@ -182,7 +183,7 @@
         <div class="row justify-between q-col-gutter-sm">
           <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
             <product-list
-              label="articulo"
+              :label="ucwords($t('billing.product'))"
               value="id"
               autofocus
               ref="codigo"
@@ -198,12 +199,12 @@
               outlined
               dense
               type="number"
-              label="Cantidad"
+              :label="ucwords($t('billing.amount'))"
             />
           </div>
           <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
             <q-input
-              label="Stock"
+              :label="ucwords($t('billing.stock'))"
               v-model="stock"
               outlined
               dense
@@ -216,7 +217,7 @@
               outlined
               dense
               type="number"
-              label="Precio de venta"
+              :label="ucwords($t('billing.priceOfSale'))"
             />
           </div>
         </div>
@@ -302,12 +303,12 @@
                         outlined
                         dense
                         type="number"
-                        label="Credito"
                         name="credito"
                         data-vv-as="credito"
                         v-validate="{
                           required: billing.typeSale.value === 'venta' && !paidSale.debito && !paidSale.efectivo
                         }"
+                        :label="ucwords($t('billing.credit'))"
                         :error-message="errorValidation('credito')"
                         :error="errors.has('credito')"
                         @keyup.enter="saveSale"
@@ -319,7 +320,7 @@
                         outlined
                         dense
                         type="number"
-                        label="Porcentaje de credito"
+                        :label="ucwords($t('billing.creditPercentage'))"
                         @keyup.enter="saveSale"
                       />
                     </div>
@@ -330,7 +331,7 @@
                         dense
                         disable
                         type="number"
-                        label="Dinero del porcentaje"
+                        :label="ucwords($t('billing.moneyPercentage'))"
                         @keyup.enter="saveSale"
                       />
                     </div>
@@ -340,12 +341,12 @@
                         outlined
                         dense
                         type="number"
-                        label="Efectivo"
                         name="efectivo"
                         data-vv-as="efectivo"
                         v-validate="{
                           required: billing.typeSale.value === 'venta' && !paidSale.debito && !paidSale.credito
                         }"
+                        :label="ucwords($t('billing.cash'))"
                         :error-message="errorValidation('efectivo')"
                         :error="errors.has('efectivo')"
                         @keyup.enter="saveSale"
@@ -360,7 +361,7 @@
                           :offset="[10, 10]"
                           content-style="font-size: 13px"
                         >
-                          Cancelar factura
+                          {{ ucwords($t('billing.cancelBilling')) }}
                         </q-tooltip>
                       </q-btn>
                     </div>
@@ -378,7 +379,7 @@
                           content-style="font-size: 13px"
                           :offset="[10, 10]"
                         >
-                          Guardar Factura
+                          {{ ucwords($t('billing.saveBilling')) }}
                         </q-tooltip>
                       </q-btn>
                     </div>
@@ -429,6 +430,50 @@
       @confirm="closeBox"
       @cancel="closeBoxCut = false"
     />
+
+    <b-confirm-alert
+      color="negative"
+      icon="close"
+      :show="alertArching"
+      :message="$t('arching.notFound')"
+      @confirm="cancel"
+      @cancel="cancel"
+    />
+
+     <q-dialog
+      persistent
+      transition-show="slide-up"
+      transition-hide="slide-down"
+      v-model="dialogBillingVisible"
+      :maximized="maximizedToggle"
+    >
+      <q-card>
+        <q-bar class="bg-primary text-white">
+          {{ ucwords($t('billing.sales')) }}
+          <q-space />
+          <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
+            <q-tooltip v-if="maximizedToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
+          </q-btn>
+          <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
+            <q-tooltip v-if="!maximizedToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
+          </q-btn>
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip content-class="bg-primary">Close</q-tooltip>
+          </q-btn>
+        </q-bar>
+        <q-card-section>
+          <data-table
+            module="billing"
+            title="listBilling"
+            :column="billingConfig"
+            :data="dataTableBilling"
+          />
+        </q-card-section>
+        <q-inner-loading :showing="visibleTableBilling">
+          <q-spinner-gears size="100px" color="primary"/>
+        </q-inner-loading>
+      </q-card>
+    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -436,28 +481,78 @@
 </template>
 
 <script>
+import { mixins } from '../mixins'
+import ProductList from '../components/ProductList'
+import DynamicForm from '../components/DynamicForm'
+import BConfirmAlert from '../components/BConfirmAlert'
+import DataTable from '../components/DataTable'
+import { boxCutConfig, buttonsBoxCut, boxCutServices } from '../config-file/boxCut/boxCutConfig'
+import { billingConfig } from '../config-file/billing/billingConfig'
+import { entryAndExitOfMoney, buttonsEntryAndExitOfMoney } from '../config-file/entryAndExitOfMoney/entryAndExitOfMoney'
 import { ALL_CLIENT } from '../Graphql/Client/getAllClient'
 import { ALL_PRODUCT } from '../Graphql/Product/getAllProduct'
 import { SAVE_BILLING } from '../Graphql/Billing/billingMutations'
+import { GET_BILLINGS } from '../Graphql/Billing/billingQueries'
 import { GET_CORTE_CAJA_ACTIVE } from '../Graphql/BoxCut/boxCutQueries'
 import { OPEN_BOX_CUT, CLOSE_BOX_CUT } from '../Graphql/BoxCut/boxCutMutations'
-import ProductList from '../components/ProductList'
-import { mixins } from '../mixins'
-import DynamicForm from '../components/DynamicForm'
-import BConfirmAlert from '../components/BConfirmAlert'
-import { boxCutConfig, buttonsBoxCut, boxCutServices } from '../config-file/boxCut/boxCutConfig'
-import { entryAndExitOfMoney, buttonsEntryAndExitOfMoney } from '../config-file/entryAndExitOfMoney/entryAndExitOfMoney'
 import { ENTRY_AND_EXIT_OF_MONEY } from '../Graphql/EntryAndExitOfMoney/entryAndExitOfMoneyMutations'
+import { GET_ARCHING } from '../Graphql/Arching/archingQueries'
 export default {
   name: 'Billing',
   mixins: [mixins.containerMixin],
   components: {
     ProductList,
     DynamicForm,
-    BConfirmAlert
+    BConfirmAlert,
+    DataTable
   },
   data () {
     return {
+      /**
+       * Status table billing
+       * @type {Boolean} status table billing
+       */
+      visibleTableBilling: false,
+      /**
+       * Set billing data table
+       * @type {Boolean} billing data table
+       */
+      dataTableBilling: [],
+      /**
+       * Config archive
+       * @type {Array} Billing array
+       */
+      billingConfig,
+      /**
+       * Status dialog billing
+       * @type {Boolean} status dialog
+       */
+      dialogBillingVisible: false,
+      /**
+       * Set status maximzed dialog
+       * @type {Boolean} status maximzed dialog
+       */
+      maximizedToggle: true,
+      /**
+       * Get arching active
+       * @type {Boolean} arching active
+       */
+      arching_id: null,
+      /**
+       * Get alert arching active
+       * @type {Boolean} alert arching active
+       */
+      alertArching: false,
+      /**
+       * Get search billing
+       * @type {Boolean} search billing
+       */
+      commonSearch: {
+        rowsPerPage: 20,
+        paginate: true,
+        sortField: 'id',
+        sortOrder: 'desc'
+      },
       /**
        * Status dialog add entry and exit of money
        * @type {Boolean} status dialog
@@ -678,9 +773,69 @@ export default {
     }
   },
   created () {
-    this.loadCreate()
+    this.getArchingActive()
   },
   methods: {
+    /**
+     * Get arching active
+     */
+    async getArchingActive () {
+      const { data } = await this.$apollo.query(
+        {
+          query: GET_ARCHING,
+          variables: {
+            arching: {
+              commonSearch: {
+                sortField: 'id',
+                sortOrder: 'desc',
+                paginate: false
+              },
+              dataFilter: {
+                sucursal_id: 1,
+                estado: true
+              }
+            }
+          },
+          fetchPolicy: 'no-cache'
+        }
+      )
+      if (data.arqueos.length > 0) {
+        this.arching_id = data.arqueos[0].id
+        this.loadCreate()
+      } else {
+        this.alertArching = true
+      }
+    },
+    /**
+     * Get Billing
+     */
+    getBillings () {
+      this.visibleTableBilling = true
+      this.dialogBillingVisible = true
+      this.$apollo.query(
+        {
+          query: GET_BILLINGS,
+          variables: {
+            billing: {
+              commonSearch: this.commonSearch,
+              dataFilter: {
+                user_created_id: this.session_id
+              }
+            }
+          },
+          fetchPolicy: 'no-cache'
+        }
+      )
+        .then(({ data }) => {
+          this.visibleTableBilling = false
+          this.dataTableBilling = data.facturas
+        })
+        .catch((err) => {
+          this.visibleTableBilling = false
+          this.dataTableBilling = []
+          this.notify(this, err.message, 'negative', 'warning')
+        })
+    },
     /**
      * Save entry and exit of money
      * @param {Object} data form entry and exit of money
@@ -758,7 +913,7 @@ export default {
             vendedor_id: this.session_id,
             monto: Number(data.monto) ?? 0,
             descripcion: data.descripcion ?? '',
-            arqueo_id: 206
+            arqueo_id: this.arching_id
           }
         }
       }).then(({ data }) => {

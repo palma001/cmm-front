@@ -97,7 +97,29 @@ export default {
     errorTotal: 'el monto ingresado es menor al total de la factura',
     errorInDataProduct: 'Factura sin productos',
     confirmCloseBox: '¿Desea cerrar la caja?',
-    typeOfVoucher: 'tipo de compobante'
+    typeOfVoucher: 'tipo de compobante',
+    created_at: 'fecha',
+    listBilling: 'lista de facturas',
+    total: 'total',
+    history: 'Historial de ventas',
+    entryAndExitOfMoney: 'entrada\\salida de dinero',
+    closeBox: 'cerrar caja',
+    newBilling: 'Nueva venta',
+    product: 'artículo',
+    amount: 'cantidad',
+    stock: 'stock',
+    priceOfSale: 'precio de venta',
+    credit: 'credito',
+    creditPercentage: 'procentaje de credito',
+    moneyPercentage: 'dinero de porcentaje',
+    cash: 'efectivo',
+    cancelBilling: 'cancelar factura',
+    saveBilling: 'guardar factura',
+    sales: 'ventas'
+  },
+
+  arching: {
+    notFound: 'Arqueo cerrado, pongase en contacto con el administrador'
   },
 
   boxCut: {

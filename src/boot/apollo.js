@@ -6,8 +6,8 @@ import { createHttpLink } from 'apollo-link-http'
 
 const httpLink = createHttpLink(
   {
-    uri: 'http://api.dixcont.store/graphql',
-    // uri: 'http://127.0.0.1:8000/graphql',
+    // uri: 'http://api.dixcont.store/graphql',
+    uri: 'http://127.0.0.1:8000/graphql',
     fetch: fetch
   }
 )

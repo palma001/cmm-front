@@ -5,65 +5,37 @@ export const billingConfig = [
     children: [
       {
         tabulated: {
-          name: 'document',
+          name: 'cliente',
           align: 'left',
-          field: row => row.document,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'cliente_id',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              outlined: true,
-              dense: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'first_name',
-          align: 'left',
-          field: row => row.first_name,
-          sortable: true,
+          field: row => row.cliente.full_name,
+          sortable: false,
           visible: true
         }
       },
       {
         tabulated: {
-          name: 'last_name',
+          name: 'typeOfVoucher',
           align: 'left',
-          field: row => row.last_name,
-          sortable: true,
+          field: row => `${row.tipo_comprobante}-${row.num_comprobante}`,
+          sortable: false,
           visible: true
         }
       },
       {
         tabulated: {
-          name: 'email',
+          name: 'created_at',
           align: 'left',
-          field: row => row.email,
-          sortable: true,
+          field: row => row.created_at,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'total',
+          align: 'left',
+          field: row => row.total_format,
+          sortable: false,
           visible: true
         }
       }
