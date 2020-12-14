@@ -25,7 +25,6 @@ export const mutations = {
   },
 
   [MUTATIONS.SET_USER]: (state, user) => {
-    console.log(user)
     state.user_session = user
     localStorage.setItem('user_session', JSON.stringify(user))
   },

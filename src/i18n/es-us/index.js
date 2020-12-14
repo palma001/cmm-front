@@ -20,7 +20,8 @@ export default {
     darkMode: 'modo oscuro',
     active: 'activar',
     desactive: 'desactivar',
-    error: 'algo salio mal!'
+    error: 'algo salio mal!',
+    code: 'Código'
   },
 
   // users

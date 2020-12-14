@@ -7,9 +7,9 @@
           dense
           outlined
           clearable
-          label="Código"
           v-model="search"
           ref="codigo"
+          :label="$t('template.code')"
           :autofocus="autofocus"
           @keyup.enter="findProduct"
         />

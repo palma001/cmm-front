@@ -183,7 +183,7 @@
         <div class="row justify-between q-col-gutter-sm">
           <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
             <product-list
-              :label="ucwords($t('billing.product'))"
+              label="articulo"
               value="id"
               autofocus
               ref="codigo"
