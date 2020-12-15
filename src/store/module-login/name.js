@@ -16,6 +16,7 @@ const SET_EXPIRE_IN = 'SET_EXPIRE_IN'
 const CLEAR_ACCOUNT_STATE = 'CLEAR_ACCOUNT_STORE'
 const SET_USER = 'SET_USER'
 const SET_ID = 'SET_ID'
+const SET_SUCURSALES = 'SET_SUCURSALES'
 
 /**
  * Getters
@@ -52,5 +53,6 @@ export const MUTATIONS = {
 export const GETTERS = {
   GET_TOKEN,
   GET_ID,
-  GET_USER
+  GET_USER,
+  SET_SUCURSALES
 }

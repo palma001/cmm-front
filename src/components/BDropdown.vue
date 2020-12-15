@@ -11,25 +11,23 @@
       {{ $t(`template.${tooltip}`) }}
     </q-tooltip>
     <q-menu>
-      <q-list>
-        <q-item v-for="item in dataItem" :key="item.id"
+      <q-list v-for="item in dataItem" :key="item.id">
+        <q-item
           clickable
           v-close-popup
+          v-ripple
+          dense
+          bordered
           tabindex="0"
+          active-class="my-menu-link"
+          :active="item[labelItem] === itemSelected"
+          @click="selected(item)"
         >
           <q-item-section avatar>
-            <q-avatar
-              :icon="icon"
-              color="primary"
-              text-color="white"
-            />
+            <q-icon :name="icon"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>{{dataItem[labelItem]}}</q-item-label>
-            <q-item-label caption></q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-icon name="info" />
+            <q-item-label :lines="3" class="active">{{item[labelItem]}}</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -62,7 +60,24 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+      itemSelected: this.label
+    }
+  },
+  methods: {
+    /**
+     * Emit event selected
+     * @param {Object} data data selected
+     */
+    selected (data) {
+      this.itemSelected = data[this.labelItem]
+      this.$emit('selected', data)
+    }
   }
 }
 </script>
+<style lang="sass">
+.my-menu-link
+  color: white
+  background: goldenrod
+</style>

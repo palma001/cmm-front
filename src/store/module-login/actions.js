@@ -26,6 +26,10 @@ export const actions = {
             email
             full_name
           }
+          sucursales {
+            id
+            nombre_sucursal
+          }
         }
       }`,
       variables: {
@@ -33,12 +37,15 @@ export const actions = {
         password: self.password
       },
       update: (store, { data: { login } }) => {
+        console.log(login)
         commit(MUTATIONS.SET_TOKEN, login.access_token)
         commit(MUTATIONS.SET_REFRESH_TOKEN, login.refresh_token)
         commit(MUTATIONS.SET_USER, login.user)
         commit(MUTATIONS.SET_EXPIRE_IN, Number(login.expires_in))
+        commit(MUTATIONS.SET_EXPIRE_IN, Number(login.expires_in))
         commit(MUTATIONS.SET_ID, Number(login.user.id))
         dispatch(ACTIONS.AUTO_LOGOUT, Number(login.expires_in))
+        self.$q.sessionStorage.set('sucursales', login.sucursales)
         self.$router.push({ name: 'billing' })
       }
     })

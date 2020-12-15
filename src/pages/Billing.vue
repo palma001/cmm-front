@@ -321,6 +321,7 @@
                         dense
                         type="number"
                         :label="ucwords($t('billing.creditPercentage'))"
+                        @input="percentage"
                         @keyup.enter="saveSale"
                       />
                     </div>
@@ -776,6 +777,13 @@ export default {
     this.getArchingActive()
   },
   methods: {
+    /**
+     * Calculate percentage
+     * @param {Number} percentage percentage credit
+     */
+    percentage (percentage) {
+      this.paidSale.montoPorcentaje = (percentage * this.paidSale.credito) / 100
+    },
     /**
      * Get arching active
      */

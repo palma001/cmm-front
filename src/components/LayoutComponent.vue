@@ -12,7 +12,14 @@
         />
         <q-separator dark vertical inset />
         <q-toolbar-title>{{ titleApp }}</q-toolbar-title>
-        <b-dropdown icon="store" class="q-mr-sm"/>
+        <b-dropdown
+          icon="store"
+          class="q-mr-sm"
+          labelItem="nombre_sucursal"
+          :label="labelDrown"
+          :dataItem="sucursales"
+          @selected="sucursaelSelected"
+        />
         <q-separator dark vertical inset />
         <q-btn
           flat
@@ -113,7 +120,6 @@
 </template>
 
 <script>
-import { Loading, QSpinnerGears } from 'quasar'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -157,8 +163,10 @@ export default {
 
   data () {
     return {
+      labelDrown: null,
       active: true,
       visible: true,
+      sucursales: this.$q.sessionStorage.getItem('sucursales'),
       /**
        * Status menu
        *
@@ -177,24 +185,34 @@ export default {
     ...mapGetters([GETTERS.GET_USER])
   },
   methods: {
+    /**
+     * Emit event logout
+     */
     logout () {
       this.$emit('logout')
     },
+    /**
+     * Sucursal lected
+     * @param {Object} data sucursal selected
+     */
+    sucursaelSelected (data) {
+      this.labelDrown = data.nombre_sucursal
+      this.$q.sessionStorage.set('sucursalSelected', data)
+    },
+    /**
+     * Dark mode aplication
+     */
     darkMode () {
       this.$q.dark.toggle()
       this.$q.sessionStorage.set('dark', this.$q.dark.isActive)
     },
+    /**
+     * Loading aplications
+     */
     loadingPage () {
       this.$q.dark.set(this.$q.sessionStorage.getItem('dark'))
-      Loading.show({
-        spinner: QSpinnerGears,
-        spinnerColor: 'primary',
-        backgroundColor: 'white',
-        spinnerSize: 100
-      })
-      setTimeout(() => {
-        Loading.hide()
-      }, 3000)
+      this.labelDrown = this.sucursales[0].nombre_sucursal
+      this.$q.sessionStorage.set('sucursalSelected', this.sucursales[0])
     },
     /**
      * Change route
