@@ -21,7 +21,8 @@ export default {
     active: 'activar',
     desactive: 'desactivar',
     error: 'algo salio mal!',
-    code: 'Código'
+    code: 'Código',
+    sucursales: 'sucursales'
   },
 
   // users

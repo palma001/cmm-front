@@ -22,7 +22,7 @@ module.exports = function (/* ctx */) {
 
       'i18n',
       'services',
-      'socket',
+      // 'socket',
       'vee-validate',
       'apollo'
     ],

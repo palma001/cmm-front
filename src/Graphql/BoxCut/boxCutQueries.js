@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 export const GET_CORTE_CAJA_ACTIVE = gql`
-  query getCorteCaja($user_session_id: Int!) {
+  query getCorteCaja($boxCutFilter: CorteCajaFilterInput!) {
     verificarCorte (
-      vendedor_id: $user_session_id
+      input: $boxCutFilter
     )
     {
       id

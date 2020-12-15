@@ -54,15 +54,15 @@ export default {
      * Close box
      */
     async closeBox () {
-      if (this.$q.sessionStorage.getItem('box_cut_id')) {
+      if (this.$q.sessionStorage.has('box_cut_id')) {
         await this.$apollo.mutate({
           mutation: CLOSE_BOX_CUT,
           variables: {
             id: this.$q.sessionStorage.getItem('box_cut_id')
           }
         })
-        this.$q.sessionStorage.remove('box_cut_id')
       }
+      this.$q.sessionStorage.clear()
     },
     ...mapActions([ACTIONS.LOGOUT])
   }

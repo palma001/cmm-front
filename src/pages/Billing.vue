@@ -428,6 +428,7 @@
       icon="close"
       :show="closeBoxCut"
       :message="$t('billing.confirmCloseBox')"
+      :loading="loadingCLose"
       @confirm="closeBox"
       @cancel="closeBoxCut = false"
     />
@@ -482,6 +483,7 @@
 </template>
 
 <script>
+import { SessionStorage } from 'quasar'
 import { mixins } from '../mixins'
 import ProductList from '../components/ProductList'
 import DynamicForm from '../components/DynamicForm'
@@ -509,6 +511,7 @@ export default {
   },
   data () {
     return {
+      loadingCLose: false,
       /**
        * Status table billing
        * @type {Boolean} status table billing
@@ -534,11 +537,6 @@ export default {
        * @type {Boolean} status maximzed dialog
        */
       maximizedToggle: true,
-      /**
-       * Get arching active
-       * @type {Boolean} arching active
-       */
-      arching_id: null,
       /**
        * Get alert arching active
        * @type {Boolean} alert arching active
@@ -604,6 +602,14 @@ export default {
        * @type {Number} id user session
        */
       session_id: this.$store.state.login.id,
+      /**
+       *
+       */
+      arching: SessionStorage.getItem('arching'),
+      /**
+       *
+       */
+      sucursalSelected: SessionStorage.getItem('sucursalSelected'),
       /**
        * Visible loading page
        * @type {Boolean} status loading page
@@ -774,6 +780,7 @@ export default {
     }
   },
   created () {
+    this.$root.$on('sucursal', this.getArchingActive)
     this.getArchingActive()
   },
   methods: {
@@ -783,38 +790,6 @@ export default {
      */
     percentage (percentage) {
       this.paidSale.montoPorcentaje = (percentage * this.paidSale.credito) / 100
-    },
-    /**
-     * Get arching active
-     */
-    async getArchingActive () {
-      this.visible = true
-      const { data } = await this.$apollo.query(
-        {
-          query: GET_ARCHING,
-          variables: {
-            arching: {
-              commonSearch: {
-                sortField: 'id',
-                sortOrder: 'desc',
-                paginate: false
-              },
-              dataFilter: {
-                sucursal_id: 1,
-                estado: true
-              }
-            }
-          },
-          fetchPolicy: 'no-cache'
-        }
-      )
-      this.visible = false
-      if (data.arqueos.length > 0) {
-        this.arching_id = data.arqueos[0].id
-        this.loadCreate()
-      } else {
-        this.alertArching = true
-      }
     },
     /**
      * Get Billing
@@ -880,11 +855,39 @@ export default {
     cancelEntryAndExitOfMoney () {
       this.addEntryAndExitOfMoney = false
     },
+
+    /**
+     * Get arching active
+     * @param {Object} sucursal sucursal selected
+     */
+    async getArchingActive (sucursal) {
+      const { data } = await this.$apollo.query(
+        {
+          query: GET_ARCHING,
+          variables: {
+            arching: {
+              commonSearch: {
+                sortField: 'id',
+                sortOrder: 'desc',
+                paginate: false
+              },
+              dataFilter: {
+                sucursal_id: this.sucursalSelected.id,
+                estado: true
+              }
+            }
+          },
+          fetchPolicy: 'no-cache'
+        }
+      )
+      this.arching = data.arqueos[0]
+      this.loadCreate()
+    },
     /**
      * Load data
     */
     loadCreate () {
-      this.getCorteCaja()
+      this.getCorteCaja(this.arching.id)
       this.getCLients()
       this.getProducts()
       this.setRelationalData(this.boxCutServices, [], this)
@@ -893,6 +896,7 @@ export default {
      * Close box
      */
     closeBox () {
+      this.loadingCLose = true
       this.$apollo.mutate({
         mutation: CLOSE_BOX_CUT,
         variables: {
@@ -900,8 +904,9 @@ export default {
         }
       })
         .then(({ data }) => {
-          this.getCorteCaja()
+          this.getArchingActive(this.sucursalSelected)
           this.closeBoxCut = false
+          this.loadingCLose = false
           this.notify(this, 'boxCut.boxCloseSuccess', 'positive', 'mood')
         })
         .catch(err => {
@@ -923,13 +928,13 @@ export default {
             vendedor_id: this.session_id,
             monto: Number(data.monto) ?? 0,
             descripcion: data.descripcion ?? '',
-            arqueo_id: this.arching_id
+            arqueo_id: this.arching.id
           }
         }
       }).then(({ data }) => {
         this.billing.box.label = data.abrirCorte.caja.nombre_caja
         this.billing.box.value = data.abrirCorte.id
-        this.$q.sessionStorage.set('box_cut_id', data.abrirCorte.id)
+        SessionStorage.set('box_cut_id', data.abrirCorte.id)
         this.addBoxCut = false
         this.loadingAdd = false
         this.notify(this, 'boxCut.boxOpenSuccess', 'positive', 'mood')
@@ -949,12 +954,16 @@ export default {
     /**
      * Get Corte caja
      */
-    getCorteCaja () {
+    getCorteCaja (archingId) {
+      this.visible = true
       this.$apollo.query(
         {
           query: GET_CORTE_CAJA_ACTIVE,
           variables: {
-            user_session_id: this.session_id
+            boxCutFilter: {
+              vendedor_id: this.session_id,
+              arqueo_id: archingId
+            }
           },
           fetchPolicy: 'no-cache'
         }
@@ -962,9 +971,11 @@ export default {
         .then(({ data }) => {
           this.billing.box.label = data.verificarCorte.caja.nombre_caja
           this.billing.box.value = data.verificarCorte.id
+          this.visible = false
         })
         .catch(() => {
           this.addBoxCut = true
+          this.visible = false
         })
     },
     /**
@@ -1046,7 +1057,7 @@ export default {
               })
                 .catch(err => {
                   this.visible = false
-                  this.notify(this, err.message, 'positive', 'mood')
+                  this.notify(this, err.message, 'negative', 'mood')
                 })
             }
           }

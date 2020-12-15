@@ -175,8 +175,8 @@ export const relationalData = [
     query: ALL_BOX,
     propData: 'data',
     nameQuery: 'cajas',
+    varStorage: true,
     variables: {
-      sucursal_id: 1,
       vendedor_id: null
     }
   }

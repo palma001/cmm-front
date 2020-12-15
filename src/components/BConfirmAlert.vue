@@ -20,8 +20,8 @@
       </q-card-section>
       <q-separator/>
       <q-card-actions align="right">
-        <q-btn :label="$t('template.cancel')" class="glossy" color="negative" @click="cancel" />
-        <q-btn :label="$t('template.confirm')" class="glossy" color="primary" @click="confirm" />
+        <q-btn :label="$t('template.cancel')" class="glossy" color="negative" @click="cancel" :disable="loading"/>
+        <q-btn :label="$t('template.confirm')" class="glossy" color="primary" @click="confirm" :loading="loading" :disable="loading"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -48,6 +48,10 @@ export default {
     color: {
       type: String,
       default: 'primary'
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {

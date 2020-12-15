@@ -1,3 +1,5 @@
+
+import { SessionStorage } from 'quasar'
 /**
  * Translates the tags in Entities
  * @param {String} message tag to translate
@@ -57,6 +59,24 @@ function assignRelationalData (currentDataConfig, propTag, propData, list) {
   })
 }
 /**
+ * Set variable select
+ * @param {Object} dataConfig config variable
+ */
+function setVariables (dataConfig) {
+  if (dataConfig.varStorage) {
+    switch (dataConfig.nameQuery) {
+      case 'cajas':
+        if (SessionStorage.has('sucursalSelected')) {
+          dataConfig.variables.sucursal_id = Number(SessionStorage.getItem('sucursalSelected').id)
+        }
+        break
+      default:
+        break
+    }
+  }
+  return dataConfig.variables
+}
+/**
  * Gets relational data of the entity
  * @param {{relationalData: Array<Object>, config: Array<Object>}} entityConfig
  * @param {Array} toRelationalData
@@ -74,7 +94,7 @@ export const setRelationalData = (
       vueInstance.$apollo.query(
         {
           query: dataConfig.query,
-          variables: dataConfig.variables,
+          variables: setVariables(dataConfig),
           fetchPolicy: 'no-cache'
         }
       )

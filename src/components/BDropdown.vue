@@ -1,14 +1,15 @@
 <template>
   <q-btn :icon="icon" :label="label" flat stretch>
     <q-tooltip
-      anchor="bottom middle"
+      anchor="center left"
+      self="center right"
       transition-show="flip-right"
       transition-hide="flip-left"
       content-style="font-size: 13px"
       v-if="tooltip"
       :offset="[10, 10]"
     >
-      {{ $t(`template.${tooltip}`) }}
+      {{ ucwords($t(`template.${tooltip}`)) }}
     </q-tooltip>
     <q-menu>
       <q-list v-for="item in dataItem" :key="item.id">
@@ -36,8 +37,10 @@
 </template>
 
 <script>
+import { mixins } from '../mixins'
 export default {
   name: 'BDropdown',
+  mixins: [mixins.containerMixin],
   props: {
     icon: {
       type: String,

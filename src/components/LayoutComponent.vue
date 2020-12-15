@@ -16,6 +16,7 @@
           icon="store"
           class="q-mr-sm"
           labelItem="nombre_sucursal"
+          tooltip="sucursales"
           :label="labelDrown"
           :dataItem="sucursales"
           @selected="sucursaelSelected"
@@ -116,6 +117,9 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+    <q-inner-loading :showing="visible">
+      <q-spinner-gears size="100px" color="primary"/>
+    </q-inner-loading>
   </q-layout>
 </template>
 
@@ -124,6 +128,7 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import BDropdown from '../components/BDropdown'
+import { SessionStorage } from 'quasar'
 export default {
   name: 'LayoutComponent',
   mixins: [mixins.containerMixin],
@@ -165,8 +170,8 @@ export default {
     return {
       labelDrown: null,
       active: true,
-      visible: true,
-      sucursales: this.$q.sessionStorage.getItem('sucursales'),
+      visible: false,
+      sucursales: SessionStorage.getItem('sucursales'),
       /**
        * Status menu
        *
@@ -196,23 +201,34 @@ export default {
      * @param {Object} data sucursal selected
      */
     sucursaelSelected (data) {
-      this.labelDrown = data.nombre_sucursal
-      this.$q.sessionStorage.set('sucursalSelected', data)
+      this.visible = true
+      setTimeout(() => {
+        this.labelDrown = data.nombre_sucursal
+        SessionStorage.set('sucursalSelected', data)
+        this.$root.$emit('sucursal', data)
+        this.visible = false
+      }, 1000)
     },
     /**
      * Dark mode aplication
      */
     darkMode () {
       this.$q.dark.toggle()
-      this.$q.sessionStorage.set('dark', this.$q.dark.isActive)
+      SessionStorage.set('dark', this.$q.dark.isActive)
     },
     /**
      * Loading aplications
      */
     loadingPage () {
-      this.$q.dark.set(this.$q.sessionStorage.getItem('dark'))
-      this.labelDrown = this.sucursales[0].nombre_sucursal
-      this.$q.sessionStorage.set('sucursalSelected', this.sucursales[0])
+      this.$q.dark.set(SessionStorage.getItem('dark'))
+      const sucursaelSelected = SessionStorage.getItem('sucursalSelected')
+      if (sucursaelSelected) {
+        SessionStorage.set('sucursalSelected', sucursaelSelected)
+        this.labelDrown = sucursaelSelected.nombre_sucursal
+      } else {
+        this.labelDrown = this.sucursales[0].nombre_sucursal
+        SessionStorage.set('sucursalSelected', this.sucursales[0])
+      }
     },
     /**
      * Change route
