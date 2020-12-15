@@ -860,7 +860,7 @@ export default {
      * Get arching active
      * @param {Object} sucursal sucursal selected
      */
-    async getArchingActive (sucursal) {
+    async getArchingActive (sucursal = null) {
       const { data } = await this.$apollo.query(
         {
           query: GET_ARCHING,
@@ -872,7 +872,7 @@ export default {
                 paginate: false
               },
               dataFilter: {
-                sucursal_id: this.sucursalSelected.id,
+                sucursal_id: sucursal ? sucursal.id : this.sucursalSelected.id,
                 estado: true
               }
             }
@@ -975,6 +975,8 @@ export default {
         })
         .catch(() => {
           this.addBoxCut = true
+          this.billing.box.label = null
+          this.billing.box.value = null
           this.visible = false
         })
     },

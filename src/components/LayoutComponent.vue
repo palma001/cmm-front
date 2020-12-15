@@ -201,13 +201,9 @@ export default {
      * @param {Object} data sucursal selected
      */
     sucursaelSelected (data) {
-      this.visible = true
-      setTimeout(() => {
-        this.labelDrown = data.nombre_sucursal
-        SessionStorage.set('sucursalSelected', data)
-        this.$root.$emit('sucursal', data)
-        this.visible = false
-      }, 1000)
+      SessionStorage.set('sucursalSelected', data)
+      this.labelDrown = data.nombre_sucursal
+      this.$root.$emit('sucursal', data)
     },
     /**
      * Dark mode aplication
