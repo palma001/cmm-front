@@ -1211,6 +1211,9 @@ export default {
             client.value = client.id
             return client
           })
+          this.billing.client = data.clientes.filter(cliente => {
+            return cliente.value === '6'
+          })[0]
         })
     },
     /**
