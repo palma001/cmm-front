@@ -16,8 +16,24 @@
     :error="error"
     :use-chips="useChips"
     @input="input"
-    @filter="filterFn"
+    @select="select"
   >
+   <template v-slot:option="scope">
+      <q-item
+        v-bind="scope.itemProps"
+        v-on="scope.itemEvents"
+      >
+        <q-item-section avatar v-if="scope.opt.icon">
+          <q-icon :name="scope.opt.icon" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label v-html="scope.opt.label" />
+          <q-item-label caption v-if="scope.opt.description">
+            {{ scope.opt.description }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </template>
     <template v-slot:no-option>
       <q-item>
         <q-item-section class="text-grey">
@@ -112,8 +128,8 @@ export default {
   },
   watch: {
     value () {
-      this.valueSelect = this.value
       console.log(this.valueSelect)
+      this.valueSelect = this.value
     },
     errorMessage () {
       this.errorMessageProp = this.errorMessage
@@ -124,7 +140,7 @@ export default {
       return this.data.map(element => {
         element.label = element[this.dataLabel]
         element.value = element[this.dataValue]
-        element.description = [this.dataDescription]
+        element.description = element[this.dataDescription]
         element.icon = element[this.dataIcon]
         return element
       })
@@ -132,24 +148,19 @@ export default {
   },
   methods: {
     /**
-     * Event fiter data
-     * @type {String} value filter
-     * @type {callback} function callback
-     */
-    filterFn (val, update) {
-      update(() => {
-        const needle = val.toLowerCase()
-        this.dataOptions.filter(v => {
-          return v.label.toLowerCase().indexOf(needle) > -1
-        })
-      })
-    },
-    /**
      * Event input
      * @type {Object} data input selected
      */
     input (data) {
       this.$emit('input', data)
+    },
+    /**
+     * Event input
+     * @type {Object} data input selected
+     */
+    select (data) {
+      this.valueSelect = data
+      this.$emit('select', data)
     }
   }
 }

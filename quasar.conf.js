@@ -22,8 +22,9 @@ module.exports = function (/* ctx */) {
 
       'i18n',
       'services',
-      'socket',
-      'vee-validate'
+      // 'socket',
+      'vee-validate',
+      'apollo'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -88,7 +89,9 @@ module.exports = function (/* ctx */) {
     framework: {
       iconSet: 'material-icons', // Quasar icon set
       lang: 'en-us', // Quasar language pack
-      config: {},
+      config: {
+        dark: 'auto' // or Boolean true/false
+      },
 
       // Possible values for "importStrategy":
       // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
@@ -105,7 +108,9 @@ module.exports = function (/* ctx */) {
       // Quasar plugins
       plugins: [
         'Notify',
-        'Loading'
+        'Loading',
+        'LocalStorage',
+        'SessionStorage'
       ]
     },
 

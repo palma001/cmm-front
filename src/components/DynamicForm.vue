@@ -344,7 +344,6 @@ export default {
                         self.objectToBind[propTag] = value
                       },
                       select: function (value) {
-                        console.log(value)
                         self.objectToBind[propTag] = value
                       }
                     },
