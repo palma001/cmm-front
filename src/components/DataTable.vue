@@ -20,12 +20,12 @@
             :class="col.class">
             {{ ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`)) }}
           </q-th>
-          <q-th align="left">
+          <q-th align="left" v-if="action">
              {{ ucwords($t('template.actions')) }}
           </q-th>
         </q-tr>
       </template>
-      <template v-slot:top-right>
+      <template v-slot:top-right v-if="searchable">
         <q-input dense
           debounce="300"
           @input="search"
@@ -43,7 +43,7 @@
             :props="props">
             {{ col.value }}
           </q-td>
-          <q-td>
+          <q-td v-if="action">
             <q-btn size="sm"
               color="primary"
               dense
@@ -63,6 +63,22 @@ export default {
   name: 'DataTable',
   mixins: [mixins.containerMixin],
   props: {
+    /**
+     * Actions
+     * @type {Boolean} status
+     */
+    action: {
+      type: Boolean,
+      required: false
+    },
+    /**
+     * Searchable
+     * @type {Boolean} status
+     */
+    searchable: {
+      type: Boolean,
+      required: false
+    },
     /**
      * Loading status
      * @type {Boolean} status
