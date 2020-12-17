@@ -1,110 +1,27 @@
-export const roleConfig = [
+import { ALL_BOX } from '../../Graphql/Box/boxQueries'
+export const boxCutConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'acronym',
+          name: 'monto',
           align: 'left',
           field: row => row.acronym,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'acronym',
+          propTag: 'monto',
           addible: true,
           editable: true,
-          type: 'String',
+          type: 'Number',
           visibleLabel: true,
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
-              outlined: true,
-              dense: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-
-      // {
-      //   addible: {
-      //     propTag: 'user',
-      //     addible: true,
-      //     type: 'String',
-      //     visibleLabel: true,
-      //     component: {
-      //       name: 'b-search-select',
-      //       props: {
-      //         data: [
-      //           {
-      //             name: 'hola',
-      //             id: 'como estas1'
-      //           },
-      //           {
-      //             name: 'bien',
-      //             id: 'como estas2'
-      //           },
-      //           {
-      //             name: 'y tu',
-      //             id: 'como estas3'
-      //           }
-      //         ],
-      //         dataValue: 'id',
-      //         dataLabel: 'name',
-      //         behavior: 'menu',
-      //         outlined: true,
-      //         dense: true,
-      //         clearable: true
-      //       },
-      //       class: {
-      //         'col-xs-12': true,
-      //         'col-sm-12': true,
-      //         'col-md-12': true
-      //       },
-      //       directives: [
-      //         {
-      //           name: 'validate',
-      //           value: {
-      //             required: true
-      //           }
-      //         }
-      //       ]
-      //     }
-      //   }
-      // },
-      {
-        tabulated: {
-          name: 'name',
-          align: 'left',
-          field: row => row.name,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'name',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
+              type: 'number',
               outlined: true,
               dense: true
             },
@@ -125,15 +42,48 @@ export const roleConfig = [
         }
       },
       {
+        actionable: {
+          propTag: 'caja_id',
+          addible: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'nombre_caja',
+              behavior: 'menu',
+              outlined: true,
+              dense: true,
+              clearable: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
         tabulated: {
-          name: 'description',
+          name: 'descripcion',
           align: 'left',
-          field: row => row.description,
+          field: row => row.descripcion,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'description',
+          propTag: 'descripcion',
           addible: true,
           editable: true,
           type: 'String',
@@ -165,7 +115,7 @@ export const roleConfig = [
   }
 ]
 
-export const buttonsRole = [
+export const buttonsBoxCut = [
   {
     name: 'cancel',
     action: 'cancel',
@@ -219,6 +169,26 @@ export const buttonsRole = [
   }
 ]
 
+export const relationalData = [
+  {
+    targetPropTag: 'caja_id',
+    query: ALL_BOX,
+    propData: 'data',
+    nameQuery: 'cajas',
+    varStorage: true,
+    variables: {
+      vendedor_id: null
+    }
+  }
+]
+
 export const propsPanelEdition = {
   data: {}
+}
+
+export const boxCutServices = {
+  props: propsPanelEdition,
+  config: boxCutConfig,
+  propData: 'data',
+  relationalData: relationalData
 }

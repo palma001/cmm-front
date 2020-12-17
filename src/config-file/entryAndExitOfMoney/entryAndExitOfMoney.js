@@ -1,18 +1,18 @@
-export const roleConfig = [
+export const entryAndExitOfMoney = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'acronym',
+          name: 'monto',
           align: 'left',
-          field: row => row.acronym,
+          field: row => row.monto,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'acronym',
+          propTag: 'monto',
           addible: true,
           editable: true,
           type: 'String',
@@ -20,91 +20,7 @@ export const roleConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
-              outlined: true,
-              dense: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-
-      // {
-      //   addible: {
-      //     propTag: 'user',
-      //     addible: true,
-      //     type: 'String',
-      //     visibleLabel: true,
-      //     component: {
-      //       name: 'b-search-select',
-      //       props: {
-      //         data: [
-      //           {
-      //             name: 'hola',
-      //             id: 'como estas1'
-      //           },
-      //           {
-      //             name: 'bien',
-      //             id: 'como estas2'
-      //           },
-      //           {
-      //             name: 'y tu',
-      //             id: 'como estas3'
-      //           }
-      //         ],
-      //         dataValue: 'id',
-      //         dataLabel: 'name',
-      //         behavior: 'menu',
-      //         outlined: true,
-      //         dense: true,
-      //         clearable: true
-      //       },
-      //       class: {
-      //         'col-xs-12': true,
-      //         'col-sm-12': true,
-      //         'col-md-12': true
-      //       },
-      //       directives: [
-      //         {
-      //           name: 'validate',
-      //           value: {
-      //             required: true
-      //           }
-      //         }
-      //       ]
-      //     }
-      //   }
-      // },
-      {
-        tabulated: {
-          name: 'name',
-          align: 'left',
-          field: row => row.name,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'name',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
+              type: 'number',
               outlined: true,
               dense: true
             },
@@ -125,15 +41,58 @@ export const roleConfig = [
         }
       },
       {
+        actionable: {
+          propTag: 'tipo_operacion',
+          addible: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [
+                {
+                  value: 1,
+                  label: 'Salida de efectivo',
+                  description: 'Salio Dinero de la Caja'
+                },
+                {
+                  value: 2,
+                  label: 'Efectivo',
+                  description: 'Entro Dinero a la Caja'
+                }
+              ],
+              behavior: 'menu',
+              dataDescription: 'description',
+              outlined: true,
+              dense: true,
+              clearable: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
         tabulated: {
-          name: 'description',
+          name: 'descripcion',
           align: 'left',
-          field: row => row.description,
+          field: row => row.descripcion,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'description',
+          propTag: 'descripcion',
           addible: true,
           editable: true,
           type: 'String',
@@ -165,7 +124,7 @@ export const roleConfig = [
   }
 ]
 
-export const buttonsRole = [
+export const buttonsEntryAndExitOfMoney = [
   {
     name: 'cancel',
     action: 'cancel',
