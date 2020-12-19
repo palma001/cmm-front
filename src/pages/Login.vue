@@ -5,7 +5,7 @@
       </div>
     </div> -->
     <div class="row justify-center">
-      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-7 col-xs-11">
+      <div class="col-xl-3 col-lg-4 col-md-4 col-sm-5 col-xs-11">
         <q-card flat class="my-card" style="background-color: transparent !important;">
           <q-card-section class="text-center q-pt-none q-pb-none">
             <img src="../statics/logos/logo_dixcont.png" class="img">
