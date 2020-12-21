@@ -467,13 +467,11 @@
           <data-table
             module="billing"
             title="listBilling"
+            :loading="visibleTableBilling"
             :column="billingConfig"
             :data="dataTableBilling"
           />
         </q-card-section>
-        <q-inner-loading :showing="visibleTableBilling">
-          <q-spinner-gears size="100px" color="primary"/>
-        </q-inner-loading>
       </q-card>
     </q-dialog>
     <q-inner-loading :showing="visible">
@@ -880,7 +878,11 @@ export default {
           fetchPolicy: 'no-cache'
         }
       )
-      this.arching = data.arqueos[0]
+      if (data.arqueos.length > 0) {
+        this.arching = data.arqueos[0]
+      } else {
+        this.alertArching = true
+      }
       this.loadCreate()
     },
     /**
