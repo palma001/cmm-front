@@ -135,7 +135,8 @@ export default {
     overflow-y:hidden!important;
     background-color: rgba(0,0,0,0.6);
   }
+
   .img {
-    width: 80%;
+    width: 70%;
   }
 </style>

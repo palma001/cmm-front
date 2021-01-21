@@ -24,7 +24,8 @@ module.exports = function (/* ctx */) {
       'services',
       // 'socket',
       'vee-validate',
-      'apollo'
+      'apollo',
+      'graphql'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -128,8 +129,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Dixcont',
-        short_name: 'Dixcont',
+        name: 'Bais',
+        short_name: 'Bais',
         description: 'software accounting software',
         display: 'standalone',
         orientation: 'portrait',
@@ -206,7 +207,7 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'Dixcont'
+        appId: 'bais'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

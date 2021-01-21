@@ -322,7 +322,6 @@ export default {
               if (prop.actionable && prop.actionable.addible) {
                 const propTag = prop.actionable.propTag
                 prop.actionable.component.props.value = (prop.actionable.component.props.defaultValue) ? prop.actionable.component.props.defaultValue : self.objectToBind[propTag]
-                console.log(prop.actionable.component.props.value, propTag)
                 return createElement(
                   prop.actionable.component.name,
                   {

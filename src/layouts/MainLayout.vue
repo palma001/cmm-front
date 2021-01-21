@@ -10,6 +10,7 @@
 <script>
 
 import LayoutComponent from 'components/LayoutComponent.vue'
+
 import { mapActions } from 'vuex'
 import { ACTIONS } from '../store/module-login/name.js'
 import { CLOSE_BOX_CUT } from '../Graphql/BoxCut/boxCutMutations'
