@@ -547,7 +547,7 @@ export default {
       commonSearch: {
         rowsPerPage: 20,
         paginate: true,
-        sortField: 'id',
+        sortBy: 'id',
         sortOrder: 'desc'
       },
       /**
@@ -865,7 +865,7 @@ export default {
           variables: {
             arching: {
               commonSearch: {
-                sortField: 'id',
+                sortBy: 'id',
                 sortOrder: 'desc',
                 paginate: false
               },

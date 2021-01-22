@@ -55,6 +55,11 @@ const routes = [
         path: 'billing',
         name: 'billing',
         component: () => import('pages/Billing.vue')
+      },
+      {
+        path: 'checking-accounts',
+        name: 'checking-accounts',
+        component: () => import('pages/CheckingAccount.vue')
       }
     ]
   },

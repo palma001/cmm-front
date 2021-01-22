@@ -22,7 +22,8 @@ export default {
     desactive: 'desactivar',
     error: 'algo salio mal!',
     code: 'Código',
-    sucursales: 'sucursales'
+    sucursales: 'sucursales',
+    business: 'empresa'
   },
 
   // users
@@ -36,6 +37,14 @@ export default {
     email: 'correo'
   },
 
+  // clients
+  clients: {
+    clients: 'clientes',
+    document: 'documento',
+    name: 'nombre',
+    listClients: 'lista de clientes',
+    email: 'correo'
+  },
   // modules
   modules: {
     products: 'productos',
@@ -49,7 +58,8 @@ export default {
     category_module: 'Categoria',
     listModule: 'lista de modulos',
     'branch-offices': 'sucursales',
-    billing: 'facturar'
+    billing: 'facturar',
+    'checking-accounts': 'cuenta corrinte'
   },
 
   // permissions

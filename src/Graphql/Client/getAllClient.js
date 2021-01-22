@@ -9,6 +9,9 @@ export const ALL_CLIENT = gql`
     {
       id
       full_name
+      email
+      num_documento
+      tipo_documento
     }
   }
 `

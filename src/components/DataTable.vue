@@ -4,8 +4,9 @@
       :data="data"
       :columns="columnData"
       :title="ucwords($t(`${module}.${title}`))"
-      :pagination="paginationConfig"
+      :pagination.sync="paginationConfig"
       :loading="loading"
+      @request="request"
       @update:pagination="setPagination">
       <template v-slot:loading>
         <q-inner-loading showing
@@ -186,6 +187,9 @@ export default {
     search (data) {
       this.paginationConfig.page = 1
       this.$emit('search-data', data)
+    },
+    request (data) {
+      this.$emit('request', data)
     }
   }
 }

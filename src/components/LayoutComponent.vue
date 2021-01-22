@@ -87,6 +87,7 @@
       bordered>
       <q-expansion-item
         expand-separator
+        default-opened
         v-for="category_module in data"
         :key="category_module.id"
         :icon="category_module.icon"
@@ -177,7 +178,7 @@ export default {
        *
        * @type {Bollean} status menu
        */
-      leftDrawerOpen: false
+      leftDrawerOpen: true
     }
   },
   created () {
