@@ -66,7 +66,7 @@
         </div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <div class="row justify-between q-col-gutter-sm">
+        <div class="row justify-between q-col-gutter-xs">
           <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
             <q-select
               autocomplete="off"
@@ -79,6 +79,8 @@
               input-debounce="0"
               name="client"
               v-model="billing.client"
+              option-label="full_name"
+              option-value="id"
               v-validate="'required'" data-vv-as="field"
               :error-message="errorValidation('client')"
               :error="errors.has('client')"
@@ -103,15 +105,17 @@
               clearable
               dense
               input-debounce="0"
-              name="typeSale"
-              ref="typeSaleRef"
-              v-model="billing.typeSale"
+              name="operationType"
+              ref="operationTypeRef"
+              v-model="billing.operationType"
               v-validate="'required'"
               data-vv-as="field"
+              option-value="id"
+              option-label="name"
               :label="ucwords($t('billing.typeOfSale'))"
-              :options="typeSales"
-              :error-message="errorValidation('typeSale')"
-              :error="errors.has('typeSale')"
+              :options="operationTypes"
+              :error-message="errorValidation('operationType')"
+              :error="errors.has('operationType')"
             >
               <template v-slot:no-option>
                 <q-item>
@@ -131,16 +135,18 @@
               clearable
               dense
               input-debounce="0"
-              name="typeOfVoucher"
+              name="voucherType"
               autocomplete="off"
-              ref="typeOfVoucherRef"
-              v-model="billing.typeOfVoucher"
+              ref="voucherTypeRef"
+              v-model="billing.voucherType"
               v-validate="'required'"
               data-vv-as="field"
-              :label="ucwords($t('billing.typeOfVoucher'))"
-              :options="typeOfVouchers"
-              :error-message="errorValidation('typeOfVoucher')"
-              :error="errors.has('typeOfVoucher')"
+              option-value="id"
+              option-label="name"
+              :label="ucwords($t('billing.voucherType'))"
+              :options="voucherTypes"
+              :error-message="errorValidation('voucherType')"
+              :error="errors.has('voucherType')"
             >
               <template v-slot:no-option>
                 <q-item>
@@ -154,11 +160,12 @@
           <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
             <q-select
               outlined
-              v-model="billing.box"
-              disable
+              v-model="coin"
               dense
-              :label="ucwords($t('billing.box'))"
-              :options="[billing.box]"
+              option-label="name"
+              option-value="id"
+              :label="ucwords($t('billing.coin'))"
+              :options="coins"
             >
               <template v-slot:no-option>
                 <q-item>
@@ -273,7 +280,7 @@
             </div>
           </template>
           <template v-slot:after>
-            <div class="q-pa-xs">
+            <!-- <div class="q-pa-xs">
               <q-card>
                 <q-card-section style="background: goldenrod; color: white" class="q-pt-xs q-pb-xs">
                   <div class="text-h6 text-right">Total: {{ totalSale }} $</div>
@@ -290,7 +297,7 @@
                         name="debito"
                         data-vv-as="debito"
                         v-validate="{
-                          required: billing.typeSale.value === 'venta' && !paidSale.credito && !paidSale.efectivo
+                          required: billing.operationType.value === 'venta' && !paidSale.credito && !paidSale.efectivo
                         }"
                         :error-message="errorValidation('debito')"
                         :error="errors.has('debito')"
@@ -306,7 +313,7 @@
                         name="credito"
                         data-vv-as="credito"
                         v-validate="{
-                          required: billing.typeSale.value === 'venta' && !paidSale.debito && !paidSale.efectivo
+                          required: billing.operationType.value === 'venta' && !paidSale.debito && !paidSale.efectivo
                         }"
                         :label="ucwords($t('billing.credit'))"
                         :error-message="errorValidation('credito')"
@@ -345,7 +352,7 @@
                         name="efectivo"
                         data-vv-as="efectivo"
                         v-validate="{
-                          required: billing.typeSale.value === 'venta' && !paidSale.debito && !paidSale.credito
+                          required: billing.operationType.value === 'venta' && !paidSale.debito && !paidSale.credito
                         }"
                         :label="ucwords($t('billing.cash'))"
                         :error-message="errorValidation('efectivo')"
@@ -387,7 +394,7 @@
                   </div>
                 </q-card-section>
               </q-card>
-            </div>
+            </div> -->
           </template>
         </q-splitter>
       </q-card-section>
@@ -490,14 +497,12 @@ import DataTable from '../components/DataTable'
 import { boxCutConfig, buttonsBoxCut, boxCutServices } from '../config-file/boxCut/boxCutConfig'
 import { billingConfig } from '../config-file/billing/billingConfig'
 import { entryAndExitOfMoney, buttonsEntryAndExitOfMoney } from '../config-file/entryAndExitOfMoney/entryAndExitOfMoney'
-import { ALL_CLIENT } from '../Graphql/Client/getAllClient'
 import { ALL_PRODUCT } from '../Graphql/Product/getAllProduct'
 import { SAVE_BILLING } from '../Graphql/Billing/billingMutations'
 import { GET_BILLINGS } from '../Graphql/Billing/billingQueries'
 import { GET_CORTE_CAJA_ACTIVE } from '../Graphql/BoxCut/boxCutQueries'
 import { OPEN_BOX_CUT, CLOSE_BOX_CUT } from '../Graphql/BoxCut/boxCutMutations'
 import { ENTRY_AND_EXIT_OF_MONEY } from '../Graphql/EntryAndExitOfMoney/entryAndExitOfMoneyMutations'
-import { GET_ARCHING } from '../Graphql/Arching/archingQueries'
 export default {
   name: 'Billing',
   mixins: [mixins.containerMixin],
@@ -691,11 +696,8 @@ export default {
       billing: {
         client: null,
         dateBilling: null,
-        typeOfVoucher: 'Ticket',
-        typeSale: {
-          value: 'venta',
-          label: 'Venta'
-        },
+        voucherType: null,
+        operationType: null,
         box: {
           label: null,
           value: null
@@ -737,28 +739,21 @@ export default {
        */
       discount: 0,
       /**
-       * Type of sales
-       * @type {Array} type of sales
+       * Operation Type
+       * @type {Array} Operation type
        */
-      typeSales: [
-        {
-          value: 'venta',
-          label: 'Venta'
-        },
-        {
-          value: 'pedido',
-          label: 'Pedido'
-        },
-        {
-          value: 'cuenta corriente',
-          label: 'Cuenta Corriente'
-        }
-      ],
+      operationTypes: [],
       /**
        * Type of vouchers
        * @type {Array} type of vouchers
        */
-      typeOfVouchers: ['Ticket', 'Factura A', 'Factura B'],
+      voucherTypes: [],
+      /**
+       * Coin list
+       * @type {Array} Coin list
+       */
+      coins: [],
+      coin: null,
       /**
        * Model details sales
        * @type {Array} model details sale
@@ -778,8 +773,7 @@ export default {
     }
   },
   created () {
-    this.$root.$on('sucursal', this.getArchingActive)
-    this.getArchingActive()
+    this.loadCreate()
   },
   methods: {
     /**
@@ -853,46 +847,18 @@ export default {
     cancelEntryAndExitOfMoney () {
       this.addEntryAndExitOfMoney = false
     },
-
-    /**
-     * Get arching active
-     * @param {Object} sucursal sucursal selected
-     */
-    async getArchingActive (sucursal = null) {
-      const { data } = await this.$apollo.query(
-        {
-          query: GET_ARCHING,
-          variables: {
-            arching: {
-              commonSearch: {
-                sortBy: 'id',
-                sortOrder: 'desc',
-                paginate: false
-              },
-              dataFilter: {
-                sucursal_id: sucursal ? sucursal.id : this.sucursalSelected.id,
-                estado: true
-              }
-            }
-          },
-          fetchPolicy: 'no-cache'
-        }
-      )
-      if (data.arqueos.length > 0) {
-        this.arching = data.arqueos[0]
-      } else {
-        this.alertArching = true
-      }
-      this.loadCreate()
-    },
     /**
      * Load data
     */
     loadCreate () {
-      this.getCorteCaja(this.arching.id)
-      this.getCLients()
-      this.getProducts()
-      this.setRelationalData(this.boxCutServices, [], this)
+      this.getOpeationTypes()
+      this.getVoucherTypes()
+      this.getClients()
+      this.getCoins()
+      // this.getCorteCaja(this.arching.id)
+      // this.getCLients()
+      // this.getProducts()
+      // this.setRelationalData(this.boxCutServices, [], this)
     },
     /**
      * Close box
@@ -1042,8 +1008,8 @@ export default {
                     corte_caja_id: this.billing.box.value,
                     cliente_id: this.billing.client.value,
                     user_created_id: this.session_id,
-                    tipo_operacion: this.billing.typeSale.value,
-                    tipo_comprobante: this.billing.typeOfVoucher,
+                    tipo_operacion: this.billing.operationType.value,
+                    tipo_comprobante: this.billing.voucherType,
                     created_at: this.billing.dateBilling,
                     detalleFactura: this.setModelDetailsSale(this.dataProduct),
                     pagoFactura: {
@@ -1078,7 +1044,7 @@ export default {
         return false
       }
 
-      if (totalPaid < this.totalSale && this.billing.typeSale.value === 'venta') {
+      if (totalPaid < this.totalSale && this.billing.operationType.value === 'venta') {
         this.notify(this, 'billing.errorTotal', 'negative', 'warning')
         return false
       }
@@ -1092,7 +1058,7 @@ export default {
       this.dataProduct = []
       this.billing.client = null
       this.billing.dateBilling = null
-      this.billing.typeSale = {
+      this.billing.operationType = {
         label: 'Venta',
         value: 'venta'
       }
@@ -1197,25 +1163,10 @@ export default {
     /**
      * All CLient
      */
-    getCLients () {
-      this.$apollo.query(
-        {
-          query: ALL_CLIENT,
-          variables: {
-            empresa_id: 1
-          },
-          fetchPolicy: 'no-cache'
-        }
-      )
-        .then(({ data }) => {
-          this.clients = data.clientes.map(client => {
-            client.label = client.full_name
-            client.value = client.id
-            return client
-          })
-          this.billing.client = data.clientes.filter(cliente => {
-            return cliente.value === '6'
-          })[0]
+    getClients () {
+      this.$services.getData(['clients'])
+        .then(({ res }) => {
+          this.clients = res.data
         })
     },
     /**
@@ -1237,6 +1188,33 @@ export default {
             product.value = product.id
             return product
           })
+        })
+    },
+    /**
+     * Get operation types
+     */
+    getOpeationTypes () {
+      this.$services.getData(['operation-types'])
+        .then(({ res }) => {
+          this.operationTypes = res.data
+        })
+    },
+    /**
+     * Get coins
+     */
+    getCoins () {
+      this.$services.getData(['coins'])
+        .then(({ res }) => {
+          this.coins = res.data
+        })
+    },
+    /**
+     * Get voucher types
+     */
+    getVoucherTypes () {
+      this.$services.getData(['voucher-types'])
+        .then(({ res }) => {
+          this.voucherTypes = res.data
         })
     },
     /**

@@ -29,6 +29,16 @@ export const mutations = {
     localStorage.setItem('user_session', JSON.stringify(user))
   },
 
+  [MUTATIONS.SET_ROLE]: (state, role) => {
+    state.user_role = role
+    localStorage.setItem('roleSelected', JSON.stringify(role))
+  },
+
+  [MUTATIONS.SET_BRANCH_OFFICE]: (state, branchOffice) => {
+    state.user_branchOffice = branchOffice
+    localStorage.setItem('branchOffice', JSON.stringify(branchOffice))
+  },
+
   [MUTATIONS.SET_ID]: (state, id) => {
     state.id = id
     localStorage.setItem('id_session', id)

@@ -27,5 +27,22 @@ export const getters = {
    */
   [GETTERS.GET_USER]: (state) => {
     return state.user_session
+  },
+  /**
+   * Status of de role
+   * @param  {[type]} state [description]
+   * @return {[type]}       [description]
+   */
+  [GETTERS.GET_ROLE]: (state) => {
+    return state.user_role
+  },
+
+  /**
+   * Status of de role
+   * @param  {[type]} state [description]
+   * @return {[type]}       [description]
+   */
+  [GETTERS.GET_BRANCH_OFFICE]: (state) => {
+    return state.user_branchOffice
   }
 }

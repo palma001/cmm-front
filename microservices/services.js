@@ -7,7 +7,7 @@ import config, {
 } from './config'
 
 export const getData = function (url, params) {
-  return axiosInstance.get(`${url[0]}/${url[1]}`, {
+  return axiosInstance.get(url.join('/'), {
     params
   }).then((res) => {
     return {
@@ -25,7 +25,7 @@ export const getData = function (url, params) {
 }
 
 export const getOneData = function (url) {
-  return axiosInstance.get(`${url[0]}/${url[1]}/${url[2]}`).then((res) => {
+  return axiosInstance.get(url.join('/')).then((res) => {
     return {
       status: true,
       res: res
@@ -40,7 +40,7 @@ export const getOneData = function (url) {
   })
 }
 export const postData = function (url, params) {
-  return axiosInstance.post(`${url[0]}/${url[1]}`, params).then((res) => {
+  return axiosInstance.post(url.join('/'), params).then((res) => {
     return {
       status: true,
       res: res
@@ -55,7 +55,7 @@ export const postData = function (url, params) {
   })
 }
 export const putData = function (url, params) {
-  return axiosInstance.put(`${url[0]}/${url[1]}/${url[2]}`, params).then((res) => {
+  return axiosInstance.put(url.join('/'), params).then((res) => {
     return {
       status: true,
       res: res
@@ -70,7 +70,7 @@ export const putData = function (url, params) {
   })
 }
 export const deleteData = function (url, params) {
-  return axiosInstance.delete(`${url[0]}/${url[1]}/${url[2]}`).then((res) => {
+  return axiosInstance.delete(url.join('/')).then((res) => {
     return {
       status: true,
       res: res

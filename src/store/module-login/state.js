@@ -28,5 +28,9 @@ export const state = {
    * Data user in session
    * @type {String} email in session
    */
-  user_session: null
+  user_session: null,
+
+  user_role: null,
+
+  user_branchOffice: null
 }

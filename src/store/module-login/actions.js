@@ -7,58 +7,28 @@ import gql from 'graphql-tag'
  */
 
 export const actions = {
-  [ACTIONS.LOGIN]: ({ commit, dispatch }, { self }) => {
+  [ACTIONS.LOGIN]: ({ commit, dispatch }, { self, param }) => {
     self.btnDisable = true
-    self.$apollo.mutate({
-      mutation: gql`mutation ($username: String!, $password: String!) {
-        login(input: {
-          username: $username,
-          password: $password,
-        })
-        {
-          access_token
-          refresh_token
-          expires_in
-          token_type
-          user {
-            id
-            name
-            email
-            full_name
-          }
-          sucursales {
-            id
-            nombre_sucursal
-          }
-        }
-      }`,
-      variables: {
-        username: self.username,
-        password: self.password
-      },
-      update: (store, { data: { login } }) => {
-        console.log(login)
-        commit(MUTATIONS.SET_TOKEN, login.access_token)
-        commit(MUTATIONS.SET_REFRESH_TOKEN, login.refresh_token)
-        commit(MUTATIONS.SET_USER, login.user)
-        commit(MUTATIONS.SET_EXPIRE_IN, Number(login.expires_in))
-        commit(MUTATIONS.SET_EXPIRE_IN, Number(login.expires_in))
-        commit(MUTATIONS.SET_ID, Number(login.user.id))
-        dispatch(ACTIONS.AUTO_LOGOUT, Number(login.expires_in))
-        self.$q.sessionStorage.set('sucursales', login.sucursales)
-        self.$router.push({ name: 'billing' })
-      }
-    })
-      .then(res => {
+    self.$services.postData(['authentication', 'login'], param)
+      .then(({ res }) => {
+        commit(MUTATIONS.SET_TOKEN, res.data.access_token)
+        commit(MUTATIONS.SET_REFRESH_TOKEN, res.data.refresh_token)
+        commit(MUTATIONS.SET_USER, res.data.user)
+        commit(MUTATIONS.SET_EXPIRE_IN, Number(res.data.expires_in))
+        commit(MUTATIONS.SET_EXPIRE_IN, Number(res.data.expires_in))
+        commit(MUTATIONS.SET_ID, Number(res.data.user.id))
+        dispatch(ACTIONS.AUTO_LOGOUT, Number(res.data.expires_in))
+        commit(MUTATIONS.SET_ROLE, res.data.user.roles[0])
+        commit(MUTATIONS.SET_BRANCH_OFFICE, res.data.user.branch_offices[0])
+        self.$router.push({ name: res.data.user.roles[0].modules[0].route })
         self.btnDisable = false
       })
-      .catch((error) => {
-        // Error
+      .catch(() => {
         self.$q.notify({
           position: 'top',
           color: 'negative',
           icon: 'report_problem',
-          message: error.message
+          message: 'Las credenciales son incorrectas'
         })
         self.btnDisable = false
       })
@@ -69,31 +39,24 @@ export const actions = {
    */
   [ACTIONS.LOGOUT]: ({ commit }, { self }) => {
     commit(MUTATIONS.CLEAR_ACCOUNT_STATE)
-    self.$router.push({ name: 'login' })
+    self.$router.push({ name: 'LandingPage' })
   },
   /**
    * Valiad session active
    */
   [ACTIONS.VALID_SESSION]: ({ commit, dispatch }) => {
-    const token = localStorage.getItem('TOKEN')
-    const expireIn = new Date(localStorage.getItem('expires_in'))
-    const now = new Date()
     const user = JSON.parse(localStorage.getItem('user_session'))
-    const refreshToken = localStorage.getItem('REFRESH_TOKEN')
-    const id = localStorage.getItem('id_session')
-    const invalidToken = !token || token === 'null'
-    const invalidRefreshToken = !refreshToken || refreshToken === 'null'
-    const invalidDate = !expireIn || expireIn === 'null' || now.getTime() >= expireIn.getTime()
-    const invalidUser = !user || user === 'null'
-    if (invalidToken || invalidDate || invalidUser || invalidRefreshToken) {
+    const role = JSON.parse(localStorage.getItem('roleSelected'))
+    const branchOffice = JSON.parse(localStorage.getItem('branchOffice'))
+    // const userActive = localStorage.getItem('session_active')
+    const invalidUser = !user || user === null || role === null
+    if (invalidUser) {
       commit(MUTATIONS.CLEAR_ACCOUNT_STATE)
       return false
     }
-    commit(MUTATIONS.SET_TOKEN, token)
-    commit(MUTATIONS.SET_REFRESH_TOKEN, refreshToken)
     commit(MUTATIONS.SET_USER, user)
-    commit(MUTATIONS.SET_EXPIRE_IN, expireIn)
-    commit(MUTATIONS.SET_ID, Number(id))
+    commit(MUTATIONS.SET_ROLE, role)
+    commit(MUTATIONS.SET_BRANCH_OFFICE, branchOffice)
     return true
   },
   /**

@@ -182,7 +182,7 @@ export default {
     }
   },
   created () {
-    this.loadingPage()
+    // this.loadingPage()
   },
   computed: {
     /**
