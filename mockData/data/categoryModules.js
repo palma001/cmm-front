@@ -20,6 +20,12 @@ export const categoryModules = [
         route: 'checking-accounts',
         icon: 'receipt',
         devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'voucher-list',
+        route: 'voucherList',
+        icon: 'subject',
+        devices: ['mobile', 'desktop']
       }
     ]
   }

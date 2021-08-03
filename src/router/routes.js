@@ -60,6 +60,11 @@ const routes = [
         path: 'checking-accounts',
         name: 'checking-accounts',
         component: () => import('pages/CheckingAccount.vue')
+      },
+      {
+        path: 'voucher-list',
+        name: 'voucherList',
+        component: () => import('pages/VoucherList.vue')
       }
     ]
   },

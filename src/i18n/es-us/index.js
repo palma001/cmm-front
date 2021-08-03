@@ -59,7 +59,8 @@ export default {
     listModule: 'lista de modulos',
     'branch-offices': 'sucursales',
     billing: 'facturar',
-    'checking-accounts': 'cuenta corrinte'
+    'checking-accounts': 'cuenta corrinte',
+    'voucher-list': 'listado de comprobantes'
   },
 
   // permissions
