@@ -58,7 +58,7 @@ export default {
     category_module: 'Categoria',
     listModule: 'lista de modulos',
     'branch-offices': 'sucursales',
-    billing: 'facturar',
+    billing: 'nuevo comprobante',
     'checking-accounts': 'cuenta corrinte'
   },
 
@@ -116,7 +116,7 @@ export default {
     history: 'Historial de ventas',
     entryAndExitOfMoney: 'entrada\\salida de dinero',
     closeBox: 'cerrar caja',
-    newBilling: 'Nueva venta',
+    newBilling: 'Nueva Comprobante',
     product: 'artículo',
     amount: 'cantidad',
     stock: 'stock',
