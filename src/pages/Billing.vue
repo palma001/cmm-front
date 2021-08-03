@@ -186,13 +186,16 @@
                     <q-input type="number" v-model.number="props.row.amount" dense autofocus @input="recalculate(props.row)"/>
                   </q-popup-edit>
                 </q-td>
-                <q-td key="purchase_price" :props="props">
-                  {{ props.row.purchase_price }}
+                <q-td key="unitValue" :props="props">
+                  {{ props.row.unitValue }}
                 </q-td>
-                <q-td key="price" :props="props">
-                  {{ props.row.price }}
-                  <q-popup-edit v-model.number="props.row.price">
-                    <q-input type="number" v-model.number="props.row.price" dense autofocus @input="recalculate(props.row)"/>
+                <q-td key="opIgv" :props="props">
+                  {{ props.row.opIgv }}
+                </q-td>
+                <q-td key="unitPrice" :props="props">
+                  {{ props.row.unitPrice }}
+                  <q-popup-edit v-model.number="props.row.unitPrice">
+                    <q-input type="number" v-model.number="props.row.unitPrice" dense autofocus @input="recalculate(props.row)"/>
                   </q-popup-edit>
                 </q-td>
                 <q-td key="discount" :props="props">
@@ -209,22 +212,30 @@
           </q-table>
         </div>
         <div class="col-3">
-          <q-list separator>
+          <q-list separator dense>
             <q-item clickable v-ripple>
               <q-item-section>OP.GRAVADA:</q-item-section>
-              <q-item-section side>S/ 100</q-item-section>
+              <q-item-section side>S/ {{ totalUnitValue }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section>IGV:</q-item-section>
-              <q-item-section side>S/ 1.22</q-item-section>
+              <q-item-section side>S/ {{ igvTotal }}</q-item-section>
             </q-item>
             <q-item clickable v-ripple active>
               <q-item-section>TOTAL A PAGAR:</q-item-section>
-              <q-item-section side>S/ 1.22</q-item-section>
+              <q-item-section side>S/ {{ totalSale }}</q-item-section>
             </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section>CONDICIÓN DE PAGO:</q-item-section>
-              <q-item-section side>S/ 1.22</q-item-section>
+            <q-item>
+              <q-item-section class="q-mt-xs">
+                <q-select
+                  label="Condición de pagos"
+                  outlined
+                  :options="paymentsCondition"
+                  v-model="paymentCondition"
+                  dense
+                  @input="modalPaid = true"
+                />
+              </q-item-section>
             </q-item>
           </q-list>
         </div>
@@ -336,7 +347,86 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
+    <q-dialog
+      v-model="modalPaid"
+      persistent
+    >
+      <q-card style="width: 800px; max-width: 80vw;">
+        <q-card-section class="q-pb-sm">
+          <div class="text-h6">Agregar pagos</div>
+        </q-card-section>
+        <q-card-section class="row justify-between q-col-gutter-sm">
+          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="paymentMethod"
+              ref="paymentMethodRef"
+              v-model="paymentMethod"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Método de pago"
+              :options="paymentMethods"
+              @filter="filterPaymentMethods"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="paymentDestination"
+              ref="paymentDestinationRef"
+              v-model="paymentDestination"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Destino"
+              :options="paymentDestinations"
+              @filter="filterPaymentDestinations"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+            <q-input label="Referencia" outlined dense/>
+          </div>
+          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+            <q-input label="Monto" outlined dense/>
+          </div>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn label="Cerrar" color="negative" v-close-popup />
+          <q-btn label="Generar Factura" color="primary" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <!-- <b-confirm-alert
       color="negative"
       icon="close"
@@ -376,9 +466,16 @@ export default {
         label: 'Gravado - Operación Onerosa',
         value: 12
       },
+      paymentsCondition: ['Crédito', 'Contado'],
+      paymentCondition: null,
       modalProduct: false,
       loadingCLose: false,
       product: null,
+      modalPaid: false,
+      paymentMethod: null,
+      paymentMethods: [],
+      paymentDestination: null,
+      paymentDestinations: [],
       /**
        * Status table billing
        * @type {Boolean} status table billing
@@ -439,6 +536,8 @@ export default {
        * @type {Number} total sale
        */
       totalSale: 0,
+      igvTotal: 0,
+      totalUnitValue: 0,
       /**
        * Width init splitter
        * @type {Number} % width init
@@ -484,16 +583,23 @@ export default {
           sortable: true
         },
         {
-          name: 'purchase_price',
-          label: 'Precio de compra',
-          field: row => row.purchase_price ?? 0,
+          name: 'unitValue',
+          label: 'Valor Unitario',
+          field: 'unitValue',
           headerClasses: 'bg-primary text-white',
           sortable: true
         },
         {
-          name: 'price',
-          label: 'Precio de venta',
-          field: 'price',
+          name: 'opIgv',
+          label: 'Igv',
+          field: 'opIgv',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'unitPrice',
+          label: 'Precio Unitario',
+          field: 'unitPrice',
           headerClasses: 'bg-primary text-white',
           sortable: true
         },
@@ -631,6 +737,8 @@ export default {
       this.getClients()
       this.getExchange()
       this.getProducts()
+      this.getPaymentMethods()
+      this.getPaymentDestinations()
       // this.getCorteCaja(this.arching.id)
       // this.getCLients()
       // this.getProducts()
@@ -658,15 +766,17 @@ export default {
     /**
      * Set data in table product
      * @param {Array} array list porduct
-     * @param {Object} val product
      */
-    pushArray (array, val) {
+    pushArray (array) {
+      const percentage = this.getPercentage(this.stock.purchase_price, this.igv.value)
+      const unitValue = this.stock.sale_price - percentage
       array.push({
         id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,
-        purchase_price: this.stock.purchase_price,
-        price: this.stock.sale_price,
+        unitValue: isNaN(unitValue) ? 0 : unitValue,
+        opIgv: isNaN(percentage) ? 0 : percentage,
+        unitPrice: this.stock.sale_price,
         discount: this.discount,
         subtotal: this.totalProduct
       })
@@ -765,6 +875,11 @@ export default {
         }
       })
     },
+    /**
+     * Filter clients
+     * @param {String} value data filter
+     * @param {Callback} update update select data
+     */
     filterClients (value, update) {
       update(() => {
         this.getClients(value)
@@ -787,13 +902,19 @@ export default {
           this.clients = res.data.data
         })
     },
+    /**
+     * Filter Products
+     * @param {String} value data filter
+     * @param {Callback} update update select data
+     */
     filterProducts (value, update) {
       update(() => {
         this.getProducts(value)
       })
     },
     /**
-     * All CLient
+     * Get products
+     * @param {String} value data filter
      */
     getProducts (value) {
       this.$services.getData(['products'], {
@@ -806,6 +927,58 @@ export default {
       })
         .then(({ res }) => {
           this.products = res.data
+        })
+    },
+    /**
+     * Filter psyment method
+     * @param {String} value data filter
+     * @param {Callback} update update select data
+     */
+    filterPaymentMethods (value, update) {
+      update(() => {
+        this.getPaymentMethods(value)
+      })
+    },
+    /**
+     * Get payment method
+     * @param {String} value data filter
+     */
+    getPaymentMethods (value) {
+      this.$services.getData(['payment-methods'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          this.paymentMethods = res.data.data
+        })
+    },
+    /**
+     * Filter payment destination
+     * @param {String} value data filter
+     * @param {Callback} update update select data
+     */
+    filterPaymentDestinations (value, update) {
+      update(() => {
+        this.getPaymentDestinations(value)
+      })
+    },
+    /**
+     * Get payment destination
+     * @param {String} value data filter
+     */
+    getPaymentDestinations (value) {
+      this.$services.getData(['payment-destinations'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          this.paymentDestinations = res.data.data
         })
     },
     /**
@@ -851,6 +1024,7 @@ export default {
           this.dataProduct.splice(index, 1)
         }
       })
+      this.totalCalculate()
     },
     /**
      * Recalcute table subtotal
@@ -858,7 +1032,7 @@ export default {
     recalculate (data) {
       this.dataProduct.map(product => {
         if (product.id === data.id) {
-          product.subtotal = (data.amount * data.price) - data.discount
+          product.subtotal = (data.amount * data.unitPrice) - data.discount
           return product
         }
       })
@@ -869,10 +1043,25 @@ export default {
      */
     totalCalculate () {
       let total = 0
+      let igvTotal = 0
+      let unitValue = 0
       this.dataProduct.forEach(element => {
         total = Number(total) + Number(element.subtotal)
+        igvTotal = (Number(igvTotal) + (Number(element.opIgv) * Number(element.amount)))
+        unitValue = (Number(unitValue) + (Number(element.unitValue) * Number(element.amount)))
       })
+      this.igvTotal = igvTotal.toFixed(2)
       this.totalSale = total
+      this.totalUnitValue = unitValue.toFixed(2)
+    },
+    /**
+     * Get percentage
+     * @param {Number} price price products
+     * @param {Number} percentage percentage calculate
+     * @returns {Number} percentage calculated
+     */
+    getPercentage (price, percentage) {
+      return ((percentage / 100) * price).toFixed(2)
     }
   }
 }
