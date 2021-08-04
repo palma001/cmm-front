@@ -2,7 +2,7 @@
   <q-page class="flex-start q-pa-md">
     <div class="row q-pa-xs">
         <div class="col-8">
-          <h7>Comprobantes Facturas - Notas (crédito y débito) - Boletas - Anulaciones</h7>
+          <p>Comprobantes Facturas - Notas (crédito y débito) - Boletas - Anulaciones</p>
         </div>
         <div class="col-4">
           <q-btn color="primary" icon="control_point" label="Nuevo" no-caps glossy/>
@@ -12,7 +12,7 @@
             push
             glossy
             no-caps
-            icon="text_snippet"
+            icon="monetization_on"
             label="Reporte de Pagos"
             @click="onMainClick"
             class="q-ml-md"
@@ -20,11 +20,11 @@
             <q-list>
               <q-item clickable v-close-popup @click="onItemClick">
                 <q-item-section avatar>
-                  <q-avatar icon="description" color="primary" text-color="white" />
+                  <q-avatar icon="insert_drive_file" color="primary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Generar Reporte</q-item-label>
-                  <q-item-label caption>February 22, 2016</q-item-label>
+                  <q-item-label>Generar reporte</q-item-label>
+                  <q-item-label caption>Agosto 01, 2021</q-item-label>
                 </q-item-section>
                 <q-item-section side>
                   <q-icon name="info" color="amber" />
@@ -36,8 +36,8 @@
                   <q-avatar icon="file_download" color="secondary" text-color="white" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Descargar Hoja de Cálculo</q-item-label>
-                  <q-item-label caption>February 22, 2016</q-item-label>
+                  <q-item-label>Descargar hoja de cálculo</q-item-label>
+                  <q-item-label caption>Agosto 01, 2021</q-item-label>
                 </q-item-section>
                 <q-item-section side>
                   <q-icon name="info" color="amber" />
@@ -124,42 +124,216 @@
         :columns="columns"
         row-key="name"
         :visible-columns="visibleColumns"
+        :filter="filter"
       >
         <template v-slot:top="props">
-          <div class="col-2 q-table__title">Comprobantes</div>
-
-          <q-space />
-
-          <div v-if="$q.screen.gt.xs" class="col">
-            <q-toggle v-model="visibleColumns" val="Notas C/D" label="Notas C/D" />
-            <q-toggle v-model="visibleColumns" val="Usuario" label="Usuario" />
-            <q-toggle v-model="visibleColumns" val="T. Exportación" label="T. Exportación" />
-            <q-toggle v-model="visibleColumns" val="T. Gratuito" label="T. Gratuito" />
-            <q-toggle v-model="visibleColumns" val="T. Inafecto" label="T. Inafecto" />
-            <q-toggle v-model="visibleColumns" val="T. Exonerado" label="T. Exonerado" />
-            <q-toggle v-model="visibleColumns" val="F. Vencimiento" label="F. Vencimiento" />
+           <div class="row justify-end full-width">
+            <div class="col-8">
+              <div class="q-table__title">Comprobantes</div>
+            </div>
+            <div class="col-3">
+              <q-input dense debounce="300" color="primary" v-model="filter">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </div>
+            <div class="col-auto">
+              <q-btn
+              flat round dense
+              :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+              @click="props.toggleFullscreen"
+              class="q-ml-md"
+            />
+            </div>
           </div>
-          <q-select
-            v-else
-            v-model="visibleColumns"
-            multiple
-            borderless
-            dense
-            options-dense
-            :display-value="$q.lang.table.columns"
-            emit-value
-            map-options
-            :options="columns"
-            option-value="name"
-            style="min-width: 150px"
-          />
+          <div class="rows">
+            <div v-if="$q.screen.gt.xs" class="col">
+              <q-toggle v-model="visibleColumns" val="noteCd" label="Notas C/D" />
+              <q-toggle v-model="visibleColumns" val="user" label="Usuario" />
+              <q-toggle v-model="visibleColumns" val="tExportacion" label="T. Exportación" />
+              <q-toggle v-model="visibleColumns" val="tGratuita" label="T. Gratuito" />
+              <q-toggle v-model="visibleColumns" val="tInafecta" label="T. Inafecto" />
+              <q-toggle v-model="visibleColumns" val="tExonerado" label="T. Exonerado" />
+              <q-toggle v-model="visibleColumns" val="dateExp" label="F. Vencimiento" />
+            </div>
+            <q-select
+              v-else
+              v-model="visibleColumns"
+              multiple
+              borderless
+              dense
+              options-dense
+              :display-value="$q.lang.table.columns"
+              emit-value
+              map-options
+              :options="columns"
+              option-value="name"
+              style="min-width: 150px"
+            />
+          </div>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="name" :props="props">
+              {{ props.row.name }}
+            </q-td>
+            <q-td key="soap" :props="props">
+              {{ props.row.soap }}
+            </q-td>
+            <q-td key="dateEmission" :props="props">
+              {{ props.row.dateEmission }}
+            </q-td>
+            <q-td key="dateExp" :props="props">
+              {{ props.row.dateExp }}
+            </q-td>
+            <q-td key="client" :props="props">
+              {{ props.row.client }}
+            </q-td>
+            <q-td key="number" :props="props">
+              {{ props.row.number }}
+            </q-td>
+            <q-td key="noteCd" :props="props">
+              {{ props.row.noteCd }}
+            </q-td>
+            <q-td key="state" :props="props">
+              <q-badge color="green">
+                {{ props.row.state }}
+              </q-badge>
+            </q-td>
+            <q-td key="user" :props="props">
+              {{ props.row.user }}
+            </q-td>
+            <q-td key="coin" :props="props">
+              {{ props.row.coin }}
+            </q-td>
+            <q-td key="tExportacion" :props="props">
+              {{ props.row.tExportacion }}
+            </q-td>
+            <q-td key="tGratuita" :props="props">
+              {{ props.row.tGratuita }}
+            </q-td>
+            <q-td key="tInafecta" :props="props">
+              {{ props.row.tInafecta }}
+            </q-td>
+            <q-td key="tExonerado" :props="props">
+              {{ props.row.tExonerado }}
+            </q-td>
+            <q-td key="tGravado" :props="props">
+              {{ props.row.tGravado }}
+            </q-td>
+            <q-td key="tIgv" :props="props">
+              {{ props.row.tIgv }}
+            </q-td>
+            <q-td key="total" :props="props">
+              {{ props.row.total }}
+            </q-td>
+            <q-td key="saldo" :props="props">
+              {{ props.row.saldo }}
+            </q-td>
+            <q-td key="ordenCompra" :props="props">
+              {{ props.row.ordenCompra }}
+            </q-td>
+            <q-td key="paid" :props="props">
+              {{ props.row.paid }}
+              <q-btn push color="primary" label="Pagos" size="12px" no-caps glossy/>
+            </q-td>
+            <q-td key="downloads" :props="props">
+              {{ props.row.downloads }}
+              <q-btn-dropdown
+                splits
+                color="primary"
+                push
+                glossy
+                no-caps
+                icon="file_download"
+                label="Formato"
+                @click="onMainClick"
+                class="q-ml-md"
+                size="12px"
+              >
+                <q-list>
+                  <q-item clickable v-close-popup @click="onItemClick">
+                    <q-item-section avatar>
+                      <q-avatar icon="file_download" color="secondary" text-color="white" size="md"/>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>XML</q-item-label>
+                    </q-item-section>
+                  </q-item>
 
-          <q-btn
-            flat round dense
-            :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
-            @click="props.toggleFullscreen"
-            class="q-ml-md"
-          />
+                  <q-item clickable v-close-popup @click="onItemClick">
+                    <q-item-section avatar>
+                      <q-avatar icon="file_download" color="secondary" text-color="white" size="md"/>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>PDF</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item clickable v-close-popup @click="onItemClick">
+                    <q-item-section avatar>
+                      <q-avatar icon="file_download" color="secondary" text-color="white" size="md" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>CDR</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+            </q-td>
+            <q-td key="actions" :props="props">
+              {{ props.row.actions }}
+              <q-btn-dropdown
+                splits
+                color="primary"
+                push
+                glossy
+                no-caps
+                icon="check"
+                label="Acciones"
+                @click="onMainClick"
+                class="q-ml-md"
+                size="12px"
+              >
+                <q-list>
+                  <q-item clickable v-close-popup @click="onItemClick">
+                    <q-item-section avatar>
+                      <q-avatar icon="clear" color="red" text-color="white" size="md"/>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Anular</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item clickable v-close-popup @click="onItemClick">
+                    <q-item-section avatar>
+                      <q-avatar icon="edit" color="orange" text-color="white" size="md"/>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Nota</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-close-popup @click="onItemClick">
+                    <q-item-section avatar>
+                      <q-avatar icon="dehaze" color="orange" text-color="white" size="md"/>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Guía</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable v-close-popup @click="onItemClick">
+                    <q-item-section avatar>
+                      <q-avatar icon="chevron_right" color="primary" text-color="white" size="md"/>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Opciones</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+            </q-td>
+          </q-tr>
         </template>
 
       </q-table>
@@ -171,10 +345,10 @@
 export default {
   data () {
     return {
-      visibleColumns: ['desc', 'SOAP', 'client', 'number', 'state', 'coin', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'download', 'actions'],
+      visibleColumns: ['id', 'soap', 'dateEmission', 'dateExp', 'client', 'number', 'noteCd', 'state', 'user', 'coin', 'tGravado', 'tExportacion', 'tGratuita', 'tInafecta', 'tExonerado', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'paid', 'downloads', 'actions'],
       columns: [
         {
-          name: 'desc',
+          name: 'name',
           required: true,
           label: '#',
           align: 'left',
@@ -182,120 +356,100 @@ export default {
           format: val => `${val}`,
           sortable: true
         },
-        { name: 'SOAP', align: 'center', label: 'Soap', field: 'soap', sortable: true },
-        { name: 'date', label: 'Fecha', field: 'date', sortable: true },
-        { name: 'client', label: 'Cliente', field: 'client' },
-        { name: 'number', label: 'Número', field: 'number' },
-        { name: 'state', label: 'Estado', field: 'state' },
-        { name: 'coin', label: 'Moneda', field: 'coin', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'tGravado', label: 'T. Gravado', field: 'tGravado', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'tIgv', label: 'T. Igv', field: 'tIgv', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'total', label: 'Total', field: 'total', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'saldo', label: 'Saldo', field: 'saldo', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'ordenCompra', label: 'Orden de Compra', field: 'ordenCompra', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-        { name: 'download', label: 'Descargas', field: 'download' },
-        { name: 'actions', label: 'Acciones', field: 'actions' }
+        { name: 'soap', align: 'center', label: 'SOAP', field: 'soap', sortable: true },
+        { name: 'dateEmission', align: 'center', label: 'F. Emisión', field: 'dateEmission', sortable: true },
+        { name: 'dateExp', align: 'center', label: 'F. Vencimiento', field: 'dateExp', sortable: true },
+        { name: 'client', align: 'center', label: 'Cliente', field: 'client', sortable: true },
+        { name: 'number', align: 'center', label: 'Número', field: 'number', sortable: true },
+        { name: 'noteCd', align: 'center', label: 'Nota C/D', field: 'noteCd', sortable: true },
+        { name: 'state', align: 'center', label: 'Estado', field: 'state', sortable: true },
+        { name: 'user', align: 'center', label: 'Usuario', field: 'user', sortable: true },
+        { name: 'coin', align: 'center', label: 'Moneda', field: 'coin', sortable: true },
+        { name: 'tExportacion', align: 'center', label: 'T. Expotación', field: 'tExportacion', sortable: true },
+        { name: 'tGratuita', align: 'center', label: 'T. Gratuita', field: 'tGratuita', sortable: true },
+        { name: 'tInafecta', align: 'center', label: 'T. Inafecta', field: 'tInafecta', sortable: true },
+        { name: 'tExonerado', align: 'center', label: 'T. Exonerado', field: 'tExonerado', sortable: true },
+        { name: 'tGravado', align: 'center', label: 'T. Gravado', field: 'tGravado', sortable: true },
+        { name: 'tIgv', align: 'center', label: 'T. Igv', field: 'tIgv', sortable: true },
+        { name: 'total', align: 'center', label: 'Total', field: 'total', sortable: true },
+        { name: 'saldo', align: 'center', label: 'Saldo', field: 'saldo', sortable: true },
+        { name: 'ordenCompra', align: 'center', label: 'Orden de Compra', field: 'ordenCompra', sortable: true },
+        { name: 'paid', align: 'center', label: 'Pagos', field: 'paid', sortable: true },
+        { name: 'downloads', align: 'center', label: 'Descargas', field: 'downloads' },
+        { name: 'actions', align: 'center', label: 'Acciones', field: 'actions' }
       ],
       data: [
         {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          sodium: 87,
-          calcium: '14%',
-          iron: '1%'
+          name: '1',
+          soap: 'Demo1',
+          dateEmission: '2021-07-31',
+          dateExp: '2021-07-31',
+          client: 'CCAMA NIFLA SAUL RAMIRO 10098011680',
+          number: 'F001-31 FACTURA ELECTRÓNICA',
+          noteCd: '',
+          state: 'Aceptado',
+          user: 'Administrador demo@gmail.com',
+          coin: 'PEN',
+          tExportacion: '0.00',
+          tGratuita: '0.00',
+          tInafecta: '0.00',
+          tExonerado: '0.00',
+          tGravado: '6.78',
+          tIgv: '1.22',
+          total: '8.00',
+          saldo: '8.00',
+          ordenCompra: '',
+          paid: '',
+          downloads: '',
+          actions: ''
         },
         {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          sodium: 129,
-          calcium: '8%',
-          iron: '1%'
+          name: '2',
+          soap: 'Demo2',
+          dateEmission: '2021-07-31',
+          dateExp: '2021-07-31',
+          client: 'CCAMA NIFLA SAUL RAMIRO 10098011680',
+          number: 'F001-31 FACTURA ELECTRÓNICA',
+          noteCd: '',
+          state: 'Aceptado',
+          user: 'Administrador demo@gmail.com',
+          coin: 'PEN',
+          tExportacion: '0.00',
+          tGratuita: '0.00',
+          tInafecta: '0.00',
+          tExonerado: '0.00',
+          tGravado: '6.78',
+          tIgv: '1.22',
+          total: '8.00',
+          saldo: '8.00',
+          ordenCompra: '',
+          paid: '',
+          downloads: '',
+          actions: ''
         },
         {
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          sodium: 337,
-          calcium: '6%',
-          iron: '7%'
-        },
-        {
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          sodium: 413,
-          calcium: '3%',
-          iron: '8%'
-        },
-        {
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          sodium: 327,
-          calcium: '7%',
-          iron: '16%'
-        },
-        {
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          sodium: 50,
-          calcium: '0%',
-          iron: '0%'
-        },
-        {
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          sodium: 38,
-          calcium: '0%',
-          iron: '2%'
-        },
-        {
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          sodium: 562,
-          calcium: '0%',
-          iron: '45%'
-        },
-        {
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          sodium: 326,
-          calcium: '2%',
-          iron: '22%'
-        },
-        {
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          sodium: 54,
-          calcium: '12%',
-          iron: '6%'
+          name: '3',
+          soap: 'Demo3',
+          dateEmission: '2021-07-31',
+          dateExp: '2021-07-31',
+          client: 'CARLOS RAFAEK  ACOSTA RAMIREZ 10088017680',
+          number: 'F001-31 FACTURA ELECTRÓNICA',
+          noteCd: '',
+          state: 'Aceptado',
+          user: 'Administrador demo@gmail.com',
+          coin: 'PEN',
+          tExportacion: '0.00',
+          tGratuita: '0.00',
+          tInafecta: '0.00',
+          tExonerado: '0.00',
+          tGravado: '6.78',
+          tIgv: '1.22',
+          total: '8.00',
+          saldo: '8.00',
+          ordenCompra: '',
+          paid: '',
+          downloads: '',
+          actions: ''
         }
       ],
       dialog: false,
@@ -309,9 +463,7 @@ export default {
       product: '',
       category: '',
       state: '',
-      options: [
-        'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
-      ],
+      filter: '',
       voucherTypes: [
         'Factura electrónica', 'Boleta de venta electrónica', 'Nota de credito', 'Nota de débito'
       ],
