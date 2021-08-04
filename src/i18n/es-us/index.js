@@ -36,15 +36,6 @@ export default {
     listUser: 'lista de usuarios',
     email: 'correo'
   },
-
-  // clients
-  clients: {
-    clients: 'clientes',
-    document: 'documento',
-    name: 'nombre',
-    listClients: 'lista de clientes',
-    email: 'correo'
-  },
   // modules
   modules: {
     products: 'productos',
@@ -59,7 +50,9 @@ export default {
     listModule: 'lista de modulos',
     'branch-offices': 'sucursales',
     billing: 'nuevo comprobante',
-    'checking-accounts': 'cuenta corrinte'
+    categories: 'categorias',
+    brands: 'marcas',
+    clients: 'clientes'
   },
 
   // permissions
@@ -146,6 +139,49 @@ export default {
     boxIsrequired: 'El campo caja es requerido'
   },
 
+  category: {
+    name: 'nombre',
+    description: 'descripción',
+    add: 'agregar categoría',
+    list: 'Lista de categorías',
+    addSuccessfull: 'Categoría agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessfull: 'Categoría eliminada exitosamente',
+    update: 'Editar Categoría',
+    editSuccessfull: 'Categoría editada exitosamente'
+  },
+  brand: {
+    name: 'nombre',
+    description: 'descripción',
+    add: 'agregar marca',
+    list: 'Lista de marcas',
+    addSuccessfull: 'marca agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessfull: 'Marca eliminada exitosamente',
+    update: 'Editar Marca',
+    editSuccessfull: 'Marca editada exitosamente'
+  },
+  client: {
+    name: 'nombre',
+    last_name: 'apellido',
+    add: 'agregar cliente',
+    list: 'Lista de clientes',
+    addSuccessfull: 'cliente agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessfull: 'Cliente eliminada exitosamente',
+    update: 'Editar Cliente',
+    editSuccessfull: 'Cliente editada exitosamente',
+    document_number: 'número Doc.',
+    email: 'correo',
+    phone: 'telefono',
+    document_type_id: 'tipo de Doc.',
+    document_type: 'tipo de Doc.',
+    client_type: 'tipo de cliente',
+    client_type_id: 'tipo de cliente'
+  },
   entryAndExitOfMoney: {
     monto: 'monto',
     descripcion: 'descripcion',

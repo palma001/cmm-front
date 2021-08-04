@@ -18,9 +18,8 @@
 export default {
   props: {
     value: {
-      type: [String, Object],
-      required: true,
-      default: ''
+      type: [String, Object, Number],
+      required: false
     },
     errorMessage: {
       type: String,
@@ -36,7 +35,8 @@ export default {
     },
     type: {
       type: String,
-      required: true
+      required: false,
+      default: 'text'
     },
     rounded: {
       type: Boolean,
@@ -64,6 +64,9 @@ export default {
       valueProp: '',
       errorMessageProp: ''
     }
+  },
+  created () {
+    this.valueProp = this.value
   },
   watch: {
     value () {

@@ -15,6 +15,8 @@
     :error-message="errorMessageProp"
     :error="error"
     :use-chips="useChips"
+    :max-values="maxValue"
+    @filter="filter"
     @input="input"
     @select="select"
   >
@@ -57,10 +59,12 @@ export default {
       default: false
     },
     label: {
-      type: String
+      type: String,
+      require: false,
+      default: ''
     },
     value: {
-      type: [String, Object]
+      type: [String, Object, Number, Array]
     },
     data: {
       type: Array,
@@ -118,17 +122,25 @@ export default {
     useChips: {
       type: Boolean,
       default: false
+    },
+    maxValue: {
+      type: [String, Number],
+      default: 1
+
     }
   },
   data () {
     return {
       valueSelect: null,
-      errorMessageProp: ''
+      errorMessageProp: '',
+      dataFilter: []
     }
+  },
+  created () {
+    this.valueSelect = this.setModelSelect(this.value)
   },
   watch: {
     value () {
-      console.log(this.valueSelect)
       this.valueSelect = this.value
     },
     errorMessage () {
@@ -137,16 +149,30 @@ export default {
   },
   computed: {
     dataOptions () {
-      return this.data.map(element => {
-        element.label = element[this.dataLabel]
-        element.value = element[this.dataValue]
-        element.description = element[this.dataDescription]
-        element.icon = element[this.dataIcon]
-        return element
+      return this.dataFilter.map(element => {
+        return this.setModelSelect(element)
       })
     }
   },
   methods: {
+    setModelSelect (data) {
+      if (data) {
+        if (!Array.isArray(data)) {
+          return {
+            label: data[this.dataLabel],
+            value: data[this.dataValue],
+            description: data[this.dataDescription],
+            icon: data[this.dataIcon]
+          }
+        } else if (Array.isArray(data) && !this.multiple) {
+          return this.setModelSelect(data[0])
+        } else {
+          return data.map(d => {
+            return this.setModelSelect(d)
+          })
+        }
+      }
+    },
     /**
      * Event input
      * @type {Object} data input selected
@@ -161,6 +187,17 @@ export default {
     select (data) {
       this.valueSelect = data
       this.$emit('select', data)
+    },
+    /**
+     * Filter input
+     * @param  {Object}
+     * @param  {Function}
+     */
+    filter (val, update) {
+      update(() => {
+        const needle = val.toLowerCase()
+        this.dataFilter = this.data.filter(v => v[this.dataLabel].toLowerCase().indexOf(needle) > -1)
+      })
     }
   }
 }

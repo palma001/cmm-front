@@ -1,5 +1,4 @@
 
-import { SessionStorage } from 'quasar'
 /**
  * Translates the tags in Entities
  * @param {String} message tag to translate
@@ -37,7 +36,10 @@ export const errorRequest = function (error) {
  * @return {String}       text ucwords
  */
 export const ucwords = function (value) {
-  return value.toLowerCase().charAt(0).toUpperCase() + value.slice(1)
+  if (typeof value === 'string') {
+    return value.toLowerCase().charAt(0).toUpperCase() + value.slice(1)
+  }
+  return value
 }
 /**
  * Assign data to each selects
@@ -49,32 +51,11 @@ export const ucwords = function (value) {
 function assignRelationalData (currentDataConfig, propTag, propData, list) {
   currentDataConfig.forEach(config => {
     config.children.forEach(child => {
-      // if (child.edition.propTag === propTag) {
-      //   child.edition.component.props[propData] = list[0].data
-      // }
-      if (child.actionable.propTag === propTag) {
+      if (child.actionable && child.actionable.propTag === propTag) {
         child.actionable.component.props[propData] = list
       }
     })
   })
-}
-/**
- * Set variable select
- * @param {Object} dataConfig config variable
- */
-function setVariables (dataConfig) {
-  if (dataConfig.varStorage) {
-    switch (dataConfig.nameQuery) {
-      case 'cajas':
-        if (SessionStorage.has('sucursalSelected')) {
-          dataConfig.variables.sucursal_id = Number(SessionStorage.getItem('sucursalSelected').id)
-        }
-        break
-      default:
-        break
-    }
-  }
-  return dataConfig.variables
 }
 /**
  * Gets relational data of the entity
@@ -91,23 +72,17 @@ export const setRelationalData = (
 ) => {
   if (entityConfig) {
     entityConfig.relationalData.forEach(dataConfig => {
-      vueInstance.$apollo.query(
-        {
-          query: dataConfig.query,
-          variables: setVariables(dataConfig),
-          fetchPolicy: 'no-cache'
-        }
-      )
-        .then(({ data }) => {
+      vueInstance.$services.getData(dataConfig.services, dataConfig.petitionParams)
+        .then(({ res }) => {
           toRelationalData = []
-          toRelationalData = toRelationalData.concat(data[dataConfig.nameQuery])
+          toRelationalData = toRelationalData.concat(res.data)
           assignRelationalData(
             entityConfig.config,
             dataConfig.targetPropTag,
             dataConfig.propData,
             toRelationalData
           )
-          callback(data, toRelationalData)
+          callback(res.data, toRelationalData)
         })
     })
   }

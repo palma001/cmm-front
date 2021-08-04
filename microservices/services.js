@@ -16,10 +16,7 @@ export const getData = function (url, params) {
     }
   }).catch((err) => {
     if (err) {
-      return {
-        status: false,
-        response: err
-      }
+      throw new Error(err)
     }
   })
 }
@@ -32,40 +29,32 @@ export const getOneData = function (url) {
     }
   }).catch((err) => {
     if (err) {
-      return {
-        status: false,
-        response: err
-      }
+      throw new Error(err)
     }
   })
 }
 export const postData = function (url, params) {
-  return axiosInstance.post(url.join('/'), params).then((res) => {
+  return axiosInstance.post(url.join('/'), lowerCase(params)).then((res) => {
     return {
       status: true,
       res: res
     }
   }).catch((err) => {
     if (err) {
-      return {
-        status: false,
-        response: err
-      }
+      throw new Error(err)
     }
   })
 }
 export const putData = function (url, params) {
-  return axiosInstance.put(url.join('/'), params).then((res) => {
+  lowerCase(params)
+  return axiosInstance.put(url.join('/'), lowerCase(params)).then((res) => {
     return {
       status: true,
       res: res
     }
   }).catch((err) => {
     if (err) {
-      return {
-        status: false,
-        response: err
-      }
+      throw new Error(err)
     }
   })
 }
@@ -77,12 +66,19 @@ export const deleteData = function (url, params) {
     }
   }).catch((err) => {
     if (err) {
-      return {
-        status: false,
-        response: err
-      }
+      throw new Error(err)
     }
   })
+}
+const lowerCase = function (data) {
+  const model = {}
+  for (const param in data) {
+    if (data[param] && typeof data[param] === 'string') {
+      model[param] = data[param].toLowerCase()
+    }
+    model[param] = data[param]
+  }
+  return model
 }
 const services = {
   install (Vue, options = {}) {

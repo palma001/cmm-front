@@ -16,9 +16,21 @@ export const categoryModules = [
         devices: ['mobile', 'desktop']
       },
       {
-        name: 'checking-accounts',
-        route: 'checking-accounts',
+        name: 'categories',
+        route: 'categories',
         icon: 'receipt',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'brands',
+        route: 'brands',
+        icon: 'receipt',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'clients',
+        route: 'clients',
+        icon: 'group',
         devices: ['mobile', 'desktop']
       }
     ]

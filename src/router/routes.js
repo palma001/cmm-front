@@ -57,9 +57,19 @@ const routes = [
         component: () => import('pages/Billing.vue')
       },
       {
-        path: 'checking-accounts',
-        name: 'checking-accounts',
-        component: () => import('pages/CheckingAccount.vue')
+        path: 'categories',
+        name: 'categories',
+        component: () => import('pages/Category.vue')
+      },
+      {
+        path: 'brands',
+        name: 'brands',
+        component: () => import('pages/Brand.vue')
+      },
+      {
+        path: 'clients',
+        name: 'clients',
+        component: () => import('pages/CLient.vue')
       }
     ]
   },

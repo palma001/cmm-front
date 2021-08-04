@@ -1,12 +1,14 @@
 <script>
 import BInput from './BInput'
 import BSearchSelect from './BSearchSelect'
+import { QCheckbox } from 'quasar'
 import { mixins } from '../mixins'
 export default {
   name: 'DynamicFormEdition',
   components: {
     BInput,
-    BSearchSelect
+    BSearchSelect,
+    QCheckbox
   },
   mixins: [mixins.containerMixin],
   props: {
@@ -20,68 +22,63 @@ export default {
      */
     propsPanelEdition: {
       type: Object,
-      required: true
-    },
-    /*
-     * Action Button
-     * @type {Array} config buttons
-     */
-    buttons: {
-      type: Array,
       default () {
-        return [
-          {
-            name: 'cancel',
-            action: 'cancel',
-            label: false,
-            props: {
-              icon: 'highlight_off',
-              color: 'negative',
-              glossy: true,
-              size: '12px'
-            },
-            tooltip: {
-              text: 'cancel',
+        return {
+          data: {},
+          buttons: [
+            {
+              name: 'cancel',
+              action: 'cancel',
+              label: false,
               props: {
-                'content-class': 'bg-negative'
+                icon: 'highlight_off',
+                color: 'negative',
+                glossy: true,
+                size: '12px'
+              },
+              tooltip: {
+                text: 'cancel',
+                props: {
+                  'content-class': 'bg-negative'
+                }
+              }
+            },
+            {
+              name: 'reset',
+              action: 'reset',
+              label: false,
+              props: {
+                icon: 'restore',
+                color: 'positive',
+                glossy: true,
+                size: '12px'
+              },
+              tooltip: {
+                text: 'reset',
+                props: {
+                  'content-class': 'bg-positive'
+                }
+              }
+            },
+            {
+              name: 'update',
+              action: 'update',
+              label: false,
+              props: {
+                color: 'primary',
+                glossy: true,
+                size: '12px',
+                icon: 'edit'
+              },
+              tooltip: {
+                text: 'update',
+                props: {
+                  'content-class': 'bg-primary'
+                }
               }
             }
-          },
-          {
-            name: 'reset',
-            action: 'reset',
-            label: false,
-            props: {
-              icon: 'restore',
-              color: 'positive',
-              glossy: true,
-              size: '12px'
-            },
-            tooltip: {
-              text: 'reset',
-              props: {
-                'content-class': 'bg-positive'
-              }
-            }
-          },
-          {
-            name: 'add',
-            action: 'add',
-            label: false,
-            props: {
-              color: 'primary',
-              glossy: true,
-              size: '12px',
-              icon: 'add_circle'
-            },
-            tooltip: {
-              text: 'add',
-              props: {
-                'content-class': 'bg-primary'
-              }
-            }
-          }
-        ]
+          ]
+        }
       }
     },
     /*
@@ -191,7 +188,6 @@ export default {
   },
   watch: {
     loading () {
-      this.objectToBind = {}
       this.loadingAdd = this.loading
     }
   },
@@ -218,7 +214,7 @@ export default {
                   on: {
                     click: function () {
                       switch (button.action.toLowerCase()) {
-                        case 'add':
+                        case 'update':
                           self.update(self)
                           break
                         case 'cancel':
@@ -266,14 +262,15 @@ export default {
       }
     },
     /**
-     * Add data
+     * Update data
      */
     update (self) {
       self.validateBeforeSubmit()
         .then(res => {
+          console.log(res)
           if (res && !self.invalidateKey) {
             const data = self.objectToBindS(self.propsPanelEdition.data, self.objectToBind)
-            self.$emit('update', data)
+            self.$emit('update', this.convertSelect(data))
           }
         })
     },
@@ -285,8 +282,9 @@ export default {
      */
     objectToBindS (dataOld, value) {
       const transform = {}
+      Object.assign(dataOld, value)
       for (const datasOld in dataOld) {
-        transform[datasOld] = (value[datasOld]) ? value[datasOld] : dataOld[datasOld]
+        transform[datasOld] = (value[datasOld] || typeof value[datasOld] === 'boolean') ? value[datasOld] : dataOld[datasOld]
       }
       return transform
     },
@@ -343,14 +341,14 @@ export default {
             confi.children.map(prop => {
               if (prop.actionable && prop.actionable.editable) {
                 const propTag = prop.actionable.propTag
-                prop.actionable.component.props.value = (typeof self.propsPanelEdition.data[propTag] !== 'boolean') ? self.propsPanelEdition.data[propTag] : String(self.propsPanelEdition.data[propTag])
+                prop.actionable.component.props.value = self.objectToBind[propTag] !== undefined ? self.objectToBind[propTag] : self.propsPanelEdition.data[propTag]
                 return createElement(
                   prop.actionable.component.name,
                   {
                     ref: propTag,
                     props: {
                       ...prop.actionable.component.props,
-                      label: prop.actionable.visibleLabel ? self.ucwords(self.$t(`${self.module}.${propTag}`)) : '',
+                      label: prop.actionable.visibleLabel ? self.ucwords(self.$t(`${self.module}.${String(propTag)}`)) : '',
                       errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
                       error: this.errors.has(propTag)
                     },
@@ -423,6 +421,17 @@ export default {
         return ''
       }
     },
+    convertSelect (data) {
+      for (const key in data) {
+        if (Object.hasOwnProperty.call(data, key)) {
+          const element = data[key]
+          if (data[key] && typeof data[key] === 'object') {
+            data[`${key}_id`] = element.value ?? element.id
+          }
+        }
+      }
+      return data
+    },
     /**
      * Loading state
      * @type {createELement} create element
@@ -461,11 +470,13 @@ export default {
             class: {
               'text-h6': true,
               'items-center': true,
+              'bg-primary': true,
+              'text-white': true,
               row: true
             }
           },
           [
-            self.ucwords(`${self.$t(`${self.module}.add`)}`),
+            self.ucwords(`${self.$t(`${self.module}.update`)}`),
             createElement('q-space'),
             createElement('q-btn', {
               props: {
@@ -507,7 +518,7 @@ export default {
           ]
         ),
         createElement('q-separator'),
-        self.createButtons(createElement, self.buttons, self),
+        self.createButtons(createElement, self.propsPanelEdition.buttons, self),
         self.loadingBar(createElement, self)
       ]
     )

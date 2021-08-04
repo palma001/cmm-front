@@ -111,7 +111,8 @@ module.exports = function (/* ctx */) {
         'Notify',
         'Loading',
         'LocalStorage',
-        'SessionStorage'
+        'SessionStorage',
+        'Dialog'
       ]
     },
 
@@ -129,8 +130,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Bais',
-        short_name: 'Bais',
+        name: 'Grupo Sudamerica',
+        short_name: 'Grupo Sudamerica',
         description: 'software accounting software',
         display: 'standalone',
         orientation: 'portrait',
@@ -207,7 +208,7 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'bais'
+        appId: 'GrupoSudamerica'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

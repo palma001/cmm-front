@@ -1,8 +1,8 @@
 {
-  "name": "Bais",
+  "name": "sudamerica",
   "version": "0.0.1",
   "description": "software accounting software",
-  "productName": "Bais",
+  "productName": "Grupo Sudamerica",
   "author": "Luis Palma <palmaluis1997@gmail.com>",
   "private": true,
   "scripts": {

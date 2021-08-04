@@ -1,12 +1,14 @@
 <script>
 import BInput from './BInput'
 import BSearchSelect from './BSearchSelect'
+import { QCheckbox } from 'quasar'
 import { mixins } from '../mixins'
 export default {
   name: 'DynamicForm',
   components: {
     BInput,
-    BSearchSelect
+    BSearchSelect,
+    QCheckbox
   },
   mixins: [mixins.containerMixin],
   props: {
@@ -185,6 +187,7 @@ export default {
     loading () {
       this.objectToBind = {}
       this.loadingAdd = this.loading
+      this.$validator.reset()
     }
   },
   methods: {
@@ -257,6 +260,17 @@ export default {
         )
       }
     },
+    convertSelect (data) {
+      for (const key in data) {
+        if (data[key] && Object.hasOwnProperty.call(data, key)) {
+          const element = data[key]
+          if (typeof data[key] === 'object') {
+            data[`${key}_id`] = element.value
+          }
+        }
+      }
+      return data
+    },
     /**
      * Add data
      */
@@ -264,7 +278,7 @@ export default {
       self.validateBeforeSubmit()
         .then(res => {
           if (res && !self.invalidateKey) {
-            self.$emit('save', self.objectToBind)
+            self.$emit('save', this.convertSelect(self.objectToBind))
           }
         })
     },
@@ -310,6 +324,12 @@ export default {
     other (action) {
       this.$emit(action, this.objectToBind)
     },
+    convertData (data) {
+      if (typeof data === 'object') {
+        return data.value
+      }
+      return data
+    },
     /**
      * Description
      */
@@ -319,9 +339,13 @@ export default {
         config.map(confi => {
           inputs.push(
             confi.children.map(prop => {
+              if ((prop.actionable && prop.actionable.dependentName) && prop.actionable.dependentVisible) {
+                prop.actionable.addible = (self.convertData(self.objectToBind[prop.actionable.dependentName]) === prop.actionable.dependentValue)
+              }
               if (prop.actionable && prop.actionable.addible) {
                 const propTag = prop.actionable.propTag
                 prop.actionable.component.props.value = (prop.actionable.component.props.defaultValue) ? prop.actionable.component.props.defaultValue : self.objectToBind[propTag]
+                console.log(prop.actionable.component.props.value)
                 return createElement(
                   prop.actionable.component.name,
                   {
@@ -349,10 +373,9 @@ export default {
                     },
                     directives: (function () {
                       if (prop.actionable.component.directives) {
-                        const directives = [
+                        return [
                           ...prop.actionable.component.directives
                         ]
-                        return directives
                       }
                     })()
                   }
@@ -363,6 +386,17 @@ export default {
         })
       }
       return inputs
+    },
+    filterDependent (data, value, dependeFilterField) {
+      if (value) {
+        return data.filter(element => {
+          if (element[dependeFilterField]) {
+            return element[dependeFilterField] === value.value
+          }
+          return true
+        })
+      }
+      return data
     },
     /**
      * Validations the errors
@@ -439,6 +473,8 @@ export default {
             class: {
               'text-h6': true,
               'items-center': true,
+              'bg-primary': true,
+              'text-white': true,
               row: true
             }
           },
@@ -514,6 +550,7 @@ export default {
 
     @media (min-width: $breakpoint-xl-min)
       min-width : 450px;
+
     @media (max-width: $breakpoint-xl-max)
       max-width : 450px;
 </style>
