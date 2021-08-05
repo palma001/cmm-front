@@ -798,6 +798,7 @@ export default {
     deletePayment (index) {
       this.payments.splice(index, 1)
       this.totalPayemnts()
+      this.paymentAmount = this.totalSale - this.totalPaid
     },
     /**
      * Add payment to bill electronic
@@ -810,7 +811,7 @@ export default {
         paymentMethod: this.paymentMethod
       })
       this.totalPayemnts()
-      this.paymentAmount = 0
+      this.paymentAmount = this.totalSale - this.totalPaid
       this.paymentReference = null
       this.paymentDestination = null
       this.paymentMethod = null
