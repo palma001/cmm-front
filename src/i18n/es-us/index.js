@@ -52,7 +52,9 @@ export default {
     billing: 'nuevo comprobante',
     categories: 'categorias',
     brands: 'marcas',
-    clients: 'clientes'
+    clients: 'clientes',
+    productCommissions: 'Comision de productos',
+    sellerCommissions: 'Comision de vendedores'
   },
 
   // permissions
@@ -162,6 +164,36 @@ export default {
     deleteSuccessfull: 'Marca eliminada exitosamente',
     update: 'Editar Marca',
     editSuccessfull: 'Marca editada exitosamente'
+  },
+  productCommission: {
+    product: 'producto',
+    product_id: 'producto',
+    add: 'agregar comisión',
+    list: 'Lista de comisiones',
+    addSuccessfull: 'comisión agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessfull: 'Comisión eliminada exitosamente',
+    update: 'Editar Comisión',
+    editSuccessfull: 'Comisión editada exitosamente',
+    amount: 'monto',
+    commission_type_select: 'Tipo de comisión',
+    commission_type: 'Tipo de comisión'
+  },
+  sellerCommission: {
+    seller: 'vendedor',
+    seller_id: 'vendedor',
+    add: 'agregar comisión',
+    list: 'Lista de comisiones',
+    addSuccessfull: 'comisión agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessfull: 'Comisión eliminada exitosamente',
+    update: 'Editar Comisión',
+    editSuccessfull: 'Comisión editada exitosamente',
+    amount: 'monto',
+    commission_type_select: 'Tipo de comisión',
+    commission_type: 'Tipo de comisión'
   },
   client: {
     name: 'nombre',

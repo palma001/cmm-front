@@ -22,11 +22,6 @@ const routes = [
         name: 'products'
       },
       {
-        path: '/business',
-        name: 'business',
-        component: () => import('pages/Business.vue')
-      },
-      {
         path: 'users',
         name: 'users',
         component: () => import('pages/User.vue')
@@ -40,11 +35,6 @@ const routes = [
         path: 'permissions',
         name: 'permissions',
         component: () => import('pages/Permission.vue')
-      },
-      {
-        path: 'branch-offices',
-        name: 'branch-offices',
-        component: () => import('pages/BranchOffice.vue')
       },
       {
         path: 'roles',
@@ -69,7 +59,17 @@ const routes = [
       {
         path: 'clients',
         name: 'clients',
-        component: () => import('pages/CLient.vue')
+        component: () => import('pages/Client.vue')
+      },
+      {
+        path: 'product-commissions',
+        name: 'ProductCommission',
+        component: () => import('pages/ProductCommission.vue')
+      },
+      {
+        path: 'seller-commissions',
+        name: 'SellerCommission',
+        component: () => import('pages/SellerCommission.vue')
       }
     ]
   },

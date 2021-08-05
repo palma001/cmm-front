@@ -196,7 +196,12 @@ export default {
     filter (val, update) {
       update(() => {
         const needle = val.toLowerCase()
-        this.dataFilter = this.data.filter(v => v[this.dataLabel].toLowerCase().indexOf(needle) > -1)
+        console.log(this.dataLabel)
+        this.dataFilter = this.data.filter(v => {
+          if (v[this.dataLabel]) {
+            return v[this.dataLabel].toLowerCase().indexOf(needle) > -1
+          }
+        })
       })
     }
   }

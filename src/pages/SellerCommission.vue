@@ -5,7 +5,7 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('client.add')"
+          :label="$q.screen.lt.sm ? '' : $t('sellerCommission.add')"
           @click="addDialig = true"
         >
         <q-tooltip
@@ -15,7 +15,7 @@
           v-if="$q.screen.lt.sm"
         >
           {{
-            ucwords($t('client.add'))
+            ucwords($t('sellerCommission.add'))
           }}
         </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="client"
+          module="sellerCommission"
           searchable
           action
-          :column="client"
+          :column="sellerCommission"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -45,9 +45,9 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="client"
+        module="sellerCommission"
         :propsPanelEdition="propsPanelEdition"
-        :config="client"
+        :config="sellerCommission"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -60,8 +60,8 @@
       v-model="addDialig"
     >
       <dynamic-form
-        module="client"
-        :config="client"
+        module="sellerCommission"
+        :config="sellerCommission"
         :loading="loadingForm"
         @cancel="addDialig = false"
         @save="save"
@@ -73,7 +73,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { client, buttonsActions, propsPanelEdition, clientServices } from '../config-file/client/clientConfig.js'
+import { sellerCommission, buttonsActions, propsPanelEdition, sellerCommissionServices } from '../config-file/sellerCommission/sellerCommissionConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -86,9 +86,9 @@ export default {
   },
   data () {
     return {
-      clientServices,
       buttonsActions,
       propsPanelEdition,
+      sellerCommissionServices,
       loadingForm: false,
       /**
        * Selected data
@@ -116,11 +116,9 @@ export default {
         sortOrder: 'desc',
         perPage: 1,
         dataSearch: {
-          name: '',
-          last_name: '',
-          document_number: '',
-          email: '',
-          phone: ''
+          'seller.name': '',
+          commission_type: '',
+          amount: ''
         }
       },
       /**
@@ -132,7 +130,7 @@ export default {
        * File config module
        * @type {Object}
        */
-      client,
+      sellerCommission,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -153,8 +151,8 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.getClients()
-    this.setRelationalData(this.clientServices, [], this)
+    this.getsellerCommissions()
+    this.setRelationalData(this.sellerCommissionServices, [], this)
   },
   computed: {
     /**
@@ -168,6 +166,11 @@ export default {
      * @param  {Object} data selected
      */
     viewDetails (data) {
+      data.commission_type_select = {
+        label: data.commission_type === 'p' ? 'Porcentaje' : 'Monto',
+        value: data.commission_type
+      }
+      console.log(data)
       this.editDialog = true
       this.propsPanelEdition.data = data
       this.selectedData = data
@@ -179,7 +182,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar cliente?',
+        message: '¿Desea eliminar la comisión del vendedor?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -190,9 +193,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['clients', data.id])
-        this.notify(this, 'client.deleteSuccessfull', 'positive', 'mood')
-        this.getClients()
+        await this.$services.deleteData(['seller-commissions', data.id])
+        this.notify(this, 'sellerCommission.deleteSuccessfull', 'positive', 'mood')
+        this.getsellerCommissions()
       })
     },
     /**
@@ -205,17 +208,17 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getClients(this.params)
+      this.getsellerCommissions(this.params)
     },
     /**
-     * Search client
+     * Search sellerCommission
      * @param  {Object}
      */
     searchData (data) {
       for (const dataSearch in this.params.dataSearch) {
         this.params.dataSearch[dataSearch] = data
       }
-      this.getClients()
+      this.getsellerCommissions()
     },
     /**
      * Update Branch Office
@@ -223,13 +226,14 @@ export default {
      */
     update (data) {
       data.user_updated_id = this.userSession.id
+      data.commission_type = data.commission_type_select_id
       this.loadingForm = true
-      this.$services.putData(['clients', this.selectedData.id], data)
+      this.$services.putData(['seller-commissions', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getClients(this.params)
-          this.notify(this, 'client.editSuccessfull', 'positive', 'mood')
+          this.getsellerCommissions(this.params)
+          this.notify(this, 'sellerCommission.editSuccessfull', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -241,25 +245,25 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.user_id = this.userSession.id
+      data.commission_type = data.commission_type_select_id
       this.loadingForm = true
-      this.$services.postData(['clients'], data)
+      this.$services.postData(['seller-commissions'], data)
         .then(({ res }) => {
           this.addDialig = false
           this.loadingForm = false
-          this.getClients(this.params)
-          this.notify(this, 'client.addSuccessfull', 'positive', 'mood')
+          this.getsellerCommissions(this.params)
+          this.notify(this, 'sellerCommission.addSuccessfull', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Get all client
+     * Get all sellerCommission
      */
-    getClients (params = this.params) {
+    getsellerCommissions (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['clients'], this.params)
+      this.$services.getData(['seller-commissions'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
