@@ -179,7 +179,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar cliente?',
+        message: '¿Desea eliminar el cliente?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'

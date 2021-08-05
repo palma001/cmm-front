@@ -351,9 +351,78 @@
       v-model="modalPaid"
       persistent
     >
-      <q-card style="width: 800px; max-width: 80vw;">
-        <q-card-section class="q-pb-sm">
-          <div class="text-h6">Agregar pagos</div>
+      <q-card style="width: 900px; max-width: 80vw;">
+        <q-card-section class="q-pb-sm row">
+          <div class="text-h6 col-5">Agregar pagos</div>
+        </q-card-section>
+        <q-card-section class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm" v-for="(payment, index) in payments" :key="payment.id">
+          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="paymentMethod"
+              ref="paymentMethodRef"
+              v-model="payment.paymentMethod"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Método de pago"
+              :options="paymentMethods"
+              @filter="filterPaymentMethods"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="paymentDestination"
+              ref="paymentDestinationRef"
+              v-model="payment.paymentDestination"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Destino"
+              :options="paymentDestinations"
+              @filter="filterPaymentDestinations"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+            <q-input label="Referencia" outlined dense v-model="payment.paymentReference"/>
+          </div>
+          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+            <q-input label="Monto" outlined dense v-model="payment.paymentAmount" @input="totalPayemnts"/>
+          </div>
+          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+            <q-btn icon="close" dense round color="negative"  @click="deletePayment(index)"/>
+          </div>
         </q-card-section>
         <q-card-section class="row justify-between q-col-gutter-sm">
           <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
@@ -385,7 +454,7 @@
               </template>
             </q-select>
           </div>
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+          <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
             <q-select
               use-input
               hide-selected
@@ -415,11 +484,30 @@
             </q-select>
           </div>
           <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Referencia" outlined dense/>
+            <q-input label="Referencia" outlined dense v-model="paymentReference"/>
           </div>
           <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Monto" outlined dense/>
+            <q-input label="Monto" outlined dense v-model="paymentAmount" @input="totalPayemnts"/>
           </div>
+          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+            <q-btn icon="add" dense round color="primary" @click="addPayment"/>
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-list separator dense>
+            <q-item clickable v-ripple active>
+              <q-item-section>TOTAL A PAGAR:</q-item-section>
+              <q-item-section side>S/ {{ totalSale }}</q-item-section>
+            </q-item>
+            <q-item clickable v-ripple>
+              <q-item-section>TOTAL PAGADO</q-item-section>
+              <q-item-section side>S/ {{ totalPaid }}</q-item-section>
+            </q-item>
+            <q-item clickable v-ripple>
+              <q-item-section>PENDIENTE</q-item-section>
+              <q-item-section side>S/ {{ totalSale - totalPaid }}</q-item-section>
+            </q-item>
+          </q-list>
         </q-card-section>
         <q-card-actions align="right">
           <q-btn label="Cerrar" color="negative" v-close-popup />
@@ -476,6 +564,10 @@ export default {
       paymentMethods: [],
       paymentDestination: null,
       paymentDestinations: [],
+      payments: [],
+      paymentAmount: 0,
+      paymentReference: null,
+      totalPaid: 0,
       /**
        * Status table billing
        * @type {Boolean} status table billing
@@ -521,11 +613,6 @@ export default {
        * @type {Boolean} status form
        */
       loadingAdd: false,
-      /**
-       * User Session
-       * @type {Number} id user session
-       */
-      session_id: this.$store.state.login.id,
       /**
        * Visible loading page
        * @type {Boolean} status loading page
@@ -627,7 +714,7 @@ export default {
         dateBilling: null,
         voucherType: null,
         operationType: null,
-        exchange: null,
+        exchange: 300,
         expiration_date: new Date(),
         created_at: new Date()
       },
@@ -676,6 +763,10 @@ export default {
        * @type {Array} Coin list
        */
       coins: [],
+      /**
+       * Coin change
+       * @type {Object} coin value
+       */
       coin: null,
       /**
        * Inventories product selected
@@ -700,6 +791,30 @@ export default {
     this.loadCreate()
   },
   methods: {
+    /**
+     * Delete payment
+     * @param {Number} index indiex payment
+     */
+    deletePayment (index) {
+      this.payments.splice(index, 1)
+      this.totalPayemnts()
+    },
+    /**
+     * Add payment to bill electronic
+     */
+    addPayment () {
+      this.payments.push({
+        paymentAmount: this.paymentAmount,
+        paymentReference: this.paymentReference,
+        paymentDestination: this.paymentDestination,
+        paymentMethod: this.paymentMethod
+      })
+      this.totalPayemnts()
+      this.paymentAmount = 0
+      this.paymentReference = null
+      this.paymentDestination = null
+      this.paymentMethod = null
+    },
     totalCalculateProduct () {
       this.totalProduct = this.stock.sale_price * this.amount
     },
@@ -1053,6 +1168,20 @@ export default {
       this.igvTotal = igvTotal.toFixed(2)
       this.totalSale = total
       this.totalUnitValue = unitValue.toFixed(2)
+    },
+    /**
+     * Calculate billing total
+     */
+    totalPayemnts () {
+      if (this.payments.length > 0) {
+        let total = 0
+        this.payments.forEach(element => {
+          total = Number(total) + Number(element.paymentAmount)
+        })
+        this.totalPaid = total
+      } else {
+        this.totalPaid = 0
+      }
     },
     /**
      * Get percentage

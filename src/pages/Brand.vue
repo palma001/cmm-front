@@ -8,16 +8,16 @@
           :label="$q.screen.lt.sm ? '' : $t('brand.add')"
           @click="addDialig = true"
         >
-        <q-tooltip
-          anchor="center right"
-          self="center left"
-          :offset="[10, 10]"
-          v-if="$q.screen.lt.sm"
-        >
-          {{
-            ucwords($t('brand.add'))
-          }}
-        </q-tooltip>
+          <q-tooltip
+            anchor="center right"
+            self="center left"
+            :offset="[10, 10]"
+            v-if="$q.screen.lt.sm"
+          >
+            {{
+              ucwords($t('brand.add'))
+            }}
+          </q-tooltip>
       </q-btn>
       </div>
       <div class="col-12">
@@ -174,7 +174,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar marca?',
+        message: '¿Desea eliminar la marca?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
