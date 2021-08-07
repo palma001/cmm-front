@@ -108,7 +108,7 @@
               v-model="billing.exchange"
               outlined
               dense
-              disable
+              readonly
               label="Cambio del dia"
               type="text"
             >
@@ -801,7 +801,7 @@ export default {
         dateBilling: null,
         voucherType: null,
         operationType: null,
-        exchange: 300,
+        exchange: 0,
         expiration_date: date.formatDate(new Date(), 'YYYY-MM-DD'),
         created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
       },
