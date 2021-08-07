@@ -34,6 +34,12 @@ export const categoryModules = [
         devices: ['mobile', 'desktop']
       },
       {
+        name: 'products',
+        route: 'Product',
+        icon: 'receipt',
+        devices: ['mobile', 'desktop']
+      },
+      {
         name: 'productCommissions',
         route: 'ProductCommission',
         icon: 'money',

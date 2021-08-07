@@ -27,8 +27,14 @@
           <q-th v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            :class="col.class">
-            {{ ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`)) }}
+            :class="col.class"
+          >
+            <span v-if="col.traductorOff">
+              {{ ucwords(col.label ? col.label : col.name) }}
+            </span>
+            <span v-else>
+              {{ ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`)) }}
+            </span>
           </q-th>
           <q-th align="center" v-if="action">
             {{ ucwords($t('template.actions')) }}

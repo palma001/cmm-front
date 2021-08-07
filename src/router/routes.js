@@ -14,12 +14,7 @@ const routes = [
       {
         path: '',
         name: '',
-        component: () => import('pages/Index.vue')
-      },
-      {
-        path: '/products',
-        component: () => import('pages/Index.vue'),
-        name: 'products'
+        component: () => import('pages/Billing.vue')
       },
       {
         path: 'users',
@@ -70,6 +65,11 @@ const routes = [
         path: 'seller-commissions',
         name: 'SellerCommission',
         component: () => import('pages/SellerCommission.vue')
+      },
+      {
+        path: 'products',
+        name: 'Product',
+        component: () => import('pages/Product.vue')
       }
     ]
   },

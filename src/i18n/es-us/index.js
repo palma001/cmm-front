@@ -129,19 +129,6 @@ export default {
   arching: {
     notFound: 'Arqueo cerrado, pongase en contacto con el administrador'
   },
-
-  boxCut: {
-    add: 'Abrir caja',
-    monto: 'monto de inicio',
-    descripcion: 'descripción',
-    cancel: 'cancelar',
-    reset: 'limpiar',
-    caja_id: 'caja',
-    boxOpenSuccess: 'la caja se abrio exitosamente!',
-    boxCloseSuccess: 'caja cerrada exitosamente!',
-    boxIsrequired: 'El campo caja es requerido'
-  },
-
   category: {
     name: 'nombre',
     description: 'descripción',
@@ -153,6 +140,22 @@ export default {
     deleteSuccessfull: 'Categoría eliminada exitosamente',
     update: 'Editar Categoría',
     editSuccessfull: 'Categoría editada exitosamente'
+  },
+  product: {
+    brand_id: 'marca',
+    category_id: 'categoria',
+    supsec: 'supsec',
+    code: 'código',
+    numsec: 'numsec',
+    description: 'nombre',
+    add: 'agregar producto',
+    list: 'Lista de productos',
+    addSuccessfull: 'Producto agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessfull: 'Producto eliminada exitosamente',
+    update: 'Editar Producto',
+    editSuccessfull: 'Producto editada exitosamente'
   },
   brand: {
     name: 'nombre',

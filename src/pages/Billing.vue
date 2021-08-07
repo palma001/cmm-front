@@ -694,14 +694,8 @@ export default {
       selectedGuides: [],
       guides: [],
       tab: 'payments',
-      igvs: [{
-        label: 'Gravado - Operación Onerosa',
-        value: 12
-      }],
-      igv: {
-        label: 'Gravado - Operación Onerosa',
-        value: 12
-      },
+      igvs: [{ label: 'Gravado - Operación Onerosa', value: 12 }],
+      igv: { label: 'Gravado - Operación Onerosa', value: 12 },
       paymentsCondition: ['Crédito', 'Contado'],
       paymentCondition: null,
       modalProduct: false,
