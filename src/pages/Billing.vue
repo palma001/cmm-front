@@ -518,7 +518,10 @@
                     label="Monto"
                     outlined
                     dense
-                    :rules="[val => val && val.length > 0 || 'El campo monto de pago es requerido']"
+                    :rules="[
+                      val => val && val.length > 0 || 'El campo monto de pago es requerido',
+                      val => val <= totalSale - totalPaid || 'El monto no puede superar el total a pagar'
+                    ]"
                     v-model="paymentAmount"
                     @input="totalPayemnts"
                   />
