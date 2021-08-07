@@ -218,6 +218,7 @@ export default {
       for (const dataSearch in this.params.dataSearch) {
         this.params.dataSearch[dataSearch] = data
       }
+      this.params.page = 1
       this.getProductCommissions()
     },
     /**

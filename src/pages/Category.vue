@@ -101,7 +101,7 @@ export default {
       optionPagination: {
         rowsPerPage: 20,
         rowsNumber: 20,
-        paginate: true,
+        paginated: true,
         sortBy: 'id',
         sortOrder: 'desc'
       },
@@ -211,6 +211,7 @@ export default {
       for (const dataSearch in this.params.dataSearch) {
         this.params.dataSearch[dataSearch] = data
       }
+      this.params.page = 1
       this.getCategories()
     },
     /**

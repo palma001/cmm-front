@@ -23,7 +23,7 @@ export default {
     error: 'algo salio mal!',
     code: 'Código',
     sucursales: 'sucursales',
-    business: 'empresa'
+    sales: 'ventas'
   },
 
   // users
@@ -54,7 +54,9 @@ export default {
     brands: 'marcas',
     clients: 'clientes',
     productCommissions: 'Comision de productos',
-    sellerCommissions: 'Comision de vendedores'
+    sellerCommissions: 'Comision de vendedores',
+    'checking-accounts': 'cuenta corrinte',
+    'voucher-list': 'listado de comprobantes'
   },
 
   // permissions
@@ -143,7 +145,9 @@ export default {
   },
   product: {
     brand_id: 'marca',
+    brand: 'marca',
     category_id: 'categoria',
+    category: 'categoria',
     supsec: 'supsec',
     code: 'código',
     numsec: 'numsec',

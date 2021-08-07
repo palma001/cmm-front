@@ -18,10 +18,14 @@ export const product = [
           type: 'String',
           visibleLabel: true,
           component: {
-            name: 'b-input',
+            name: 'b-search-select',
             props: {
-              type: 'text',
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
               dense: true,
+              clearable: true,
               outlined: true
             },
             class: {
@@ -57,7 +61,7 @@ export const product = [
           component: {
             name: 'b-input',
             props: {
-              type: 'textarea',
+              type: 'text',
               dense: true,
               outlined: true
             },
@@ -70,7 +74,7 @@ export const product = [
               {
                 name: 'validate',
                 value: {
-                  required: false
+                  required: true
                 }
               }
             ]
@@ -94,7 +98,7 @@ export const product = [
           component: {
             name: 'b-input',
             props: {
-              type: 'textarea',
+              type: 'text',
               dense: true,
               outlined: true
             },
@@ -107,7 +111,7 @@ export const product = [
               {
                 name: 'validate',
                 value: {
-                  required: false
+                  required: true
                 }
               }
             ]
@@ -131,7 +135,7 @@ export const product = [
           component: {
             name: 'b-input',
             props: {
-              type: 'textarea',
+              type: 'text',
               dense: true,
               outlined: true
             },
@@ -144,7 +148,7 @@ export const product = [
               {
                 name: 'validate',
                 value: {
-                  required: false
+                  required: true
                 }
               }
             ]
@@ -168,7 +172,7 @@ export const product = [
           component: {
             name: 'b-input',
             props: {
-              type: 'textarea',
+              type: 'text',
               dense: true,
               outlined: true
             },
@@ -181,7 +185,7 @@ export const product = [
               {
                 name: 'validate',
                 value: {
-                  required: false
+                  required: true
                 }
               }
             ]
@@ -192,7 +196,7 @@ export const product = [
         tabulated: {
           name: 'category_id',
           align: 'left',
-          field: row => row.category.name,
+          field: row => row.category ? row.category.name : '-',
           sortable: true,
           visible: true
         },
@@ -203,10 +207,14 @@ export const product = [
           type: 'String',
           visibleLabel: true,
           component: {
-            name: 'b-input',
+            name: 'b-search-select',
             props: {
-              type: 'textarea',
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
               dense: true,
+              clearable: true,
               outlined: true
             },
             class: {
@@ -218,7 +226,7 @@ export const product = [
               {
                 name: 'validate',
                 value: {
-                  required: false
+                  required: true
                 }
               }
             ]
@@ -310,4 +318,31 @@ export const propsPanelEdition = {
       }
     }
   ]
+}
+export const relationalDataConfiguration = [
+  {
+    targetPropTag: 'category',
+    entity: 'category',
+    services: ['categories'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'brand',
+    entity: 'brand',
+    services: ['brands'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  }
+]
+
+export const productServices = {
+  props: propsPanelEdition,
+  config: product,
+  propData: 'data',
+  relationalData: relationalDataConfiguration
 }

@@ -28,7 +28,9 @@
             v-model="brand"
             dense
             outlined
+            ref="brand"
             @input="filterPrimary"
+            @keyup.enter.native="nextInput('code')"
           />
         </div>
         <div class="col-xs-2 col-lg-1">
@@ -38,7 +40,9 @@
             dense
             v-model="code"
             outlined
+            ref="code"
             @input="filterPrimary"
+            @keyup.enter.native="nextInput('supsec')"
           />
         </div>
         <div class="col-xs-2 col-lg-1">
@@ -46,6 +50,7 @@
             type="text"
             label="D"
             dense
+            ref="supsec"
             v-model="supsec"
             outlined
             @input="filterPrimary"
@@ -57,6 +62,7 @@
               type="text"
               dense
               outlined
+              :ref="attributeType.name"
               :label="attributeType.name"
               v-model="attributeTypes[attributeType.name]"
               @input="filterSecondary"
@@ -121,7 +127,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { product, buttonsActions, propsPanelEdition } from '../config-file/product/productConfig.js'
+import { product, buttonsActions, propsPanelEdition, productServices } from '../config-file/product/productConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -134,6 +140,7 @@ export default {
   },
   data () {
     return {
+      productServices,
       visible: false,
       brand: null,
       code: null,
@@ -215,6 +222,7 @@ export default {
     this.getAttributeTypes()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.setRelationalData(this.productServices, [], this)
   },
   computed: {
     /**
@@ -223,6 +231,9 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    nextInput (ref) {
+      this.$refs[ref].focus()
+    },
     filterSecondary () {
       console.log(this.attributeTypes)
       // this.params = {
@@ -233,13 +244,12 @@ export default {
      * Filter primary
      */
     filterPrimary () {
-      this.params = {
-        filterProduct: {
-          code: this.code,
-          'brand.name': this.brand,
-          supsec: this.supsec
-        }
+      this.params.filterProduct = {
+        code: this.code,
+        'brand.name': this.brand,
+        supsec: this.supsec
       }
+      this.params.page = 1
       this.getProducts(this.params)
     },
     /**
@@ -334,6 +344,7 @@ export default {
       for (const dataSearch in this.params.dataSearch) {
         this.params.dataSearch[dataSearch] = data
       }
+      this.params.page = 1
       this.getProducts()
     },
     /**
@@ -380,14 +391,14 @@ export default {
       this.loadingTable = true
       this.$services.getData(['products'], params)
         .then(({ res }) => {
-          this.data = res.data.map(productData => {
+          this.data = res.data.data.map(productData => {
             productData.attribute = {}
             productData.attribute_types.forEach(attributeType => {
               productData.attribute[attributeType.name] = attributeType.pivot.description
             })
             return productData
           })
-          this.optionPagination.rowsNumber = 1000000
+          this.optionPagination.rowsNumber = res.data.total
           this.loadingTable = false
         })
         .catch(err => {
