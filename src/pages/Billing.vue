@@ -1,5 +1,5 @@
 <template>
-  <!-- @keyup.113="saveSale" -->
+  <!-- @keyup.113=saveSale -->
   <q-page padding>
     <q-card class="my-card">
       <q-card-section class="q-pb-sm row q-col-gutter-sm">
@@ -194,16 +194,16 @@
                     <q-input type="number" v-model.number="props.row.amount" dense autofocus @input="recalculate(props.row)"/>
                   </q-popup-edit>
                 </q-td>
-                <q-td key="unitValue" :props="props">
-                  {{ props.row.unitValue }}
+                <q-td key="purchase_price" :props="props">
+                  {{ props.row.purchase_price }}
                 </q-td>
-                <q-td key="opIgv" :props="props">
-                  {{ props.row.opIgv }}
+                <q-td key="igv" :props="props">
+                  {{ props.row.igv }}
                 </q-td>
-                <q-td key="unitPrice" :props="props">
-                  {{ props.row.unitPrice }}
-                  <q-popup-edit v-model.number="props.row.unitPrice">
-                    <q-input type="number" v-model.number="props.row.unitPrice" dense autofocus @input="recalculate(props.row)"/>
+                <q-td key="price" :props="props">
+                  {{ props.row.price }}
+                  <q-popup-edit v-model.number="props.row.price">
+                    <q-input type="number" v-model.number="props.row.price" dense autofocus @input="recalculate(props.row)"/>
                   </q-popup-edit>
                 </q-td>
                 <q-td key="discount" :props="props">
@@ -234,7 +234,7 @@
               <q-item-section side>S/ {{ totalSale }}</q-item-section>
             </q-item>
             <q-item>
-              <q-item-section class="q-mt-xs">
+              <q-item-section class="q-mt-sm">
                 <q-select
                   label="Condición de pagos"
                   outlined
@@ -248,6 +248,11 @@
           </q-list>
         </div>
       </q-card-section>
+      <q-separator/>
+      <q-card-actions align="right">
+        <q-btn color="negative" label="Cancelar facturación" @click="cancelBill"/>
+        <q-btn color="primary" label="Generar factura" @click="modelBill"/>
+      </q-card-actions>
     </q-card>
     <q-dialog
       v-model="modalProduct"
@@ -644,7 +649,7 @@
         </q-tab-panels>
         <q-card-actions align="right">
           <q-btn label="Cerrar" color="negative" v-close-popup />
-          <q-btn label="Generar Factura" color="primary" />
+          <q-btn label="Generar Factura" color="primary" @click="modelBill"/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -657,6 +662,8 @@
 <script>
 import { date } from 'quasar'
 import { mixins } from '../mixins'
+import { GETTERS } from '../store/module-login/name.js'
+import { mapGetters } from 'vuex'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
 export default {
@@ -738,23 +745,23 @@ export default {
           sortable: true
         },
         {
-          name: 'unitValue',
+          name: 'purchase_price',
           label: 'Valor Unitario',
-          field: 'unitValue',
+          field: 'purchase_price',
           headerClasses: 'bg-primary text-white',
           sortable: true
         },
         {
-          name: 'opIgv',
+          name: 'igv',
           label: 'Igv',
-          field: 'opIgv',
+          field: 'igv',
           headerClasses: 'bg-primary text-white',
           sortable: true
         },
         {
-          name: 'unitPrice',
+          name: 'price',
           label: 'Precio Unitario',
-          field: 'unitPrice',
+          field: 'price',
           headerClasses: 'bg-primary text-white',
           sortable: true
         },
@@ -783,8 +790,8 @@ export default {
         voucherType: null,
         operationType: null,
         exchange: 300,
-        expiration_date: new Date(),
-        created_at: new Date()
+        expiration_date: date.formatDate(new Date(), 'YYYY-MM-DD'),
+        created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
       },
       /**
        * Client List
@@ -836,13 +843,97 @@ export default {
        * @type {Object} stock product selected
        */
       stock: {},
-      totalProduct: 0
+      totalProduct: 0,
+      userSession: null,
+      branchOfficeSession: null
     }
+  },
+  computed: {
+    /**
+     * Getters Vuex
+     */
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   created () {
     this.loadCreate()
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    modelBill () {
+      const billModel = {
+        serie_id: 1,
+        client_id: this.billing.client.id,
+        voucher_type_id: this.billing.voucherType.id,
+        branch_office_id: this.branchOfficeSession.id,
+        operation_type_id: this.billing.operationType.id,
+        seller_id: this.userSession.id,
+        coin_id: this.coin.id,
+        exchange: this.billing.exchange,
+        igv: 12,
+        expiration_date: date.formatDate(this.billing.expiration_date, 'YYYY-MM-DD'),
+        bill_electronic_details: this.dataProduct,
+        bill_electronic_payments: this.modelPayments(this.payments),
+        bill_electronic_guides: [],
+        user_created_id: this.userSession.id,
+        user_updated_id: this.userSession.id,
+        created_at: date.formatDate(this.billing.created_at, 'YYYY-MM-DDTHH:mm:ss')
+      }
+      this.saveBill(billModel)
+    },
+    /**
+     * Save bill
+     * @param {Object} data data bill
+     */
+    saveBill (data) {
+      this.$services.postData(['bill-electronics'], data)
+        .then(res => {
+          this.notify(this, 'billing.saveSuccess', 'positive', 'mood')
+          this.cancelBill()
+        })
+        .catch(() => {
+          this.notify(this, 'billing.error', 'negative', 'warning')
+        })
+    },
+    cancelBill () {
+      this.dataProduct = []
+      this.payments = []
+      this.billing.client = null
+      this.billing.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.billing.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.totalSale = 0
+      this.totalPaid = 0
+      this.totalUnitValue = 0
+      this.totalProduct = 0
+      this.igvTotal = 0
+      this.product = null
+      this.amount = 1
+      this.stock = {}
+      this.modalProduct = false
+      this.modalPaid = false
+      this.paymentCondition = null
+    },
+    /**
+     * Model paymnets
+     * @param {Array} data data model
+     * @return {Array} model
+     */
+    modelPayments (data) {
+      return data.map(payment => {
+        return {
+          payment_method_id: payment.paymentMethod.id,
+          payment_destination_id: payment.paymentDestination.id,
+          reference: payment.paymentReference,
+          amount: payment.paymentAmount,
+          exchange: this.billing.exchange,
+          user_created_id: this.userSession.id
+        }
+      })
+    },
+    /**
+     * Open dialog operation
+     * @param {String} data name tab
+     */
     openOptionDialog (data) {
       this.tab = data
       this.modalPaid = true
@@ -929,10 +1020,6 @@ export default {
       this.getProducts()
       this.getPaymentMethods()
       this.getPaymentDestinations()
-      // this.getCorteCaja(this.arching.id)
-      // this.getCLients()
-      // this.getProducts()
-      // this.setRelationalData(this.boxCutServices, [], this)
     },
     /**
      * Set Data in table
@@ -954,14 +1041,15 @@ export default {
       const percentage = this.getPercentage(this.stock.purchase_price, this.igv.value)
       const unitValue = this.stock.sale_price - percentage
       array.push({
-        id: this.product.id,
+        product_id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,
-        unitValue: isNaN(unitValue) ? 0 : unitValue,
-        opIgv: isNaN(percentage) ? 0 : percentage,
-        unitPrice: this.stock.sale_price,
+        purchase_price: isNaN(unitValue) ? 0 : unitValue,
+        igv: isNaN(percentage) ? 0 : percentage,
+        price: this.stock.sale_price,
         discount: this.discount,
-        subtotal: this.totalProduct
+        subtotal: this.totalProduct,
+        user_created_id: this.userSession.id
       })
     },
     /**
@@ -1016,8 +1104,7 @@ export default {
      * @param {Object} index product table index
      */
     validateArray (data, index) {
-      const validDate = data.filter((product) => product.id === index.id)
-      return (validDate.length === 0) ? null : true
+      return data.find((product) => product.product_id === index.id)
     },
     /**
      * Add product price in table
@@ -1026,7 +1113,7 @@ export default {
      */
     addAmountProduct (product, index) {
       product.map(product => {
-        if (product.id === index.id) {
+        if (product.product_id === index.id) {
           product.amount = Number(product.amount) + Number(this.amount) ?? Number(product.amount)
           this.recalculate(product)
           return product
@@ -1216,8 +1303,8 @@ export default {
      */
     recalculate (data) {
       this.dataProduct.map(product => {
-        if (product.id === data.id) {
-          product.subtotal = (data.amount * data.unitPrice) - data.discount
+        if (product.product_id === data.id) {
+          product.subtotal = (data.amount * data.price) - data.discount
           return product
         }
       })
@@ -1232,8 +1319,8 @@ export default {
       let unitValue = 0
       this.dataProduct.forEach(element => {
         total = Number(total) + Number(element.subtotal)
-        igvTotal = (Number(igvTotal) + (Number(element.opIgv) * Number(element.amount)))
-        unitValue = (Number(unitValue) + (Number(element.unitValue) * Number(element.amount)))
+        igvTotal = (Number(igvTotal) + (Number(element.igv) * Number(element.amount)))
+        unitValue = (Number(unitValue) + (Number(element.purchase_price) * Number(element.amount)))
       })
       this.igvTotal = igvTotal.toFixed(2)
       this.totalSale = total

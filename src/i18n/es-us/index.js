@@ -122,7 +122,8 @@ export default {
     cash: 'efectivo',
     cancelBilling: 'cancelar factura',
     saveBilling: 'guardar factura',
-    sales: 'ventas'
+    sales: 'ventas',
+    error: 'A ocurrido un error'
   },
 
   arching: {
