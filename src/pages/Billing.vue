@@ -166,6 +166,18 @@
               style="height: 40px;"
               @click="openOptionDialog('guides')"
             />
+            <q-btn
+              icon="money"
+              color="positive"
+              label="pagos"
+              style="height: 40px;"
+              v-if="payments.length"
+              @click="openOptionDialog('payments')"
+            >
+              <q-badge color="negative" floating>
+                S/ {{ totalPaid }}
+              </q-badge>
+            </q-btn>
           </div>
         </div>
       </q-card-section>
@@ -860,6 +872,9 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    /**
+     * Model bill
+     */
     modelBill () {
       const billModel = {
         serie_id: 1,
@@ -886,13 +901,17 @@ export default {
      * @param {Object} data data bill
      */
     saveBill (data) {
+      this.modalPaid = false
+      this.visible = true
       this.$services.postData(['bill-electronics'], data)
         .then(res => {
           this.notify(this, 'billing.saveSuccess', 'positive', 'mood')
           this.cancelBill()
+          this.visible = false
         })
         .catch(() => {
           this.notify(this, 'billing.error', 'negative', 'warning')
+          this.visible = false
         })
     },
     cancelBill () {
@@ -1303,7 +1322,7 @@ export default {
      */
     recalculate (data) {
       this.dataProduct.map(product => {
-        if (product.product_id === data.id) {
+        if (product.product_id === data.product_id) {
           product.subtotal = (data.amount * data.price) - data.discount
           return product
         }
