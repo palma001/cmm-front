@@ -1,5 +1,6 @@
 <template>
-  <q-page padding @keyup.113="saveSale">
+  <!-- @keyup.113="saveSale" -->
+  <q-page padding>
     <q-card class="my-card">
       <q-card-section class="q-pb-sm row q-col-gutter-sm">
         <div class="col-8">
@@ -118,8 +119,8 @@
           </div>
         </div>
       </q-card-section>
-      <q-card-section class="q-py-none q-mt-xs">
-        <div class="row q-col-gutter-sm">
+      <q-card-section :class="$q.screen.lt.md ? 'q-py-none q-mt-md' : 'q-py-none'">
+        <div class="row q-col-gutter-md">
           <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
             <q-select
               autocomplete="off"
@@ -150,20 +151,27 @@
               </template>
             </q-select>
           </div>
-          <div class="col-auto">
+          <div class="col-auto q-gutter-sm">
             <q-btn
               icon="add"
               color="primary"
-              label="Agregar producto"
+              label="producto"
               style="height: 40px;"
               @click="modalProduct = true"
+            />
+            <q-btn
+              icon="add"
+              color="orange"
+              label="guias"
+              style="height: 40px;"
+              @click="openOptionDialog('guides')"
             />
           </div>
         </div>
       </q-card-section>
       <q-separator/>
       <q-card-section class="row justify-between q-col-gutter-sm">
-        <div class="q-pa-xs col-9">
+        <div class="q-pa-xs col-xs-12 col-sm-12 col-lg-9">
           <q-table
             row-key="name"
             wrap-cells
@@ -211,7 +219,7 @@
             </template>
           </q-table>
         </div>
-        <div class="col-3">
+        <div class="col-xs-12 col-sm-12 col-lg-3">
           <q-list separator dense>
             <q-item clickable v-ripple>
               <q-item-section>OP.GRAVADA:</q-item-section>
@@ -233,7 +241,7 @@
                   :options="paymentsCondition"
                   v-model="paymentCondition"
                   dense
-                  @input="modalPaid = true"
+                  @input="openOptionDialog('payments')"
                 />
               </q-item-section>
             </q-item>
@@ -241,7 +249,6 @@
         </div>
       </q-card-section>
     </q-card>
-
     <q-dialog
       v-model="modalProduct"
       persistent
@@ -352,177 +359,292 @@
       persistent
     >
       <q-card style="width: 900px; max-width: 80vw;">
-        <q-card-section class="q-pb-sm row">
-          <div class="text-h6 col-5">Agregar pagos</div>
-        </q-card-section>
-        <q-card-section class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm" v-for="(payment, index) in payments" :key="payment.id">
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="paymentMethod"
-              ref="paymentMethodRef"
-              v-model="payment.paymentMethod"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              label="Método de pago"
-              :options="paymentMethods"
-              @filter="filterPaymentMethods"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
+        <q-tabs
+          v-model="tab"
+          dense
+          class="bg-primary text-white shadow-2"
+          align="left"
+          narrow-indicator
+        >
+          <q-tab name="payments" label="Pagos" />
+          <q-tab name="guides" label="Guias" />
+        </q-tabs>
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="payments">
+            <q-card-section class="q-py-none row">
+              <div class="text-h6 col-5">Agregar Pagos</div>
+            </q-card-section>
+            <q-card-section class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm" v-for="(payment, index) in payments" :key="payment.id">
+              <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                <q-select
+                  use-input
+                  hide-selected
+                  fill-input
+                  outlined
+                  clearable
+                  dense
+                  autocomplete="off"
+                  input-debounce="0"
+                  name="paymentMethod"
+                  ref="paymentMethodRef"
+                  v-model="payment.paymentMethod"
+                  data-vv-as="field"
+                  option-value="id"
+                  option-label="name"
+                  label="Método de pago"
+                  :options="paymentMethods"
+                  @filter="filterPaymentMethods"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                <q-select
+                  use-input
+                  hide-selected
+                  fill-input
+                  outlined
+                  clearable
+                  dense
+                  autocomplete="off"
+                  input-debounce="0"
+                  name="paymentDestination"
+                  ref="paymentDestinationRef"
+                  v-model="payment.paymentDestination"
+                  data-vv-as="field"
+                  option-value="id"
+                  option-label="name"
+                  label="Destino"
+                  :options="paymentDestinations"
+                  @filter="filterPaymentDestinations"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                <q-input label="Referencia" outlined dense v-model="payment.paymentReference"/>
+              </div>
+              <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                <q-input label="Monto" outlined dense v-model="payment.paymentAmount" @input="totalPayemnts"/>
+              </div>
+              <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                <q-btn icon="close" dense round color="negative"  @click="deletePayment(index)"/>
+              </div>
+            </q-card-section>
+            <q-card-section>
+              <q-form @submit="addPayment" class="row justify-between q-col-gutter-sm" ref="addPayment">
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                  <q-select
+                    use-input
+                    hide-selected
+                    fill-input
+                    outlined
+                    clearable
+                    dense
+                    autocomplete="off"
+                    input-debounce="0"
+                    name="paymentMethod"
+                    ref="paymentMethodRef"
+                    v-model="paymentMethod"
+                    data-vv-as="field"
+                    option-value="id"
+                    option-label="name"
+                    label="Método de pago"
+                    :rules="[val => val || 'El campo metodo de pago es requerido']"
+                    :options="paymentMethods"
+                    @filter="filterPaymentMethods"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No results
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                  <q-select
+                    use-input
+                    hide-selected
+                    fill-input
+                    outlined
+                    clearable
+                    dense
+                    autocomplete="off"
+                    input-debounce="0"
+                    name="paymentDestination"
+                    ref="paymentDestinationRef"
+                    v-model="paymentDestination"
+                    data-vv-as="field"
+                    option-value="id"
+                    option-label="name"
+                    label="Destino"
+                    :rules="[val => val || 'El campo destino es requerido']"
+                    :options="paymentDestinations"
+                    @filter="filterPaymentDestinations"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No results
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                  <q-input
+                    label="Referencia"
+                    outlined
+                    dense
+                    v-model="paymentReference"
+                  />
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                  <q-input
+                    label="Monto"
+                    outlined
+                    dense
+                    :rules="[val => val && val.length > 0 || 'El campo monto de pago es requerido']"
+                    v-model="paymentAmount"
+                    @input="totalPayemnts"
+                  />
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                  <q-btn icon="add" dense round color="primary" type="submit"/>
+                </div>
+              </q-form>
+            </q-card-section>
+            <q-card-section>
+              <q-list separator dense>
+                <q-item clickable v-ripple active>
+                  <q-item-section>TOTAL A PAGAR:</q-item-section>
+                  <q-item-section side>S/ {{ totalSale }}</q-item-section>
                 </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="paymentDestination"
-              ref="paymentDestinationRef"
-              v-model="payment.paymentDestination"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              label="Destino"
-              :options="paymentDestinations"
-              @filter="filterPaymentDestinations"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
+                <q-item clickable v-ripple>
+                  <q-item-section>TOTAL PAGADO</q-item-section>
+                  <q-item-section side>S/ {{ totalPaid }}</q-item-section>
                 </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Referencia" outlined dense v-model="payment.paymentReference"/>
-          </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Monto" outlined dense v-model="payment.paymentAmount" @input="totalPayemnts"/>
-          </div>
-          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
-            <q-btn icon="close" dense round color="negative"  @click="deletePayment(index)"/>
-          </div>
-        </q-card-section>
-        <q-card-section class="row justify-between q-col-gutter-sm">
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="paymentMethod"
-              ref="paymentMethodRef"
-              v-model="paymentMethod"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              label="Método de pago"
-              :options="paymentMethods"
-              @filter="filterPaymentMethods"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
+                <q-item clickable v-ripple>
+                  <q-item-section>PENDIENTE</q-item-section>
+                  <q-item-section side>S/ {{ totalSale - totalPaid }}</q-item-section>
                 </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="paymentDestination"
-              ref="paymentDestinationRef"
-              v-model="paymentDestination"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              label="Destino"
-              :options="paymentDestinations"
-              @filter="filterPaymentDestinations"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Referencia" outlined dense v-model="paymentReference"/>
-          </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Monto" outlined dense v-model="paymentAmount" @input="totalPayemnts"/>
-          </div>
-          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
-            <q-btn icon="add" dense round color="primary" @click="addPayment"/>
-          </div>
-        </q-card-section>
-        <q-card-section>
-          <q-list separator dense>
-            <q-item clickable v-ripple active>
-              <q-item-section>TOTAL A PAGAR:</q-item-section>
-              <q-item-section side>S/ {{ totalSale }}</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section>TOTAL PAGADO</q-item-section>
-              <q-item-section side>S/ {{ totalPaid }}</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section>PENDIENTE</q-item-section>
-              <q-item-section side>S/ {{ totalSale - totalPaid }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
+              </q-list>
+            </q-card-section>
+          </q-tab-panel>
+          <q-tab-panel name="guides">
+            <q-card-section class="q-py-none row">
+              <div class="text-h6 col-5">Agregar Guias</div>
+            </q-card-section>
+             <q-card-section class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm" v-for="(selectedGuide, index) in selectedGuides" :key="selectedGuide.id">
+              <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                <q-select
+                  use-input
+                  hide-selected
+                  fill-input
+                  outlined
+                  clearable
+                  dense
+                  autocomplete="off"
+                  input-debounce="0"
+                  name="guide"
+                  ref="guideRef"
+                  v-model="selectedGuide.guide"
+                  data-vv-as="field"
+                  option-value="id"
+                  option-label="name"
+                  label="Guia"
+                  :options="guides"
+                  @filter="filterGuides"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                <q-input label="Descripción" outlined dense v-model="selectedGuide.description"/>
+              </div>
+              <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                <q-input label="Observación" outlined dense v-model="selectedGuide.observation" @input="totalPayemnts"/>
+              </div>
+              <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                <q-input label="Orden de compra" outlined dense v-model="selectedGuide.pucharse_order" @input="totalPayemnts"/>
+              </div>
+              <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                <q-btn icon="close" dense round color="negative"  @click="deleteSelectedGuide(index)"/>
+              </div>
+            </q-card-section>
+            <q-card-section class="row justify-between q-col-gutter-sm">
+              <q-form class="row justify-between q-col-gutter-sm">
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                  <q-select
+                    use-input
+                    hide-selected
+                    fill-input
+                    outlined
+                    clearable
+                    dense
+                    autocomplete="off"
+                    input-debounce="0"
+                    name="guide"
+                    ref="guideRef"
+                    v-model="guide"
+                    data-vv-as="field"
+                    option-value="id"
+                    option-label="name"
+                    label="Guia"
+                    :options="guides"
+                    @filter="filterGuides"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No results
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                  <q-input label="Descripción" outlined dense v-model="description"/>
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                  <q-input label="Observación" outlined dense v-model="observation" @input="totalPayemnts"/>
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                  <q-input label="Orden de compra" outlined dense v-model="purchase_order" @input="totalPayemnts"/>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right q-mt-xs">
+                  <q-btn icon="add" dense round color="primary"/>
+                </div>
+              </q-form>
+            </q-card-section>
+          </q-tab-panel>
+        </q-tab-panels>
         <q-card-actions align="right">
           <q-btn label="Cerrar" color="negative" v-close-popup />
           <q-btn label="Generar Factura" color="primary" />
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <!-- <b-confirm-alert
-      color="negative"
-      icon="close"
-      :show="alertArching"
-      :message="$t('arching.notFound')"
-      @confirm="cancel"
-      @cancel="cancel"
-    /> -->
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -533,19 +655,23 @@
 import { date } from 'quasar'
 import { mixins } from '../mixins'
 // import DynamicForm from '../components/DynamicForm'
-// import BConfirmAlert from '../components/BConfirmAlert'
 // import DataTable from '../components/DataTable'
-import { billingConfig } from '../config-file/billing/billingConfig'
 export default {
   name: 'Billing',
   mixins: [mixins.containerMixin],
   components: {
     // DynamicForm
-    // BConfirmAlert,
     // DataTable
   },
   data () {
     return {
+      guide: null,
+      description: null,
+      purchase_order: null,
+      observation: null,
+      selectedGuides: [],
+      guides: [],
+      tab: 'payments',
       igvs: [{
         label: 'Gravado - Operación Onerosa',
         value: 12
@@ -569,51 +695,6 @@ export default {
       paymentReference: null,
       totalPaid: 0,
       /**
-       * Status table billing
-       * @type {Boolean} status table billing
-       */
-      visibleTableBilling: false,
-      /**
-       * Set billing data table
-       * @type {Boolean} billing data table
-       */
-      dataTableBilling: [],
-      /**
-       * Config archive
-       * @type {Array} Billing array
-       */
-      billingConfig,
-      /**
-       * Status dialog billing
-       * @type {Boolean} status dialog
-       */
-      dialogBillingVisible: false,
-      /**
-       * Set status maximzed dialog
-       * @type {Boolean} status maximzed dialog
-       */
-      maximizedToggle: true,
-      /**
-       * Get alert arching active
-       * @type {Boolean} alert arching active
-       */
-      alertArching: false,
-      /**
-       * Get search billing
-       * @type {Boolean} search billing
-       */
-      commonSearch: {
-        rowsPerPage: 20,
-        paginate: true,
-        sortBy: 'id',
-        sortOrder: 'desc'
-      },
-      /**
-       * Loading add cut box
-       * @type {Boolean} status form
-       */
-      loadingAdd: false,
-      /**
        * Visible loading page
        * @type {Boolean} status loading page
        */
@@ -625,22 +706,6 @@ export default {
       totalSale: 0,
       igvTotal: 0,
       totalUnitValue: 0,
-      /**
-       * Width init splitter
-       * @type {Number} % width init
-       */
-      splitterModel: 70, // start at 50%
-      /**
-       * Model paid sale
-       * @type {Object} model paid sale
-       */
-      paidSale: {
-        debito: null,
-        credito: null,
-        efectivo: null,
-        porcentaje: null,
-        montoPorcentaje: null
-      },
       /**
        * Columns Table
        * @type {Array} column array
@@ -734,11 +799,6 @@ export default {
        */
       amount: 1,
       /**
-       * Price product
-       * @type {Number} price product
-       */
-      priceOfSale: null,
-      /**
        * Data product billing
        * @type {Array} data billing
        */
@@ -773,24 +833,24 @@ export default {
        * @type {Object} stock product selected
        */
       stock: {},
-      totalProduct: 0,
-      /**
-       * Model details sales
-       * @type {Array} model details sale
-       */
-      modelDetailsSale: [
-        'amount',
-        'discount',
-        'detallable_type',
-        'detallable_id',
-        'price'
-      ]
+      totalProduct: 0
     }
   },
   created () {
     this.loadCreate()
   },
   methods: {
+    openOptionDialog (data) {
+      this.tab = data
+      this.modalPaid = true
+    },
+    /**
+     * Delete payment
+     * @param {Number} index indiex payment
+     */
+    deleteSelectedGuide (index) {
+      this.guides.splice(index, 1)
+    },
     /**
      * Delete payment
      * @param {Number} index indiex payment
@@ -815,7 +875,13 @@ export default {
       this.paymentReference = null
       this.paymentDestination = null
       this.paymentMethod = null
+      setTimeout(() => {
+        this.$refs.addPayment.resetValidation()
+      }, 100)
     },
+    /**
+     * Calculate subtotal products
+     */
     totalCalculateProduct () {
       this.totalProduct = this.stock.sale_price * this.amount
     },
@@ -833,6 +899,9 @@ export default {
         this.totalProduct = 0
       }
     },
+    /**
+     * Get Data in exchange
+     */
     getExchange () {
       this.$services.getData(['exchange-rate'], {
         start_date: date.formatDate(date.subtractFromDate(new Date(), { month: 1 }), 'DD/MM/YYYY'),
@@ -840,7 +909,9 @@ export default {
         coin: 'PEN'
       })
         .then(({ res }) => {
-          this.billing.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
+          if (res.data.length) {
+            this.billing.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
+          }
         })
     },
     /**
@@ -859,13 +930,6 @@ export default {
       // this.getCLients()
       // this.getProducts()
       // this.setRelationalData(this.boxCutServices, [], this)
-    },
-    /**
-     * Cancel box cut
-     * @param {Object} data form box cut
-     */
-    cancel (data) {
-      this.$router.push({ name: 'products' })
     },
     /**
      * Set Data in table
@@ -896,31 +960,6 @@ export default {
         discount: this.discount,
         subtotal: this.totalProduct
       })
-    },
-    /**
-     * Reset inputs billing
-     */
-    emptyInputBilling () {
-      this.dataProduct = []
-      this.billing.client = null
-      this.billing.dateBilling = null
-      this.billing.operationType = {
-        label: 'Venta',
-        value: 'venta'
-      }
-      this.stock = null
-      this.amount = 1
-      this.priceOfSale = null
-      this.totalSale = 0
-      this.paidSale = {
-        debito: null,
-        credito: null,
-        efectivo: null
-      }
-      this.$refs.codigo.focus()
-      setTimeout(() => {
-        this.$validator.reset()
-      }, 100)
     },
     /**
      * Print product error
@@ -1034,6 +1073,33 @@ export default {
      */
     getProducts (value) {
       this.$services.getData(['products'], {
+        dataSearch: {
+          name: value,
+          code: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          this.products = res.data
+        })
+    },
+    /**
+     * Filter Products
+     * @param {String} value data filter
+     * @param {Callback} update update select data
+     */
+    filterGuides (value, update) {
+      update(() => {
+        this.getGuides(value)
+      })
+    },
+    /**
+     * Get products
+     * @param {String} value data filter
+     */
+    getGuides (value) {
+      this.$services.getData(['guides'], {
         dataSearch: {
           name: value,
           code: value
