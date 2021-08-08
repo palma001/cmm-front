@@ -230,9 +230,15 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Next input
+     */
     nextInput (ref) {
       this.$refs[ref].focus()
     },
+    /**
+     * Filter attribute type
+     */
     filterSecondary () {
       for (const key in this.attributeTypes) {
         if (Object.hasOwnProperty.call(this.attributeTypes, key)) {
