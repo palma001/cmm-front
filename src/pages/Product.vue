@@ -57,14 +57,13 @@
           />
         </div>
         <div class="offset-lg-1 col-sm-6 col-lg-8 row q-col-gutter-xs justify-end">
-          <div v-for="attributeType in listAttributeTypes" class="col-xs-4 col-lg-2" :key="attributeType.id">
+          <div v-for="attributeType in listAttributeTypes" class="col-xs-6 col-sm-4 col-lg-2" :key="attributeType.id">
             <q-input
               type="text"
               dense
               outlined
-              :ref="attributeType.name"
               :label="attributeType.name"
-              v-model="attributeTypes[attributeType.name]"
+              v-model="attributeTypes[attributeType.id]"
               @input="filterSecondary"
             />
           </div>
@@ -219,10 +218,10 @@ export default {
     }
   },
   created () {
-    this.getAttributeTypes()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.setRelationalData(this.productServices, [], this)
+    this.getAttributeTypes()
   },
   computed: {
     /**
@@ -235,10 +234,15 @@ export default {
       this.$refs[ref].focus()
     },
     filterSecondary () {
-      console.log(this.attributeTypes)
-      // this.params = {
-      //   dataFilter:
-      // }
+      for (const key in this.attributeTypes) {
+        if (Object.hasOwnProperty.call(this.attributeTypes, key)) {
+          this.params.dataFilter = {
+            'attributeTypeProducts.attribute_type_id': this.attributeTypes[key] ? key : null,
+            'attributeTypeProducts.description': this.attributeTypes[key]
+          }
+        }
+      }
+      this.getProducts(this.params)
     },
     /**
      * Filter primary
@@ -260,9 +264,6 @@ export default {
       this.$services.getData(['attribute-types'])
         .then(({ res }) => {
           this.listAttributeTypes = res.data
-          res.data.forEach(attributeType => {
-            this.attributeTypes[attributeType.name] = null
-          })
           this.visible = false
           this.newModelTable()
           this.getProducts()

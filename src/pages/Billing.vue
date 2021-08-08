@@ -1016,7 +1016,7 @@ export default {
         coin: 'PEN'
       })
         .then(({ res }) => {
-          if (res.data.exchange_rates.length > 0) {
+          if (res.data.length > 0 && res.data.exchange_rates.length > 0) {
             this.billing.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
           }
         })
