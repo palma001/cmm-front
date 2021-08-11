@@ -164,6 +164,7 @@
               color="orange"
               label="guias"
               style="height: 40px;"
+              :disable="dataProduct.length <= 0"
               @click="openOptionDialog('guides')"
             />
             <q-btn
@@ -178,12 +179,24 @@
                 S/ {{ totalPaid }}
               </q-badge>
             </q-btn>
+            <q-btn
+              icon="receipt"
+              color="positive"
+              label="Cuotas"
+              style="height: 40px;"
+              v-if="fees.length"
+              @click="openOptionDialog('payments')"
+            >
+              <q-badge color="negative" floating>
+                {{ fees.length }}
+              </q-badge>
+            </q-btn>
           </div>
         </div>
       </q-card-section>
       <q-separator/>
       <q-card-section class="row justify-between q-col-gutter-sm">
-        <div class="q-pa-xs col-xs-12 col-sm-12 col-lg-9">
+        <div class="q-pa-xs col-xs-12 col-md-9 col-sm-12 col-lg-9">
           <q-table
             row-key="name"
             wrap-cells
@@ -231,7 +244,7 @@
             </template>
           </q-table>
         </div>
-        <div class="col-xs-12 col-sm-12 col-lg-3">
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
           <q-list separator dense>
             <q-item clickable v-ripple>
               <q-item-section>OP.GRAVADA:</q-item-section>
@@ -250,9 +263,11 @@
                 <q-select
                   label="Condición de pagos"
                   outlined
-                  :options="paymentsCondition"
-                  v-model="paymentCondition"
                   dense
+                  :disable="dataProduct.length <= 0"
+                  :readonly="dataProduct.length <= 0"
+                  v-model="paymentCondition"
+                  :options="paymentsCondition"
                   @input="openOptionDialog('payments')"
                 />
               </q-item-section>
@@ -263,7 +278,7 @@
       <q-separator/>
       <q-card-actions align="right">
         <q-btn color="negative" label="Cancelar facturación" @click="cancelBill"/>
-        <q-btn color="primary" label="Generar factura" @click="modelBill"/>
+        <q-btn color="primary" label="Generar factura" @click="modelBill" :disable="dataProduct.length <= 0"/>
       </q-card-actions>
     </q-card>
     <q-dialog
@@ -383,15 +398,22 @@
           align="left"
           narrow-indicator
         >
-          <q-tab name="payments" label="Pagos" />
+          <q-tab name="payments" label="Pagos" v-if="paymentCondition === 'Contado'"/>
+          <q-tab name="fees" label="Cuotas" v-if="paymentCondition === 'Crédito'"/>
           <q-tab name="guides" label="Guias" />
         </q-tabs>
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="payments">
             <q-card-section class="q-py-none row">
-              <div class="text-h6 col-5">Agregar Pagos</div>
+              <div class="text-h6 col-5">
+                Agregar Pagos
+              </div>
             </q-card-section>
-            <q-card-section class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm" v-for="(payment, index) in payments" :key="payment.id">
+            <q-card-section
+              class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm"
+              v-for="(payment, index) in payments"
+              :key="payment.id"
+            >
               <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
                 <q-select
                   use-input
@@ -460,8 +482,12 @@
                 <q-btn icon="close" dense round color="negative"  @click="deletePayment(index)"/>
               </div>
             </q-card-section>
-            <q-card-section>
-              <q-form @submit="addPayment" class="row justify-between q-col-gutter-sm" ref="addPayment">
+            <q-card-section v-if="(totalSale - totalPaid) > 0">
+              <q-form
+                @submit="addPayment"
+                class="row justify-between q-col-gutter-sm"
+                ref="addPayment"
+              >
                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
                   <q-select
                     use-input
@@ -544,7 +570,13 @@
                   />
                 </div>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
-                  <q-btn icon="add" dense round color="primary" type="submit"/>
+                  <q-btn
+                    icon="add"
+                    dense
+                    round
+                    color="primary"
+                    type="submit"
+                  />
                 </div>
               </q-form>
             </q-card-section>
@@ -556,6 +588,100 @@
                 </q-item>
                 <q-item clickable v-ripple>
                   <q-item-section>TOTAL PAGADO</q-item-section>
+                  <q-item-section side>S/ {{ totalPaid }}</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section>PENDIENTE</q-item-section>
+                  <q-item-section side>S/ {{ totalSale - totalPaid }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-card-section>
+          </q-tab-panel>
+          <q-tab-panel name="fees" v-if="paymentCondition === 'Crédito'">
+            <q-card-section class="q-py-none row">
+              <div class="text-h6 col-5">
+                Agregar Cuotas
+              </div>
+            </q-card-section>
+            <q-card-section
+              class="row q-col-gutter-x-sm q-py-xs q-mt-sm"
+              v-for="(feesOne, index) in fees"
+              :key="feesOne.id"
+            >
+              <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                <q-input
+                  type="date"
+                  label="Fecha de cobro"
+                  outlined
+                  dense
+                  v-model="feesOne.date"
+                />
+              </div>
+              <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                <q-input
+                  label="Monto"
+                  outlined
+                  dense
+                  v-model="feesOne.amount"
+                  @input="totalPayemnts"
+                />
+              </div>
+              <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                <q-btn
+                  icon="close"
+                  color="negative"
+                  dense
+                  round
+                  @click="deleteFees(index)"
+                />
+              </div>
+            </q-card-section>
+            <q-card-section v-if="(totalSale - totalPaid) > 0">
+              <q-form
+                @submit="addFees"
+                class="row q-col-gutter-sm"
+                ref="fees"
+              >
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                  <q-input
+                    type="date"
+                    label="Fecha de cobro"
+                    outlined
+                    dense
+                    v-model="dateFees"
+                  />
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                  <q-input
+                    label="Monto"
+                    outlined
+                    dense
+                    v-model="paymentAmount"
+                    :rules="[
+                      val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+                      val => val <= (totalSale - totalPaid) || 'El monto no puede superar el total a pagar'
+                    ]"
+                  />
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                  <q-btn
+                    icon="add"
+                    dense
+                    round
+                    color="primary"
+                    type="submit"
+                  />
+                </div>
+              </q-form>
+            </q-card-section>
+            <q-card-section>
+              <q-list separator dense>
+                <q-item clickable v-ripple active>
+                  <q-item-section>TOTAL A PAGAR:</q-item-section>
+                  <q-item-section side>S/ {{ totalSale }}</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section>TOTAL CUOTAS</q-item-section>
                   <q-item-section side>S/ {{ totalPaid }}</q-item-section>
                 </q-item>
                 <q-item clickable v-ripple>
@@ -710,6 +836,8 @@ export default {
       paymentAmount: 0,
       paymentReference: null,
       totalPaid: 0,
+      fees: [],
+      dateFees: date.formatDate(new Date(), 'YYYY-MM-DD'),
       /**
        * Visible loading page
        * @type {Boolean} status loading page
@@ -884,6 +1012,7 @@ export default {
         bill_electronic_details: this.dataProduct,
         bill_electronic_payments: this.modelPayments(this.payments),
         bill_electronic_guides: [],
+        bill_fees: this.fees,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
         created_at: date.formatDate(this.billing.created_at, 'YYYY-MM-DDTHH:mm:ss')
@@ -908,9 +1037,13 @@ export default {
           this.visible = false
         })
     },
+    /**
+     * Clean bill data
+     */
     cancelBill () {
       this.dataProduct = []
       this.payments = []
+      this.fees = []
       this.billing.client = null
       this.billing.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.billing.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
@@ -948,8 +1081,9 @@ export default {
      * @param {String} data name tab
      */
     openOptionDialog (data) {
-      this.tab = data
+      this.tab = this.paymentCondition === 'Crédito' ? 'fees' : data
       this.modalPaid = true
+      this.paymentAmount = this.totalSale - this.totalPaid
     },
     /**
      * Delete payment
@@ -968,9 +1102,44 @@ export default {
       this.paymentAmount = this.totalSale - this.totalPaid
     },
     /**
+     * Delete payment
+     * @param {Number} index indiex payment
+     */
+    deleteFees (index) {
+      this.fees.splice(index, 1)
+      this.totalPayemnts()
+      this.paymentAmount = this.totalSale - this.totalPaid
+    },
+    /**
+     * Add fees to bill electronic
+     */
+    addFees () {
+      this.payments = []
+      this.fees.push({
+        amount: this.paymentAmount,
+        date: this.dateFees,
+        user_created_id: this.userSession.id
+      })
+      this.totalPayemnts()
+      this.paymentAmount = this.totalSale - this.totalPaid
+      this.resetValidations(this.$refs.fees)
+    },
+    /**
+     * Reset validation
+     * @param {Object} ref ref DOM
+     */
+    resetValidations (ref) {
+      setTimeout(() => {
+        if (this.paymentAmount) {
+          ref.resetValidation()
+        }
+      }, 100)
+    },
+    /**
      * Add payment to bill electronic
      */
     addPayment () {
+      this.fees = []
       this.payments.push({
         paymentAmount: this.paymentAmount,
         paymentReference: this.paymentReference,
@@ -982,9 +1151,7 @@ export default {
       this.paymentReference = null
       this.paymentDestination = null
       this.paymentMethod = null
-      setTimeout(() => {
-        this.$refs.addPayment.resetValidation()
-      }, 100)
+      this.resetValidations(this.$refs.addPayment)
     },
     /**
      * Calculate subtotal products
@@ -1016,7 +1183,7 @@ export default {
         coin: 'PEN'
       })
         .then(({ res }) => {
-          if (res.data.length > 0 && res.data.exchange_rates.length > 0) {
+          if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
             this.billing.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
           }
         })
@@ -1343,10 +1510,12 @@ export default {
      * Calculate billing total
      */
     totalPayemnts () {
-      if (this.payments.length > 0) {
+      const data = this.paymentCondition === 'Contado' ? this.payments : this.fees
+      if (data.length > 0) {
         let total = 0
-        this.payments.forEach(element => {
-          total = Number(total) + Number(element.paymentAmount)
+        data.forEach(element => {
+          const amount = this.paymentCondition === 'Contado' ? element.paymentAmount : element.amount
+          total = Number(total) + Number(amount)
         })
         this.totalPaid = total
       } else {
