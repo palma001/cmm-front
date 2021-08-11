@@ -29,9 +29,11 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
+              'col-xs-6': true,
+              'col-sm-6': true,
+              'col-md-6': true,
+              'col-lg-6': true,
+              'col-xl-6': true
             },
             directives: [
               {
@@ -66,9 +68,11 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
+              'col-xs-6': true,
+              'col-sm-6': true,
+              'col-md-6': true,
+              'col-lg-6': true,
+              'col-xl-6': true
             },
             directives: [
               {
@@ -103,9 +107,11 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
+              'col-xs-6': true,
+              'col-sm-6': true,
+              'col-md-6': true,
+              'col-lg-6': true,
+              'col-xl-6': true
             },
             directives: [
               {
@@ -140,9 +146,11 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
+              'col-xs-6': true,
+              'col-sm-6': true,
+              'col-md-6': true,
+              'col-lg-6': true,
+              'col-xl-6': true
             },
             directives: [
               {
@@ -177,9 +185,11 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
+              'col-xs-6': true,
+              'col-sm-6': true,
+              'col-md-6': true,
+              'col-lg-6': true,
+              'col-xl-6': true
             },
             directives: [
               {
@@ -218,9 +228,11 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
+              'col-xs-6': true,
+              'col-sm-6': true,
+              'col-md-6': true,
+              'col-lg-6': true,
+              'col-xl-6': true
             },
             directives: [
               {

@@ -104,7 +104,6 @@
       />
     </q-dialog>
     <q-dialog
-      position="right"
       full-height
       persistent
       v-model="addDialig"
