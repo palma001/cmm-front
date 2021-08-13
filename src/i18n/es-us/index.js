@@ -23,7 +23,8 @@ export default {
     error: 'algo salio mal!',
     code: 'Código',
     sucursales: 'sucursales',
-    sales: 'ventas'
+    sales: 'ventas',
+    errorDocumentNumber: 'Documento invalido'
   },
 
   // users

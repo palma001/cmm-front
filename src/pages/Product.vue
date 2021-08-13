@@ -104,8 +104,8 @@
       />
     </q-dialog>
     <q-dialog
-      full-height
       persistent
+      full-height
       v-model="addDialig"
     >
       <dynamic-form
@@ -114,7 +114,183 @@
         :loading="loadingForm"
         @cancel="addDialig = false"
         @save="save"
-      />
+      >
+        <template>
+          <q-card>
+            <q-tabs
+              v-model="tab"
+              dense
+              class="text-grey"
+              active-color="primary"
+              indicator-color="primary"
+              align="justify"
+              narrow-indicator
+            >
+              <q-tab name="priceList" label="Lista de precios" />
+              <q-tab name="otherAttribute" label="Otros atributos" />
+            </q-tabs>
+            <q-separator />
+            <q-tab-panels v-model="tab" animated>
+              <q-tab-panel name="priceList">
+                <div class="row q-col-gutter-xs" v-for="(productPrice, index) in productPrices" :key="productPrice.id">
+                  <div class="col-6">
+                    <q-input
+                      label="Nombre"
+                      outlined
+                      dense
+                      v-model="productPrice.name"
+                      :rules="[val => val && val.length > 0 || 'Este campo es requerido']"
+                    />
+                  </div>
+                  <div class="col-5">
+                    <q-input
+                      label="Precio"
+                      outlined
+                      dense
+                      v-model="productPrice.price"
+                      :rules="[val => val && val.length > 0 || 'Este campo es requerido']"
+                    />
+                  </div>
+                  <div class="col-1 text-right q-mt-xs">
+                    <q-btn
+                      dense
+                      round
+                      icon="delete"
+                      color="negative"
+                      @click="deletePrice(index)"
+                    />
+                  </div>
+                </div>
+                <q-form ref="fromPrice" class="row q-col-gutter-xs" @submit="addPrice">
+                  <div class="col-6">
+                    <q-input
+                      label="Nombre"
+                      outlined
+                      dense
+                      v-model="namePrice"
+                      :rules="[val => val && val.length > 0 || 'Este campo es requerido']"
+                    />
+                  </div>
+                  <div class="col-5">
+                    <q-input
+                      label="Precio"
+                      outlined
+                      dense
+                      v-model="priceProduct"
+                      :rules="[val => val && val.length > 0 || 'Este campo es requerido']"
+                    />
+                  </div>
+                  <div class="col-1 text-right q-mt-xs">
+                    <q-btn
+                      dense
+                      round
+                      icon="add"
+                      color="primary"
+                      type="submit"
+                    />
+                  </div>
+                </q-form>
+              </q-tab-panel>
+              <q-tab-panel name="otherAttribute">
+                <div class="row q-col-gutter-xs" v-for="(attrubteSeved, index) in attributesSeved" :key="attrubteSeved.id">
+                  <div class="col-6">
+                    <q-select
+                      autocomplete="off"
+                      use-input
+                      hide-selected
+                      fill-input
+                      dense
+                      outlined
+                      clearable
+                      input-debounce="20"
+                      name="attributeType"
+                      v-model="attrubteSeved.attributeType"
+                      option-label="name"
+                      option-value="id"
+                      label="Atributo"
+                      :rules="[val => val || 'Este campo es requerido']"
+                      :options="listAttributeTypes"
+                    >
+                      <template v-slot:no-option>
+                        <q-item>
+                          <q-item-section class="text-grey">
+                            No results
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </div>
+                  <div class="col-5">
+                    <q-input
+                      label="Valor"
+                      outlined
+                      dense
+                      v-model="attrubteSeved.description"
+                      :rules="[val => val && val.length > 0 || 'Este campo es requerido']"
+                    />
+                  </div>
+                  <div class="col-1 text-right q-mt-xs">
+                    <q-btn
+                      dense
+                      round
+                      icon="delete"
+                      color="negative"
+                      @click="deleteAttribute(index)"
+                    />
+                  </div>
+                </div>
+                <q-form ref="fromAttribute" class="row q-col-gutter-xs" @submit="addAttribute">
+                  <div class="col-6">
+                    <q-select
+                      autocomplete="off"
+                      use-input
+                      hide-selected
+                      fill-input
+                      dense
+                      outlined
+                      clearable
+                      input-debounce="20"
+                      name="attributeType"
+                      v-model="attributeType"
+                      option-label="name"
+                      option-value="id"
+                      label="Atributo"
+                      :rules="[val => val || 'Este campo es requerido']"
+                      :options="listAttributeTypes"
+                    >
+                      <template v-slot:no-option>
+                        <q-item>
+                          <q-item-section class="text-grey">
+                            No results
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </div>
+                  <div class="col-5">
+                    <q-input
+                      label="Valor"
+                      outlined
+                      dense
+                      v-model="attributeValue"
+                      :rules="[val => val && val.length > 0 || 'Este campo es requerido']"
+                    />
+                  </div>
+                  <div class="col-1 text-right q-mt-xs">
+                    <q-btn
+                      dense
+                      round
+                      icon="add"
+                      color="primary"
+                      type="submit"
+                    />
+                  </div>
+                </q-form>
+              </q-tab-panel>
+            </q-tab-panels>
+          </q-card>
+        </template>
+      </dynamic-form>
     </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
@@ -138,6 +314,7 @@ export default {
   },
   data () {
     return {
+      tab: 'priceList',
       productServices,
       visible: false,
       brand: null,
@@ -209,11 +386,17 @@ export default {
        * @type {Object} attribute type
        */
       attributeTypes: {},
+      attributeType: null,
+      attributeValue: null,
+      attributesSeved: [],
       /**
        * List attribute product
        * @type {Array}
        */
-      listAttributeTypes: []
+      listAttributeTypes: [],
+      productPrices: [],
+      priceProduct: null,
+      namePrice: null
     }
   },
   created () {
@@ -229,6 +412,55 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Delete attributte product
+     * @param {Number} index index attribute
+     */
+    deleteAttribute (index) {
+      this.attributesSeved.splice(index, 1)
+    },
+    /**
+     * Delete attributte product
+     * @param {Number} index index attribute
+     */
+    deletPrice (index) {
+      this.productPrices.splice(index, 1)
+    },
+    /**
+     * Reset validation
+     * @param {Object} ref ref DOM
+     */
+    resetValidations (ref) {
+      setTimeout(() => {
+        ref.resetValidation()
+      })
+    },
+    /**
+     * Add attribute product
+     */
+    addPrice () {
+      this.productPrices.push({
+        price: this.priceProduct,
+        name: this.namePrice,
+        user_created_id: this.userSession.id
+      })
+      this.priceProduct = null
+      this.namePrice = null
+      this.resetValidations(this.$refs.fromPrice)
+    },
+    /**
+     * Add attribute product
+     */
+    addAttribute () {
+      this.attributesSeved.push({
+        attributeType: this.attributeType,
+        description: this.attributeValue,
+        user_created_id: this.userSession.id
+      })
+      this.attributeType = null
+      this.attributeValue = null
+      this.resetValidations(this.$refs.fromAttribute)
+    },
     /**
      * Next input
      */
@@ -371,6 +603,17 @@ export default {
           this.loadingForm = false
         })
     },
+    modelAttributeModel (data) {
+      const attributes = []
+      data.forEach(element => {
+        attributes.push({
+          attribute_type_id: element.attributeType.id,
+          description: element.description,
+          user_created_id: element.user_created_id
+        })
+      })
+      return attributes
+    },
     /**
      * Save Branch Office
      * @param  {Object}
@@ -378,12 +621,18 @@ export default {
     save (data) {
       data.user_created_id = this.userSession.id
       data.user_id = this.userSession.id
+      data.attribute_types = this.modelAttributeModel(this.attributesSeved)
+      data.product_prices = this.productPrices
+      console.log(this.modelAttributeModel(this.attributesSeved))
       this.loadingForm = true
       this.$services.postData(['products'], data)
         .then(({ res }) => {
           this.addDialig = false
           this.loadingForm = false
           this.getProducts(this.params)
+          this.attributesSeved = []
+          this.productPrices = []
+          this.tab = 'priceList'
           this.notify(this, 'product.addSuccessfull', 'positive', 'mood')
         })
         .catch(() => {

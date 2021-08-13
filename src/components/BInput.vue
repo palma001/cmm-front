@@ -11,6 +11,7 @@
     :outlined="outlined"
     :dense="dense"
     @input="input"
+    @blur="blur"
   />
 </template>
 
@@ -79,6 +80,9 @@ export default {
   methods: {
     input (value) {
       this.$emit('input', value)
+    },
+    blur (value) {
+      this.$emit('blur', this.valueProp)
     }
   }
 }

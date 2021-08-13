@@ -507,8 +507,7 @@ export default {
                 ref: 'form',
                 class: {
                   row: true,
-                  'justify-evenly': true,
-                  'q-gutter-sm': true
+                  'q-col-gutter-xs': true
                 }
               },
               [

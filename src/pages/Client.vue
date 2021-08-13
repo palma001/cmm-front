@@ -63,6 +63,7 @@
         module="client"
         :config="client"
         :loading="loadingForm"
+        :apiKey="['document_number']"
         @cancel="addDialig = false"
         @save="save"
       />

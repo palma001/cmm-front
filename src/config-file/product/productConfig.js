@@ -29,7 +29,7 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-6': true,
+              'col-xs-12': true,
               'col-sm-6': true,
               'col-md-6': true,
               'col-lg-6': true,
@@ -68,7 +68,7 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-6': true,
+              'col-xs-12': true,
               'col-sm-6': true,
               'col-md-6': true,
               'col-lg-6': true,
@@ -107,7 +107,7 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-6': true,
+              'col-xs-12': true,
               'col-sm-6': true,
               'col-md-6': true,
               'col-lg-6': true,
@@ -146,7 +146,7 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-6': true,
+              'col-xs-12': true,
               'col-sm-6': true,
               'col-md-6': true,
               'col-lg-6': true,
@@ -185,7 +185,7 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-6': true,
+              'col-xs-12': true,
               'col-sm-6': true,
               'col-md-6': true,
               'col-lg-6': true,
@@ -228,7 +228,7 @@ export const product = [
               outlined: true
             },
             class: {
-              'col-xs-6': true,
+              'col-xs-12': true,
               'col-sm-6': true,
               'col-md-6': true,
               'col-lg-6': true,

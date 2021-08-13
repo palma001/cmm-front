@@ -137,7 +137,9 @@ export const client = [
             props: {
               type: 'text',
               dense: true,
-              outlined: true
+              outlined: true,
+              api: true,
+              urlApi: ['ruc']
             },
             class: {
               'col-xs-12': true,

@@ -95,11 +95,11 @@ export default {
       required: false
     },
     /*
-     * Name microservice
-     * @type {String} microservice
+     * Name api key
+     * @type {Array} api key
      */
-    microservices: {
-      type: String,
+    apiKey: {
+      type: Array,
       required: false
     },
     /*
@@ -304,14 +304,15 @@ export default {
      * @type {Object} data get
      *
      */
-    getPrimaryKey (data) {
-      this.$services.getDataParams(
-        [this.microservices, this.module],
-        data[this.primaryKey[0]])
+    getTercero (url, propTag) {
+      this.$services.getOneData(url)
         .then(res => {
-          if (res.res.status === 200) {
-            this.invalidateKey = true
-            this.errorValidation(this.primaryKey[0])
+          if (!res.data) {
+            this.apiKey.forEach((apiTag) => {
+              if (propTag === apiTag) {
+                this.invalidateKey = true
+              }
+            })
           } else {
             this.invalidateKey = false
           }
@@ -329,6 +330,14 @@ export default {
         return data.value
       }
       return data
+    },
+    validateKey (propTag) {
+      this.apiKey.forEach((apiTag) => {
+        if (this.invalidateKey && propTag === apiTag) {
+          return true
+        }
+        return false
+      })
     },
     /**
      * Description
@@ -368,6 +377,12 @@ export default {
                       },
                       select: function (value) {
                         self.objectToBind[propTag] = value
+                      },
+                      blur: function (value) {
+                        if (prop.actionable.component.props.api && value) {
+                          const url = [prop.actionable.component.props.urlApi, value]
+                          self.getTercero(url, propTag)
+                        }
                       }
                     },
                     directives: (function () {
@@ -428,8 +443,8 @@ export default {
      * @return {String} message the error
      */
     messageErrorPrimary (propTag) {
-      if (this.invalidateKey && propTag === this.primaryKey[0]) {
-        return this.$t('invalidatePrimaryKey', 'message')
+      if (this.invalidateKey && propTag === 'document_number') {
+        return this.$t('template.errorDocumentNumber')
       } else {
         return ''
       }
@@ -513,7 +528,14 @@ export default {
                 }
               },
               [
-                self.createInput(createElement, self.config, self)
+                self.createInput(createElement, self.config, self),
+                createElement(
+                  'div',
+                  {
+                    class: { 'q-pa-xs': true, 'full-width': true }
+                  },
+                  this.$slots.default
+                )
               ]
             )
           ]
