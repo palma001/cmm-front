@@ -511,7 +511,14 @@ export default {
                 }
               },
               [
-                self.createInput(createElement, self.config, self)
+                self.createInput(createElement, self.config, self),
+                createElement(
+                  'div',
+                  {
+                    class: { 'q-pa-xs': true, 'full-width': true }
+                  },
+                  this.$slots.default
+                )
               ]
             )
           ]

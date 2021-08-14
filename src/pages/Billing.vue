@@ -289,7 +289,7 @@
         <q-card-section>
           <div class="text-h6">Agregar Producto o Servicio</div>
         </q-card-section>
-        <q-card-section class="row justify-between q-col-gutter-sm">
+        <q-card-section class="row justify-between q-col-gutter-x-sm">
           <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
             <q-select
               use-input
@@ -306,7 +306,7 @@
               data-vv-as="field"
               option-value="id"
               option-label="full_name"
-              label="Productos"
+              :label="value ? 'C-P-D' : 'Productos'"
               :options="products"
               @input="selectProuct"
               @filter="filterProducts"
@@ -317,6 +317,17 @@
                     No results
                   </q-item-section>
                 </q-item>
+              </template>
+              <template v-slot:append>
+                <q-toggle
+                  v-model="value"
+                  color="primary"
+                  dense
+                >
+                  <q-tooltip>
+                    Activar filtro por CPD
+                  </q-tooltip>
+                </q-toggle>
               </template>
             </q-select>
           </div>
@@ -813,6 +824,7 @@ export default {
   },
   data () {
     return {
+      value: false,
       guide: null,
       description: null,
       purchase_order: null,
@@ -994,6 +1006,20 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    /**
+     * Filter primary
+     */
+    filterPrimary (value) {
+      const valeArray = value.split('-')
+      const param = {
+        filterProduct: {
+          code: valeArray[1],
+          'brand.name': valeArray[0],
+          supsec: valeArray[2]
+        }
+      }
+      this.getProducts(param)
+    },
     /**
      * Model bill
      */
@@ -1334,7 +1360,17 @@ export default {
      */
     filterProducts (value, update) {
       update(() => {
-        this.getProducts(value)
+        if (this.value) {
+          this.filterPrimary(value)
+        } else {
+          const param = {
+            dataSearch: {
+              description: value,
+              code: value
+            }
+          }
+          this.getProducts(param)
+        }
       })
     },
     /**
@@ -1343,10 +1379,7 @@ export default {
      */
     getProducts (value) {
       this.$services.getData(['products'], {
-        dataSearch: {
-          name: value,
-          code: value
-        },
+        ...value,
         paginate: true,
         perPage: 100
       })
