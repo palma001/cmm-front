@@ -300,25 +300,6 @@ export default {
       }, 500)
     },
     /**
-     * Get validation primary key
-     * @type {Object} data get
-     *
-     */
-    getTercero (url, propTag) {
-      this.$services.getOneData(url)
-        .then(res => {
-          if (!res.data) {
-            this.apiKey.forEach((apiTag) => {
-              if (propTag === apiTag) {
-                this.invalidateKey = true
-              }
-            })
-          } else {
-            this.invalidateKey = false
-          }
-        })
-    },
-    /**
      * Other Actions
      * @type {String} action
      */
@@ -377,12 +358,6 @@ export default {
                       },
                       select: function (value) {
                         self.objectToBind[propTag] = value
-                      },
-                      blur: function (value) {
-                        if (prop.actionable.component.props.api && value) {
-                          const url = [prop.actionable.component.props.urlApi, value]
-                          self.getTercero(url, propTag)
-                        }
                       }
                     },
                     directives: (function () {
@@ -528,6 +503,13 @@ export default {
                 }
               },
               [
+                createElement(
+                  'div',
+                  {
+                    class: { 'q-pa-xs': true, 'full-width': true }
+                  },
+                  this.$slots.top
+                ),
                 self.createInput(createElement, self.config, self),
                 createElement(
                   'div',

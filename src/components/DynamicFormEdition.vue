@@ -511,6 +511,7 @@ export default {
                 }
               },
               [
+                createElement('div', this.$slots.top),
                 self.createInput(createElement, self.config, self),
                 createElement(
                   'div',

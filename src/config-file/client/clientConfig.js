@@ -5,80 +5,6 @@ export const client = [
     children: [
       {
         tabulated: {
-          name: 'name',
-          align: 'left',
-          field: row => row.name,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'name',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'last_name',
-          align: 'left',
-          field: row => row.last_name,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'last_name',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: false
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
           name: 'document_type_id',
           align: 'left',
           field: row => row.document_type ? row.document_type.name : '-',
@@ -87,7 +13,7 @@ export const client = [
         },
         actionable: {
           propTag: 'document_type',
-          addible: true,
+          addible: false,
           editable: true,
           type: 'String',
           visibleLabel: true,
@@ -100,7 +26,9 @@ export const client = [
               behavior: 'menu',
               dense: true,
               clearable: true,
-              outlined: true
+              outlined: true,
+              disable: true,
+              readonly: true
             },
             class: {
               'col-xs-12': true,
@@ -128,7 +56,7 @@ export const client = [
         },
         actionable: {
           propTag: 'document_number',
-          addible: true,
+          addible: false,
           editable: true,
           type: 'String',
           visibleLabel: true,
@@ -138,8 +66,7 @@ export const client = [
               type: 'text',
               dense: true,
               outlined: true,
-              api: true,
-              urlApi: ['ruc']
+              disable: true
             },
             class: {
               'col-xs-12': true,
@@ -151,6 +78,82 @@ export const client = [
                 name: 'validate',
                 value: {
                   required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'name',
+          align: 'left',
+          field: row => row.name,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'name',
+          addible: false,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true,
+              disable: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'last_name',
+          align: 'left',
+          field: row => row.last_name,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'last_name',
+          addible: false,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true,
+              disable: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
                 }
               }
             ]

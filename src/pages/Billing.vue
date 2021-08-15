@@ -136,7 +136,7 @@
               option-label="full_name"
               option-value="id"
               v-validate="'required'" data-vv-as="field"
-              @filter="filterClients"
+              @filter="getClients"
               :error-message="errorValidation('client')"
               :error="errors.has('client')"
               :label="ucwords($t('billing.cliente'))"
@@ -443,7 +443,7 @@
                   option-label="name"
                   label="Método de pago"
                   :options="paymentMethods"
-                  @filter="filterPaymentMethods"
+                  @filter="getPaymentMethods"
                 >
                   <template v-slot:no-option>
                     <q-item>
@@ -472,7 +472,7 @@
                   option-label="name"
                   label="Destino"
                   :options="paymentDestinations"
-                  @filter="filterPaymentDestinations"
+                  @filter="getPaymentDestinations"
                 >
                   <template v-slot:no-option>
                     <q-item>
@@ -518,7 +518,7 @@
                     label="Método de pago"
                     :rules="[val => val || 'El campo metodo de pago es requerido']"
                     :options="paymentMethods"
-                    @filter="filterPaymentMethods"
+                    @filter="getPaymentMethods"
                   >
                     <template v-slot:no-option>
                       <q-item>
@@ -548,7 +548,7 @@
                     label="Destino"
                     :rules="[val => val || 'El campo destino es requerido']"
                     :options="paymentDestinations"
-                    @filter="filterPaymentDestinations"
+                    @filter="getPaymentDestinations"
                   >
                     <template v-slot:no-option>
                       <q-item>
@@ -725,7 +725,7 @@
                   option-label="name"
                   label="Guia"
                   :options="guides"
-                  @filter="filterGuides"
+                  @filter="getGuides"
                 >
                   <template v-slot:no-option>
                     <q-item>
@@ -769,7 +769,7 @@
                     option-label="name"
                     label="Guia"
                     :options="guides"
-                    @filter="filterGuides"
+                    @filter="getGuides"
                   >
                     <template v-slot:no-option>
                       <q-item>
@@ -1009,7 +1009,7 @@ export default {
     /**
      * Filter primary
      */
-    filterPrimary (value) {
+    filterPrimary (value, update) {
       const valeArray = value.split('-')
       const param = {
         filterProduct: {
@@ -1018,7 +1018,7 @@ export default {
           supsec: valeArray[2]
         }
       }
-      this.getProducts(param)
+      this.getProducts(param, update)
     },
     /**
      * Model bill
@@ -1221,11 +1221,7 @@ export default {
       this.getOpeationTypes()
       this.getVoucherTypes()
       this.getCoins()
-      this.getClients()
       this.getExchange()
-      this.getProducts()
-      this.getPaymentMethods()
-      this.getPaymentDestinations()
     },
     /**
      * Set Data in table
@@ -1327,19 +1323,9 @@ export default {
       })
     },
     /**
-     * Filter clients
-     * @param {String} value data filter
-     * @param {Callback} update update select data
-     */
-    filterClients (value, update) {
-      update(() => {
-        this.getClients(value)
-      })
-    },
-    /**
      * All CLient
      */
-    getClients (value) {
+    getClients (value, update) {
       this.$services.getData(['clients'], {
         dataSearch: {
           document_number: value,
@@ -1350,7 +1336,9 @@ export default {
         perPage: 100
       })
         .then(({ res }) => {
-          this.clients = res.data.data
+          update(() => {
+            this.clients = res.data.data
+          })
         })
     },
     /**
@@ -1359,49 +1347,39 @@ export default {
      * @param {Callback} update update select data
      */
     filterProducts (value, update) {
-      update(() => {
-        if (this.value) {
-          this.filterPrimary(value)
-        } else {
-          const param = {
-            dataSearch: {
-              description: value,
-              code: value
-            }
+      if (this.value) {
+        this.filterPrimary(value, update)
+      } else {
+        const param = {
+          dataSearch: {
+            description: value,
+            code: value
           }
-          this.getProducts(param)
         }
-      })
+        this.getProducts(param, update)
+      }
     },
     /**
      * Get products
      * @param {String} value data filter
      */
-    getProducts (value) {
+    getProducts (value, update) {
       this.$services.getData(['products'], {
         ...value,
         paginate: true,
         perPage: 100
       })
         .then(({ res }) => {
-          this.products = res.data.data
+          update(() => {
+            this.products = res.data.data
+          })
         })
-    },
-    /**
-     * Filter Products
-     * @param {String} value data filter
-     * @param {Callback} update update select data
-     */
-    filterGuides (value, update) {
-      update(() => {
-        this.getGuides(value)
-      })
     },
     /**
      * Get products
      * @param {String} value data filter
      */
-    getGuides (value) {
+    getGuides (value, update) {
       this.$services.getData(['guides'], {
         dataSearch: {
           name: value,
@@ -1411,24 +1389,16 @@ export default {
         perPage: 100
       })
         .then(({ res }) => {
-          this.products = res.data
+          update(() => {
+            this.products = res.data
+          })
         })
-    },
-    /**
-     * Filter psyment method
-     * @param {String} value data filter
-     * @param {Callback} update update select data
-     */
-    filterPaymentMethods (value, update) {
-      update(() => {
-        this.getPaymentMethods(value)
-      })
     },
     /**
      * Get payment method
      * @param {String} value data filter
      */
-    getPaymentMethods (value) {
+    getPaymentMethods (value, update) {
       this.$services.getData(['payment-methods'], {
         dataSearch: {
           name: value
@@ -1437,24 +1407,16 @@ export default {
         perPage: 100
       })
         .then(({ res }) => {
-          this.paymentMethods = res.data.data
+          update(() => {
+            this.paymentMethods = res.data.data
+          })
         })
-    },
-    /**
-     * Filter payment destination
-     * @param {String} value data filter
-     * @param {Callback} update update select data
-     */
-    filterPaymentDestinations (value, update) {
-      update(() => {
-        this.getPaymentDestinations(value)
-      })
     },
     /**
      * Get payment destination
      * @param {String} value data filter
      */
-    getPaymentDestinations (value) {
+    getPaymentDestinations (value, update) {
       this.$services.getData(['payment-destinations'], {
         dataSearch: {
           name: value
@@ -1463,7 +1425,9 @@ export default {
         perPage: 100
       })
         .then(({ res }) => {
-          this.paymentDestinations = res.data.data
+          update(() => {
+            this.paymentDestinations = res.data.data
+          })
         })
     },
     /**

@@ -10,6 +10,8 @@
     :standout="standout"
     :outlined="outlined"
     :dense="dense"
+    :disable="disable"
+    :readonly="readonly"
     @input="input"
     @blur="blur"
   />
@@ -27,6 +29,14 @@ export default {
       default: ''
     },
     error: {
+      type: Boolean,
+      default: false
+    },
+    disable: {
+      type: Boolean,
+      default: false
+    },
+    readonly: {
       type: Boolean,
       default: false
     },

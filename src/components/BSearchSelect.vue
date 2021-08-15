@@ -16,6 +16,8 @@
     :error="error"
     :use-chips="useChips"
     :max-values="maxValue"
+    :disable="disable"
+    :readonly="readonly"
     @filter="filter"
     @input="input"
     @select="select"
@@ -55,6 +57,14 @@ export default {
       default: ''
     },
     error: {
+      type: Boolean,
+      default: false
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
+    disable: {
       type: Boolean,
       default: false
     },
