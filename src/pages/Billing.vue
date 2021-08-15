@@ -39,7 +39,7 @@
               data-vv-as="field"
               option-value="id"
               option-label="name"
-              :label="ucwords($t('billing.typeOfSale'))"
+              :label="ucwords($t('billing.operation_type'))"
               :options="operationTypes"
               :error-message="errorValidation('operationType')"
               :error="errors.has('operationType')"
@@ -70,7 +70,7 @@
               data-vv-as="field"
               option-value="id"
               option-label="name"
-              :label="ucwords($t('billing.voucherType'))"
+              :label="ucwords($t('billing.voucher_type'))"
               :options="voucherTypes"
               :error-message="errorValidation('voucherType')"
               :error="errors.has('voucherType')"
@@ -139,7 +139,7 @@
               @filter="getClients"
               :error-message="errorValidation('client')"
               :error="errors.has('client')"
-              :label="ucwords($t('billing.cliente'))"
+              :label="ucwords($t('billing.client'))"
               :options="clients"
             >
               <template v-slot:no-option>

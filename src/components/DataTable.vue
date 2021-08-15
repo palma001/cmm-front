@@ -64,8 +64,56 @@
           </q-td>
           <q-td v-for="col in props.cols"
             :key="col.name"
-            :props="props">
-            {{ col.value ? col.value : '-' }}
+            :props="props"
+          >
+            <q-btn-dropdown
+              splits
+              push
+              glossy
+              no-caps
+              v-if="col.button && col.button.type === 'dropdown'"
+              :color="col.button.color"
+              :icon="col.button.icon"
+              :label="col.button.label ? ucwords($t(`${module}.${col.name}`)) : ''"
+              :class="col.button.class"
+              :size="col.button.size"
+            >
+              <q-list>
+                <q-item
+                  clickable
+                  v-for="option in col.button.options"
+                  :key="option.id"
+                  @click="$emit(option.event, props.row)"
+                >
+                  <q-item-section avatar v-if="option.avatar">
+                    <q-avatar
+                      :icon="option.avatar.icon"
+                      :color="option.avatar.color"
+                      :text-color="option.avatar.textColor"
+                      :size="option.avatar.size"
+                    />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label v-if="option.label">
+                      {{ ucwords($t(`${module}.${option.label}`)) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+            <q-btn
+              v-else-if="col.button && col.button.type === 'button'"
+              :label="ucwords($t(`${module}.${col.button.label}`))"
+              :icon="col.button.icon"
+              :color="col.button.color"
+              :size="col.button.size"
+              :push="col.button.push"
+              :class="col.button.class"
+              @click="$emit(col.button.event, props.row)"
+            />
+            <span v-else>
+              {{ col.value ? col.value : '-' }}
+            </span>
           </q-td>
           <q-td v-if="action" align="center">
             <q-btn

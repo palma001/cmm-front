@@ -114,9 +114,17 @@ export default {
     error: 'A ocurrido un error',
     expiration_date: 'fecha de expiración',
     seller: 'vendedor',
-    igv: 'igv'
+    igv: 'igv',
+    download: 'descargas',
+    XML: 'XML',
+    PDF: 'PDF',
+    CDR: 'CDR',
+    payment: 'pagos',
+    options: 'opciones',
+    note: 'Nota',
+    guide: 'guía',
+    newBilling: 'Nueva factura'
   },
-
   arching: {
     notFound: 'Arqueo cerrado, pongase en contacto con el administrador'
   },
