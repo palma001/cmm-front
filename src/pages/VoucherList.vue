@@ -124,7 +124,18 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
-      <q-table
+      <data-table
+          title="list"
+          module="billing"
+          searchable
+          action
+          :column="billingConfig"
+          :data="data"
+          :loading="loadingTable"
+          :optionPagination="optionPagination"
+          @on-load-data="loadData"
+        />
+      <!-- <q-table
         title="Comprobantes"
         :data="data"
         :columns="columns"
@@ -340,123 +351,51 @@
           </q-tr>
         </template>
 
-      </q-table>
+      </q-table> -->
     </div>
   </q-page>
 </template>
 
 <script>
+import { billingConfig } from '../config-file/billing/billingConfig.js'
+import { mixins } from '../mixins'
+import DataTable from '../components/DataTable.vue'
 export default {
+  mixins: [mixins.containerMixin],
+  components: {
+    DataTable
+  },
   data () {
     return {
-      text: '',
-      visibleColumns: ['id', 'soap', 'dateEmission', 'dateExp', 'client', 'number', 'noteCd', 'state', 'user', 'coin', 'tGravado', 'tExportacion', 'tGratuita', 'tInafecta', 'tExonerado', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'paid', 'downloads', 'actions'],
-      columns: [
-        {
-          name: 'name',
-          required: true,
-          label: '#',
-          align: 'left',
-          field: row => row.name,
-          format: val => `${val}`,
-          sortable: true
-        },
-        { name: 'soap', align: 'center', label: 'SOAP', field: 'soap', sortable: true },
-        { name: 'dateEmission', align: 'center', label: 'F. Emisión', field: 'dateEmission', sortable: true },
-        { name: 'dateExp', align: 'center', label: 'F. Vencimiento', field: 'dateExp', sortable: true },
-        { name: 'client', align: 'center', label: 'Cliente', field: 'client', sortable: true },
-        { name: 'number', align: 'center', label: 'Número', field: 'number', sortable: true },
-        { name: 'noteCd', align: 'center', label: 'Nota C/D', field: 'noteCd', sortable: true },
-        { name: 'state', align: 'center', label: 'Estado', field: 'state', sortable: true },
-        { name: 'user', align: 'center', label: 'Usuario', field: 'user', sortable: true },
-        { name: 'coin', align: 'center', label: 'Moneda', field: 'coin', sortable: true },
-        { name: 'tExportacion', align: 'center', label: 'T. Expotación', field: 'tExportacion', sortable: true },
-        { name: 'tGratuita', align: 'center', label: 'T. Gratuita', field: 'tGratuita', sortable: true },
-        { name: 'tInafecta', align: 'center', label: 'T. Inafecta', field: 'tInafecta', sortable: true },
-        { name: 'tExonerado', align: 'center', label: 'T. Exonerado', field: 'tExonerado', sortable: true },
-        { name: 'tGravado', align: 'center', label: 'T. Gravado', field: 'tGravado', sortable: true },
-        { name: 'tIgv', align: 'center', label: 'T. Igv', field: 'tIgv', sortable: true },
-        { name: 'total', align: 'center', label: 'Total', field: 'total', sortable: true },
-        { name: 'saldo', align: 'center', label: 'Saldo', field: 'saldo', sortable: true },
-        { name: 'ordenCompra', align: 'center', label: 'Orden de Compra', field: 'ordenCompra', sortable: true },
-        { name: 'paid', align: 'center', label: 'Pagos', field: 'paid', sortable: true },
-        { name: 'downloads', align: 'center', label: 'Descargas', field: 'downloads' },
-        { name: 'actions', align: 'center', label: 'Acciones', field: 'actions' }
-      ],
-      data: [
-        {
-          name: '1',
-          soap: 'Demo1',
-          dateEmission: '2021-07-31',
-          dateExp: '2021-07-31',
-          client: 'CCAMA NIFLA SAUL RAMIRO 10098011680',
-          number: 'F001-31 FACTURA ELECTRÓNICA',
-          noteCd: '',
-          state: 'Aceptado',
-          user: 'Administrador demo@gmail.com',
-          coin: 'PEN',
-          tExportacion: '0.00',
-          tGratuita: '0.00',
-          tInafecta: '0.00',
-          tExonerado: '0.00',
-          tGravado: '6.78',
-          tIgv: '1.22',
-          total: '8.00',
-          saldo: '8.00',
-          ordenCompra: '',
-          paid: '',
-          downloads: '',
-          actions: ''
-        },
-        {
-          name: '2',
-          soap: 'Demo2',
-          dateEmission: '2021-07-31',
-          dateExp: '2021-07-31',
-          client: 'CCAMA NIFLA SAUL RAMIRO 10098011680',
-          number: 'F001-31 FACTURA ELECTRÓNICA',
-          noteCd: '',
-          state: 'Aceptado',
-          user: 'Administrador demo@gmail.com',
-          coin: 'PEN',
-          tExportacion: '0.00',
-          tGratuita: '0.00',
-          tInafecta: '0.00',
-          tExonerado: '0.00',
-          tGravado: '6.78',
-          tIgv: '1.22',
-          total: '8.00',
-          saldo: '8.00',
-          ordenCompra: '',
-          paid: '',
-          downloads: '',
-          actions: ''
-        },
-        {
-          name: '3',
-          soap: 'Demo3',
-          dateEmission: '2021-07-31',
-          dateExp: '2021-07-31',
-          client: 'CARLOS RAFAEK  ACOSTA RAMIREZ 10088017680',
-          number: 'F001-31 FACTURA ELECTRÓNICA',
-          noteCd: '',
-          state: 'Aceptado',
-          user: 'Administrador demo@gmail.com',
-          coin: 'PEN',
-          tExportacion: '0.00',
-          tGratuita: '0.00',
-          tInafecta: '0.00',
-          tExonerado: '0.00',
-          tGravado: '6.78',
-          tIgv: '1.22',
-          total: '8.00',
-          saldo: '8.00',
-          ordenCompra: '',
-          paid: '',
-          downloads: '',
-          actions: ''
+      loadingTable: false,
+      /**
+       * Options pagination
+       * @type {Object}
+       */
+      optionPagination: {
+        rowsPerPage: 20,
+        rowsNumber: 20,
+        paginated: true,
+        sortBy: 'id',
+        sortOrder: 'desc'
+      },
+      /**
+       * Params search
+       * @type {Object}
+       */
+      params: {
+        paginated: true,
+        sortBy: 'id',
+        sortOrder: 'desc',
+        perPage: 1,
+        dataSearch: {
+          'client.name': ''
         }
-      ],
+      },
+      text: '',
+      billingConfig,
+      visibleColumns: ['id', 'soap', 'dateEmission', 'dateExp', 'client', 'number', 'noteCd', 'state', 'user', 'coin', 'tGravado', 'tExportacion', 'tGratuita', 'tInafecta', 'tExonerado', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'paid', 'downloads', 'actions'],
+      data: [],
       dialog: false,
       position: 'top',
       model: null,
@@ -489,10 +428,43 @@ export default {
       ]
     }
   },
+  created () {
+    this.getBillElectronics()
+  },
   methods: {
+    /**
+     * Load data sorting
+     * @param  {Object}
+     */
+    loadData (data) {
+      this.params.page = data.page
+      this.params.sortBy = data.sortBy ?? this.params.sortBy
+      this.params.sortOrder = data.sortOrder
+      this.params.perPage = data.rowsPerPage
+      this.optionPagination = data
+      this.getBillElectronics(this.params)
+    },
     open (position) {
       this.position = position
       this.dialog = true
+    },
+    /**
+     * Get Bill electronis
+     */
+    getBillElectronics () {
+      this.loadingTable = true
+      this.$services.getData(['bill-electronics'], this.params)
+        .then(({ res }) => {
+          this.data = res.data.data
+          this.loadingTable = false
+          this.optionPagination.rowsNumber = res.data.total
+        })
+        .catch(err => {
+          console.log(err)
+          this.data = []
+          this.loadingTable = false
+          this.optionPagination.rowsNumber = 0
+        })
     }
   }
 }
