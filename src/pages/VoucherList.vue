@@ -402,8 +402,8 @@ export default {
       category: '',
       state: '',
       filter: '',
-      option: false,
-      pay: true,
+      option: true, // Variable que controla que se muestre la ventana de dialogo para Opciones
+      pay: true, // Variable que controla que se muestre la ventana de dialogo para Pagos
       voucherTypes: [
         'Factura electrónica', 'Boleta de venta electrónica', 'Nota de credito', 'Nota de débito'
       ],
