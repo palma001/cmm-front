@@ -469,6 +469,38 @@
         </template>
       </dynamic-form>
     </q-dialog>
+    <q-dialog v-model="stockDialog">
+      <q-card>
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Stock del producto</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section>
+          <q-markup-table>
+            <thead>
+              <tr>
+                <th class="text-left">Almacen</th>
+                <th class="text-right">Precio de compra</th>
+                <th class="text-right">Precio de venta</th>
+                <th class="text-right">Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="stock.length <= 0">
+                 <td class="text-center" colspan="4">Producto sin stock</td>
+              </tr>
+              <tr v-else v-for="stockOne in stock" :key="stockOne.id">
+                <td class="text-left">{{ stockOne.warehouse_name }}</td>
+                <td class="text-right">{{ stockOne.purchase_price }}</td>
+                <td class="text-right">{{ stockOne.sale_price }}</td>
+                <td class="text-right">{{ stockOne.stock_product }}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -491,6 +523,8 @@ export default {
   },
   data () {
     return {
+      stock: [],
+      stockDialog: false,
       tab: 'priceList',
       productServices,
       visible: false,
@@ -590,7 +624,8 @@ export default {
   },
   methods: {
     viewStock (data) {
-      console.log(data)
+      this.stock = data.stock
+      this.stockDialog = true
     },
     /**
      * Delete attributte product
