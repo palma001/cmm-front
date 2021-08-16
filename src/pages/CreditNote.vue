@@ -502,9 +502,12 @@ export default {
     this.getOneBill()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
-    // this.getExchange()
+    this.getExchange()
   },
   methods: {
+    /**
+     * Get data billing
+     */
     getOneBill () {
       this.$services.getOneData(['bill-electronic', this.$route.params.id, 'note'])
         .then(({ res }) => {
@@ -513,6 +516,7 @@ export default {
             this.creditNote.voucherTypeNote = res.data.credit_note.voucher_type_note
             this.creditNote.typeOfCreditNote = res.data.credit_note.type_of_credit_note
             this.creditNote.observation = res.data.credit_note.description
+            this.creditNote.created_at = date.formatDate(res.data.credit_note.created_at, 'YYYY-MM-DD')
             this.dataProduct = this.modelProduct(res.data.credit_note.credit_note_details)
           } else {
             this.dataProduct = this.modelProduct(res.data.bill_electronic_details)
@@ -520,6 +524,10 @@ export default {
           this.totalCalculate()
         })
     },
+    /**
+     * Model product
+     * @param {Array} data product billing
+     */
     modelProduct (data) {
       return data.map(details => {
         return {
@@ -536,6 +544,9 @@ export default {
         }
       })
     },
+    /**
+     * Get Seller
+     */
     getSellers (value, update) {
       this.$services.getData(['sellers'], {
         dataSearch: {
@@ -592,12 +603,12 @@ export default {
       this.visible = true
       this.$services.postData(['bill-electronic', this.$route.params.id, 'note'], data)
         .then(res => {
-          this.notify(this, 'order.saveSuccess', 'positive', 'mood')
+          this.notify(this, 'creditNote.saveSuccess', 'positive', 'mood')
           this.cancelCreditNote()
           this.visible = false
         })
         .catch(() => {
-          this.notify(this, 'order.error', 'negative', 'warning')
+          this.notify(this, 'creditNote.error', 'negative', 'warning')
           this.visible = false
         })
     },
