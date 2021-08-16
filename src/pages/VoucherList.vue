@@ -64,7 +64,7 @@
           @downloadCDR="downloadCDR"
           @viewPayment="viewPayment"
           @search-data="searchData"
-          @options="options"
+          @viewNote="viewNote"
         />
       </div>
     </div>
@@ -253,8 +253,8 @@ export default {
     viewPayment (data) {
       console.log(data)
     },
-    options (data) {
-      console.log(data, 'options')
+    viewNote (data) {
+      this.$router.push({ name: 'CreditNote', params: { id: data.id } })
     },
     open (position) {
       this.position = position

@@ -95,6 +95,11 @@ const routes = [
         path: 'new-quotations',
         name: 'NewQuotation',
         component: () => import('pages/NewQuotation.vue')
+      },
+      {
+        path: 'credit-note/:id',
+        name: 'CreditNote',
+        component: () => import('pages/CreditNote.vue')
       }
     ]
   },

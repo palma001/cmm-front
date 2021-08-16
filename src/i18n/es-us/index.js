@@ -186,6 +186,30 @@ export default {
     guide: 'guía',
     newBilling: 'Nueva factura'
   },
+  creditNote: {
+    saveSuccess: 'nota de credito creada exitosamente!',
+    voucherTypeNotes: 'tipos comprobante',
+    typeOfCreditNotes: 'tipos de notas de credito',
+    created_at: 'fecha',
+    list: 'lista de nota de creditos',
+    total: 'total',
+    cash: 'efectivo',
+    cancelBilling: 'cancelar nota de credito',
+    saveBilling: 'guardar nota de credito',
+    error: 'A ocurrido un error',
+    expiration_date: 'fecha de expiración',
+    seller: 'vendedor',
+    igv: 'igv',
+    download: 'descargas',
+    XML: 'XML',
+    PDF: 'PDF',
+    CDR: 'CDR',
+    payment: 'pagos',
+    options: 'opciones',
+    note: 'Nota',
+    guide: 'guía',
+    newCreditNote: 'Nueva nota de credito'
+  },
   arching: {
     notFound: 'Arqueo cerrado, pongase en contacto con el administrador'
   },
