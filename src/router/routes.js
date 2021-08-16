@@ -13,7 +13,7 @@ const routes = [
     children: [
       {
         path: '',
-        name: '',
+        name: 'billing',
         component: () => import('pages/Billing.vue')
       },
       {

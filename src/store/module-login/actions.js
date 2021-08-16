@@ -20,10 +20,11 @@ export const actions = {
         dispatch(ACTIONS.AUTO_LOGOUT, Number(res.data.expires_in))
         commit(MUTATIONS.SET_ROLE, res.data.user.roles[0])
         commit(MUTATIONS.SET_BRANCH_OFFICE, res.data.user.branch_offices[0])
-        self.$router.push({ name: res.data.user.roles[0].modules[0].route })
+        self.$router.push({ name: 'billing' })
         self.btnDisable = false
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err)
         self.$q.notify({
           position: 'top',
           color: 'negative',
@@ -39,7 +40,7 @@ export const actions = {
    */
   [ACTIONS.LOGOUT]: ({ commit }, { self }) => {
     commit(MUTATIONS.CLEAR_ACCOUNT_STATE)
-    self.$router.push({ name: 'LandingPage' })
+    self.$router.push({ name: 'login' })
   },
   /**
    * Valiad session active
