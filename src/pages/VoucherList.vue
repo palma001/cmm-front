@@ -140,6 +140,199 @@
         </q-card>
       </q-dialog> -->
     </div>
+    <!-- Ventana Modal para el botón OPCIONES por cada registro de Comprobante-->
+    <q-dialog v-model="option">
+      <q-card style="width: 700px; max-width: 80vw;">
+        <q-card-section>
+          <div class="text-h6">Comprobante: F0001-34</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <div>La factura F001-34, ha sido aceptada</div>
+          <br>
+          <div class="row q-col-gutter-sm">
+            <div class="col-3">
+              <q-btn icon="print" class="full-width" label="Imprimir A4" stack glossy color="primary" no-caps dense/>
+            </div>
+            <div class="col-3">
+              <q-btn icon="print" class="full-width" label="Imprimir Ticket 80 mm" stack glossy color="primary" no-caps dense/>
+            </div>
+            <div class="col-3">
+              <q-btn icon="print" class="full-width" label="Imprimir Ticket 50 mm" stack glossy color="primary" no-caps dense />
+            </div>
+            <div class="col-3">
+              <q-btn icon="print" class="full-width" label="Imprimir A5" stack glossy color="primary" no-caps dense />
+            </div>
+          </div>
+          <br>
+          <div class="row q-col-gutter-sm">
+            <div class="col-8">
+              <q-input outlined v-model="text" label="email" dense/>
+            </div>
+           <div class="col-4">
+              <q-btn color="primary" icon-right="mail" label="Enviar" no-caps/>
+            </div>
+          </div>
+          <br>
+          <div class="row q-col-gutter-sm">
+            <div class="col-2">
+              <q-input outlined v-model="text" label="Cód." dense/>
+            </div>
+            <div class="col-6">
+              <q-input outlined v-model="text" label="teléfono" dense/>
+            </div>
+            <div class="col-4">
+              <q-btn color="primary" icon="smartphone" label="Enviar" no-caps/>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!-- Ventana Modal para el botón PAGOS por cada registro de Comprobante-->
+    <q-dialog v-model="pay">
+      <q-card style="width: 1200px; max-width: 80vw;">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Pagos del comprobante: F001-34</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section>
+        <q-space />
+        <div class="row">
+          <div class="col-8">
+          </div>
+          <div class="col-2">
+            TOTAL A PAGAR
+          </div>
+          <div class="col-2">
+            50.000,00
+          </div>
+        </div>
+        <q-separator/>
+        <q-space/>
+        <div class="row">
+          <div class="col-8">
+          </div>
+          <div class="col-2">
+            TOTAL PAGADO
+          </div>
+          <div class="col-2">
+            30.000,00
+          </div>
+        </div>
+        <q-separator/>
+        <div class="row">
+          <div class="col-8">
+          </div>
+          <div class="col-2">
+            PENDIENTE DE PAGO
+          </div>
+          <div class="col-2">
+            20.000,00
+          </div>
+        </div>
+        <q-separator/>
+        <br>
+         <q-btn
+          color="primary"
+          icon="control_point"
+          label="Nuevo"
+          no-caps
+          glossy
+        />
+        <q-table
+            :data="dataPay"
+            :columns="columsPay"
+            row-key="name"
+          >
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td key="desc" :props="props">
+                  {{ props.row.name }}
+                </q-td>
+                <q-td key="paymentDate" :props="props">
+                  <q-input v-model="date" filled type="date" dense/>
+                </q-td>
+                <q-td key="paymentMethod" :props="props">
+                  <q-select outlined v-model="model" :options="paymentMethods" label="Seleccionar" dense/>
+                </q-td>
+                <q-td key="destiny" :props="props">
+                  <q-select outlined v-model="model" :options="destinations" label="Seleccionar" dense/>
+                </q-td>
+                <q-td key="reference" :props="props">
+                  <q-input outlined v-model="text" label="Referencia" dense />
+                </q-td>
+                <q-td key="archive" :props="props">
+                  <q-file
+                    :value="files"
+                    @input="updateFiles"
+                    label="Seleccionar archivo"
+                    outlined
+                    multiple
+                    :clearable="!isUploading"
+                    style="max-width: 400px"
+                    dense
+                  >
+                    <template v-slot:file="{ index, file }">
+                      <q-chip
+                        class="full-width q-my-xs"
+                        :removable="isUploading && uploadProgress[index].percent < 1"
+                        square
+                        @remove="cancelFile(index)"
+                      >
+                        <q-linear-progress
+                          class="absolute-full full-height"
+                          :value="uploadProgress[index].percent"
+                          :color="uploadProgress[index].color"
+                          track-color="grey-2"
+                        />
+
+                        <q-avatar>
+                          <q-icon :name="uploadProgress[index].icon" />
+                        </q-avatar>
+
+                        <div class="ellipsis relative-position">
+                          {{ file.name }}
+                        </div>
+
+                        <q-tooltip>
+                          {{ file.name }}
+                        </q-tooltip>
+                      </q-chip>
+                    </template>
+
+                    <template v-slot:after v-if="canUpload">
+                      <q-btn
+                        color="primary"
+                        dense
+                        icon="cloud_upload"
+                        round
+                        @click="upload"
+                        :disable="!canUpload"
+                        :loading="isUploading"
+                      />
+                    </template>
+                  </q-file>
+                </q-td>
+                <q-td key="mount" :props="props">
+                  <q-input outlined v-model="text" label="Monto" dense />
+                </q-td>
+                <q-td key="actions" :props="props" class="q-pa-md q-gutter-sm">
+                  <q-btn round color="primary" glossy text-color="white" icon="add" size="xs" />
+                  <q-btn round color="negative" glossy text-color="white" icon="delete" size="xs" />
+                </q-td>
+              </q-tr>
+            </template>
+
+          </q-table>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -189,6 +382,10 @@ export default {
           expiration_date: ''
         }
       },
+      archives: null,
+      files: null,
+      uploadProgress: [],
+      uploading: null,
       text: '',
       billingConfig,
       visibleColumns: ['id', 'soap', 'dateEmission', 'dateExp', 'client', 'number', 'noteCd', 'state', 'user', 'coin', 'tGravado', 'tExportacion', 'tGratuita', 'tInafecta', 'tExonerado', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'paid', 'downloads', 'actions'],
@@ -205,6 +402,8 @@ export default {
       category: '',
       state: '',
       filter: '',
+      option: true, // Variable que controla que se muestre la ventana de dialogo para Opciones
+      pay: true, // Variable que controla que se muestre la ventana de dialogo para Pagos
       voucherTypes: [
         'Factura electrónica', 'Boleta de venta electrónica', 'Nota de credito', 'Nota de débito'
       ],
@@ -222,6 +421,41 @@ export default {
       ],
       states: [
         'Registrado', 'Enviado', 'Aceptado', 'Observado', 'Rechazado', 'Anulado', 'Por anular'
+      ],
+      paymentMethods: [
+        'Efectivo', 'Tarjeta de crédito', 'Tarjeta de débito', 'Transferencia', 'Factura a 30 días', 'Tarjeta d ecrédito Visa', 'Contado contraentrega', 'A 30 días', 'Crédito', 'Contado'
+      ],
+      destinations: [
+        'Banco de Crédito del Perú - PEN ', 'Caja General'
+      ],
+      columsPay: [
+        {
+          name: 'desc',
+          required: true,
+          label: '#',
+          align: 'left',
+          field: row => row.name,
+          format: val => `${val}`,
+          sortable: true
+        },
+        { name: 'paymentDate', align: 'center', label: 'Fecha de Pago', field: 'paymentDate', sortable: true },
+        { name: 'paymentMethod', align: 'center', label: 'Método de Pago', field: 'paymentMethod', sortable: true },
+        { name: 'destiny', align: 'center', label: 'Destino', field: 'destiny', sortable: true },
+        { name: 'reference', align: 'center', label: 'Referencia', field: 'reference', sortable: true },
+        { name: 'archive', align: 'center', label: 'Archivo', field: 'archive' },
+        { name: 'mount', align: 'center', label: 'Monto', field: 'mount' },
+        { name: 'actions', align: 'center', label: 'Acciones', field: 'action' }
+      ],
+      dataPay: [
+        {
+          name: '1'
+        },
+        {
+          name: '2'
+        },
+        {
+          name: '3'
+        }
       ]
     }
   },
@@ -251,7 +485,7 @@ export default {
       console.log(data)
     },
     viewPayment (data) {
-      console.log(data)
+      this.pay = true
     },
     viewNote (data) {
       this.$router.push({ name: 'CreditNote', params: { id: data.id } })
