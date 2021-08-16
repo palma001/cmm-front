@@ -42,6 +42,11 @@ const routes = [
         component: () => import('pages/Billing.vue')
       },
       {
+        path: 'referral-guide',
+        name: 'referral-guide',
+        component: () => import('pages/ReferralGuide.vue')
+      },
+      {
         path: 'categories',
         name: 'categories',
         component: () => import('pages/Category.vue')
