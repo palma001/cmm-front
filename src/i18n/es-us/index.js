@@ -57,7 +57,36 @@ export default {
     productCommissions: 'Comision de productos',
     sellerCommissions: 'Comision de vendedores',
     'checking-accounts': 'cuenta corrinte',
-    'voucher-list': 'listado de comprobantes'
+    'voucher-list': 'listado de comprobantes',
+    orders: 'Pedidos'
+  },
+
+  order: {
+    newOrder: 'nuevo pedido',
+    client: 'cliente',
+    operation_type: 'tipo de venta',
+    code: 'código',
+    coin: 'Moneda',
+    saveSuccess: 'perdido creado exitosamente!',
+    voucher_type: 'tipo comprobante',
+    created_at: 'fecha',
+    list: 'lista de pedidos',
+    total: 'total',
+    cash: 'efectivo',
+    cancelOrder: 'cancelar perdido',
+    saveOrder: 'guardar perdido',
+    error: 'A ocurrido un error',
+    expiration_date: 'fecha de expiración',
+    seller: 'vendedor',
+    igv: 'igv',
+    download: 'descargas',
+    XML: 'XML',
+    PDF: 'PDF',
+    CDR: 'CDR',
+    payment: 'pagos',
+    options: 'opciones',
+    note: 'Nota',
+    guide: 'guía'
   },
 
   // permissions

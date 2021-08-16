@@ -75,6 +75,16 @@ const routes = [
         path: 'voucher-list',
         name: 'VoucherList',
         component: () => import('pages/VoucherList.vue')
+      },
+      {
+        path: 'orders',
+        name: 'Order',
+        component: () => import('pages/Order.vue')
+      },
+      {
+        path: 'new-order',
+        name: 'NewOrder',
+        component: () => import('pages/NewOrder.vue')
       }
     ]
   },
