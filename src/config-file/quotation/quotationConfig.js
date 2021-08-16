@@ -1,5 +1,5 @@
 import { date } from 'quasar'
-export const orderConfig = [
+export const quotationConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
@@ -24,9 +24,18 @@ export const orderConfig = [
       },
       {
         tabulated: {
-          name: 'expiration_date',
+          name: 'validity_time',
           align: 'left',
-          field: row => date.formatDate(row.expiration_date, 'DD-MM-YYYY'),
+          field: row => row.validity_time,
+          sortable: true,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'delivery_time',
+          align: 'left',
+          field: row => row.delivery_time,
           sortable: true,
           visible: true
         }
@@ -36,6 +45,15 @@ export const orderConfig = [
           name: 'coin',
           align: 'left',
           field: row => row.coin.name,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'shipping_address',
+          align: 'left',
+          field: row => row.shipping_address,
           sortable: false,
           visible: true
         }

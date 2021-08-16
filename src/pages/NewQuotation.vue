@@ -3,36 +3,41 @@
   <q-page padding>
     <q-card class="my-card">
       <q-card-section class="q-pb-sm row q-col-gutter-sm">
-        <div class="col-6">
+        <div class="col-9">
           <div class="row justify-between">
             <div class="col-auto">
               <p class="text-h5">
-                {{ ucwords($t('order.newOrder')) }}
+                {{ ucwords($t('quotation.newQuotation')) }}
               </p>
             </div>
           </div>
         </div>
-        <div class="col-2">
-          <q-input type="date" dense outlined label="Fec. Emisión" v-model="order.created_at"/>
-        </div>
-        <div class="col-2">
-          <q-input type="date" dense outlined label="Fec. Vencimiento" v-model="order.expiration_date"/>
-        </div>
-        <div class="col-2">
-          <q-input type="date" dense outlined label="Fec. Entrega" v-model="order.delivery_date"/>
+        <div class="col-3">
+          <q-input type="date" dense outlined label="Fec. Emisión" v-model="quotation.created_at"/>
         </div>
       </q-card-section>
       <q-separator/>
-      <q-card-section class="row  q-col-gutter-sm">
-        <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+      <q-card-section class="row q-col-gutter-sm q-pb-none">
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
           <q-select
-            outlined
-            v-model="coin"
+            autocomplete="off"
+            use-input
+            hide-selected
+            fill-input
             dense
-            option-label="name"
+            outlined
+            clearable
+            input-debounce="20"
+            name="client"
+            v-model="quotation.client"
+            option-label="full_name"
             option-value="id"
-            :label="ucwords($t('order.coin'))"
-            :options="coins"
+            v-validate="'required'" data-vv-as="field"
+            @filter="getClients"
+            :error-message="errorValidation('client')"
+            :error="errors.has('client')"
+            :label="ucwords($t('quotation.client'))"
+            :options="clients"
           >
             <template v-slot:no-option>
               <q-item>
@@ -43,21 +48,25 @@
             </template>
           </q-select>
         </div>
-        <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+        <div class="col-3">
           <q-input
-            v-model="order.exchange"
-            outlined
-            dense
-            readonly
-            label="Cambio del dia"
             type="text"
-          >
-          </q-input>
-          <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
-            Tipo de cambio del día, extraído de SUNAT
-          </q-tooltip>
+            dense
+            outlined
+            label="Tiempo de entrega"
+            v-model="quotation.delivery_time"
+          />
         </div>
-        <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+        <div class="col-3">
+          <q-input
+            type="text"
+            dense
+            outlined
+            label="Tiempo de validación"
+            v-model="quotation.validity_time"
+          />
+        </div>
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
           <q-select
             use-input
             hide-selected
@@ -67,9 +76,9 @@
             dense
             autocomplete="off"
             input-debounce="0"
-            name="paymentMethod"
-            ref="paymentMethodRef"
-            v-model="paymentMethod"
+            name="paymentMethodQ"
+            ref="paymentMethodQRef"
+            v-model="paymentMethodQ"
             data-vv-as="field"
             option-value="id"
             option-label="name"
@@ -87,27 +96,16 @@
           </q-select>
         </div>
       </q-card-section>
-      <q-card-section class="row q-py-sm q-col-gutter-sm">
-        <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+      <q-card-section class="row q-col-gutter-sm q-pt-none">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
           <q-select
-            autocomplete="off"
-            use-input
-            hide-selected
-            fill-input
-            dense
             outlined
-            clearable
-            input-debounce="20"
-            name="client"
-            v-model="order.client"
-            option-label="full_name"
+            v-model="coin"
+            dense
+            option-label="name"
             option-value="id"
-            v-validate="'required'" data-vv-as="field"
-            @filter="getClients"
-            :error-message="errorValidation('client')"
-            :error="errors.has('client')"
-            :label="ucwords($t('order.client'))"
-            :options="clients"
+            :label="ucwords($t('quotation.coin'))"
+            :options="coins"
           >
             <template v-slot:no-option>
               <q-item>
@@ -118,7 +116,45 @@
             </template>
           </q-select>
         </div>
-        <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+          <q-input
+            v-model="quotation.exchange"
+            outlined
+            dense
+            readonly
+            label="Cambio del dia"
+            type="text"
+          >
+          </q-input>
+          <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
+            Tipo de cambio del día, extraído de SUNAT
+          </q-tooltip>
+        </div>
+        <div class="col-5 q-gutter-sm">
+          <q-btn
+            icon="add"
+            color="primary"
+            label="producto"
+            style="height: 40px;"
+            @click="modalProduct = true"
+          />
+          <q-btn
+            icon="money"
+            color="positive"
+            label="pagos"
+            style="height: 40px;"
+            :disable="dataProduct.length <= 0"
+            @click="openOptionDialog"
+          >
+            <q-badge color="negative" floating>
+              S/ {{ totalPaid }}
+            </q-badge>
+          </q-btn>
+        </div>
+      </q-card-section>
+      <q-separator/>
+      <q-card-section class="row q-col-gutter-sm">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
           <q-select
             use-input
             hide-selected
@@ -147,35 +183,13 @@
             </template>
           </q-select>
         </div>
-        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-          <q-btn
-            icon="add"
-            color="primary"
-            label="producto"
-            style="height: 40px;"
-            @click="modalProduct = true"
-          />
-        </div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-section class="row q-col-gutter-sm">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-          <q-input
-            type="textarea"
-            outlined
-            label="Observación"
-            v-model="order.observation"
-            rows="2"
-            dense
-          />
-        </div>
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
           <q-input
             type="textarea"
             outlined
             label="Dirección de envio"
-            v-model="order.address"
-            rows="2"
+            v-model="quotation.shipping_address"
+            rows="1"
             dense
           />
         </div>
@@ -217,6 +231,12 @@
                     <q-input type="number" v-model.number="props.row.price" dense autofocus @input="recalculate(props.row)"/>
                   </q-popup-edit>
                 </q-td>
+                <q-td key="discount" :props="props">
+                  {{ props.row.discount }}
+                  <q-popup-edit v-model.number="props.row.discount">
+                    <q-input type="number" v-model.number="props.row.discount" dense autofocus @input="recalculate(props.row)"/>
+                  </q-popup-edit>
+                </q-td>
                 <q-td key="subtotal" :props="props">
                   {{ props.row.subtotal }}
                 </q-td>
@@ -243,8 +263,8 @@
       </q-card-section>
       <q-separator/>
       <q-card-actions align="right">
-        <q-btn color="negative" label="Cancelar pedido" @click="cancelOrder"/>
-        <q-btn color="primary" label="Generar pedido" @click="modelOrder" :disable="dataProduct.length <= 0"/>
+        <q-btn color="negative" label="Cancelar cotización" @click="cancelQuotation"/>
+        <q-btn color="primary" label="Generar cotización" @click="modelQuotation" :disable="dataProduct.length <= 0"/>
       </q-card-actions>
     </q-card>
     <q-dialog
@@ -363,6 +383,222 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog
+      v-model="modalPaid"
+      persistent
+    >
+      <q-card style="width: 900px; max-width: 80vw;">
+        <q-tabs
+          v-model="tab"
+          dense
+          class="bg-primary text-white shadow-2"
+          align="left"
+          narrow-indicator
+        >
+          <q-tab name="payments" label="Pagos"/>
+        </q-tabs>
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="payments">
+            <q-card-section class="q-py-none row">
+              <div class="text-h6 col-5">
+                Agregar Pagos
+              </div>
+            </q-card-section>
+            <q-card-section
+              class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm"
+              v-for="(payment, index) in payments"
+              :key="payment.id"
+            >
+              <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                <q-select
+                  use-input
+                  hide-selected
+                  fill-input
+                  outlined
+                  clearable
+                  dense
+                  autocomplete="off"
+                  input-debounce="0"
+                  name="paymentMethod"
+                  ref="paymentMethodRef"
+                  v-model="payment.paymentMethod"
+                  data-vv-as="field"
+                  option-value="id"
+                  option-label="name"
+                  label="Método de pago"
+                  :options="paymentMethods"
+                  @filter="getPaymentMethods"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                <q-select
+                  use-input
+                  hide-selected
+                  fill-input
+                  outlined
+                  clearable
+                  dense
+                  autocomplete="off"
+                  input-debounce="0"
+                  name="paymentDestination"
+                  ref="paymentDestinationRef"
+                  v-model="payment.paymentDestination"
+                  data-vv-as="field"
+                  option-value="id"
+                  option-label="name"
+                  label="Destino"
+                  :options="paymentDestinations"
+                  @filter="getPaymentDestinations"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                <q-input label="Referencia" outlined dense v-model="payment.paymentReference"/>
+              </div>
+              <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                <q-input label="Monto" outlined dense v-model="payment.paymentAmount" @input="totalPayemnts"/>
+              </div>
+              <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                <q-btn icon="close" dense round color="negative"  @click="deletePayment(index)"/>
+              </div>
+            </q-card-section>
+            <q-card-section v-if="(totalSale - totalPaid) > 0">
+              <q-form
+                @submit="addPayment"
+                class="row justify-between q-col-gutter-sm"
+                ref="addPayment"
+              >
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                  <q-select
+                    use-input
+                    hide-selected
+                    fill-input
+                    outlined
+                    clearable
+                    dense
+                    autocomplete="off"
+                    input-debounce="0"
+                    name="paymentMethod"
+                    ref="paymentMethodRef"
+                    v-model="paymentMethod"
+                    data-vv-as="field"
+                    option-value="id"
+                    option-label="name"
+                    label="Método de pago"
+                    :rules="[val => val || 'El campo metodo de pago es requerido']"
+                    :options="paymentMethods"
+                    @filter="getPaymentMethods"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No results
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                  <q-select
+                    use-input
+                    hide-selected
+                    fill-input
+                    outlined
+                    clearable
+                    dense
+                    autocomplete="off"
+                    input-debounce="0"
+                    name="paymentDestination"
+                    ref="paymentDestinationRef"
+                    v-model="paymentDestination"
+                    data-vv-as="field"
+                    option-value="id"
+                    option-label="name"
+                    label="Destino"
+                    :rules="[val => val || 'El campo destino es requerido']"
+                    :options="paymentDestinations"
+                    @filter="getPaymentDestinations"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No results
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                  <q-input
+                    label="Referencia"
+                    outlined
+                    dense
+                    v-model="paymentReference"
+                  />
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                  <q-input
+                    label="Monto"
+                    outlined
+                    dense
+                    :rules="[
+                      val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+                      val => val <= (totalSale - totalPaid) || 'El monto no puede superar el total a pagar'
+                    ]"
+                    v-model="paymentAmount"
+                    @input="totalPayemnts"
+                  />
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                  <q-btn
+                    icon="add"
+                    dense
+                    round
+                    color="primary"
+                    type="submit"
+                  />
+                </div>
+              </q-form>
+            </q-card-section>
+            <q-card-section>
+              <q-list separator dense>
+                <q-item clickable v-ripple active>
+                  <q-item-section>TOTAL A PAGAR:</q-item-section>
+                  <q-item-section side>S/ {{ totalSale }}</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section>TOTAL PAGADO</q-item-section>
+                  <q-item-section side>S/ {{ totalPaid }}</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple>
+                  <q-item-section>PENDIENTE</q-item-section>
+                  <q-item-section side>S/ {{ totalSale - totalPaid }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-card-section>
+          </q-tab-panel>
+        </q-tab-panels>
+        <q-card-actions align="right">
+          <q-btn label="Cerrar" color="negative" v-close-popup />
+          <q-btn label="Generar cotización" color="primary" @click="modelQuotation"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -374,31 +610,40 @@ import { date } from 'quasar'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
-// import DynamicForm from '../components/DynamicForm'
-// import DataTable from '../components/DataTable'
 export default {
-  name: 'order',
+  name: 'quotation',
   mixins: [mixins.containerMixin],
-  components: {
-    // DynamicForm
-    // DataTable
-  },
   data () {
     return {
-      modalProduct: false,
       sellers: [],
       seller: null,
       value: false,
+      guide: null,
       description: null,
       purchase_order: null,
       observation: null,
+      selectedGuides: [],
+      guides: [],
+      tab: 'payments',
       igvs: [{ label: 'Gravado - Operación Onerosa', value: 12 }],
       igv: { label: 'Gravado - Operación Onerosa', value: 12 },
+      paymentsCondition: ['Crédito', 'Contado'],
+      paymentCondition: null,
+      modalProduct: false,
       loadingCLose: false,
       product: null,
       modalPaid: false,
       paymentMethod: null,
+      paymentMethodQ: null,
       paymentMethods: [],
+      paymentDestination: null,
+      paymentDestinations: [],
+      payments: [],
+      paymentAmount: 0,
+      paymentReference: null,
+      totalPaid: 0,
+      fees: [],
+      dateFees: date.formatDate(new Date(), 'YYYY-MM-DD'),
       /**
        * Visible loading page
        * @type {Boolean} status loading page
@@ -461,6 +706,13 @@ export default {
           sortable: true
         },
         {
+          name: 'discount',
+          label: 'Descuento',
+          field: 'discount',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
           name: 'subtotal',
           label: 'Subtotal',
           field: 'subtotal',
@@ -469,15 +721,19 @@ export default {
         }
       ],
       /**
-       * order Model
-       * @type {Object} order model
+       * quotation Model
+       * @type {Object} quotation model
        */
-      order: {
+      quotation: {
         client: null,
+        datequotation: null,
+        voucherType: null,
+        operationType: null,
         exchange: 0,
-        expiration_date: date.formatDate(new Date(), 'YYYY-MM-DD'),
-        created_at: date.formatDate(new Date(), 'YYYY-MM-DD'),
-        delivery_date: date.formatDate(new Date(), 'YYYY-MM-DD')
+        delivery_time: null,
+        validity_time: null,
+        shipping_address: null,
+        created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
       },
       /**
        * Client List
@@ -495,8 +751,8 @@ export default {
        */
       amount: 1,
       /**
-       * Data product order
-       * @type {Array} data order
+       * Data product quotation
+       * @type {Array} data quotation
        */
       dataProduct: [],
       /**
@@ -504,6 +760,16 @@ export default {
        * @type {Number} discount product
        */
       discount: 0,
+      /**
+       * Operation Type
+       * @type {Array} Operation type
+       */
+      operationTypes: [],
+      /**
+       * Type of vouchers
+       * @type {Array} type of vouchers
+       */
+      voucherTypes: [],
       /**
        * Coin list
        * @type {Array} Coin list
@@ -567,57 +833,55 @@ export default {
       this.getProducts(param, update)
     },
     /**
-     * Model order
+     * Model bill
      */
-    modelOrder () {
-      const orderModel = {
-        serie_id: 1,
-        client_id: this.order.client.id,
-        payment_method_id: this.paymentMethod.id,
-        branch_office_id: this.branchOfficeSession.id,
+    modelQuotation () {
+      const quotationModel = {
+        client_id: this.quotation.client.id,
+        payment_method_id: this.paymentMethodQ.id,
         seller_id: this.seller.id,
         coin_id: this.coin.id,
-        exchange: this.order.exchange,
-        address: this.order.address,
-        observation: this.order.observation,
-        expiration_date: date.formatDate(this.order.expiration_date, 'YYYY-MM-DD'),
-        delivery_date: date.formatDate(this.order.delivery_date, 'YYYY-MM-DD'),
-        order_details: this.dataProduct,
+        exchange_rate: this.quotation.exchange,
+        validity_time: this.quotation.validity_time,
+        delivery_time: this.quotation.delivery_time,
+        quotation_details: this.dataProduct,
+        quotation_payments: this.modelPayments(this.payments),
+        shipping_address: this.quotation.shipping_address,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
-        created_at: date.formatDate(this.order.created_at, 'YYYY-MM-DDTHH:mm:ss')
+        created_at: date.formatDate(this.quotation.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
-      this.saveOrder(orderModel)
+      this.saveQuotationModel(quotationModel)
     },
     /**
-     * Save order
-     * @param {Object} data data order
+     * Save bill
+     * @param {Object} data data bill
      */
-    saveOrder (data) {
+    saveQuotationModel (data) {
       this.modalPaid = false
       this.visible = true
-      this.$services.postData(['orders'], data)
+      this.$services.postData(['quotations'], data)
         .then(res => {
-          this.notify(this, 'order.saveSuccess', 'positive', 'mood')
-          this.cancelOrder()
+          this.notify(this, 'quotation.saveSuccess', 'positive', 'mood')
+          this.cancelQuotation()
           this.visible = false
         })
         .catch(() => {
-          this.notify(this, 'order.error', 'negative', 'warning')
+          this.notify(this, 'quotation.error', 'negative', 'warning')
           this.visible = false
         })
     },
     /**
-     * Clean order data
+     * Clean bill data
      */
-    cancelOrder () {
+    cancelQuotation () {
       this.dataProduct = []
-      this.order.client = null
-      this.order = {}
-      this.order.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
-      this.order.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
-      this.order.delivery_date = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.payments = []
+      this.quotation.client = null
+      this.quotation = {}
+      this.quotation.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.totalSale = 0
+      this.totalPaid = 0
       this.totalUnitValue = 0
       this.totalProduct = 0
       this.igvTotal = 0
@@ -625,6 +889,48 @@ export default {
       this.amount = 1
       this.stock = {}
       this.modalProduct = false
+      this.modalPaid = false
+      this.paymentCondition = null
+    },
+    /**
+     * Model paymnets
+     * @param {Array} data data model
+     * @return {Array} model
+     */
+    modelPayments (data) {
+      return data.map(payment => {
+        return {
+          payment_method_id: payment.paymentMethod.id,
+          payment_destination_id: payment.paymentDestination.id,
+          reference: payment.paymentReference,
+          amount: payment.paymentAmount,
+          user_created_id: this.userSession.id
+        }
+      })
+    },
+    /**
+     * Open dialog operation
+     * @param {String} data name tab
+     */
+    openOptionDialog () {
+      this.modalPaid = true
+      this.paymentAmount = this.totalSale - this.totalPaid
+    },
+    /**
+     * Delete payment
+     * @param {Number} index indiex payment
+     */
+    deleteSelectedGuide (index) {
+      this.guides.splice(index, 1)
+    },
+    /**
+     * Delete payment
+     * @param {Number} index indiex payment
+     */
+    deletePayment (index) {
+      this.payments.splice(index, 1)
+      this.totalPayemnts()
+      this.paymentAmount = this.totalSale - this.totalPaid
     },
     /**
      * Reset validation
@@ -636,6 +942,24 @@ export default {
           ref.resetValidation()
         }
       }, 100)
+    },
+    /**
+     * Add payment to bill electronic
+     */
+    addPayment () {
+      this.fees = []
+      this.payments.push({
+        paymentAmount: this.paymentAmount,
+        paymentReference: this.paymentReference,
+        paymentDestination: this.paymentDestination,
+        paymentMethod: this.paymentMethod
+      })
+      this.totalPayemnts()
+      this.paymentAmount = this.totalSale - this.totalPaid
+      this.paymentReference = null
+      this.paymentDestination = null
+      this.paymentMethod = null
+      this.resetValidations(this.$refs.addPayment)
     },
     /**
      * Calculate subtotal products
@@ -668,7 +992,7 @@ export default {
       })
         .then(({ res }) => {
           if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
-            this.order.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
+            this.quotation.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
           }
         })
     },
@@ -676,8 +1000,6 @@ export default {
      * Load data
     */
     loadCreate () {
-      this.getOpeationTypes()
-      this.getVoucherTypes()
       this.getCoins()
       this.getExchange()
     },
@@ -707,6 +1029,7 @@ export default {
         purchase_price: isNaN(unitValue) ? 0 : unitValue,
         igv: isNaN(percentage) ? 0 : percentage,
         price: this.stock.sale_price,
+        discount: this.discount,
         subtotal: this.totalProduct,
         user_created_id: this.userSession.id
       })
@@ -851,13 +1174,21 @@ export default {
         })
     },
     /**
-     * Get operation types
+     * Get payment destination
+     * @param {String} value data filter
      */
-    getOpeationTypes () {
-      this.$services.getData(['operation-types'])
+    getPaymentDestinations (value, update) {
+      this.$services.getData(['payment-destinations'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
         .then(({ res }) => {
-          this.operationTypes = res.data
-          this.order.operationType = res.data[0]
+          update(() => {
+            this.paymentDestinations = res.data.data
+          })
         })
     },
     /**
@@ -871,16 +1202,6 @@ export default {
         .then(({ res }) => {
           this.coins = res.data
           this.coin = res.data[0]
-        })
-    },
-    /**
-     * Get voucher types
-     */
-    getVoucherTypes () {
-      this.$services.getData(['voucher-types'])
-        .then(({ res }) => {
-          this.voucherTypes = res.data
-          this.order.voucherType = res.data[0]
         })
     },
     /**
@@ -901,14 +1222,14 @@ export default {
     recalculate (data) {
       this.dataProduct.map(product => {
         if (product.product_id === data.product_id) {
-          product.subtotal = data.amount * data.price
+          product.subtotal = (data.amount * data.price) - data.discount
           return product
         }
       })
       this.totalCalculate()
     },
     /**
-     * Calculate order total
+     * Calculate quotation total
      */
     totalCalculate () {
       let total = 0
@@ -922,6 +1243,22 @@ export default {
       this.igvTotal = igvTotal.toFixed(2)
       this.totalSale = total
       this.totalUnitValue = unitValue.toFixed(2)
+    },
+    /**
+     * Calculate quotation total
+     */
+    totalPayemnts () {
+      const data = this.paymentCondition === 'Contado' ? this.payments : this.fees
+      if (data.length > 0) {
+        let total = 0
+        data.forEach(element => {
+          const amount = this.paymentCondition === 'Contado' ? element.paymentAmount : element.amount
+          total = Number(total) + Number(amount)
+        })
+        this.totalPaid = total
+      } else {
+        this.totalPaid = 0
+      }
     },
     /**
      * Get percentage

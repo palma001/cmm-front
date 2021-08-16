@@ -85,6 +85,16 @@ const routes = [
         path: 'new-order',
         name: 'NewOrder',
         component: () => import('pages/NewOrder.vue')
+      },
+      {
+        path: 'quotations',
+        name: 'Quotation',
+        component: () => import('pages/Quotation.vue')
+      },
+      {
+        path: 'new-quotations',
+        name: 'NewQuotation',
+        component: () => import('pages/NewQuotation.vue')
       }
     ]
   },

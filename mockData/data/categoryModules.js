@@ -52,11 +52,17 @@ export const categoryModules = [
         devices: ['mobile', 'desktop']
       },
       {
-        name: 'productCommissions',
-        route: 'ProductCommission',
-        icon: 'money',
+        name: 'quotations',
+        route: 'Quotation',
+        icon: 'receipt',
         devices: ['mobile', 'desktop']
       },
+      // {
+      //   name: 'productCommissions',
+      //   route: 'ProductCommission',
+      //   icon: 'money',
+      //   devices: ['mobile', 'desktop']
+      // },
       {
         name: 'sellerCommissions',
         route: 'SellerCommission',

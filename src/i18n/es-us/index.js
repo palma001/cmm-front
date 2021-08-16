@@ -58,7 +58,8 @@ export default {
     sellerCommissions: 'Comision de vendedores',
     'checking-accounts': 'cuenta corrinte',
     'voucher-list': 'listado de comprobantes',
-    orders: 'Pedidos'
+    orders: 'Pedidos',
+    quotations: 'cotización'
   },
 
   order: {
@@ -75,6 +76,37 @@ export default {
     cash: 'efectivo',
     cancelOrder: 'cancelar perdido',
     saveOrder: 'guardar perdido',
+    error: 'A ocurrido un error',
+    expiration_date: 'fecha de expiración',
+    seller: 'vendedor',
+    igv: 'igv',
+    download: 'descargas',
+    XML: 'XML',
+    PDF: 'PDF',
+    CDR: 'CDR',
+    payment: 'pagos',
+    options: 'opciones',
+    note: 'Nota',
+    guide: 'guía'
+  },
+
+  quotation: {
+    newQuotation: 'nuevo cotización',
+    client: 'cliente',
+    operation_type: 'tipo de venta',
+    code: 'código',
+    coin: 'Moneda',
+    shipping_address: 'dirección de entrega',
+    validity_time: 'tiempo de validación',
+    delivery_time: 'tiempo de entrega',
+    saveSuccess: 'cotización creado exitosamente!',
+    voucher_type: 'tipo comprobante',
+    created_at: 'fecha',
+    list: 'lista de cotizaciones',
+    total: 'total',
+    cash: 'efectivo',
+    cancelOrder: 'cancelar cotización',
+    saveOrder: 'guardar cotización',
     error: 'A ocurrido un error',
     expiration_date: 'fecha de expiración',
     seller: 'vendedor',

@@ -95,7 +95,7 @@ export const billingConfig = [
         tabulated: {
           name: 'download',
           align: 'center',
-          visible: true,
+          visible: false,
           button: {
             label: 'download',
             color: 'primary',
@@ -158,27 +158,27 @@ export const billingConfig = [
                   textColor: 'white',
                   size: 'md'
                 }
-              },
-              {
-                label: 'guide',
-                event: 'viewGuide',
-                avatar: {
-                  icon: 'dehaze',
-                  color: 'orange',
-                  textColor: 'white',
-                  size: 'md'
-                }
-              },
-              {
-                label: 'options',
-                event: 'options',
-                avatar: {
-                  icon: 'chevron_right',
-                  color: 'primary',
-                  textColor: 'white',
-                  size: 'md'
-                }
               }
+              // {
+              //   label: 'guide',
+              //   event: 'viewGuide',
+              //   avatar: {
+              //     icon: 'dehaze',
+              //     color: 'orange',
+              //     textColor: 'white',
+              //     size: 'md'
+              //   }
+              // },
+              // {
+              //   label: 'options',
+              //   event: 'options',
+              //   avatar: {
+              //     icon: 'chevron_right',
+              //     color: 'primary',
+              //     textColor: 'white',
+              //     size: 'md'
+              //   }
+              // }
             ]
           }
         }
