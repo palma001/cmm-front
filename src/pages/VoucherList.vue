@@ -186,7 +186,6 @@
             </div>
           </div>
         </q-card-section>
-
         <q-card-actions align="right">
           <q-btn flat label="Cerrar" color="primary" v-close-popup />
         </q-card-actions>
@@ -194,151 +193,125 @@
     </q-dialog>
     <!-- Ventana Modal para el botón PAGOS por cada registro de Comprobante-->
     <q-dialog v-model="pay">
-      <q-card style="width: 1200px; max-width: 80vw;">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Pagos del comprobante: F001-34</div>
+      <q-card style="width: 1200px; max-width: 80vw;" v-if="billSelected">
+        <q-card-section class="row items-center q-pb-none" v-if="billSelected">
+          <div class="text-h6">Pagos del comprobante: F001-{{ billSelected.id }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
 
-        <q-card-section>
-        <q-space />
-        <div class="row">
-          <div class="col-8">
-          </div>
-          <div class="col-2">
-            TOTAL A PAGAR
-          </div>
-          <div class="col-2">
-            50.000,00
-          </div>
-        </div>
-        <q-separator/>
-        <q-space/>
-        <div class="row">
-          <div class="col-8">
-          </div>
-          <div class="col-2">
-            TOTAL PAGADO
-          </div>
-          <div class="col-2">
-            30.000,00
-          </div>
-        </div>
-        <q-separator/>
-        <div class="row">
-          <div class="col-8">
-          </div>
-          <div class="col-2">
-            PENDIENTE DE PAGO
-          </div>
-          <div class="col-2">
-            20.000,00
-          </div>
-        </div>
-        <q-separator/>
-        <br>
-         <q-btn
-          color="primary"
-          icon="control_point"
-          label="Nuevo"
-          no-caps
-          glossy
-        />
-        <q-table
-            :data="dataPay"
-            :columns="columsPay"
-            row-key="name"
-          >
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="desc" :props="props">
-                  {{ props.row.name }}
-                </q-td>
-                <q-td key="paymentDate" :props="props">
-                  <q-input v-model="date" filled type="date" dense/>
-                </q-td>
-                <q-td key="paymentMethod" :props="props">
-                  <q-select outlined v-model="model" :options="paymentMethods" label="Seleccionar" dense/>
-                </q-td>
-                <q-td key="destiny" :props="props">
-                  <q-select outlined v-model="model" :options="destinations" label="Seleccionar" dense/>
-                </q-td>
-                <q-td key="reference" :props="props">
-                  <q-input outlined v-model="text" label="Referencia" dense />
-                </q-td>
-                <q-td key="archive" :props="props">
-                  <q-file
-                    :value="files"
-                    @input="updateFiles"
-                    label="Seleccionar archivo"
-                    outlined
-                    multiple
-                    :clearable="!isUploading"
-                    style="max-width: 400px"
-                    dense
-                  >
-                    <template v-slot:file="{ index, file }">
-                      <q-chip
-                        class="full-width q-my-xs"
-                        :removable="isUploading && uploadProgress[index].percent < 1"
-                        square
-                        @remove="cancelFile(index)"
-                      >
-                        <q-linear-progress
-                          class="absolute-full full-height"
-                          :value="uploadProgress[index].percent"
-                          :color="uploadProgress[index].color"
-                          track-color="grey-2"
-                        />
-
-                        <q-avatar>
-                          <q-icon :name="uploadProgress[index].icon" />
-                        </q-avatar>
-
-                        <div class="ellipsis relative-position">
-                          {{ file.name }}
-                        </div>
-
-                        <q-tooltip>
-                          {{ file.name }}
-                        </q-tooltip>
-                      </q-chip>
-                    </template>
-
-                    <template v-slot:after v-if="canUpload">
-                      <q-btn
-                        color="primary"
+        <q-card-section v-if="billSelected">
+          <div class="row justify-end q-gutter-sm">
+            <div class="col-12">
+              <q-list bordered separator dense>
+                <q-item clickable v-ripple :active="active">
+                  <q-item-section>TOTAL A PAGAR</q-item-section>
+                  <q-item-section side> {{ billSelected.total }}</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple :active="active" active-class="text-orange">
+                  <q-item-section>TOTAL PAGADO</q-item-section>
+                  <q-item-section side>{{ totalPaid }}</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple :active="active" active-class="bg-teal-1 text-grey-8">
+                  <q-item-section>PENDIENTE DE PAGO</q-item-section>
+                  <q-item-section side>{{  (billSelected.total - totalPaid).toFixed(2) }}</q-item-section>
+                </q-item>
+              </q-list>
+            </div>
+            <div class="col-12">
+              <q-btn
+                color="primary"
+                icon="control_point"
+                label="Nuevo"
+                no-caps
+                glossy
+                v-if="billSelected.total - totalPaid"
+                @click="addNewPayment"
+              />
+            </div>
+            <div class="col-12">
+              <q-table
+                :data="payments"
+                :columns="columsPay"
+                row-key="name"
+              >
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <!-- <q-td key="created_at" :props="props">
+                      <q-input v-model="props.row.created_at" filled type="date" dense/>
+                    </q-td> -->
+                    <q-td key="payment_destination" :props="props">
+                      <q-select
+                        use-input
+                        hide-selected
+                        fill-input
+                        outlined
+                        clearable
                         dense
-                        icon="cloud_upload"
-                        round
-                        @click="upload"
-                        :disable="!canUpload"
-                        :loading="isUploading"
+                        autocomplete="off"
+                        input-debounce="0"
+                        name="paymentDestination"
+                        ref="paymentDestinationRef"
+                        v-model="props.row.payment_destination"
+                        data-vv-as="field"
+                        option-value="id"
+                        option-label="name"
+                        label="Destino"
+                        :options="paymentDestinations"
+                        @filter="getPaymentDestinations"
                       />
-                    </template>
-                  </q-file>
-                </q-td>
-                <q-td key="mount" :props="props">
-                  <q-input outlined v-model="text" label="Monto" dense />
-                </q-td>
-                <q-td key="actions" :props="props" class="q-pa-md q-gutter-sm">
-                  <q-btn round color="primary" glossy text-color="white" icon="add" size="xs" />
-                  <q-btn round color="negative" glossy text-color="white" icon="delete" size="xs" />
-                </q-td>
-              </q-tr>
-            </template>
-
-          </q-table>
+                    </q-td>
+                    <q-td key="payment_method" :props="props">
+                      <q-select
+                        use-input
+                        hide-selected
+                        fill-input
+                        outlined
+                        clearable
+                        dense
+                        autocomplete="off"
+                        input-debounce="0"
+                        name="paymentMethod"
+                        ref="paymentMethodRef"
+                        v-model="props.row.payment_method"
+                        data-vv-as="field"
+                        option-value="id"
+                        option-label="name"
+                        label="Método de pago"
+                        :options="paymentMethods"
+                        @filter="getPaymentMethods"
+                      />
+                    </q-td>
+                    <q-td key="reference" :props="props">
+                      <q-input outlined v-model="props.row.reference" label="Referencia" dense />
+                    </q-td>
+                    <q-td key="amount" :props="props">
+                      <q-input outlined v-model="props.row.amount" label="Monto" dense @input="totalPayements"/>
+                    </q-td>
+                    <q-td key="actions" :props="props" class="q-pa-md q-gutter-sm">
+                      <q-btn round color="negative" glossy text-color="white" icon="delete" size="xs" @click="deletePayment(props)" />
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </div>
+          </div>
         </q-card-section>
+        <q-card-actions align="right">
+          <q-btn color="negative" label="cancelar" @click="pay = false"/>
+          <q-btn color="positive" label="guardad pagos" @click="savePayment"/>
+        </q-card-actions>
       </q-card>
     </q-dialog>
   </q-page>
 </template>
 
 <script>
+import { date } from 'quasar'
 import { billingConfig } from '../config-file/billing/billingConfig.js'
 import { mixins } from '../mixins'
+import { GETTERS } from '../store/module-login/name.js'
+import { mapGetters } from 'vuex'
 import DataTable from '../components/DataTable.vue'
 export default {
   mixins: [mixins.containerMixin],
@@ -348,6 +321,7 @@ export default {
   data () {
     return {
       loadingTable: false,
+      billSelected: null,
       /**
        * Options pagination
        * @type {Object}
@@ -382,6 +356,7 @@ export default {
           expiration_date: ''
         }
       },
+      payments: [],
       archives: null,
       files: null,
       uploadProgress: [],
@@ -402,67 +377,136 @@ export default {
       category: '',
       state: '',
       filter: '',
-      option: true, // Variable que controla que se muestre la ventana de dialogo para Opciones
-      pay: true, // Variable que controla que se muestre la ventana de dialogo para Pagos
-      voucherTypes: [
-        'Factura electrónica', 'Boleta de venta electrónica', 'Nota de credito', 'Nota de débito'
-      ],
-      series: [
-        'Serie 1', 'Serie 2', 'Serie 3', 'Serie 4'
-      ],
-      clients: [
-        '26.545.123 - Luis Salazar', '12.548.125 - Carlos Gonzaléz', '4.521.983 - Samantha Rodríguez', '12.256.123 - Carlos Alcala'
-      ],
-      products: [
-        '0001 - Harina de trigo', '0002  - Arroz', '0003 - Harina de maíz', '0005 - Leche'
-      ],
-      categories: [
-        'Alimentos', 'Cerraduras', 'HP', 'Pinturas'
-      ],
-      states: [
-        'Registrado', 'Enviado', 'Aceptado', 'Observado', 'Rechazado', 'Anulado', 'Por anular'
-      ],
-      paymentMethods: [
-        'Efectivo', 'Tarjeta de crédito', 'Tarjeta de débito', 'Transferencia', 'Factura a 30 días', 'Tarjeta d ecrédito Visa', 'Contado contraentrega', 'A 30 días', 'Crédito', 'Contado'
-      ],
-      destinations: [
-        'Banco de Crédito del Perú - PEN ', 'Caja General'
-      ],
+      option: false,
+      pay: false,
+      voucherTypes: [],
+      paymentMethods: [],
+      paymentDestinations: [],
+      exchange: 0,
+      userSession: null,
+      branchOfficeSession: null,
+      totalPaid: 0,
       columsPay: [
-        {
-          name: 'desc',
-          required: true,
-          label: '#',
-          align: 'left',
-          field: row => row.name,
-          format: val => `${val}`,
-          sortable: true
-        },
-        { name: 'paymentDate', align: 'center', label: 'Fecha de Pago', field: 'paymentDate', sortable: true },
-        { name: 'paymentMethod', align: 'center', label: 'Método de Pago', field: 'paymentMethod', sortable: true },
-        { name: 'destiny', align: 'center', label: 'Destino', field: 'destiny', sortable: true },
+        // { name: 'created_at', align: 'center', label: 'Fecha de Pago', field: 'created_at', sortable: true },
+        { name: 'payment_method', align: 'center', label: 'Método de Pago', field: 'payment_method', sortable: true },
+        { name: 'payment_destination', align: 'center', label: 'Destino', field: 'payment_destination', sortable: true },
         { name: 'reference', align: 'center', label: 'Referencia', field: 'reference', sortable: true },
-        { name: 'archive', align: 'center', label: 'Archivo', field: 'archive' },
-        { name: 'mount', align: 'center', label: 'Monto', field: 'mount' },
+        // { name: 'archive', align: 'center', label: 'Archivo', field: 'archive' },
+        { name: 'amount', align: 'center', label: 'Monto', field: 'amount' },
         { name: 'actions', align: 'center', label: 'Acciones', field: 'action' }
-      ],
-      dataPay: [
-        {
-          name: '1'
-        },
-        {
-          name: '2'
-        },
-        {
-          name: '3'
-        }
       ]
     }
   },
   created () {
     this.getBillElectronics()
+    this.getExchange()
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
+  },
+  computed: {
+    /**
+     * Getters Vuex
+     */
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Calculate billing total
+     */
+    totalPayements () {
+      let total = 0
+      if (this.payments.length > 0) {
+        this.payments.forEach(element => {
+          total = Number(total) + Number(element.amount)
+        })
+        this.totalPaid = total
+      } else {
+        this.totalPaid = 0
+      }
+    },
+    /**
+     * Model paymnets
+     * @param {Array} data data model
+     * @return {Array} model
+     */
+    modelPayments (data) {
+      return data.map(payment => {
+        return {
+          payment_method_id: payment.payment_method.id,
+          payment_destination_id: payment.payment_destination.id,
+          reference: payment.reference,
+          amount: payment.amount,
+          exchange: this.exchange,
+          user_created_id: this.userSession.id,
+          created_at: payment.created_at
+        }
+      })
+    },
+    /**
+     * Get Data in exchange
+     */
+    getExchange () {
+      this.$services.getData(['exchange-rate'], {
+        start_date: date.formatDate(date.subtractFromDate(new Date(), { month: 1 }), 'DD/MM/YYYY'),
+        final_date: date.formatDate(new Date(), 'DD/MM/YYYY'),
+        coin: 'PEN'
+      })
+        .then(({ res }) => {
+          if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
+            this.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
+          }
+        })
+    },
+    /**
+     * Add paument
+     */
+    addNewPayment () {
+      this.payments.push({})
+    },
+    /**
+     * Delete payment
+     * @param {Number} index indiex payment
+     */
+    deletePayment (index) {
+      this.payments.splice(index.rowIndex, 1)
+      this.totalPayements()
+    },
+    /**
+     * Get payment method
+     * @param {String} value data filter
+     */
+    getPaymentMethods (value, update) {
+      this.$services.getData(['payment-methods'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.paymentMethods = res.data.data
+          })
+        })
+    },
+    /**
+     * Get payment destination
+     * @param {String} value data filter
+     */
+    getPaymentDestinations (value, update) {
+      this.$services.getData(['payment-destinations'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.paymentDestinations = res.data.data
+          })
+        })
+    },
     /**
      * Load data sorting
      * @param  {Object}
@@ -484,8 +528,15 @@ export default {
     downloadCDR (data) {
       console.log(data)
     },
+    /**
+     * Open payment dialog
+     * @param {Boolean} data status dialog
+     */
     viewPayment (data) {
       this.pay = true
+      this.billSelected = data
+      this.payments = data.bill_electronic_payments
+      this.totalPayements()
     },
     viewNote (data) {
       this.$router.push({ name: 'CreditNote', params: { id: data.id } })
@@ -521,6 +572,23 @@ export default {
           this.data = []
           this.loadingTable = false
           this.optionPagination.rowsNumber = 0
+        })
+    },
+    /**
+     * Get Bill electronis
+     */
+    savePayment () {
+      this.loadingTable = true
+      this.$services.putData(['bill-electronics', this.billSelected.id], {
+        bill_electronic_payments: this.modelPayments(this.payments)
+      })
+        .then(({ res }) => {
+          this.notify(this, 'billing.saveSuccessPayment', 'positive', 'mood')
+          this.getBillElectronics()
+          this.pay = false
+        })
+        .catch(err => {
+          console.log(err)
         })
     }
   }

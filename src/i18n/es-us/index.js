@@ -160,6 +160,7 @@ export default {
   },
 
   billing: {
+    saveSuccessPayment: 'pago guarado exitosamente!',
     client: 'cliente',
     operation_type: 'tipo de venta',
     code: 'código',
