@@ -247,6 +247,21 @@ export const product = [
       },
       {
         tabulated: {
+          name: 'stock',
+          align: 'center',
+          visible: true,
+          button: {
+            color: 'primary',
+            type: 'button',
+            size: 'sm',
+            icon: 'search',
+            push: true,
+            event: 'viewStock'
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'action',
           align: 'center'
         }

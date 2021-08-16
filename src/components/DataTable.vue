@@ -103,7 +103,7 @@
             </q-btn-dropdown>
             <q-btn
               v-else-if="col.button && col.button.type === 'button'"
-              :label="ucwords($t(`${module}.${col.button.label}`))"
+              :label="col.button.label ? ucwords($t(`${module}.${col.button.label}`)) : ''"
               :icon="col.button.icon"
               :color="col.button.color"
               :size="col.button.size"

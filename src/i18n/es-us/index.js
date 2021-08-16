@@ -202,6 +202,7 @@ export default {
     editSuccessfull: 'Categoría editada exitosamente'
   },
   product: {
+    stock: 'stock',
     brand_id: 'marca',
     brand: 'marca',
     category_id: 'categoria',

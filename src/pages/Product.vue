@@ -85,6 +85,7 @@
           @search-data="searchData"
           @on-load-data="loadData"
           @delete="deleteData"
+          @viewStock="viewStock"
         />
       </div>
     </div>
@@ -588,6 +589,9 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    viewStock (data) {
+      console.log(data)
+    },
     /**
      * Delete attributte product
      * @param {Number} index index attribute
