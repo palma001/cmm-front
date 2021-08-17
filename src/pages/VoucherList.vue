@@ -259,6 +259,7 @@
                             outlined
                             clearable
                             dense
+                            autofocus
                             autocomplete="off"
                             input-debounce="0"
                             name="paymentDestination"
@@ -286,6 +287,7 @@
                           auto-save
                         >
                           <q-select
+                            autofocus
                             use-input
                             hide-selected
                             fill-input
@@ -310,7 +312,7 @@
                       <q-td key="reference" :props="props">
                         {{ props.row.reference }}
                         <q-popup-edit v-model="props.row.reference" auto-save>
-                          <q-input label="Referencia" v-model="props.row.reference" outlined dense/>
+                          <q-input autofocus label="Referencia" v-model="props.row.reference" outlined dense/>
                         </q-popup-edit>
                       </q-td>
                       <q-td key="amount" :props="props">
@@ -321,6 +323,7 @@
                             v-model="props.row.amount"
                             outlined
                             dense
+                            autofocus
                             :rules="[
                               val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
                               val => 0 <= (Number(billSelected.total) - Number(totalPaid)) || 'El monto no puede superar el total a pagar'

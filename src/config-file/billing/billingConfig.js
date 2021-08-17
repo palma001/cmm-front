@@ -6,6 +6,15 @@ export const billingConfig = [
     children: [
       {
         tabulated: {
+          name: 'serie',
+          align: 'left',
+          field: row => `F001-${row.id}`,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
           name: 'client',
           align: 'left',
           field: row => row.client.full_name,
