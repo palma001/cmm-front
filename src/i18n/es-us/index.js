@@ -231,6 +231,7 @@ export default {
     editSuccessfull: 'Categoría editada exitosamente'
   },
   product: {
+    filter: 'filtros',
     stock: 'stock',
     brand_id: 'marca',
     brand: 'marca',

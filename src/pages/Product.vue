@@ -1,11 +1,65 @@
 <template>
   <q-page padding>
     <div class="row q-gutter-y-sm">
-      <div class="col-12 col-12 text-right">
+      <div class="col-6 row text-right q-col-gutter-x-sm">
+        <div class="col-xs-4 col-lg-3">
+          <q-input
+            type="text"
+            label="C"
+            v-model="brand"
+            dense
+            outlined
+            ref="brand"
+            @input="filterPrimary"
+            @keyup.enter.native="nextInput('code')"
+          />
+        </div>
+        <div class="col-xs-4 col-lg-3">
+          <q-input
+            type="text"
+            label="P"
+            dense
+            v-model="code"
+            outlined
+            ref="code"
+            @input="filterPrimary"
+            @keyup.enter.native="nextInput('supsec')"
+          />
+        </div>
+        <div class="col-xs-4 col-lg-3">
+          <q-input
+            type="text"
+            label="D"
+            dense
+            ref="supsec"
+            v-model="supsec"
+            outlined
+            @input="filterPrimary"
+          />
+        </div>
+      </div>
+      <div class="col-6 text-right q-gutter-x-sm">
+        <q-btn
+          color="orange"
+          icon="filter"
+          :label="$q.screen.lt.md ? '' : $t('product.filter')"
+          @click="filter = !filter"
+        >
+          <q-tooltip
+            anchor="center right"
+            self="center left"
+            :offset="[10, 10]"
+            v-if="$q.screen.lt.sm"
+          >
+            {{
+              ucwords($t('product.filter'))
+            }}
+          </q-tooltip>
+        </q-btn>
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('product.add')"
+          :label="$q.screen.lt.md ? '' : $t('product.add')"
           @click="addDialig = true"
         >
           <q-tooltip
@@ -18,55 +72,18 @@
               ucwords($t('product.add'))
             }}
           </q-tooltip>
-      </q-btn>
+        </q-btn>
       </div>
-      <div class="co-12 row q-col-gutter-xs">
-        <div class="col-xs-2 col-lg-1">
+      <div class="col-12 row q-col-gutter-xs" v-if="filter">
+        <div v-for="attributeType in listAttributeTypes" class="col-xs-4 col-sm-4 col-md-2 col-lg-1" :key="attributeType.id">
           <q-input
             type="text"
-            label="C"
-            v-model="brand"
             dense
             outlined
-            ref="brand"
-            @input="filterPrimary"
-            @keyup.enter.native="nextInput('code')"
+            :label="attributeType.name"
+            v-model="attributeTypes[attributeType.id]"
+            @input="filterSecondary"
           />
-        </div>
-        <div class="col-xs-2 col-lg-1">
-          <q-input
-            type="text"
-            label="P"
-            dense
-            v-model="code"
-            outlined
-            ref="code"
-            @input="filterPrimary"
-            @keyup.enter.native="nextInput('supsec')"
-          />
-        </div>
-        <div class="col-xs-2 col-lg-1">
-          <q-input
-            type="text"
-            label="D"
-            dense
-            ref="supsec"
-            v-model="supsec"
-            outlined
-            @input="filterPrimary"
-          />
-        </div>
-        <div class="offset-lg-1 col-sm-6 col-lg-8 row q-col-gutter-xs justify-end">
-          <div v-for="attributeType in listAttributeTypes" class="col-xs-6 col-sm-4 col-lg-2" :key="attributeType.id">
-            <q-input
-              type="text"
-              dense
-              outlined
-              :label="attributeType.name"
-              v-model="attributeTypes[attributeType.id]"
-              @input="filterSecondary"
-            />
-          </div>
         </div>
       </div>
       <div class="col-12">
@@ -283,6 +300,7 @@
     <q-dialog
       persistent
       full-height
+      position="right"
       v-model="addDialig"
     >
       <dynamic-form
@@ -470,15 +488,24 @@
       </dynamic-form>
     </q-dialog>
     <q-dialog v-model="stockDialog">
-      <q-card>
+      <q-card v-if="productSelected">
         <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Stock del producto</div>
+          <div class="text-h6">
+            {{ productSelected.brand.name }} - {{ productSelected.code }} - {{ productSelected.supsec }} / {{ productSelected.description }}
+          </div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
         <q-card-section>
           <q-markup-table>
             <thead>
+              <tr class="text-left">
+                <th colspan="4">
+                  <span class="text-h6">
+                    Stock
+                  </span>
+                </th>
+              </tr>
               <tr>
                 <th class="text-left">Almacen</th>
                 <th class="text-right">Precio de compra</th>
@@ -487,10 +514,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="stock.length <= 0">
+              <tr v-if="productSelected.stock.length <= 0">
                  <td class="text-center" colspan="4">Producto sin stock</td>
               </tr>
-              <tr v-else v-for="stockOne in stock" :key="stockOne.id">
+              <tr v-else v-for="stockOne in productSelected.stock" :key="stockOne.id">
                 <td class="text-left">{{ stockOne.warehouse_name }}</td>
                 <td class="text-right">{{ stockOne.purchase_price }}</td>
                 <td class="text-right">{{ stockOne.sale_price }}</td>
@@ -523,7 +550,8 @@ export default {
   },
   data () {
     return {
-      stock: [],
+      filter: false,
+      productSelected: null,
       stockDialog: false,
       tab: 'priceList',
       productServices,
@@ -636,7 +664,7 @@ export default {
      * @param {Object} data data product
      */
     viewStock (data) {
-      this.stock = data.stock
+      this.productSelected = data
       this.stockDialog = true
     },
     /**

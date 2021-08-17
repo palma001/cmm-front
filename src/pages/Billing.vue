@@ -5,8 +5,8 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          label="agragar factura"
-          @click="$router.push({ name: 'billing' })"
+          label="agregar factura"
+          @click="$router.push({ name: 'NewBilling' })"
         />
       </div>
       <div class="col-12">
@@ -102,7 +102,7 @@
     </div>
     <!-- Ventana Modal para el botón OPCIONES por cada registro de Comprobante-->
     <q-dialog v-model="option">
-      <q-card style="width: 700px; max-width: 80vw;">
+      <q-card style="width: 600px; max-width: 80vw;">
         <q-card-section>
           <div class="text-h6">Comprobante: F0001-34</div>
         </q-card-section>
@@ -112,7 +112,16 @@
           <br>
           <div class="row q-col-gutter-sm">
             <div class="col-3">
-              <q-btn icon="print" class="full-width" label="Imprimir A4" stack glossy color="primary" no-caps dense/>
+              <q-btn
+                icon="print"
+                class="full-width"
+                label="Imprimir A4"
+                stack
+                glossy
+                color="primary"
+                no-caps
+                dense
+              />
             </div>
             <div class="col-3">
               <q-btn icon="print" class="full-width" label="Imprimir Ticket 80 mm" stack glossy color="primary" no-caps dense/>
@@ -153,7 +162,7 @@
     </q-dialog>
     <!-- Ventana Modal para el botón PAGOS por cada registro de Comprobante-->
     <q-dialog v-model="pay">
-      <q-card style="width: 1200px; max-width: 80vw;" v-if="billSelected">
+      <q-card style="width: 800px; max-width: 80vw;" v-if="billSelected">
         <q-form @submit="savePayment">
           <q-card-section class="row items-center q-pb-none" v-if="billSelected">
             <div class="text-h6">Pagos de factura: F001-{{ billSelected.id }}</div>

@@ -215,8 +215,14 @@
                 </q-td>
                 <q-td key="amount" :props="props">
                   {{ props.row.amount }}
-                  <q-popup-edit v-model.number="props.row.amount">
-                    <q-input type="number" v-model.number="props.row.amount" dense autofocus @input="recalculate(props.row)"/>
+                  <q-popup-edit auto-save v-model.number="props.row.amount">
+                    <q-input
+                      type="number"
+                      autofocus
+                      dense
+                      v-model.number="props.row.amount"
+                      @input="recalculate(props.row)"
+                    />
                   </q-popup-edit>
                 </q-td>
                 <q-td key="purchase_price" :props="props">
@@ -227,14 +233,25 @@
                 </q-td>
                 <q-td key="price" :props="props">
                   {{ props.row.price }}
-                  <q-popup-edit v-model.number="props.row.price">
-                    <q-input type="number" v-model.number="props.row.price" dense autofocus @input="recalculate(props.row)"/>
+                  <q-popup-edit v-model.number="props.row.price" auto-save>
+                    <q-input
+                      type="number"
+                      v-model.number="props.row.price"
+                      dense autofocus
+                      @input="recalculate(props.row)"
+                    />
                   </q-popup-edit>
                 </q-td>
                 <q-td key="discount" :props="props">
                   {{ props.row.discount }}
-                  <q-popup-edit v-model.number="props.row.discount">
-                    <q-input type="number" v-model.number="props.row.discount" dense autofocus @input="recalculate(props.row)"/>
+                  <q-popup-edit v-model.number="props.row.discount" auto-save>
+                    <q-input
+                      type="number"
+                      dense
+                      autofocus
+                      v-model.number="props.row.discount"
+                      @input="recalculate(props.row)"
+                    />
                   </q-popup-edit>
                 </q-td>
                 <q-td key="subtotal" :props="props">
