@@ -234,87 +234,100 @@
               </div>
               <div class="col-12">
                 <q-table
-                  class="my-sticky-column-table"
                   :data="payments"
                   :columns="columsPay"
                   :rows-per-page-options="[0]"
                   row-key="name"
-                  hide-bottom
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props">
-                      <!-- <q-td key="created_at" :props="props">
-                        <q-input v-model="props.row.created_at" filled type="date" dense/>
-                      </q-td> -->
                       <q-td key="payment_destination" :props="props">
-                        <q-select
-                          style="max-width: 200px;"
-                          use-input
-                          hide-selected
-                          fill-input
-                          outlined
-                          clearable
-                          dense
-                          autocomplete="off"
-                          input-debounce="0"
-                          name="paymentDestination"
-                          ref="paymentDestinationRef"
+                        <span v-if="props.row.payment_destination">
+                          {{ props.row.payment_destination.name }}
+                        </span>
+                        <span v-else>
+                          -
+                        </span>
+                        <q-popup-edit
                           v-model="props.row.payment_destination"
-                          data-vv-as="field"
-                          option-value="id"
-                          option-label="name"
-                          label="Destino"
-                          :rules="[val => val || 'El campo metodo de pago es requerido']"
-                          :options="paymentDestinations"
-                          @filter="getPaymentDestinations"
-                        />
+                          auto-save
+                        >
+                          <q-select
+                            use-input
+                            hide-selected
+                            fill-input
+                            outlined
+                            clearable
+                            dense
+                            autocomplete="off"
+                            input-debounce="0"
+                            name="paymentDestination"
+                            ref="paymentDestinationRef"
+                            v-model="props.row.payment_destination"
+                            data-vv-as="field"
+                            option-value="id"
+                            option-label="name"
+                            label="Destino"
+                            :rules="[val => val || 'El campo metodo de pago es requerido']"
+                            :options="paymentDestinations"
+                            @filter="getPaymentDestinations"
+                          />
+                        </q-popup-edit>
                       </q-td>
                       <q-td key="payment_method" :props="props">
-                        <q-select
-                          style="max-width: 200px;"
-                          use-input
-                          hide-selected
-                          fill-input
-                          outlined
-                          clearable
-                          dense
-                          autocomplete="off"
-                          input-debounce="0"
-                          name="paymentMethod"
-                          ref="paymentMethodRef"
+                        <span v-if="props.row.payment_method">
+                          {{ props.row.payment_method.name }}
+                        </span>
+                        <span v-else>
+                          -
+                        </span>
+                        <q-popup-edit
                           v-model="props.row.payment_method"
-                          data-vv-as="field"
-                          option-value="id"
-                          option-label="name"
-                          label="Método de pago"
-                          :options="paymentMethods"
-                          :rules="[val => val || 'El campo metodo de pago es requerido']"
-                          @filter="getPaymentMethods"
-                        />
+                          auto-save
+                        >
+                          <q-select
+                            use-input
+                            hide-selected
+                            fill-input
+                            outlined
+                            clearable
+                            dense
+                            autocomplete="off"
+                            input-debounce="0"
+                            name="paymentDestination"
+                            ref="paymentDestinationRef"
+                            v-model="props.row.payment_method"
+                            data-vv-as="field"
+                            option-value="id"
+                            option-label="name"
+                            label="Destino"
+                            :rules="[val => val || 'El campo metodo de pago es requerido']"
+                            :options="paymentMethods"
+                            @filter="getPaymentMethods"
+                          />
+                        </q-popup-edit>
                       </q-td>
                       <q-td key="reference" :props="props">
-                        <q-input
-                          outlined
-                          v-model="props.row.reference"
-                          label="Referencia"
-                          dense
-                          style="width: 200px;"
-                          :rules="[val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido']"
-                        />
+                        {{ props.row.reference }}
+                        <q-popup-edit v-model="props.row.reference" auto-save>
+                          <q-input label="Referencia" v-model="props.row.reference" outlined dense/>
+                        </q-popup-edit>
                       </q-td>
                       <q-td key="amount" :props="props">
-                        <q-input
-                          outlined
-                          v-model="props.row.amount"
-                          label="Monto"
-                          style="width: 200px;"
-                          dense
-                          :rules="[
-                            val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
-                            val => 0 <= (Number(billSelected.total) - Number(totalPaid)) || 'El monto no puede superar el total a pagar'
-                          ]"
-                          @input="totalPayements"
-                        />
+                        {{ props.row.amount }}
+                        <q-popup-edit v-model="props.row.amount" :validate="validationAmount" @before-hide="totalPayements" auto-save>
+                          <q-input
+                            label="Monto"
+                            v-model="props.row.amount"
+                            outlined
+                            dense
+                            :rules="[
+                              val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+                              val => 0 <= (Number(billSelected.total) - Number(totalPaid)) || 'El monto no puede superar el total a pagar'
+                            ]"
+                            @input="totalPayements"
+                          />
+                        </q-popup-edit>
                       </q-td>
                       <q-td key="actions" :props="props" class="q-pa-md q-gutter-sm">
                         <q-btn
@@ -323,8 +336,8 @@
                           glossy
                           text-color="white"
                           icon="delete"
-                          size="sm"
-                          class="q-mb-lg"
+                          size="xs"
+                          class="q-mb-sm"
                           @click="deletePayment(props)"
                         />
                       </q-td>
@@ -406,26 +419,11 @@ export default {
         }
       },
       payments: [],
-      archives: null,
-      files: null,
-      uploadProgress: [],
-      uploading: null,
       text: '',
       billingConfig,
       visibleColumns: ['id', 'soap', 'dateEmission', 'dateExp', 'client', 'number', 'noteCd', 'state', 'user', 'coin', 'tGravado', 'tExportacion', 'tGratuita', 'tInafecta', 'tExonerado', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'paid', 'downloads', 'actions'],
       data: [],
       dialog: false,
-      position: 'top',
-      model: null,
-      date: '',
-      dense: false,
-      voucherType: '',
-      serie: '',
-      client: '',
-      product: '',
-      category: '',
-      state: '',
-      filter: '',
       option: false,
       pay: false,
       voucherTypes: [],
@@ -436,12 +434,12 @@ export default {
       branchOfficeSession: null,
       totalPaid: 0,
       columsPay: [
-        // { name: 'created_at', align: 'center', label: 'Fecha de Pago', field: 'created_at', sortable: true },
-        { name: 'payment_method', align: 'center', label: 'Método de Pago', field: 'payment_method', sortable: true },
-        { name: 'payment_destination', align: 'center', label: 'Destino', field: 'payment_destination', sortable: true },
+        // { name: 'created_at', align: 'left', label: 'Fecha de Pago', field: 'created_at', sortable: true },
+        { name: 'payment_method', align: 'left', label: 'Método de Pago', field: 'payment_method', sortable: false },
+        { name: 'payment_destination', align: 'left', label: 'Destino', field: 'payment_destination', sortable: false },
         { name: 'reference', align: 'center', label: 'Referencia', field: 'reference', sortable: true },
         // { name: 'archive', align: 'center', label: 'Archivo', field: 'archive' },
-        { name: 'amount', align: 'center', label: 'Monto', field: 'amount' },
+        { name: 'amount', align: 'center', label: 'Monto', field: 'amount', sortable: true },
         { name: 'actions', align: 'center', label: 'Acciones', field: 'action' }
       ]
     }
@@ -459,6 +457,9 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    validationAmount (value) {
+      return value !== '' && (Number(this.billSelected.total) - Number(this.totalPaid)) >= 0
+    },
     /**
      * Calculate billing total
      */
@@ -480,14 +481,18 @@ export default {
      */
     modelPayments (data) {
       return data.map(payment => {
-        return {
-          payment_method_id: payment.payment_method.id,
-          payment_destination_id: payment.payment_destination.id,
-          reference: payment.reference,
-          amount: payment.amount,
-          exchange: this.exchange,
-          user_created_id: this.userSession.id,
-          created_at: payment.created_at
+        if (payment.payment_method && payment.payment_destination) {
+          return {
+            payment_method_id: payment.payment_method.id,
+            payment_destination_id: payment.payment_destination.id,
+            reference: payment.reference,
+            amount: payment.amount,
+            exchange: this.exchange,
+            user_created_id: this.userSession.id,
+            created_at: payment.created_at
+          }
+        } else {
+          this.notify(this, 'billing.saveErrorPayment', 'negative', 'warning')
         }
       })
     },
@@ -511,8 +516,10 @@ export default {
      */
     addNewPayment () {
       this.payments.push({
-        amount: (this.billSelected.total - this.totalPaid).toFixed(2)
+        amount: (this.billSelected.total - this.totalPaid).toFixed(2),
+        reference: '-'
       })
+      this.totalPayements()
     },
     /**
      * Delete payment

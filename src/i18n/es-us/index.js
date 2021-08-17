@@ -161,6 +161,7 @@ export default {
   },
 
   billing: {
+    saveErrorPayment: 'Ingrese los campos requeridos',
     saveSuccessPayment: 'pago guarado exitosamente!',
     client: 'cliente',
     operation_type: 'tipo de venta',
