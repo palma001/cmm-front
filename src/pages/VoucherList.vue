@@ -234,9 +234,12 @@
               </div>
               <div class="col-12">
                 <q-table
+                  class="my-sticky-column-table"
                   :data="payments"
                   :columns="columsPay"
+                  :rows-per-page-options="[0]"
                   row-key="name"
+                  hide-bottom
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props">
@@ -245,6 +248,7 @@
                       </q-td> -->
                       <q-td key="payment_destination" :props="props">
                         <q-select
+                          style="max-width: 200px;"
                           use-input
                           hide-selected
                           fill-input
@@ -267,6 +271,7 @@
                       </q-td>
                       <q-td key="payment_method" :props="props">
                         <q-select
+                          style="max-width: 200px;"
                           use-input
                           hide-selected
                           fill-input
@@ -293,6 +298,8 @@
                           v-model="props.row.reference"
                           label="Referencia"
                           dense
+                          style="width: 200px;"
+                          :rules="[val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido']"
                         />
                       </q-td>
                       <q-td key="amount" :props="props">
@@ -300,6 +307,7 @@
                           outlined
                           v-model="props.row.amount"
                           label="Monto"
+                          style="width: 200px;"
                           dense
                           :rules="[
                             val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',

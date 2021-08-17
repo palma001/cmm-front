@@ -574,7 +574,7 @@
                     dense
                     :rules="[
                       val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
-                      val => val <= (totalSale - totalPaid) || 'El monto no puede superar el total a pagar'
+                      val => 0 <= (totalSale - totalPaid) || 'El monto no puede superar el total a pagar'
                     ]"
                     v-model="paymentAmount"
                     @input="totalPayemnts"
