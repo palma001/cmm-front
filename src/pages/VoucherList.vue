@@ -299,7 +299,7 @@
                           label="Referencia"
                           dense
                           style="width: 200px;"
-                          :rules="[val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido']"
+                          :rules="[val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido']"
                         />
                       </q-td>
                       <q-td key="amount" :props="props">
@@ -323,7 +323,8 @@
                           glossy
                           text-color="white"
                           icon="delete"
-                          size="xs"
+                          size="sm"
+                          class="q-mb-lg"
                           @click="deletePayment(props)"
                         />
                       </q-td>
