@@ -53,7 +53,7 @@ export const orderConfig = [
         tabulated: {
           name: 'options',
           align: 'center',
-          visible: false,
+          visible: true,
           button: {
             label: 'options',
             color: 'primary',
@@ -62,20 +62,10 @@ export const orderConfig = [
             size: 'sm',
             options: [
               {
-                label: 'note',
-                event: 'viewNote',
+                label: 'createBill',
+                event: 'createBill',
                 avatar: {
                   icon: 'edit',
-                  color: 'orange',
-                  textColor: 'white',
-                  size: 'md'
-                }
-              },
-              {
-                label: 'guide',
-                event: 'viewGuide',
-                avatar: {
-                  icon: 'dehaze',
                   color: 'orange',
                   textColor: 'white',
                   size: 'md'

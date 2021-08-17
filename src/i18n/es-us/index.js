@@ -64,6 +64,7 @@ export default {
 
   order: {
     newOrder: 'nuevo pedido',
+    createBill: 'Facturar',
     client: 'cliente',
     operation_type: 'tipo de venta',
     code: 'código',

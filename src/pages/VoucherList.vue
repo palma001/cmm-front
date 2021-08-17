@@ -194,113 +194,151 @@
     <!-- Ventana Modal para el botón PAGOS por cada registro de Comprobante-->
     <q-dialog v-model="pay">
       <q-card style="width: 1200px; max-width: 80vw;" v-if="billSelected">
-        <q-card-section class="row items-center q-pb-none" v-if="billSelected">
-          <div class="text-h6">Pagos del comprobante: F001-{{ billSelected.id }}</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
+        <q-form @submit="savePayment">
+          <q-card-section class="row items-center q-pb-none" v-if="billSelected">
+            <div class="text-h6">Pagos del comprobante: F001-{{ billSelected.id }}</div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
 
-        <q-card-section v-if="billSelected">
-          <div class="row justify-end q-gutter-sm">
-            <div class="col-12">
-              <q-list bordered separator dense>
-                <q-item clickable v-ripple :active="active">
-                  <q-item-section>TOTAL A PAGAR</q-item-section>
-                  <q-item-section side> {{ billSelected.total }}</q-item-section>
-                </q-item>
-                <q-item clickable v-ripple :active="active" active-class="text-orange">
-                  <q-item-section>TOTAL PAGADO</q-item-section>
-                  <q-item-section side>{{ totalPaid }}</q-item-section>
-                </q-item>
-                <q-item clickable v-ripple :active="active" active-class="bg-teal-1 text-grey-8">
-                  <q-item-section>PENDIENTE DE PAGO</q-item-section>
-                  <q-item-section side>{{  (billSelected.total - totalPaid).toFixed(2) }}</q-item-section>
-                </q-item>
-              </q-list>
+          <q-card-section v-if="billSelected">
+            <div class="row justify-end q-gutter-sm">
+              <div class="col-12">
+                <q-list bordered separator dense>
+                  <q-item clickable v-ripple>
+                    <q-item-section>TOTAL A PAGAR</q-item-section>
+                    <q-item-section side> {{ billSelected.total }}</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section>TOTAL PAGADO</q-item-section>
+                    <q-item-section side>{{ totalPaid }}</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple :active="active" active-class="text-negative">
+                    <q-item-section>PENDIENTE DE PAGO</q-item-section>
+                    <q-item-section side>
+                      {{  (billSelected.total - totalPaid).toFixed(2) }}
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </div>
+              <div class="col-12 text-right">
+                <q-btn
+                  color="primary"
+                  icon="control_point"
+                  label="Nuevo"
+                  no-caps
+                  glossy
+                  v-if="billSelected.total - totalPaid"
+                  @click="addNewPayment"
+                />
+              </div>
+              <div class="col-12">
+                <q-table
+                  :data="payments"
+                  :columns="columsPay"
+                  row-key="name"
+                >
+                  <template v-slot:body="props">
+                    <q-tr :props="props">
+                      <!-- <q-td key="created_at" :props="props">
+                        <q-input v-model="props.row.created_at" filled type="date" dense/>
+                      </q-td> -->
+                      <q-td key="payment_destination" :props="props">
+                        <q-select
+                          use-input
+                          hide-selected
+                          fill-input
+                          outlined
+                          clearable
+                          dense
+                          autocomplete="off"
+                          input-debounce="0"
+                          name="paymentDestination"
+                          ref="paymentDestinationRef"
+                          v-model="props.row.payment_destination"
+                          data-vv-as="field"
+                          option-value="id"
+                          option-label="name"
+                          label="Destino"
+                          :rules="[val => val || 'El campo metodo de pago es requerido']"
+                          :options="paymentDestinations"
+                          @filter="getPaymentDestinations"
+                        />
+                      </q-td>
+                      <q-td key="payment_method" :props="props">
+                        <q-select
+                          use-input
+                          hide-selected
+                          fill-input
+                          outlined
+                          clearable
+                          dense
+                          autocomplete="off"
+                          input-debounce="0"
+                          name="paymentMethod"
+                          ref="paymentMethodRef"
+                          v-model="props.row.payment_method"
+                          data-vv-as="field"
+                          option-value="id"
+                          option-label="name"
+                          label="Método de pago"
+                          :options="paymentMethods"
+                          :rules="[val => val || 'El campo metodo de pago es requerido']"
+                          @filter="getPaymentMethods"
+                        />
+                      </q-td>
+                      <q-td key="reference" :props="props">
+                        <q-input
+                          outlined
+                          v-model="props.row.reference"
+                          label="Referencia"
+                          dense
+                        />
+                      </q-td>
+                      <q-td key="amount" :props="props">
+                        <q-input
+                          outlined
+                          v-model="props.row.amount"
+                          label="Monto"
+                          dense
+                          :rules="[
+                            val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+                            val => 0 <= (Number(billSelected.total) - Number(totalPaid)) || 'El monto no puede superar el total a pagar'
+                          ]"
+                          @input="totalPayements"
+                        />
+                      </q-td>
+                      <q-td key="actions" :props="props" class="q-pa-md q-gutter-sm">
+                        <q-btn
+                          round
+                          color="negative"
+                          glossy
+                          text-color="white"
+                          icon="delete"
+                          size="xs"
+                          @click="deletePayment(props)"
+                        />
+                      </q-td>
+                    </q-tr>
+                  </template>
+                </q-table>
+              </div>
             </div>
-            <div class="col-12">
-              <q-btn
-                color="primary"
-                icon="control_point"
-                label="Nuevo"
-                no-caps
-                glossy
-                v-if="billSelected.total - totalPaid"
-                @click="addNewPayment"
-              />
-            </div>
-            <div class="col-12">
-              <q-table
-                :data="payments"
-                :columns="columsPay"
-                row-key="name"
-              >
-                <template v-slot:body="props">
-                  <q-tr :props="props">
-                    <!-- <q-td key="created_at" :props="props">
-                      <q-input v-model="props.row.created_at" filled type="date" dense/>
-                    </q-td> -->
-                    <q-td key="payment_destination" :props="props">
-                      <q-select
-                        use-input
-                        hide-selected
-                        fill-input
-                        outlined
-                        clearable
-                        dense
-                        autocomplete="off"
-                        input-debounce="0"
-                        name="paymentDestination"
-                        ref="paymentDestinationRef"
-                        v-model="props.row.payment_destination"
-                        data-vv-as="field"
-                        option-value="id"
-                        option-label="name"
-                        label="Destino"
-                        :options="paymentDestinations"
-                        @filter="getPaymentDestinations"
-                      />
-                    </q-td>
-                    <q-td key="payment_method" :props="props">
-                      <q-select
-                        use-input
-                        hide-selected
-                        fill-input
-                        outlined
-                        clearable
-                        dense
-                        autocomplete="off"
-                        input-debounce="0"
-                        name="paymentMethod"
-                        ref="paymentMethodRef"
-                        v-model="props.row.payment_method"
-                        data-vv-as="field"
-                        option-value="id"
-                        option-label="name"
-                        label="Método de pago"
-                        :options="paymentMethods"
-                        @filter="getPaymentMethods"
-                      />
-                    </q-td>
-                    <q-td key="reference" :props="props">
-                      <q-input outlined v-model="props.row.reference" label="Referencia" dense />
-                    </q-td>
-                    <q-td key="amount" :props="props">
-                      <q-input outlined v-model="props.row.amount" label="Monto" dense @input="totalPayements"/>
-                    </q-td>
-                    <q-td key="actions" :props="props" class="q-pa-md q-gutter-sm">
-                      <q-btn round color="negative" glossy text-color="white" icon="delete" size="xs" @click="deletePayment(props)" />
-                    </q-td>
-                  </q-tr>
-                </template>
-              </q-table>
-            </div>
-          </div>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn color="negative" label="cancelar" @click="pay = false"/>
-          <q-btn color="positive" label="guardad pagos" @click="savePayment"/>
-        </q-card-actions>
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn
+              color="negative"
+              label="cancelar"
+              @click="pay = false"
+            />
+            <q-btn
+              color="positive"
+              label="guardad pagos"
+              type="submit"
+              :loading="loadingPayment"
+            />
+          </q-card-actions>
+        </q-form>
       </q-card>
     </q-dialog>
   </q-page>
@@ -320,6 +358,8 @@ export default {
   },
   data () {
     return {
+      active: true,
+      loadingPayment: false,
       loadingTable: false,
       billSelected: null,
       /**
@@ -461,7 +501,9 @@ export default {
      * Add paument
      */
     addNewPayment () {
-      this.payments.push({})
+      this.payments.push({
+        amount: (this.billSelected.total - this.totalPaid).toFixed(2)
+      })
     },
     /**
      * Delete payment
@@ -578,17 +620,19 @@ export default {
      * Get Bill electronis
      */
     savePayment () {
-      this.loadingTable = true
+      this.loadingPayment = true
       this.$services.putData(['bill-electronics', this.billSelected.id], {
         bill_electronic_payments: this.modelPayments(this.payments)
       })
         .then(({ res }) => {
           this.notify(this, 'billing.saveSuccessPayment', 'positive', 'mood')
+          this.loadingPayment = false
           this.getBillElectronics()
           this.pay = false
         })
         .catch(err => {
           console.log(err)
+          this.loadingPayment = false
         })
     }
   }

@@ -100,7 +100,7 @@
         :propsPanelEdition="propsPanelEdition"
         :config="product"
         :loading="loadingForm"
-        @cancel="editDialog = false"
+        @cancel="closeModalEdition"
         @update="update"
       >
         <template>
@@ -623,6 +623,18 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Close modal edition
+     */
+    closeModalEdition () {
+      this.editDialog = false
+      this.attributesSeved = []
+      this.productPrices = []
+    },
+    /**
+     * View stock product
+     * @param {Object} data data product
+     */
     viewStock (data) {
       this.stock = data.stock
       this.stockDialog = true

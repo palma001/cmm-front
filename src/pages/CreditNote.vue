@@ -660,7 +660,7 @@ export default {
       })
         .then(({ res }) => {
           if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
-            this.order.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
+            this.creditNote.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
           }
         })
     },
