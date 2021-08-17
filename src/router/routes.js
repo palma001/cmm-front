@@ -13,8 +13,8 @@ const routes = [
     children: [
       {
         path: '',
-        name: 'billing',
-        component: () => import('pages/Billing.vue')
+        name: '',
+        component: () => import('pages/NewBilling.vue')
       },
       {
         path: 'billing/:module/:id',
@@ -42,9 +42,9 @@ const routes = [
         component: () => import('pages/Role.vue')
       },
       {
-        path: 'billing',
-        name: 'billing',
-        component: () => import('pages/Billing.vue')
+        path: 'new-billing',
+        name: 'NewBilling',
+        component: () => import('pages/NewBilling.vue')
       },
       {
         path: 'categories',
@@ -77,9 +77,9 @@ const routes = [
         component: () => import('pages/Product.vue')
       },
       {
-        path: 'voucher-list',
-        name: 'VoucherList',
-        component: () => import('pages/VoucherList.vue')
+        path: 'billings',
+        name: 'Billing',
+        component: () => import('pages/Billing.vue')
       },
       {
         path: 'orders',

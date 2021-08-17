@@ -79,7 +79,6 @@
       bordered
       show-if-above
       v-model="leftDrawerOpen"
-      class="q-pa-none"
     >
       <q-scroll-area
         :thumb-style="thumbStyle"

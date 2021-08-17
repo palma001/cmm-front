@@ -110,6 +110,9 @@ export const billingConfig = [
             color: 'primary',
             type: 'dropdown',
             icon: 'file_download',
+            push: true,
+            splits: true,
+            glossy: true,
             size: 'sm',
             options: [
               {
@@ -155,8 +158,9 @@ export const billingConfig = [
             label: 'options',
             color: 'primary',
             type: 'dropdown',
-            icon: 'check',
             size: 'sm',
+            push: true,
+            splits: true,
             options: [
               {
                 label: 'note',

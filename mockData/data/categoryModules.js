@@ -10,14 +10,14 @@ export const categoryModules = [
     icon: 'all_inbox',
     modules: [
       {
-        name: 'billing',
-        route: 'billing',
+        name: 'newBilling',
+        route: 'NewBilling',
         icon: 'receipt',
         devices: ['mobile', 'desktop']
       },
       {
-        name: 'voucher-list',
-        route: 'VoucherList',
+        name: 'billing',
+        route: 'Billing',
         icon: 'subject',
         devices: ['mobile', 'desktop']
       },

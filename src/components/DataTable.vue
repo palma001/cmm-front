@@ -67,16 +67,15 @@
             :props="props"
           >
             <q-btn-dropdown
-              splits
-              push
-              glossy
-              no-caps
-              v-if="col.button && col.button.type === 'dropdown'"
+              :splits="col.button.splits ? col.button.splits : false"
+              :push="col.button.push ? col.button.push : false"
+              :glossy="col.button.glossy ? col.button.glossy : false"
               :color="col.button.color"
               :icon="col.button.icon"
               :label="col.button.label ? ucwords($t(`${module}.${col.name}`)) : ''"
               :class="col.button.class"
               :size="col.button.size"
+              v-if="col.button && col.button.type === 'dropdown'"
             >
               <q-list>
                 <q-item
