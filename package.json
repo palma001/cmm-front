@@ -52,10 +52,9 @@
     "last 10 iOS versions",
     "last 5 Opera versions"
   ],
-  "postinstall": "npm rebuild node-sass && npm install --unsafe-perm -f node-sass",
   "engines": {
-    "node": ">= 10.18.1",
-    "npm": ">= 6.13.4",
+    "node": ">= 14.17.1",
+    "npm": ">= 6.14.13",
     "yarn": ">= 1.21.1"
   }
 }
