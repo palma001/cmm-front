@@ -164,6 +164,7 @@ export default {
 
   billing: {
     serie: 'serie',
+    id: 'serie',
     saveErrorPayment: 'Ingrese los campos requeridos',
     saveSuccessPayment: 'pago guarado exitosamente!',
     client: 'cliente',

@@ -222,7 +222,6 @@ export default {
   watch: {
     data (value) {
       this.dataMenu = value
-      console.log(value)
       // this.dataMenu = value.filter(element => {
       //   return element.modules.filter(module => {
       //     return this.validateRole(module.roles)

@@ -149,6 +149,9 @@
                   </q-item-section>
                 </q-item>
               </template>
+              <template v-slot:append>
+                <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialig = true"/>
+              </template>
             </q-select>
           </div>
           <div class="col-auto q-gutter-sm">
@@ -819,6 +822,85 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <q-dialog
+      position="right"
+      full-height
+      persistent
+      v-model="addDialig"
+    >
+      <dynamic-form
+        module="client"
+        :config="client"
+        :loading="loadingForm"
+        @cancel="addDialig = false"
+        @save="save"
+      >
+        <template v-slot:top>
+          <q-select
+            label="Tipo de documento"
+            v-validate="'required'"
+            data-vv-as="document_type"
+            name="document_type"
+            dense
+            outlined
+            option-label="name"
+            option-value="id"
+            v-model="documentType"
+            :options="documentTypes"
+            :error="errors.has('document_type')"
+            :error-message="errors.first('document_type')"
+          />
+          <q-input
+            label="Número de documento"
+            v-validate="'required'"
+            data-vv-as="document_number"
+            name="document_number"
+            dense
+            outlined
+            v-model="documentNumber"
+            :error="errors.has('document_number')"
+            :error-message="errors.first('document_number')"
+            @blur="getDataApi"
+          />
+          <q-input
+            label="Nombre"
+            v-validate="'required'"
+            data-vv-as="name"
+            name="name"
+            dense
+            outlined
+            v-model="name"
+            :error="errors.has('name')"
+            :error-message="errors.first('name')"
+            v-if="documentType.name === 'DNI'"
+          />
+          <q-input
+            label="Apellido"
+            v-validate="'required'"
+            data-vv-as="last_name"
+            name="last_name"
+            dense
+            outlined
+            v-model="lastName"
+            :error="errors.has('last_name')"
+            :error-message="errors.first('last_name')"
+            v-if="documentType.name === 'DNI'"
+          />
+          <q-input
+            label="Nombre o razon social"
+            v-validate="'required'"
+            data-vv-as="businessName"
+            name="businessName"
+            dense
+            outlined
+            v-model="businessName"
+            :error="errors.has('businessName')"
+            :error-message="errors.first('businessName')"
+            v-if="documentType.name === 'RUC'"
+          />
+        </template>
+      </dynamic-form>
+    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -830,17 +912,30 @@ import { date } from 'quasar'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
+import { client, propsPanelEdition, clientServices } from '../config-file/client/clientConfig.js'
+import DynamicForm from '../components/DynamicForm.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
 export default {
   name: 'Billing',
   mixins: [mixins.containerMixin],
   components: {
-    // DynamicForm
+    DynamicForm
     // DataTable
   },
   data () {
     return {
+      loadingForm: false,
+      client,
+      propsPanelEdition,
+      clientServices,
+      addDialig: false,
+      documentNumber: null,
+      lastName: null,
+      name: null,
+      businessName: null,
+      documentType: null,
+      documentTypes: [],
       value: false,
       guide: null,
       description: null,
@@ -1019,10 +1114,70 @@ export default {
   },
   created () {
     this.loadCreate()
+    this.getDocumentTypes()
+    this.setRelationalData(this.clientServices, [], this)
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    /**
+     * Get all client
+     */
+    getDocumentTypes () {
+      this.loadingTable = true
+      this.$services.getData(['document-types'])
+        .then(({ res }) => {
+          this.documentTypes = res.data
+          this.documentType = res.data[0]
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    getDataApi () {
+      this.$services.getData(['ruc', this.documentNumber], {
+        documentType: this.documentType.name.toLowerCase()
+      })
+        .then(({ res }) => {
+          if (!res.data.error) {
+            if (res.data.nombre_o_razon_social) {
+              this.businessName = res.data.nombre_o_razon_social
+            } else {
+              const nameDivider = res.data.nombre_completo.split(' ')
+              this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
+              this.name = `${nameDivider[2]} ${nameDivider[3]}`
+            }
+          } else {
+            this.notify(this, res.data.error, 'negative', 'warning')
+            this.lastName = null
+            this.name = null
+            this.businessName = null
+          }
+        })
+    },
+    /**
+     * Save Branch Office
+     * @param  {Object}
+     */
+    save (data) {
+      data.user_created_id = this.userSession.id
+      data.user_id = this.userSession.id
+      data.name = this.name ?? this.businessName
+      data.last_name = this.lastName
+      data.document_number = this.documentNumber
+      data.document_type_id = this.documentType.id
+      this.loadingForm = true
+      this.$services.postData(['clients'], data)
+        .then(({ res }) => {
+          this.billing.client = res.data
+          this.addDialig = false
+          this.loadingForm = false
+          this.notify(this, 'client.addSuccessfull', 'positive', 'mood')
+        })
+        .catch(() => {
+          this.loadingForm = false
+        })
+    },
     /**
      * Filter primary
      */
@@ -1220,6 +1375,7 @@ export default {
      * Get Data in exchange
      */
     getExchange () {
+      this.visible = true
       this.$services.getData(['exchange-rate'], {
         start_date: date.formatDate(date.subtractFromDate(new Date(), { month: 1 }), 'DD/MM/YYYY'),
         final_date: date.formatDate(new Date(), 'DD/MM/YYYY'),
@@ -1229,6 +1385,10 @@ export default {
           if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
             this.billing.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
           }
+          this.visible = false
+        })
+        .catch(() => {
+          this.visible = false
         })
     },
     /**

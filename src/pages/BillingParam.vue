@@ -1038,7 +1038,6 @@ export default {
         .then(({ res }) => {
           this.billing.client = res.data.client
           this.billing.expiration_date = res.data.expiration_date ?? date.formatDate(new Date(), 'YYYY-MM-DD')
-          this.billing.created_at = date.formatDate(res.data.created_at, 'YYYY-MM-DD')
           this.coin = res.data.coin
           const products = res.data.order_details ?? res.data.quotation_details
           this.dataProduct = this.modelProduct(products)

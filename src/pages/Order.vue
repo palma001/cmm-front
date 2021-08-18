@@ -4,10 +4,8 @@
       <div class="col-12 text-right">
         <q-btn
           color="primary"
-          icon="control_point"
-          label="Nuevo"
-          no-caps
-          glossy
+          icon="add_circle"
+          label="agregar pedido"
           @click="$router.push({ name: 'NewOrder' })"
         />
       </div>

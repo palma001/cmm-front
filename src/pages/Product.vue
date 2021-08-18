@@ -40,8 +40,8 @@
       </div>
       <div class="col-6 text-right q-gutter-x-sm">
         <q-btn
-          color="orange"
-          icon="filter"
+          :color="filter ? 'negative' : 'orange'"
+          :icon="filter ? 'close' : 'filter_alt'"
           :label="$q.screen.lt.md ? '' : $t('product.filter')"
           @click="filter = !filter"
         >
