@@ -1,171 +1,464 @@
 <template>
-    <q-page class="flex-start q-pa-md">
-        <h6>Nueva Guía de Remisión</h6>
-        <div class= "row q-col-gutter-xs" >
-            <div class="col-2">
-                <q-select outlined v-model="model" :options="options" label="Establecimiento" dense/>
-            </div>
-            <div class="col-2">
-                <q-select outlined v-model="model" :options="serie" label="Serie" dense/>
-            </div>
-            <div class="col-2">
-                 <q-input outlined v-model="date" type="date" label="Fecha de emisión"  dense/>
-            </div>
-            <div class="col-2">
-                <q-input outlined v-model="date" type="date" label="Fecha de traslado"  dense/>
-            </div>
-            <div class="col-4">
-                 <q-input outlined v-model="text" label="Cliente" dense />
-            </div>
-        </div>
-        <br>
-        <div class= "row q-col-gutter-xs" >
-            <div class="col-2">
-                <q-select outlined v-model="model" :options="mode" label="Modo de traslado" dense/>
-            </div>
-            <div class="col-4">
-                <q-select outlined v-model="model" :options="reason" label="Motivo de traslado" dense/>
-            </div>
-            <div class="col-6">
-                <q-input outlined v-model="text" label="Descripción motivo de traslado" dense />
-            </div>
-        </div>
-        <br>
-         <div class= "row q-col-gutter-xs" >
-            <div class="col-2">
-                <q-select outlined v-model="model" :options="unit" label="Unidad de medidad" dense/>
-            </div>
-            <div class="col-2">
-                <q-input outlined v-model="text" label="Peso total" dense type="number"/>
-            </div>
-            <div class="col-2">
-                <q-input outlined v-model="text" label="Número de paquetes" dense type="number" />
-            </div>
-            <div class="col-6">
-                <q-input outlined v-model="text" label="Observaciones" dense />
-            </div>
-        </div>
+  <q-page padding>
+    <q-card>
+      <q-form @submit="modelGuide">
+        <q-card-section class="col-12 text-h5">
+          Nueva Guía de Remisión
+        </q-card-section>
+        <q-card-section class="row q-col-gutter-sm q-py-xs">
+          <div class="col-3">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="branchOffice"
+              ref="branchOfficeRef"
+              v-model="branchOffice"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Establecimiento"
+              :rules="[val => val || 'El campo metodo de pago es requerido']"
+              :options="branchOffices"
+              @filter="getBranchOffices"
+            />
+          </div>
+          <div class="col-3">
+            <q-input
+              outlined
+              v-model="createdAt"
+              type="date"
+              label="Fecha de emisión"
+              dense
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-3">
+            <q-input
+              outlined
+              v-model="dateTransfer"
+              type="date"
+              label="Fecha de traslado"
+              dense
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-3">
+            <q-select
+              outlined
+              label="Cliente"
+              dense
+              option-value="id"
+              option-label="full_name"
+              v-model="client"
+              disable
+              readonly
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+        </q-card-section>
+        <q-card-section class="row q-col-gutter-sm q-py-xs">
+          <div class="col-3">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="transferSubject"
+              ref="transferSubjectRef"
+              v-model="transferSubject"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Motivo de translado"
+              :rules="[val => val || 'El campo metodo de pago es requerido']"
+              :options="transferSubjects"
+              @filter="getTransferSubjects"
+            />
+          </div>
+          <div class="col-3">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="transferMode"
+              ref="transferModeRef"
+              v-model="transferMode"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Modo de translado"
+              :rules="[val => val || 'El campo metodo de pago es requerido']"
+              :options="transferModes"
+              @filter="getTransferModes"
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              type="text"
+              label="Descripción motivo de traslado"
+              dense
+              outlined
+              v-model="description"
+            />
+          </div>
+        </q-card-section>
+        <q-card-section class="row q-col-gutter-sm q-pt-xs">
+          <div class="col-2">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="measurementUnit"
+              ref="measurementUnitRef"
+              v-model="measurementUnit"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Unidad de medidad"
+              :rules="[val => val || 'El campo metodo de pago es requerido']"
+              :options="measurementUnits"
+              @filter="getMeasurementUnits"
+            />
+          </div>
+          <div class="col-2">
+            <q-input
+              outlined
+              v-model="totalWeight"
+              label="Peso total"
+              dense
+              type="number"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-2">
+            <q-input
+              outlined
+              v-model="totalPacket"
+              label="Número de paquetes"
+              dense
+              type="number"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              outlined
+              v-model="observation"
+              label="Observaciones"
+              dense
+            />
+          </div>
+        </q-card-section>
         <q-separator/>
-        <h6>Datos envío</h6>
-        <div>Dirección de partida</div>
-        <div class="row">
-            <div class="col-3">
-                <q-select outlined v-model="model" :options="country" label="País" dense/>
-            </div>
-            <div class="col-3">
-                <q-select outlined v-model="model" :options="ubigeo" label="Ubigeo" dense/>
-            </div>
-            <div class="col-6">
-                <q-input outlined v-model="text" label="Dirección" dense />
-            </div>
-        </div>
-        <div>Dirección de llegada</div>
-        <div class="row">
-            <div class="col-3">
-                <q-select outlined v-model="model" :options="country" label="País" dense/>
-            </div>
-            <div class="col-3">
-                <q-select outlined v-model="model" :options="ubigeo" label="Ubigeo" dense/>
-            </div>
-            <div class="col-6">
-                <q-input outlined v-model="text" label="Dirección" dense />
-            </div>
-        </div>
-        <h6>Datos transportista</h6>
-        <div class="row">
-            <div class="col-4">
-                <q-select outlined v-model="model" :options="idType" label="Tipo Doc. identidad" dense/>
-            </div>
-            <div class="col-4">
-                <q-input outlined v-model="text" label="Número" dense />
-            </div>
-            <div class="col-4">
-                <q-input outlined v-model="text" label="Nombre y/o razón social" dense />
-            </div>
-        </div>
-         <h6>Datos del conductor</h6>
-        <div class="row">
-            <div class="col-4">
-                <q-select outlined v-model="model" :options="idType" label="Tipo Doc. identidad" dense/>
-            </div>
-            <div class="col-4">
-                <q-input outlined v-model="text" label="Número" dense />
-            </div>
-            <div class="col-4">
-                <q-input outlined v-model="text" label="Nombre y/o razón social" dense />
-            </div>
-        </div>
-        <br>
-        <div class="row">
-            <div class="col-4">
-                <q-select outlined v-model="model" :options="idType" label="Licencia del Conductor" dense/>
-            </div>
-            <div class="col-4">
-                <q-input outlined v-model="text" label="N° de placa semirremolque" dense />
-            </div>
-            <div class="col-4">
-            </div>
-        </div>
-        <br>
-        <!-- <q-btn
-          color="primary"
-          icon="control_point"
-          label="Agregar Producto"
-          no-caps
-          glossy
-        /> -->
-        <q-table
-            title="Treats"
+        <q-card-section class="row q-col-gutter-sm q-pt-xs">
+          <div class="col-12 text-h6">
+            Datos envío
+          </div>
+          <div class="col-12 subtitle2 text-grey">
+            Dirección partida
+          </div>
+          <div class="col-2 text-h6">
+            <q-input
+              type="text"
+              label="País"
+              dense
+              outlined
+              v-model="fromCountry"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-3 text-h6">
+            <q-input
+              type="text"
+              label="Ubigeo"
+              dense
+              outlined
+              v-model="fromUbigeo"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-7 text-h6">
+            <q-input
+              type="text"
+              label="Dirección "
+              dense
+              outlined
+              v-model="fromAddress"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-12 subtitle2 text-grey">
+            Dirección llegada
+          </div>
+          <div class="col-2">
+            <q-input
+              type="text"
+              label="País"
+              dense
+              outlined
+              v-model="toCountry"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-3">
+            <q-input
+              type="text"
+              label="Ubigeo"
+              dense
+              outlined
+              v-model="toUbigeo"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-7">
+            <q-input
+              type="text"
+              label="Dirección "
+              dense
+              outlined
+              v-model="toAddress"
+            />
+          </div>
+        </q-card-section>
+        <q-separator/>
+        <q-card-section class="row q-col-gutter-sm q-py-xs">
+          <div class="col-12 text-h6">
+            Datos transportista
+          </div>
+          <div class="col-4">
+            <q-select
+              autofocus
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="carrierDocumentType"
+              ref="carrierDocumentTypeRef"
+              v-model="carrierDocumentType"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Tipo Doc. identidad"
+              :rules="[val => val || 'El campo metodo de pago es requerido']"
+              :options="documentTypes"
+              @filter="getDocumentTypes"
+            />
+          </div>
+          <div class="col-4">
+            <q-input
+              type="text"
+              label="Número"
+              dense
+              outlined
+              v-model="carrierDocumentNumber"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-4">
+            <q-input
+              type="text"
+              label="Nombre y/o razón social"
+              dense
+              outlined
+              v-model="carrierName"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+        </q-card-section>
+        <q-card-section class="row q-col-gutter-sm q-py-xs">
+          <div class="col-12 text-h6">
+            Datos conductor
+          </div>
+          <div class="col-4">
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="driverDocumentType"
+              ref="driverDocumentTypeRef"
+              v-model="driverDocumentType"
+              data-vv-as="field"
+              option-value="id"
+              option-label="name"
+              label="Tipo Doc. identidad"
+              :rules="[val => val || 'El campo metodo de pago es requerido']"
+              :options="documentTypes"
+              @filter="getDocumentTypes"
+            />
+          </div>
+          <div class="col-4">
+            <q-input
+              type="text"
+              label="Número"
+              dense
+              outlined
+              v-model="driverDocumentNumber"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-4">
+            <q-input
+              type="text"
+              label="Nombre y/o razón social"
+              dense
+              outlined
+              v-model="driverName"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-4">
+            <q-input
+              type="text"
+              label="Número de placa del vehiculo"
+              dense
+              outlined
+              v-model="licenseNumber"
+              :rules="[
+                val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+              ]"
+            />
+          </div>
+          <div class="col-4">
+            <q-input
+              type="text"
+              label="Licencia del conductor"
+              dense
+              outlined
+              v-model="plateNumber"
+            />
+          </div>
+          <div class="col-4">
+            <q-input
+              type="text"
+              label="N° placa semirremolque"
+              dense
+              outlined
+              v-model="semitrailerNumber"
+            />
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-table
+            title="Lista de productos"
             :data="dataProducts"
             :columns="columsProducts"
             row-key="id"
             :filter="filter"
             :loading="loading"
-        >
-
-            <template v-slot:top>
-                <q-btn
-                    color="primary"
-                    icon="control_point"
-                    label="Agregar Producto"
-                    no-caps
-                    glossy
-                    @click="addRow"
-                    />
-                <!-- <q-btn color="primary" :disable="loading" label="Add row" @click="addRow" /> -->
-                <q-btn class="q-ml-sm" color="primary" :disable="loading" label="Remove row" @click="removeRow" />
-                <q-space />
-                <q-input borderless dense debounce="300" color="primary" v-model="filter">
-                <template v-slot:append>
-                    <q-icon name="search" />
-                </template>
-                </q-input>
-            </template>
-
-        </q-table>
-    </q-page>
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn label="cancelar" color="negative" type="submit"/>
+          <q-btn label="guardar" color="primary" type="submit"/>
+        </q-card-actions>
+      </q-form>
+    </q-card>
+    <q-inner-loading :showing="visible">
+      <q-spinner-gears size="100px" color="primary"/>
+    </q-inner-loading>
+  </q-page>
 </template>
 
 <script>
+import { date } from 'quasar'
+import { GETTERS } from '../store/module-login/name.js'
+import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
+      visible: false,
+      branchOfficeSession: null,
+      userSession: null,
+      semitrailerNumber: null,
+      driverName: null,
+      plateNumber: null,
+      licenseNumber: null,
+      carrierDocumentNumber: null,
+      driverDocumentNumber: null,
+      fromUbigeo: null,
+      fromCountry: null,
+      fromAddress: null,
+      toUbigeo: null,
+      toCountry: null,
+      toAddress: null,
+      totalWeight: 0,
+      observation: null,
+      totalPacket: 0,
+      transferMode: null,
+      transferModes: [],
+      carrierName: null,
+      carrierDocumentType: null,
+      driverDocumentType: null,
+      documentTypes: [],
+      transferSubject: null,
+      transferSubjects: [],
+      measurementUnit: null,
+      measurementUnits: [],
+      client: null,
+      description: null,
       loading: false,
       filter: '',
       rowCount: 10,
       columsProducts: [
-        {
-          name: 'desc',
-          required: true,
-          label: '#',
-          align: 'left',
-          field: row => row.name,
-          format: val => `${val}`,
-          sortable: true
-        },
-        { name: 'unit', align: 'center', label: 'Unidad', field: 'unit', sortable: true },
-        { name: 'description', align: 'center', label: 'Descripción', field: 'description', sortable: true },
-        { name: 'cant', align: 'center', label: 'Cantidad', field: 'cant', sortable: true }
+        { name: 'description', align: 'left', label: 'Descripción', field: 'description', sortable: true },
+        { name: 'amount', align: 'left', label: 'Cantidad', field: 'amount', sortable: true }
       ],
       dataProducts: [
         {
@@ -187,50 +480,165 @@ export default {
           cant: 1
         }
       ],
-      date: '',
-      model: null,
-      options: [
-        'No hay datos', '', '', '', ''
-      ],
-      series: [
-        'No hay datos', '', '', '', ''
-      ],
-      mode: [
-        'No hay datos', '', '', '', ''
-      ],
-      reason: [
-        'No hay datos', '', '', '', ''
-      ],
-      unit: [
-        'No hay datos', '', '', '', ''
-      ]
+      branchOffices: [],
+      branchOffice: null,
+      createdAt: date.formatDate(new Date(), 'YYYY-MM-DD'),
+      dateTransfer: date.formatDate(new Date(), 'YYYY-MM-DD')
     }
   },
+  created () {
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
+    this.getOneBill()
+  },
+  computed: {
+    /**
+     * Getters Vuex
+     */
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+  },
   methods: {
-    // emulate fetching data from server
-    addRow () {
-      this.loading = true
-      setTimeout(() => {
-        const
-          index = Math.floor(Math.random() * (this.data.length + 1)),
-          row = this.original[Math.floor(Math.random() * this.original.length)]
-        if (this.data.length === 0) {
-          this.rowCount = 0
-        }
-        row.id = ++this.rowCount
-        const addRow = { ...row } // extend({}, row, { name: `${row.name} (${row.__count})` })
-        this.data = [...this.data.slice(0, index), addRow, ...this.data.slice(index)]
-        this.loading = false
-      }, 500)
+    /**
+     * Get data billing
+     */
+    getOneBill () {
+      this.$services.getOneData([this.$route.params.module, this.$route.params.id])
+        .then(({ res }) => {
+          this.client = res.data.client
+          const products = res.data.bill_electronic_details
+          this.dataProducts = this.modelProduct(products)
+        })
     },
-
-    removeRow () {
-      this.loading = true
-      setTimeout(() => {
-        const index = Math.floor(Math.random() * this.data.length)
-        this.data = [...this.data.slice(0, index), ...this.data.slice(index + 1)]
-        this.loading = false
-      }, 500)
+    /**
+     * Model product
+     * @param {Array} data product billing
+     */
+    modelProduct (data) {
+      return data.map(details => {
+        return {
+          id: details.product.id,
+          product_id: details.product.id,
+          description: details.product.description,
+          amount: details.amount,
+          user_created_id: this.userSession.id
+        }
+      })
+    },
+    modelGuide () {
+      const params = {
+        date_of_issue: this.createdAt,
+        date_transfer: this.dateTransfer,
+        total_packet: this.totalPacket,
+        description: this.description,
+        branch_office_id: this.branchOffice.id,
+        measurement_unit_id: this.measurementUnit.id,
+        transfer_mode_id: this.transferMode.id,
+        transfer_subject_id: this.transferSubject.id,
+        client_id: this.client.id,
+        observation: this.observation,
+        from_country: this.fromCountry,
+        from_ubigeo: this.fromUbigeo,
+        from_address: this.fromAddress,
+        to_country: this.toCountry,
+        to_ubigeo: this.toUbigeo,
+        to_address: this.toAddress,
+        carrier_name: this.carrierName,
+        carrier_document_type_id: this.carrierDocumentType.id,
+        carrier_document_number: this.carrierDocumentNumber,
+        driver_name: this.driverName,
+        driver_document_type_id: this.driverDocumentType.id,
+        driver_document_number: this.driverDocumentNumber,
+        total_weight: this.totalWeight,
+        plate_number: this.plateNumber,
+        license_number: this.licenseNumber,
+        semitrailer_number: this.semitrailerNumber,
+        guideDetails: this.dataProducts,
+        user_created_id: this.userSession.id,
+        user_updated_id: this.userSession.id
+      }
+      this.saveGuide(params)
+    },
+    saveGuide (data) {
+      this.visible = true
+      this.$services.postData(['guides'], data)
+        .then(res => {
+          this.notify(this, 'guide.saveSuccess', 'positive', 'mood')
+          this.visible = false
+        })
+        .catch(() => {
+          this.notify(this, 'guide.error', 'negative', 'warning')
+          this.visible = false
+        })
+    },
+    getBranchOffices (value, update) {
+      this.$services.getData(['branch-offices'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.branchOffices = res.data.data
+          })
+        })
+    },
+    getTransferModes (value, update) {
+      this.$services.getData(['transfer-modes'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.transferModes = res.data.data
+          })
+        })
+    },
+    getTransferSubjects (value, update) {
+      this.$services.getData(['transfer-subjects'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.transferSubjects = res.data.data
+          })
+        })
+    },
+    getMeasurementUnits (value, update) {
+      this.$services.getData(['measurement-units'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.measurementUnits = res.data.data
+          })
+        })
+    },
+    getDocumentTypes (value, update) {
+      this.$services.getData(['document-types'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.documentTypes = res.data.data
+          })
+        })
     }
   }
 }

@@ -25,6 +25,7 @@
           @viewPayment="viewPayment"
           @search-data="searchData"
           @viewNote="viewNote"
+          @viewGuide="viewGuide"
         />
       </div>
     </div>
@@ -569,6 +570,9 @@ export default {
     },
     viewNote (data) {
       this.$router.push({ name: 'CreditNote', params: { id: data.id } })
+    },
+    viewGuide (data) {
+      this.$router.push({ name: 'ReferralGuide', params: { id: data.id, module: 'bill-electronics' } })
     },
     open (position) {
       this.position = position

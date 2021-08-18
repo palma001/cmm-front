@@ -171,17 +171,17 @@ export const billingConfig = [
                   textColor: 'white',
                   size: 'md'
                 }
+              },
+              {
+                label: 'guide',
+                event: 'viewGuide',
+                avatar: {
+                  icon: 'dehaze',
+                  color: 'orange',
+                  textColor: 'white',
+                  size: 'md'
+                }
               }
-              // {
-              //   label: 'guide',
-              //   event: 'viewGuide',
-              //   avatar: {
-              //     icon: 'dehaze',
-              //     color: 'orange',
-              //     textColor: 'white',
-              //     size: 'md'
-              //   }
-              // },
               // {
               //   label: 'options',
               //   event: 'options',

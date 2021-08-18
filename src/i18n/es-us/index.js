@@ -162,6 +162,11 @@ export default {
     business: 'empresa'
   },
 
+  guide: {
+    saveSuccess: 'Guia guardada exitosamente!',
+    saveError: 'Error al guardar'
+  },
+
   billing: {
     serie: 'serie',
     id: 'serie',

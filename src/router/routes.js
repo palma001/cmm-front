@@ -102,6 +102,11 @@ const routes = [
         component: () => import('pages/NewQuotation.vue')
       },
       {
+        path: 'new-guide/:module/:id',
+        name: 'ReferralGuide',
+        component: () => import('pages/ReferralGuide.vue')
+      },
+      {
         path: 'credit-note/:id',
         name: 'CreditNote',
         component: () => import('pages/CreditNote.vue')
