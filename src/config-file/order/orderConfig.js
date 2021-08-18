@@ -58,8 +58,8 @@ export const orderConfig = [
             label: 'options',
             color: 'primary',
             type: 'dropdown',
-            icon: 'check',
             size: 'sm',
+            push: true,
             options: [
               {
                 label: 'createBill',
@@ -70,17 +70,17 @@ export const orderConfig = [
                   textColor: 'white',
                   size: 'md'
                 }
-              },
-              {
-                label: 'options',
-                event: 'options',
-                avatar: {
-                  icon: 'chevron_right',
-                  color: 'primary',
-                  textColor: 'white',
-                  size: 'md'
-                }
               }
+              // {
+              //   label: 'options',
+              //   event: 'options',
+              //   avatar: {
+              //     icon: 'chevron_right',
+              //     color: 'primary',
+              //     textColor: 'white',
+              //     size: 'md'
+              //   }
+              // }
             ]
           }
         }

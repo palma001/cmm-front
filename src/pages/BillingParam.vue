@@ -277,7 +277,7 @@
       </q-card-section>
       <q-separator/>
       <q-card-actions align="right">
-        <q-btn color="negative" label="Cancelar facturación" @click="cancelBill"/>
+        <q-btn color="negative" label="Cancelar facturación" @click="getOneBill"/>
         <q-btn color="primary" label="Generar factura" @click="modelBill" :disable="dataProduct.length <= 0"/>
       </q-card-actions>
     </q-card>
@@ -1012,20 +1012,23 @@ export default {
      * @param {Array} data product billing
      */
     modelProduct (data) {
-      return data.map(details => {
-        return {
-          id: details.product.id,
-          product_id: details.product.id,
-          description: details.product.description,
-          amount: details.amount,
-          price: details.price,
-          discount: details.discount ?? 0,
-          igv: details.igv,
-          purchase_price: details.purchase_price,
-          subtotal: (details.amount * details.price) - (details.discount ?? 0),
-          user_created_id: this.userSession.id
-        }
-      })
+      if (data) {
+        return data.map(details => {
+          return {
+            id: details.product.id,
+            product_id: details.product.id,
+            description: details.product.description,
+            amount: details.amount,
+            price: details.price,
+            discount: details.discount ?? 0,
+            igv: details.igv,
+            purchase_price: details.purchase_price,
+            subtotal: (details.amount * details.price) - (details.discount ?? 0),
+            user_created_id: this.userSession.id
+          }
+        })
+      }
+      return []
     },
     /**
      * Get data billing
@@ -1033,12 +1036,12 @@ export default {
     getOneBill () {
       this.$services.getOneData([this.$route.params.module, this.$route.params.id])
         .then(({ res }) => {
-          console.log(res)
           this.billing.client = res.data.client
-          this.billing.expiration_date = res.data.expiration_date
+          this.billing.expiration_date = res.data.expiration_date ?? date.formatDate(new Date(), 'YYYY-MM-DD')
           this.billing.created_at = date.formatDate(res.data.created_at, 'YYYY-MM-DD')
           this.coin = res.data.coin
-          this.dataProduct = res.data.order_details ? this.modelProduct(res.data.order_details) : []
+          const products = res.data.order_details ?? res.data.quotation_details
+          this.dataProduct = this.modelProduct(products)
           this.totalCalculate()
         })
     },
@@ -1276,17 +1279,17 @@ export default {
      * @param {Array} array list porduct
      */
     pushArray (array) {
-      const percentage = this.getPercentage(this.stock.purchase_price, this.igv.value)
-      const unitValue = this.stock.sale_price - percentage
+      const percentage = this.getPercentage(this.stock.sale_price, this.igv.value)
+      const unitValue = Number(this.stock.sale_price) + Number(percentage)
       array.push({
         product_id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,
-        purchase_price: isNaN(unitValue) ? 0 : unitValue,
+        purchase_price: this.stock.sale_price,
         igv: isNaN(percentage) ? 0 : percentage,
-        price: this.stock.sale_price,
+        price: unitValue,
         discount: this.discount,
-        subtotal: this.totalProduct,
+        subtotal: (this.amount * unitValue).toFixed(2),
         user_created_id: this.userSession.id
       })
     },

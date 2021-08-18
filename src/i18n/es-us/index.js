@@ -93,6 +93,7 @@ export default {
   },
 
   quotation: {
+    createBill: 'facturar',
     newQuotation: 'nuevo cotización',
     client: 'cliente',
     operation_type: 'tipo de venta',

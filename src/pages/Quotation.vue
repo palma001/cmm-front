@@ -22,6 +22,7 @@
           :optionPagination="optionPagination"
           @on-load-data="loadData"
           @search-data="searchData"
+          @createBill="createBill"
           @options="options"
         />
       </div>
@@ -183,6 +184,19 @@ export default {
     this.getBillElectronics()
   },
   methods: {
+    /**
+      * Get billing
+      * @param {Object} data quotation selected
+      */
+    createBill (data) {
+      this.$router.push({
+        name: 'BillingParam',
+        params: {
+          module: 'quotations',
+          id: data.id
+        }
+      })
+    },
     /**
      * Load data sorting
      * @param  {Object}

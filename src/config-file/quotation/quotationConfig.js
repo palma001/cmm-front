@@ -71,44 +71,54 @@ export const quotationConfig = [
         tabulated: {
           name: 'options',
           align: 'center',
-          visible: false,
+          visible: true,
           button: {
             label: 'options',
             color: 'primary',
             type: 'dropdown',
-            icon: 'check',
+            push: true,
             size: 'sm',
             options: [
+              // {
+              //   label: 'note',
+              //   event: 'viewNote',
+              //   avatar: {
+              //     icon: 'edit',
+              //     color: 'orange',
+              //     textColor: 'white',
+              //     size: 'md'
+              //   }
+              // },
+              // {
+              //   label: 'guide',
+              //   event: 'viewGuide',
+              //   avatar: {
+              //     icon: 'dehaze',
+              //     color: 'orange',
+              //     textColor: 'white',
+              //     size: 'md'
+              //   }
+              // },
               {
-                label: 'note',
-                event: 'viewNote',
+                label: 'createBill',
+                event: 'createBill',
                 avatar: {
                   icon: 'edit',
                   color: 'orange',
                   textColor: 'white',
                   size: 'md'
                 }
-              },
-              {
-                label: 'guide',
-                event: 'viewGuide',
-                avatar: {
-                  icon: 'dehaze',
-                  color: 'orange',
-                  textColor: 'white',
-                  size: 'md'
-                }
-              },
-              {
-                label: 'options',
-                event: 'options',
-                avatar: {
-                  icon: 'chevron_right',
-                  color: 'primary',
-                  textColor: 'white',
-                  size: 'md'
-                }
               }
+              // {
+              //   label: 'options',
+              //   event: 'options',
+              //   avatar: {
+              //     icon: 'chevron_right',
+              //     color: 'primary',
+              //     textColor: 'white',
+              //     size: 'md'
+              //   }
+              // }
             ]
           }
         }
