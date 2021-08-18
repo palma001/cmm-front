@@ -20,7 +20,7 @@ export const actions = {
         dispatch(ACTIONS.AUTO_LOGOUT, Number(res.data.expires_in))
         commit(MUTATIONS.SET_ROLE, res.data.user.roles[0])
         commit(MUTATIONS.SET_BRANCH_OFFICE, res.data.user.branch_offices[0])
-        self.$router.push({ name: 'billing' })
+        self.$router.push({ name: 'NewBilling' })
         self.btnDisable = false
       })
       .catch((err) => {
