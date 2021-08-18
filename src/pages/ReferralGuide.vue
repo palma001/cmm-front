@@ -518,7 +518,7 @@ export default {
         return {
           id: details.product.id,
           product_id: details.product.id,
-          description: details.product.description,
+          description: details.product.name ?? details.product.description,
           amount: details.amount,
           user_created_id: this.userSession.id
         }
