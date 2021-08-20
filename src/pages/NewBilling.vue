@@ -13,7 +13,7 @@
           </div>
         </div>
         <div class="col-2">
-          <q-input type="date" dense outlined label="Fec. Emisión" v-model="billing.created_at"/>
+          <q-input type="date" dense outlined label="Fec. Emisión" v-model="billing.created_at" @input="getExchange"/>
         </div>
         <div class="col-2">
           <q-input type="date" dense outlined label="Fec. Vencimiento" v-model="billing.expiration_date"/>
@@ -1377,8 +1377,8 @@ export default {
     getExchange () {
       this.visible = true
       this.$services.getData(['exchange-rate'], {
-        start_date: date.formatDate(date.subtractFromDate(new Date(), { month: 1 }), 'DD/MM/YYYY'),
-        final_date: date.formatDate(new Date(), 'DD/MM/YYYY'),
+        start_date: this.billing.created_at,
+        final_date: this.billing.created_at,
         coin: 'PEN'
       })
         .then(({ res }) => {

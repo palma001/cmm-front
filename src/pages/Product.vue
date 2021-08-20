@@ -75,8 +75,13 @@
         </q-btn>
       </div>
       <div class="col-12 row q-col-gutter-xs" v-if="filter">
-        <div v-for="attributeType in listAttributeTypes" class="col-xs-4 col-sm-4 col-md-2 col-lg-1" :key="attributeType.id">
+        <div
+          v-for="attributeType in listAttributeTypes"
+          :key="attributeType.id"
+        >
           <q-input
+            v-if="attributeType.filter"
+            class="col-xs-4 col-sm-4 col-md-2 col-lg-1"
             type="text"
             dense
             outlined
@@ -550,7 +555,7 @@ export default {
   },
   data () {
     return {
-      filter: false,
+      filter: true,
       productSelected: null,
       stockDialog: false,
       tab: 'priceList',
@@ -753,9 +758,17 @@ export default {
      */
     getAttributeTypes () {
       this.visible = true
-      this.$services.getData(['attribute-types'])
+      this.$services.getData(['attribute-types'], {
+        sortBy: 'id',
+        sortOrder: 'desc'
+      })
         .then(({ res }) => {
-          this.listAttributeTypes = res.data
+          this.listAttributeTypes = res.data.filter(element => {
+            if (element.name === 'ALTERNANTE' || element.name === 'CMOTOR' || element.name === 'MODELO' || element.name === 'DIAMET') {
+              element.filter = true
+            }
+            return element
+          })
           this.visible = false
           this.newModelTable()
           this.getProducts()
