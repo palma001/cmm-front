@@ -1,306 +1,306 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-card class="my-card">
-      <q-card-section class="q-pb-sm row q-col-gutter-sm">
-        <div class="col-8">
-          <div class="row justify-between">
-            <div class="col-auto">
-              <p class="text-h5">
-                {{ ucwords($t('billing.newBilling')) }}
-              </p>
+    <q-form @submit="modelBill">
+      <q-card class="my-card">
+        <q-card-section class="q-pb-sm row q-col-gutter-sm">
+          <div class="col-8">
+            <div class="row justify-between">
+              <div class="col-auto">
+                <p class="text-h5">
+                  {{ ucwords($t('billing.newBilling')) }}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-2">
-          <q-input type="date" dense outlined label="Fec. Emisión" v-model="billing.created_at" @input="getExchange"/>
-        </div>
-        <div class="col-2">
-          <q-input type="date" dense outlined label="Fec. Vencimiento" v-model="billing.expiration_date"/>
-        </div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-section class="q-pb-none">
-        <div class="row justify-between q-col-gutter-sm">
-          <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="operationType"
-              ref="operationTypeRef"
-              v-model="billing.operationType"
-              v-validate="'required'"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              :label="ucwords($t('billing.operation_type'))"
-              :options="operationTypes"
-              :error-message="errorValidation('operationType')"
-              :error="errors.has('operationType')"
+          <div class="col-2">
+            <q-input type="date" dense outlined label="Fec. Emisión" v-model="billing.created_at" @input="getExchange"/>
+          </div>
+          <div class="col-2">
+            <q-input type="date" dense outlined label="Fec. Vencimiento" v-model="billing.expiration_date"/>
+          </div>
+        </q-card-section>
+        <q-separator/>
+        <q-card-section class="q-pb-none">
+          <div class="row justify-between q-col-gutter-sm">
+            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+              <q-select
+                use-input
+                hide-selected
+                fill-input
+                outlined
+                clearable
+                dense
+                autocomplete="off"
+                input-debounce="0"
+                name="operationType"
+                ref="operationTypeRef"
+                v-model="billing.operationType"
+                v-validate="'required'"
+                data-vv-as="field"
+                option-value="id"
+                option-label="name"
+                :label="ucwords($t('billing.operation_type'))"
+                :options="operationTypes"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+              <q-select
+                use-input
+                hide-selected
+                fill-input
+                outlined
+                clearable
+                dense
+                input-debounce="0"
+                name="voucherType"
+                autocomplete="off"
+                ref="voucherTypeRef"
+                v-model="billing.voucherType"
+                v-validate="'required'"
+                data-vv-as="field"
+                option-value="id"
+                option-label="name"
+                :label="ucwords($t('billing.voucher_type'))"
+                :options="voucherTypes"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+              <q-select
+                outlined
+                v-model="coin"
+                dense
+                option-label="name"
+                option-value="id"
+                :label="ucwords($t('billing.coin'))"
+                :options="coins"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+              <q-input
+                v-model="billing.exchange"
+                outlined
+                dense
+                readonly
+                label="Cambio del dia"
+                type="text"
+              >
+              </q-input>
+              <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                Tipo de cambio del día, extraído de SUNAT
+              </q-tooltip>
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-section :class="$q.screen.lt.md ? 'q-py-none q-mt-md' : 'q-py-none'">
+          <div class="row q-col-gutter-md">
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                hide-selected
+                fill-input
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="client"
+                v-model="billing.client"
+                option-label="full_name"
+                option-value="id"
+                v-validate="'required'" data-vv-as="field"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :label="ucwords($t('billing.client'))"
+                :options="clients"
+                @filter="getClients"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialig = true"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-auto q-gutter-sm">
+              <q-btn
+                icon="add"
+                color="primary"
+                label="producto"
+                style="height: 40px;"
+                @click="modalProduct = true"
+              />
+              <q-btn
+                icon="add"
+                color="orange"
+                label="guias"
+                style="height: 40px;"
+                :disable="dataProduct.length <= 0"
+                @click="openOptionDialog('guides')"
+              />
+              <q-btn
+                icon="money"
+                color="positive"
+                label="pagos"
+                style="height: 40px;"
+                v-if="payments.length"
+                @click="openOptionDialog('payments')"
+              >
+                <q-badge color="negative" floating>
+                  S/ {{ totalPaid }}
+                </q-badge>
+              </q-btn>
+              <q-btn
+                icon="receipt"
+                color="positive"
+                label="Cuotas"
+                style="height: 40px;"
+                v-if="fees.length"
+                @click="openOptionDialog('payments')"
+              >
+                <q-badge color="negative" floating>
+                  {{ fees.length }}
+                </q-badge>
+              </q-btn>
+            </div>
+          </div>
+        </q-card-section>
+        <q-separator/>
+        <q-card-section class="row justify-between q-col-gutter-sm">
+          <div class="q-pa-xs col-xs-12 col-md-9 col-sm-12 col-lg-9">
+            <q-table
+              row-key="name"
+              wrap-cells
+              virtual-scroll
+              :data="dataProduct"
+              :columns="columns"
+              :rows-per-page-options="[50]"
             >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td>
+                    <q-btn size="xs" color="negative" icon="close" @click="deleteProduct(props.row)"/>
+                  </q-td>
+                  <q-td key="description" :props="props">
+                    {{ props.row.description }}
+                  </q-td>
+                  <q-td key="amount" :props="props">
+                    {{ props.row.amount }}
+                    <q-popup-edit auto-save v-model.number="props.row.amount">
+                      <q-input
+                        type="number"
+                        autofocus
+                        dense
+                        v-model.number="props.row.amount"
+                        @input="recalculate(props.row)"
+                      />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="purchase_price" :props="props">
+                    {{ props.row.purchase_price }}
+                  </q-td>
+                  <q-td key="igv" :props="props">
+                    {{ props.row.igv }}
+                  </q-td>
+                  <q-td key="price" :props="props">
+                    {{ props.row.price }}
+                    <q-popup-edit v-model.number="props.row.price" auto-save>
+                      <q-input
+                        type="number"
+                        v-model.number="props.row.price"
+                        dense autofocus
+                        @input="recalculate(props.row)"
+                      />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="discount" :props="props">
+                    {{ props.row.discount }}
+                    <q-popup-edit v-model.number="props.row.discount" auto-save>
+                      <q-input
+                        type="number"
+                        dense
+                        autofocus
+                        v-model.number="props.row.discount"
+                        @input="recalculate(props.row)"
+                      />
+                    </q-popup-edit>
+                  </q-td>
+                  <q-td key="subtotal" :props="props">
+                    {{ props.row.subtotal }}
+                  </q-td>
+                </q-tr>
               </template>
-            </q-select>
+            </q-table>
           </div>
-          <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              input-debounce="0"
-              name="voucherType"
-              autocomplete="off"
-              ref="voucherTypeRef"
-              v-model="billing.voucherType"
-              v-validate="'required'"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              :label="ucwords($t('billing.voucher_type'))"
-              :options="voucherTypes"
-              :error-message="errorValidation('voucherType')"
-              :error="errors.has('voucherType')"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
+          <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <q-list separator dense>
+              <q-item clickable v-ripple>
+                <q-item-section>OP.GRAVADA:</q-item-section>
+                <q-item-section side>S/ {{ totalUnitValue }}</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple>
+                <q-item-section>IGV:</q-item-section>
+                <q-item-section side>S/ {{ igvTotal }}</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple active>
+                <q-item-section>TOTAL A PAGAR:</q-item-section>
+                <q-item-section side>S/ {{ totalSale }}</q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section class="q-mt-sm">
+                  <q-select
+                    label="Condición de pagos"
+                    outlined
+                    dense
+                    :disable="dataProduct.length <= 0"
+                    :readonly="dataProduct.length <= 0"
+                    v-model="paymentCondition"
+                    :options="paymentsCondition"
+                    @input="openOptionDialog('payments')"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
           </div>
-          <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
-            <q-select
-              outlined
-              v-model="coin"
-              dense
-              option-label="name"
-              option-value="id"
-              :label="ucwords($t('billing.coin'))"
-              :options="coins"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
-            <q-input
-              v-model="billing.exchange"
-              outlined
-              dense
-              readonly
-              label="Cambio del dia"
-              type="text"
-            >
-            </q-input>
-            <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
-              Tipo de cambio del día, extraído de SUNAT
-            </q-tooltip>
-          </div>
-        </div>
-      </q-card-section>
-      <q-card-section :class="$q.screen.lt.md ? 'q-py-none q-mt-md' : 'q-py-none'">
-        <div class="row q-col-gutter-md">
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-            <q-select
-              autocomplete="off"
-              use-input
-              hide-selected
-              fill-input
-              dense
-              outlined
-              clearable
-              input-debounce="20"
-              name="client"
-              v-model="billing.client"
-              option-label="full_name"
-              option-value="id"
-              v-validate="'required'" data-vv-as="field"
-              @filter="getClients"
-              :error-message="errorValidation('client')"
-              :error="errors.has('client')"
-              :label="ucwords($t('billing.client'))"
-              :options="clients"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-              <template v-slot:append>
-                <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialig = true"/>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-auto q-gutter-sm">
-            <q-btn
-              icon="add"
-              color="primary"
-              label="producto"
-              style="height: 40px;"
-              @click="modalProduct = true"
-            />
-            <q-btn
-              icon="add"
-              color="orange"
-              label="guias"
-              style="height: 40px;"
-              :disable="dataProduct.length <= 0"
-              @click="openOptionDialog('guides')"
-            />
-            <q-btn
-              icon="money"
-              color="positive"
-              label="pagos"
-              style="height: 40px;"
-              v-if="payments.length"
-              @click="openOptionDialog('payments')"
-            >
-              <q-badge color="negative" floating>
-                S/ {{ totalPaid }}
-              </q-badge>
-            </q-btn>
-            <q-btn
-              icon="receipt"
-              color="positive"
-              label="Cuotas"
-              style="height: 40px;"
-              v-if="fees.length"
-              @click="openOptionDialog('payments')"
-            >
-              <q-badge color="negative" floating>
-                {{ fees.length }}
-              </q-badge>
-            </q-btn>
-          </div>
-        </div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-section class="row justify-between q-col-gutter-sm">
-        <div class="q-pa-xs col-xs-12 col-md-9 col-sm-12 col-lg-9">
-          <q-table
-            row-key="name"
-            wrap-cells
-            virtual-scroll
-            :data="dataProduct"
-            :columns="columns"
-            :rows-per-page-options="[50]"
-          >
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td>
-                  <q-btn size="xs" color="negative" icon="close" @click="deleteProduct(props.row)"/>
-                </q-td>
-                <q-td key="description" :props="props">
-                  {{ props.row.description }}
-                </q-td>
-                <q-td key="amount" :props="props">
-                  {{ props.row.amount }}
-                  <q-popup-edit auto-save v-model.number="props.row.amount">
-                    <q-input
-                      type="number"
-                      autofocus
-                      dense
-                      v-model.number="props.row.amount"
-                      @input="recalculate(props.row)"
-                    />
-                  </q-popup-edit>
-                </q-td>
-                <q-td key="purchase_price" :props="props">
-                  {{ props.row.purchase_price }}
-                </q-td>
-                <q-td key="igv" :props="props">
-                  {{ props.row.igv }}
-                </q-td>
-                <q-td key="price" :props="props">
-                  {{ props.row.price }}
-                  <q-popup-edit v-model.number="props.row.price" auto-save>
-                    <q-input
-                      type="number"
-                      v-model.number="props.row.price"
-                      dense autofocus
-                      @input="recalculate(props.row)"
-                    />
-                  </q-popup-edit>
-                </q-td>
-                <q-td key="discount" :props="props">
-                  {{ props.row.discount }}
-                  <q-popup-edit v-model.number="props.row.discount" auto-save>
-                    <q-input
-                      type="number"
-                      dense
-                      autofocus
-                      v-model.number="props.row.discount"
-                      @input="recalculate(props.row)"
-                    />
-                  </q-popup-edit>
-                </q-td>
-                <q-td key="subtotal" :props="props">
-                  {{ props.row.subtotal }}
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
-        </div>
-        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-          <q-list separator dense>
-            <q-item clickable v-ripple>
-              <q-item-section>OP.GRAVADA:</q-item-section>
-              <q-item-section side>S/ {{ totalUnitValue }}</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section>IGV:</q-item-section>
-              <q-item-section side>S/ {{ igvTotal }}</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple active>
-              <q-item-section>TOTAL A PAGAR:</q-item-section>
-              <q-item-section side>S/ {{ totalSale }}</q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section class="q-mt-sm">
-                <q-select
-                  label="Condición de pagos"
-                  outlined
-                  dense
-                  :disable="dataProduct.length <= 0"
-                  :readonly="dataProduct.length <= 0"
-                  v-model="paymentCondition"
-                  :options="paymentsCondition"
-                  @input="openOptionDialog('payments')"
-                />
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </div>
-      </q-card-section>
-      <q-separator/>
-      <q-card-actions align="right">
-        <q-btn color="negative" label="Cancelar facturación" @click="cancelBill"/>
-        <q-btn color="primary" label="Generar factura" @click="modelBill" :disable="dataProduct.length <= 0"/>
-      </q-card-actions>
-    </q-card>
+        </q-card-section>
+        <q-separator/>
+        <q-card-actions align="right">
+          <q-btn color="negative" label="Cancelar facturación" @click="cancelBill"/>
+          <q-btn color="primary" label="Generar factura" type="submit" :disable="dataProduct.length <= 0"/>
+        </q-card-actions>
+      </q-card>
+    </q-form>
     <q-dialog
       v-model="modalProduct"
       persistent
