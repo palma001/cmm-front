@@ -97,9 +97,19 @@ const routes = [
         component: () => import('pages/Quotation.vue')
       },
       {
-        path: 'new-quotations',
+        path: 'new-quotation',
         name: 'NewQuotation',
         component: () => import('pages/NewQuotation.vue')
+      },
+      {
+        path: 'new-purchase',
+        name: 'NewPurchase',
+        component: () => import('pages/NewPurchase.vue')
+      },
+      {
+        path: 'purchases',
+        name: 'Purchase',
+        component: () => import('pages/Purchase.vue')
       },
       {
         path: 'new-guide/:module/:id',

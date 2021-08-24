@@ -24,7 +24,8 @@ export default {
     code: 'Código',
     sucursales: 'sucursales',
     sales: 'ventas',
-    errorDocumentNumber: 'Documento invalido'
+    errorDocumentNumber: 'Documento invalido',
+    purchase: 'compras'
   },
 
   // users
@@ -60,7 +61,9 @@ export default {
     'checking-accounts': 'cuenta corrinte',
     'voucher-list': 'listado de comprobantes',
     orders: 'Pedidos',
-    quotations: 'cotización'
+    quotations: 'cotización',
+    newPurchase: 'nueva compra',
+    purchase: 'lista compras'
   },
 
   order: {
@@ -198,6 +201,37 @@ export default {
     guide: 'guía',
     newBilling: 'Nueva factura'
   },
+  purchase: {
+    serie: 'serie',
+    id: 'serie',
+    saveErrorPayment: 'Ingrese los campos requeridos',
+    saveSuccessPayment: 'pago guarado exitosamente!',
+    provider: 'proveedor',
+    operation_type: 'tipo de venta',
+    code: 'código',
+    coin: 'Moneda',
+    saveSuccess: 'compra creada exitosamente!',
+    voucher_type: 'tipo comprobante',
+    created_at: 'fecha',
+    list: 'lista de compras',
+    total: 'total',
+    cash: 'efectivo',
+    cancelBilling: 'cancelar compra',
+    saveBilling: 'guardar compra',
+    error: 'A ocurrido un error',
+    expiration_date: 'fecha de expiración',
+    seller: 'vendedor',
+    igv: 'igv',
+    download: 'descargas',
+    XML: 'XML',
+    PDF: 'PDF',
+    CDR: 'CDR',
+    payment: 'pagos',
+    options: 'opciones',
+    note: 'Nota',
+    guide: 'guía',
+    newPurchase: 'Nueva compra'
+  },
   creditNote: {
     saveSuccess: 'nota de credito creada exitosamente!',
     voucherTypeNotes: 'tipos comprobante',
@@ -317,6 +351,25 @@ export default {
     document_type: 'tipo de Doc.',
     client_type: 'tipo de cliente',
     client_type_id: 'tipo de cliente'
+  },
+  provider: {
+    name: 'nombre',
+    last_name: 'apellido',
+    add: 'agregar proveedor',
+    list: 'Lista de proveedors',
+    addSuccessfull: 'proveedor agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessfull: 'proveedor eliminada exitosamente',
+    update: 'Editar proveedor',
+    editSuccessfull: 'proveedor editada exitosamente',
+    document_number: 'número Doc.',
+    email: 'correo',
+    phone: 'telefono',
+    document_type_id: 'tipo de Doc.',
+    document_type: 'tipo de Doc.',
+    client_type: 'tipo de proveedor',
+    client_type_id: 'tipo de proveedor'
   },
   entryAndExitOfMoney: {
     monto: 'monto',

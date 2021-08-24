@@ -70,6 +70,24 @@ export const categoryModules = [
         devices: ['mobile', 'desktop']
       }
     ]
+  },
+  {
+    name: 'purchase',
+    icon: 'all_inbox',
+    modules: [
+      {
+        name: 'newPurchase',
+        route: 'NewPurchase',
+        icon: 'receipt',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'purchase',
+        route: 'Purchase',
+        icon: 'receipt',
+        devices: ['mobile', 'desktop']
+      }
+    ]
   }
   // {
   //   name: 'organization',
