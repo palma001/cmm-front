@@ -5,16 +5,16 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          label="agregar factura"
-          @click="$router.push({ name: 'NewBilling' })"
+          label="agregar compra"
+          @click="$router.push({ name: 'NewPurchase' })"
         />
       </div>
       <div class="col-12">
         <data-table
           title="list"
-          module="billing"
+          module="purchase"
           searchable
-          :column="billingConfig"
+          :column="purchaseConfig"
           :data="data"
           :loading="loadingTable"
           :optionPagination="optionPagination"
@@ -26,6 +26,7 @@
           @search-data="searchData"
           @viewNote="viewNote"
           @viewGuide="viewGuide"
+          @viewProduct="viewProduct"
         />
       </div>
     </div>
@@ -163,20 +164,20 @@
     </q-dialog>
     <!-- Ventana Modal para el botón PAGOS por cada registro de Comprobante-->
     <q-dialog v-model="pay">
-      <q-card style="width: 800px; max-width: 80vw;" v-if="billSelected">
+      <q-card style="width: 800px; max-width: 80vw;" v-if="purchaseSelected">
         <q-form @submit="savePayment">
-          <q-card-section class="row items-center q-pb-none" v-if="billSelected">
-            <div class="text-h6">Pagos de factura: F001-{{ billSelected.id }}</div>
+          <q-card-section class="row items-center q-pb-none" v-if="purchaseSelected">
+            <div class="text-h6">Pagos de factura: {{ purchaseSelected.serie }}-{{ purchaseSelected.number }}</div>
             <q-space />
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
-          <q-card-section v-if="billSelected">
+          <q-card-section v-if="purchaseSelected">
             <div class="row justify-end q-gutter-sm">
               <div class="col-12">
                 <q-list bordered separator dense>
                   <q-item clickable v-ripple>
                     <q-item-section>TOTAL A PAGAR</q-item-section>
-                    <q-item-section side> {{ billSelected.total }}</q-item-section>
+                    <q-item-section side> {{ purchaseSelected.total.toFixed(2) }}</q-item-section>
                   </q-item>
                   <q-item clickable v-ripple>
                     <q-item-section>TOTAL PAGADO</q-item-section>
@@ -185,7 +186,7 @@
                   <q-item clickable v-ripple :active="active" active-class="text-negative">
                     <q-item-section>PENDIENTE DE PAGO</q-item-section>
                     <q-item-section side>
-                      {{  (billSelected.total - totalPaid).toFixed(2) }}
+                      {{  (purchaseSelected.total - totalPaid).toFixed(2) }}
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -197,7 +198,7 @@
                   label="Nuevo"
                   no-caps
                   glossy
-                  v-if="billSelected.total - totalPaid"
+                  v-if="purchaseSelected.total - totalPaid"
                   @click="addNewPayment"
                 />
               </div>
@@ -295,7 +296,7 @@
                             autofocus
                             :rules="[
                               val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
-                              val => 0 <= (Number(billSelected.total) - Number(totalPaid)) || 'El monto no puede superar el total a pagar'
+                              val => 0 <= (Number(purchaseSelected.total) - Number(totalPaid)) || 'El monto no puede superar el total a pagar'
                             ]"
                             @input="totalPayements"
                           />
@@ -335,12 +336,36 @@
         </q-form>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="viewProductModal">
+      <q-card v-if="purchaseSelected" style="width: 400px; max-width: 80vw;">
+        <q-card-section class="q-pb-xs">
+          <div class="text-h6">
+            Productos / {{ purchaseSelected.serie }}-{{ purchaseSelected.number }}
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-table
+              row-key="name"
+              wrap-cells
+              virtual-scroll
+              :data="purchaseSelected.purchase_details"
+              :columns="columns"
+              :rows-per-page-options="[]"
+              hide-bottom
+            />
+        </q-card-section>
+        <q-separator/>
+        <q-card-actions align="right">
+          <q-btn color="negative" label="Cerrar" size="md" @click="viewProductModal = false"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
 import { date } from 'quasar'
-import { billingConfig } from '../config-file/billing/billingConfig.js'
+import { purchaseConfig } from '../config-file/purchase/purchaseConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -352,10 +377,30 @@ export default {
   },
   data () {
     return {
+      /**
+       * Columns Table
+       * @type {Array} column array
+       */
+      columns: [
+        {
+          name: 'description',
+          align: 'left',
+          label: 'Descripción',
+          field: row => row.product.description,
+          sortable: true
+        },
+        {
+          name: 'amount',
+          label: 'Cantidad',
+          field: 'amount',
+          sortable: true
+        }
+      ],
+      viewProductModal: false,
       active: true,
       loadingPayment: false,
       loadingTable: false,
-      billSelected: null,
+      purchaseSelected: null,
       /**
        * Options pagination
        * @type {Object}
@@ -377,14 +422,11 @@ export default {
         sortOrder: 'desc',
         perPage: 1,
         dataSearch: {
-          'client.name': '',
-          'client.document_number': '',
+          'provider.name': '',
+          'provider.document_number': '',
           'coin.name': '',
           'voucherType.name': '',
-          'operationType.name': '',
-          'seller.name': '',
-          'client.last_name': '',
-          'seller.last_name': '',
+          'provider.last_name': '',
           igv: '',
           created_at: '',
           expiration_date: ''
@@ -392,7 +434,7 @@ export default {
       },
       payments: [],
       text: '',
-      billingConfig,
+      purchaseConfig,
       visibleColumns: ['id', 'soap', 'dateEmission', 'dateExp', 'client', 'number', 'noteCd', 'state', 'user', 'coin', 'tGravado', 'tExportacion', 'tGratuita', 'tInafecta', 'tExonerado', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'paid', 'downloads', 'actions'],
       data: [],
       dialog: false,
@@ -413,11 +455,12 @@ export default {
         // { name: 'archive', align: 'center', label: 'Archivo', field: 'archive' },
         { name: 'amount', align: 'center', label: 'Monto', field: 'amount', sortable: true },
         { name: 'actions', align: 'center', label: 'Acciones', field: 'action' }
-      ]
+      ],
+      products: []
     }
   },
   created () {
-    this.getBillElectronics()
+    this.getPurchases()
     this.getExchange()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
@@ -429,11 +472,15 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    viewProduct (data) {
+      this.viewProductModal = true
+      this.purchaseSelected = data
+    },
     validationAmount (value) {
-      return value !== '' && (Number(this.billSelected.total) - Number(this.totalPaid)) >= 0
+      return value !== '' && (Number(this.purchaseSelected.total) - Number(this.totalPaid)) >= 0
     },
     /**
-     * Calculate billing total
+     * Calculate purchase total
      */
     totalPayements () {
       let total = 0
@@ -464,7 +511,7 @@ export default {
             created_at: payment.created_at
           }
         } else {
-          this.notify(this, 'billing.saveErrorPayment', 'negative', 'warning')
+          this.notify(this, 'purchase.saveErrorPayment', 'negative', 'warning')
         }
       })
     },
@@ -488,7 +535,7 @@ export default {
      */
     addNewPayment () {
       this.payments.push({
-        amount: (this.billSelected.total - this.totalPaid).toFixed(2),
+        amount: (this.purchaseSelected.total - this.totalPaid).toFixed(2),
         reference: '-'
       })
       this.totalPayements()
@@ -547,7 +594,7 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getBillElectronics(this.params)
+      this.getPurchases(this.params)
     },
     downloadXML (data) {
       console.log(data)
@@ -564,8 +611,8 @@ export default {
      */
     viewPayment (data) {
       this.pay = true
-      this.billSelected = data
-      this.payments = data.bill_electronic_payments
+      this.purchaseSelected = data
+      this.payments = data.purchase_payments
       this.totalPayements()
     },
     viewNote (data) {
@@ -587,14 +634,14 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getBillElectronics()
+      this.getPurchases()
     },
     /**
      * Get Bill electronis
      */
-    getBillElectronics () {
+    getPurchases () {
       this.loadingTable = true
-      this.$services.getData(['bill-electronics'], this.params)
+      this.$services.getData(['purchases'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.loadingTable = false
@@ -607,18 +654,24 @@ export default {
           this.optionPagination.rowsNumber = 0
         })
     },
+    modeDetails (data) {
+      return data.map(product => {
+        delete product.purchase_id
+        return product
+      })
+    },
     /**
      * Get Bill electronis
      */
     savePayment () {
       this.loadingPayment = true
-      this.$services.putData(['bill-electronics', this.billSelected.id], {
-        bill_electronic_payments: this.modelPayments(this.payments)
-      })
+      this.purchaseSelected.purchase_details = this.modeDetails(this.purchaseSelected.purchase_details)
+      this.purchaseSelected.purchase_payments = this.modelPayments(this.payments)
+      this.$services.putData(['purchases', this.purchaseSelected.id], this.purchaseSelected)
         .then(({ res }) => {
-          this.notify(this, 'billing.saveSuccessPayment', 'positive', 'mood')
+          this.notify(this, 'purchase.saveSuccessPayment', 'positive', 'mood')
           this.loadingPayment = false
-          this.getBillElectronics()
+          this.getPurchases()
           this.pay = false
         })
         .catch(err => {

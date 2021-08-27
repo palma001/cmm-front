@@ -108,9 +108,9 @@
             </div>
           </div>
         </q-card-section>
-        <q-card-section :class="$q.screen.lt.md ? 'q-py-none q-mt-md' : 'q-py-none'">
+        <q-card-section :class="$q.screen.lt.md ? 'q-py-sm' : 'q-py-none'">
           <div class="row q-col-gutter-md">
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
               <q-select
                 autocomplete="off"
                 use-input
@@ -142,7 +142,7 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+            <div class="col-xs-6 col-sm-2 col-md-3 col-lg-3 col-xl-3">
               <q-input
                 v-model="purchase.exchange"
                 outlined
@@ -1011,8 +1011,8 @@ export default {
         exchange_rate: this.purchase.exchange,
         igv: 12,
         expiration_date: date.formatDate(this.purchase.expiration_date, 'YYYY-MM-DD'),
-        bill_electronic_details: this.dataProduct,
-        bill_electronic_payments: this.modelPayments(this.payments),
+        purchase_details: this.dataProduct,
+        purchase_payments: this.modelPayments(this.payments),
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
         created_at: date.formatDate(this.purchase.created_at, 'YYYY-MM-DDTHH:mm:ss')
@@ -1131,7 +1131,7 @@ export default {
      * Calculate subtotal products
      */
     totalCalculateProduct () {
-      this.totalProduct = this.stock.price * this.amount
+      this.totalProduct = (Number(this.stock.sale_price) * Number(this.amount).toFixed(2))
     },
     /**
      * Selected product
@@ -1192,7 +1192,7 @@ export default {
      * @param {Array} array list porduct
      */
     pushArray (array) {
-      const percentage = this.getPercentage(this.stock.sale_price, this.igv.value)
+      const percentage = this.getPercentage(this.totalProduct, this.igv.value)
       const unitValue = Number(this.stock.sale_price) + Number(percentage)
       array.push({
         product_id: this.product.id,
@@ -1202,6 +1202,7 @@ export default {
         igv: isNaN(percentage) ? 0 : percentage,
         price: unitValue,
         discount: this.discount,
+        sale_price: Number(this.totalProduct) + Number(percentage),
         subtotal: Number(this.totalProduct) + Number(percentage),
         user_created_id: this.userSession.id,
         warehouse_name: this.warehouse.full_name,

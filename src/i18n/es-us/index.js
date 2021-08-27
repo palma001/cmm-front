@@ -202,6 +202,7 @@ export default {
     newBilling: 'Nueva factura'
   },
   purchase: {
+    products: 'productos',
     serie: 'serie',
     id: 'serie',
     saveErrorPayment: 'Ingrese los campos requeridos',
