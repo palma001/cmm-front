@@ -1,42 +1,33 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-form @submit="modelPurchase" ref="formPurchase">
+    <q-form @submit="modelExpenseReason" ref="formexpense">
       <q-card class="my-card">
         <q-card-section class="q-pb-sm row q-col-gutter-sm">
           <div class="col-8">
             <div class="row justify-between">
               <div class="col-auto">
                 <p class="text-h5">
-                  {{ ucwords($t('purchase.newPurchase')) }}
+                  {{ ucwords($t('expense.newExpense')) }}
                 </p>
               </div>
             </div>
           </div>
-          <div class="col-2">
+          <div class="col-4">
             <q-input
               type="date"
               dense
               outlined
               label="Fec. Emisión"
-              v-model="purchase.created_at"
+              v-model="expense.created_at"
               @input="getExchange"
-            />
-          </div>
-          <div class="col-2">
-            <q-input
-              type="date"
-              dense
-              outlined
-              label="Fec. Vencimiento"
-              v-model="purchase.expiration_date"
             />
           </div>
         </q-card-section>
         <q-separator/>
-        <q-card-section class="q-pb-none">
+        <q-card-section class="q-pb-sm">
           <div class="row justify-between q-col-gutter-sm">
-            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
               <q-select
                 use-input
                 hide-selected
@@ -45,16 +36,16 @@
                 clearable
                 dense
                 input-debounce="0"
-                name="voucherType"
+                name="expenseReason"
                 autocomplete="off"
-                ref="voucherTypeRef"
-                v-model="purchase.voucherType"
+                ref="expenseReasonRef"
+                v-model="expense.expenseReason"
                 v-validate="'required'"
                 data-vv-as="field"
                 option-value="id"
                 option-label="name"
-                :label="ucwords($t('purchase.voucher_type'))"
-                :options="voucherTypes"
+                :label="ucwords($t('expense.expenseReason'))"
+                :options="expenseReasons"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
               >
                 <template v-slot:no-option>
@@ -66,19 +57,9 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
               <q-input
-                v-model="purchase.serie"
-                outlined
-                dense
-                label="Serie"
-                type="text"
-                :rules="[ val => val && val.length || 'Este campo es requerido']"
-              />
-            </div>
-            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2">
-              <q-input
-                v-model="purchase.number"
+                v-model="expense.number"
                 outlined
                 dense
                 label="Numero"
@@ -86,14 +67,14 @@
                 :rules="[ val => val && val.length || 'Este campo es requerido']"
               />
             </div>
-            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
+            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
               <q-select
                 outlined
                 v-model="coin"
                 dense
                 option-label="name"
                 option-value="id"
-                :label="ucwords($t('purchase.coin'))"
+                :label="ucwords($t('expense.coin'))"
                 :options="coins"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
               >
@@ -108,7 +89,7 @@
             </div>
           </div>
         </q-card-section>
-        <q-card-section :class="$q.screen.lt.md ? 'q-py-sm' : 'q-py-none'">
+        <q-card-section :class="$q.screen.lt.md ? 'q-py-sm' : 'q-pt-none q-pb-sm'">
           <div class="row q-col-gutter-md">
             <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
               <q-select
@@ -121,12 +102,12 @@
                 clearable
                 input-debounce="20"
                 name="provider"
-                v-model="purchase.provider"
+                v-model="expense.provider"
                 option-label="full_name"
                 option-value="id"
                 v-validate="'required'" data-vv-as="field"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :label="ucwords($t('purchase.provider'))"
+                :label="ucwords($t('expense.provider'))"
                 :options="providers"
                 @filter="getProviders"
               >
@@ -144,7 +125,7 @@
             </div>
             <div class="col-xs-6 col-sm-2 col-md-3 col-lg-3 col-xl-3">
               <q-input
-                v-model="purchase.exchange"
+                v-model="expense.exchange"
                 outlined
                 dense
                 readonly
@@ -164,24 +145,12 @@
                 style="height: 40px;"
                 @click="modalProduct = true"
               />
-              <q-btn
-                icon="add"
-                color="positive"
-                label="pagos"
-                style="height: 40px;"
-                :disable="dataProduct <= 0"
-                @click="openOptionDialog('payments')"
-              >
-                <q-badge color="negative" floating>
-                  S/ {{ totalPaid }}
-                </q-badge>
-              </q-btn>
             </div>
           </div>
         </q-card-section>
         <q-separator/>
         <q-card-section class="row justify-between q-col-gutter-sm">
-          <div class="q-pa-xs col-xs-12 col-md-10 col-sm-12 col-lg-10">
+          <div class="q-pa-xs col-xs-12 col-md-9 col-sm-12 col-lg-9">
             <q-table
               row-key="name"
               wrap-cells
@@ -197,69 +166,32 @@
                   </q-td>
                   <q-td key="description" :props="props">
                     {{ props.row.description }}
-                  </q-td>
-                  <q-td key="warehouse_name" :props="props">
-                    {{ props.row.warehouse_name }}
-                  </q-td>
-                  <q-td key="amount" :props="props">
-                    {{ props.row.amount }}
-                    <q-popup-edit auto-save v-model.number="props.row.amount">
+                    <q-popup-edit v-model.number="props.row.description" auto-save>
                       <q-input
-                        type="number"
-                        autofocus
-                        dense
-                        v-model.number="props.row.amount"
-                        @input="recalculate(props.row)"
-                      />
-                    </q-popup-edit>
-                  </q-td>
-                  <q-td key="purchase_price" :props="props">
-                    {{ props.row.purchase_price }}
-                    <q-popup-edit v-model.number="props.row.purchase_price" auto-save>
-                      <q-input
-                        type="number"
-                        v-model.number="props.row.purchase_price"
+                        type="text"
                         dense
                         autofocus
-                        @input="recalculate(props.row)"
+                        v-model.number="props.row.description"
                       />
                     </q-popup-edit>
-                  </q-td>
-                  <q-td key="igv" :props="props">
-                    {{ props.row.igv }}
                   </q-td>
                   <q-td key="price" :props="props">
                     {{ props.row.price }}
-                  </q-td>
-                  <q-td key="discount" :props="props">
-                    {{ props.row.discount }}
-                    <q-popup-edit v-model.number="props.row.discount" auto-save>
+                    <q-popup-edit v-model.number="props.row.price" auto-save>
                       <q-input
                         type="number"
                         dense
                         autofocus
-                        v-model.number="props.row.discount"
-                        @input="recalculate(props.row)"
+                        v-model.number="props.row.price"
                       />
                     </q-popup-edit>
-                  </q-td>
-                  <q-td key="subtotal" :props="props">
-                    {{ props.row.subtotal }}
                   </q-td>
                 </q-tr>
               </template>
             </q-table>
           </div>
-          <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+          <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
             <q-list separator dense>
-              <q-item clickable v-ripple>
-                <q-item-section>OP.GRAVADA:</q-item-section>
-                <q-item-section side>S/ {{ totalUnitValue }}</q-item-section>
-              </q-item>
-              <q-item clickable v-ripple>
-                <q-item-section>IGV:</q-item-section>
-                <q-item-section side>S/ {{ igvTotal }}</q-item-section>
-              </q-item>
               <q-item clickable v-ripple active>
                 <q-item-section>TOTAL A PAGAR:</q-item-section>
                 <q-item-section side>S/ {{ totalSale }}</q-item-section>
@@ -285,137 +217,10 @@
           </q-card-section>
           <q-card-section class="row justify-between q-col-gutter-x-sm">
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                autocomplete="off"
-                input-debounce="0"
-                name="product"
-                ref="productRef"
-                v-model="product"
-                data-vv-as="field"
-                option-value="id"
-                option-label="full_name"
-                :label="value ? 'C-P-D' : 'Productos'"
-                :options="products"
-                :rules="[ val => val || 'Este campo es requerido' ]"
-                @input="selectProuct"
-                @filter="filterProducts"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-                <template v-slot:append>
-                  <q-toggle
-                    v-model="value"
-                    color="primary"
-                    dense
-                  >
-                    <q-tooltip>
-                      Activar filtro por CPD
-                    </q-tooltip>
-                  </q-toggle>
-                </template>
-              </q-select>
+              <q-input outlined type="text" v-model="product.description" dense label="Descripción"/>
             </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                autocomplete="off"
-                input-debounce="0"
-                name="warehouse"
-                ref="warehouse"
-                v-model="warehouse"
-                v-validate="'required'"
-                data-vv-as="field"
-                label="Almacen"
-                option-value="id"
-                option-label="full_name"
-                :rules="[ val => val || 'Este campo es requerido' ]"
-                :options="warehouses"
-                @filter="getWarehouse"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                autocomplete="off"
-                input-debounce="0"
-                name="igv"
-                ref="igvRef"
-                v-model="igv"
-                v-validate="'required'"
-                data-vv-as="field"
-                label="Afectación igv"
-                :rules="[ val => val || 'Este campo es requerido' ]"
-                :options="igvs"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-          </q-card-section>
-          <q-card-section class="row justify-between q-col-gutter-sm">
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <q-input
-                label="Cantidad"
-                type="number"
-                dense
-                outlined
-                v-model="amount"
-                @input="totalCalculateProduct"
-              />
-            </div>
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <q-input
-                label="Precio Unitario"
-                type="number"
-                dense
-                outlined
-                v-model="stock.sale_price"
-                @input="totalCalculateProduct"
-              />
-            </div>
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <q-input
-                label="Total"
-                type="number"
-                dense
-                disable
-                outlined
-                :value="totalProduct"
-              />
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-input outlined type="text" v-model="product.price" dense label="Precio"/>
             </div>
           </q-card-section>
           <q-card-actions align="right">
@@ -423,209 +228,6 @@
             <q-btn label="Agregar" color="primary" type="submit" />
           </q-card-actions>
         </q-form>
-      </q-card>
-    </q-dialog>
-    <q-dialog
-      v-model="modalPaid"
-      persistent
-    >
-      <q-card style="width: 900px; max-width: 80vw;">
-        <q-card-section>
-          <div class="text-h6">
-            Agregar Pagos
-          </div>
-        </q-card-section>
-        <q-card-section
-          class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm"
-          v-for="(payment, index) in payments"
-          :key="payment.id"
-        >
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="paymentMethod"
-              ref="paymentMethodRef"
-              v-model="payment.paymentMethod"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              label="Método de pago"
-              :options="paymentMethods"
-              @filter="getPaymentMethods"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="paymentDestination"
-              ref="paymentDestinationRef"
-              v-model="payment.paymentDestination"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              label="Destino"
-              :options="paymentDestinations"
-              @filter="getPaymentDestinations"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Referencia" outlined dense v-model="payment.paymentReference"/>
-          </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Monto" outlined dense v-model="payment.paymentAmount" @input="totalPayemnts"/>
-          </div>
-          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
-            <q-btn icon="close" dense round color="negative"  @click="deletePayment(index)"/>
-          </div>
-        </q-card-section>
-        <q-card-section v-if="(totalSale - totalPaid) > 0">
-          <q-form
-            @submit="addPayment"
-            class="row justify-between q-col-gutter-sm q-pa-none"
-            ref="addPayment"
-          >
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                autocomplete="off"
-                input-debounce="0"
-                name="paymentMethod"
-                ref="paymentMethodRef"
-                v-model="paymentMethod"
-                data-vv-as="field"
-                option-value="id"
-                option-label="name"
-                label="Método de pago"
-                :rules="[val => val || 'El campo metodo de pago es requerido']"
-                :options="paymentMethods"
-                @filter="getPaymentMethods"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                autocomplete="off"
-                input-debounce="0"
-                name="paymentDestination"
-                ref="paymentDestinationRef"
-                v-model="paymentDestination"
-                data-vv-as="field"
-                option-value="id"
-                option-label="name"
-                label="Destino"
-                :rules="[val => val || 'El campo destino es requerido']"
-                :options="paymentDestinations"
-                @filter="getPaymentDestinations"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-              <q-input
-                label="Referencia"
-                outlined
-                dense
-                v-model="paymentReference"
-              />
-            </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-              <q-input
-                label="Monto"
-                outlined
-                dense
-                :rules="[
-                  val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
-                  val => 0 <= (totalSale - totalPaid) || 'El monto no puede superar el total a pagar'
-                ]"
-                v-model="paymentAmount"
-                @input="totalPayemnts"
-              />
-            </div>
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
-              <q-btn
-                icon="add"
-                dense
-                round
-                color="primary"
-                type="submit"
-              />
-            </div>
-          </q-form>
-        </q-card-section>
-        <q-card-section class="q-py-none">
-          <q-list separator dense>
-            <q-item clickable v-ripple active>
-              <q-item-section>TOTAL A PAGAR:</q-item-section>
-              <q-item-section side>S/ {{ totalSale }}</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section>TOTAL PAGADO</q-item-section>
-              <q-item-section side>S/ {{ totalPaid }}</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple>
-              <q-item-section>PENDIENTE</q-item-section>
-              <q-item-section side>S/ {{ totalSale - totalPaid }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn label="Cerrar" color="negative" v-close-popup />
-          <q-btn label="Generar Factura" color="primary" @click="modelPurchase"/>
-        </q-card-actions>
       </q-card>
     </q-dialog>
     <q-dialog
@@ -723,7 +325,7 @@ import DynamicForm from '../components/DynamicForm.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
 export default {
-  name: 'purchase',
+  name: 'expense',
   mixins: [mixins.containerMixin],
   components: {
     DynamicForm
@@ -731,7 +333,7 @@ export default {
   },
   data () {
     return {
-      warehouse: null,
+      product: {},
       loadingForm: false,
       provider,
       propsPanelEdition,
@@ -750,16 +352,6 @@ export default {
       igv: { label: 'Gravado - Operación Onerosa', value: 12 },
       modalProduct: false,
       loadingCLose: false,
-      product: null,
-      modalPaid: false,
-      paymentMethod: null,
-      paymentMethods: [],
-      paymentDestination: null,
-      paymentDestinations: [],
-      payments: [],
-      paymentAmount: 0,
-      paymentReference: null,
-      totalPaid: 0,
       /**
        * Visible loading page
        * @type {Boolean} status loading page
@@ -770,7 +362,6 @@ export default {
        * @type {Number} total sale
        */
       totalSale: 0,
-      igvTotal: 0,
       totalUnitValue: 0,
       /**
        * Columns Table
@@ -794,63 +385,20 @@ export default {
           sortable: true
         },
         {
-          name: 'warehouse_name',
-          align: 'left',
-          headerClasses: 'bg-primary text-white',
-          label: 'Almacen',
-          field: 'warehouse_name',
-          sortable: true
-        },
-        {
-          name: 'amount',
-          label: 'Cantidad',
-          field: 'amount',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
-          name: 'purchase_price',
-          label: 'Valor Unitario',
-          field: 'purchase_price',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
-          name: 'igv',
-          label: 'Igv',
-          field: 'igv',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
           name: 'price',
-          label: 'Precio Unitario',
+          label: 'Precio',
           field: 'price',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
-          name: 'discount',
-          label: 'Descuento',
-          field: 'discount',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
-          name: 'subtotal',
-          label: 'Subtotal',
-          field: 'subtotal',
           headerClasses: 'bg-primary text-white',
           sortable: true
         }
       ],
       /**
-       * purchase Model
-       * @type {Object} purchase model
+       * expense Model
+       * @type {Object} expense model
        */
-      purchase: {
+      expense: {
         provider: null,
-        voucherType: null,
+        expenseReason: null,
         exchange: 0,
         expiration_date: date.formatDate(new Date(), 'YYYY-MM-DD'),
         created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
@@ -860,20 +408,14 @@ export default {
        * @type {Array} provider List
        */
       providers: [],
-      warehouses: [],
-      /**
-       * Product List
-       * @type {Array} Product List
-       */
-      products: [],
       /**
        * Amount product
        * @type {Number} amuntproduct
        */
       amount: 1,
       /**
-       * Data product purchase
-       * @type {Array} data purchase
+       * Data product expense
+       * @type {Array} data expense
        */
       dataProduct: [],
       /**
@@ -882,15 +424,10 @@ export default {
        */
       discount: 0,
       /**
-       * Operation Type
-       * @type {Array} Operation type
-       */
-      operationTypes: [],
-      /**
        * Type of vouchers
        * @type {Array} type of vouchers
        */
-      voucherTypes: [],
+      expenseReasons: [],
       /**
        * Coin list
        * @type {Array} Coin list
@@ -901,11 +438,6 @@ export default {
        * @type {Object} coin value
        */
       coin: null,
-      /**
-       * Inventories product selected
-       * @type {Object} stock product selected
-       */
-      stock: {},
       totalProduct: 0,
       userSession: null,
       branchOfficeSession: null
@@ -975,7 +507,7 @@ export default {
       this.loadingForm = true
       this.$services.postData(['providers'], data)
         .then(({ res }) => {
-          this.purchase.provider = res.data
+          this.expense.provider = res.data
           this.addDialig = false
           this.loadingForm = false
           this.notify(this, 'provider.addSuccessfull', 'positive', 'mood')
@@ -1001,39 +533,35 @@ export default {
     /**
      * Model bill
      */
-    modelPurchase () {
-      const billModel = {
-        serie: this.purchase.serie,
-        number: this.purchase.number,
-        provider_id: this.purchase.provider.id,
-        voucher_type_id: this.purchase.voucherType.id,
+    modelExpenseReason () {
+      const modelExpenseReason = {
+        number: this.expense.number,
+        provider_id: this.expense.provider.id,
+        expense_reason_id: this.expense.expenseReason.id,
         coin_id: this.coin.id,
-        exchange_rate: this.purchase.exchange,
-        igv: 12,
-        expiration_date: date.formatDate(this.purchase.expiration_date, 'YYYY-MM-DD'),
-        purchase_details: this.dataProduct,
-        purchase_payments: this.modelPayments(this.payments),
+        exchange_rate: this.expense.exchange,
+        expense_details: this.dataProduct,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
-        created_at: date.formatDate(this.purchase.created_at, 'YYYY-MM-DDTHH:mm:ss')
+        created_at: date.formatDate(this.expense.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
-      this.savePurchase(billModel)
+      this.saveExpense(modelExpenseReason)
     },
     /**
      * Save bill
      * @param {Object} data data bill
      */
-    savePurchase (data) {
+    saveExpense (data) {
       this.modalPaid = false
       this.visible = true
-      this.$services.postData(['purchases'], data)
+      this.$services.postData(['expenses'], data)
         .then(res => {
-          this.notify(this, 'purchase.saveSuccess', 'positive', 'mood')
+          this.notify(this, 'expense.saveSuccess', 'positive', 'mood')
           this.cancelBill()
           this.visible = false
         })
         .catch(() => {
-          this.notify(this, 'purchase.error', 'negative', 'warning')
+          this.notify(this, 'expense.error', 'negative', 'warning')
           this.visible = false
         })
     },
@@ -1042,64 +570,17 @@ export default {
      */
     cancelBill () {
       this.dataProduct = []
-      this.payments = []
-      this.purchase = {}
-      this.purchase.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
-      this.purchase.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.expense = {}
+      this.expense.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.totalSale = 0
-      this.totalPaid = 0
       this.totalUnitValue = 0
       this.totalProduct = 0
-      this.igvTotal = 0
-      this.product = null
+      this.product = {}
       this.amount = 1
-      this.stock = {}
       this.modalProduct = false
-      this.modalPaid = false
-      this.getVoucherTypes()
+      this.getExpenseReasons()
       this.getCoins()
-      this.resetValidations(this.$refs.formPurchase)
-    },
-    /**
-     * Model paymnets
-     * @param {Array} data data model
-     * @return {Array} model
-     */
-    modelPayments (data) {
-      return data.map(payment => {
-        return {
-          payment_method_id: payment.paymentMethod.id,
-          payment_destination_id: payment.paymentDestination.id,
-          reference: payment.paymentReference,
-          amount: payment.paymentAmount,
-          exchange: this.purchase.exchange,
-          user_created_id: this.userSession.id
-        }
-      })
-    },
-    /**
-     * Open dialog operation
-     * @param {String} data name tab
-     */
-    openOptionDialog (data) {
-      this.modalPaid = true
-      this.paymentAmount = this.totalSale - this.totalPaid
-    },
-    /**
-     * Delete payment
-     * @param {Number} index indiex payment
-     */
-    deleteSelectedGuide (index) {
-      this.guides.splice(index, 1)
-    },
-    /**
-     * Delete payment
-     * @param {Number} index indiex payment
-     */
-    deletePayment (index) {
-      this.payments.splice(index, 1)
-      this.totalPayemnts()
-      this.paymentAmount = this.totalSale - this.totalPaid
+      this.resetValidations(this.$refs.formexpense)
     },
     /**
      * Reset validation
@@ -1109,29 +590,6 @@ export default {
       setTimeout(() => {
         ref.resetValidation()
       }, 100)
-    },
-    /**
-     * Add payment to bill electronic
-     */
-    addPayment () {
-      this.payments.push({
-        paymentAmount: this.paymentAmount,
-        paymentReference: this.paymentReference,
-        paymentDestination: this.paymentDestination,
-        paymentMethod: this.paymentMethod
-      })
-      this.totalPayemnts()
-      this.paymentAmount = this.totalSale - this.totalPaid
-      this.paymentReference = null
-      this.paymentDestination = null
-      this.paymentMethod = null
-      this.resetValidations(this.$refs.addPayment)
-    },
-    /**
-     * Calculate subtotal products
-     */
-    totalCalculateProduct () {
-      this.totalProduct = (Number(this.stock.sale_price) * Number(this.amount).toFixed(2))
     },
     /**
      * Selected product
@@ -1153,13 +611,13 @@ export default {
     getExchange () {
       this.visible = true
       this.$services.getData(['exchange-rate'], {
-        start_date: this.purchase.created_at,
-        final_date: this.purchase.created_at,
+        start_date: this.expense.created_at,
+        final_date: this.expense.created_at,
         coin: 'PEN'
       })
         .then(({ res }) => {
           if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
-            this.purchase.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
+            this.expense.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
           }
           this.visible = false
         })
@@ -1171,7 +629,7 @@ export default {
      * Load data
     */
     loadCreate () {
-      this.getVoucherTypes()
+      this.getExpenseReasons()
       this.getCoins()
       this.getExchange()
     },
@@ -1180,34 +638,9 @@ export default {
      * @param {Object} val value product
      */
     setTable () {
-      if (this.validateArray(this.dataProduct, this.product)) {
-        this.addAmountProduct(this.dataProduct, this.product)
-      } else {
-        this.pushArray(this.dataProduct, this.product)
-      }
+      this.product.user_created_id = this.userSession.id
+      this.dataProduct.push(this.product)
       this.totalCalculate()
-    },
-    /**
-     * Set data in table product
-     * @param {Array} array list porduct
-     */
-    pushArray (array) {
-      const percentage = this.getPercentage(this.totalProduct, this.igv.value)
-      const unitValue = Number(this.stock.sale_price) + Number(percentage)
-      array.push({
-        product_id: this.product.id,
-        description: this.product.full_name,
-        amount: this.amount,
-        purchase_price: this.stock.sale_price,
-        igv: isNaN(percentage) ? 0 : percentage,
-        price: unitValue,
-        discount: this.discount,
-        sale_price: Number(this.totalProduct) + Number(percentage),
-        subtotal: Number(this.totalProduct) + Number(percentage),
-        user_created_id: this.userSession.id,
-        warehouse_name: this.warehouse.full_name,
-        warehouse_id: this.warehouse.id
-      })
     },
     /**
      * Print product error
@@ -1264,20 +697,6 @@ export default {
       return data.find((product) => product.product_id === index.id && product.warehouse_id === this.warehouse.id)
     },
     /**
-     * Add product price in table
-     * @param {Array} product table
-     * @param {Object} index product table index
-     */
-    addAmountProduct (product, index) {
-      product.map(product => {
-        if (product.product_id === index.id) {
-          product.amount = Number(product.amount) + Number(this.amount) ?? Number(product.amount)
-          this.recalculate(product)
-          return product
-        }
-      })
-    },
-    /**
      * All provider
      */
     getProviders (value, update) {
@@ -1297,113 +716,6 @@ export default {
         })
     },
     /**
-     * Filter Products
-     * @param {String} value data filter
-     * @param {Callback} update update select data
-     */
-    filterProducts (value, update) {
-      if (this.value) {
-        this.filterPrimary(value, update)
-      } else {
-        const param = {
-          dataSearch: {
-            description: value,
-            code: value
-          }
-        }
-        this.getProducts(param, update)
-      }
-    },
-    /**
-     * Get products
-     * @param {String} value data filter
-     */
-    getProducts (value, update) {
-      this.$services.getData(['products'], {
-        ...value,
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.products = res.data.data
-          })
-        })
-    },
-    /**
-     * Get products
-     * @param {String} value data filter
-     */
-    getGuides (value, update) {
-      this.$services.getData(['guides'], {
-        dataSearch: {
-          name: value,
-          code: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.products = res.data
-          })
-        })
-    },
-    /**
-     * Get payment method
-     * @param {String} value data filter
-     */
-    getPaymentMethods (value, update) {
-      this.$services.getData(['payment-methods'], {
-        dataSearch: {
-          name: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.paymentMethods = res.data.data
-          })
-        })
-    },
-    /**
-     * Get payment destination
-     * @param {String} value data filter
-     */
-    getPaymentDestinations (value, update) {
-      this.$services.getData(['payment-destinations'], {
-        dataSearch: {
-          name: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.paymentDestinations = res.data.data
-          })
-        })
-    },
-    /**
-     * Get payment destination
-     * @param {String} value data filter
-     */
-    getWarehouse (value, update) {
-      this.$services.getData(['warehouses'], {
-        dataSearch: {
-          name: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.warehouses = res.data.data
-          })
-        })
-    },
-    /**
      * Get coins
      */
     getCoins () {
@@ -1419,11 +731,11 @@ export default {
     /**
      * Get voucher types
      */
-    getVoucherTypes () {
-      this.$services.getData(['voucher-types'])
+    getExpenseReasons () {
+      this.$services.getData(['expense-reasons'])
         .then(({ res }) => {
-          this.voucherTypes = res.data
-          this.purchase.voucherType = res.data[0]
+          this.expenseReasons = res.data
+          this.expense.expenseReason = res.data[0]
         })
     },
     /**
@@ -1435,46 +747,14 @@ export default {
       this.totalCalculate()
     },
     /**
-     * Recalcute table subtotal
-     */
-    recalculate (data) {
-      this.dataProduct.map(product => {
-        if (product.product_id === data.product_id) {
-          product.subtotal = (data.amount * data.price) - data.discount
-          return product
-        }
-      })
-      this.totalCalculate()
-    },
-    /**
-     * Calculate purchase total
+     * Calculate expense total
      */
     totalCalculate () {
       let total = 0
-      let igvTotal = 0
-      let unitValue = 0
       this.dataProduct.forEach(element => {
-        total = Number(total) + Number(element.subtotal)
-        igvTotal = (Number(igvTotal) + (Number(element.igv) * Number(element.amount)))
-        unitValue = (Number(unitValue) + (Number(element.price) * Number(element.amount)))
+        total = Number(total) + Number(element.price)
       })
-      this.igvTotal = igvTotal.toFixed(2)
       this.totalSale = total
-      this.totalUnitValue = unitValue.toFixed(2)
-    },
-    /**
-     * Calculate purchase total
-     */
-    totalPayemnts () {
-      if (this.payments.length > 0) {
-        let total = 0
-        this.payments.forEach(element => {
-          total = Number(total) + Number(element.paymentAmount)
-        })
-        this.totalPaid = total
-      } else {
-        this.totalPaid = 0
-      }
     },
     /**
      * Get percentage

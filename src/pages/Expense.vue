@@ -6,7 +6,7 @@
           color="primary"
           icon="add_circle"
           label="agregar compra"
-          @click="$router.push({ name: 'NewPurchase' })"
+          @click="$router.push({ name: 'NewExpense' })"
         />
       </div>
       <div class="col-12">

@@ -86,6 +86,24 @@ export const categoryModules = [
         route: 'Purchase',
         icon: 'receipt',
         devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'expense',
+        route: 'Expense',
+        icon: 'receipt',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'provider',
+        route: 'Provider',
+        icon: 'group',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'budgetRequest',
+        route: 'BudgetRequest',
+        icon: 'receipt',
+        devices: ['mobile', 'desktop']
       }
     ]
   }

@@ -120,6 +120,21 @@ const routes = [
         path: 'credit-note/:id',
         name: 'CreditNote',
         component: () => import('pages/CreditNote.vue')
+      },
+      {
+        path: 'expenses',
+        name: 'Expense',
+        component: () => import('pages/Expense.vue')
+      },
+      {
+        path: 'new-expense',
+        name: 'NewExpense',
+        component: () => import('pages/NewExpense.vue')
+      },
+      {
+        path: 'providers',
+        name: 'Provider',
+        component: () => import('pages/Provider.vue')
       }
     ]
   },
