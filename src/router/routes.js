@@ -135,6 +135,16 @@ const routes = [
         path: 'providers',
         name: 'Provider',
         component: () => import('pages/Provider.vue')
+      },
+      {
+        path: 'budget-requests',
+        name: 'BudgetRequest',
+        component: () => import('pages/BudgetRequest.vue')
+      },
+      {
+        path: 'new-budget-request',
+        name: 'BudgetRequest',
+        component: () => import('pages/BudgetRequest.vue')
       }
     ]
   },

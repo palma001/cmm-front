@@ -5,16 +5,16 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          label="agregar gasto"
-          @click="$router.push({ name: 'NewExpense' })"
+          label="agregar solicitud"
+          @click="$router.push({ name: 'NewBudgetRequest' })"
         />
       </div>
       <div class="col-12">
         <data-table
           title="list"
-          module="expense"
+          module="budgetRequest"
           searchable
-          :column="expenseConfig"
+          :column="budgetRequestConfig"
           :data="data"
           :loading="loadingTable"
           :optionPagination="optionPagination"
@@ -22,31 +22,29 @@
           @downloadXML="downloadXML"
           @downloadPDF="downloadPDF"
           @downloadCDR="downloadCDR"
-          @viewPayment="viewPayment"
           @search-data="searchData"
           @viewNote="viewNote"
-          @viewGuide="viewGuide"
           @viewProduct="viewProduct"
         />
       </div>
     </div>
     <q-dialog v-model="viewProductModal">
-      <q-card v-if="expenseSelected" style="width: 400px; max-width: 80vw;">
+      <q-card v-if="budgetRequestSelected" style="width: 400px; max-width: 80vw;">
         <q-card-section class="q-pb-xs">
           <div class="text-h6">
-            Productos / {{ expenseSelected.number }}
+            Productos / {{ budgetRequestSelected.number }}
           </div>
         </q-card-section>
         <q-card-section>
           <q-table
-              row-key="name"
-              wrap-cells
-              virtual-scroll
-              :data="expenseSelected.expense_details"
-              :columns="columns"
-              :rows-per-page-options="[]"
-              hide-bottom
-            />
+            row-key="name"
+            wrap-cells
+            virtual-scroll
+            :data="budgetRequestSelected.budgetRequest_details"
+            :columns="columns"
+            :rows-per-page-options="[]"
+            hide-bottom
+          />
         </q-card-section>
         <q-separator/>
         <q-card-actions align="right">
@@ -59,7 +57,7 @@
 
 <script>
 import { date } from 'quasar'
-import { expenseConfig } from '../config-file/expense/expenseConfig.js'
+import { budgetRequestConfig } from '../config-file/budgetRequest/budgetRequestConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -92,7 +90,7 @@ export default {
       ],
       viewProductModal: false,
       loadingTable: false,
-      expenseSelected: null,
+      budgetRequestSelected: null,
       /**
        * Options pagination
        * @type {Object}
@@ -124,7 +122,7 @@ export default {
           expiration_date: ''
         }
       },
-      expenseConfig,
+      budgetRequestConfig,
       data: [],
       dialog: false,
       option: false,
@@ -134,7 +132,7 @@ export default {
     }
   },
   created () {
-    this.getexpenses()
+    this.getbudgetRequests()
     this.getExchange()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
@@ -148,13 +146,13 @@ export default {
   methods: {
     viewProduct (data) {
       this.viewProductModal = true
-      this.expenseSelected = data
+      this.budgetRequestSelected = data
     },
     validationAmount (value) {
-      return value !== '' && (Number(this.expenseSelected.total) - Number(this.totalPaid)) >= 0
+      return value !== '' && (Number(this.budgetRequestSelected.total) - Number(this.totalPaid)) >= 0
     },
     /**
-     * Calculate expense total
+     * Calculate budgetRequest total
      */
     totalPayements () {
       let total = 0
@@ -185,7 +183,7 @@ export default {
             created_at: payment.created_at
           }
         } else {
-          this.notify(this, 'expense.saveErrorPayment', 'negative', 'warning')
+          this.notify(this, 'budgetRequest.saveErrorPayment', 'negative', 'warning')
         }
       })
     },
@@ -209,7 +207,7 @@ export default {
      */
     addNewPayment () {
       this.payments.push({
-        amount: (this.expenseSelected.total - this.totalPaid).toFixed(2),
+        amount: (this.budgetRequestSelected.total - this.totalPaid).toFixed(2),
         reference: '-'
       })
       this.totalPayements()
@@ -223,42 +221,6 @@ export default {
       this.totalPayements()
     },
     /**
-     * Get payment method
-     * @param {String} value data filter
-     */
-    getPaymentMethods (value, update) {
-      this.$services.getData(['payment-methods'], {
-        dataSearch: {
-          name: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.paymentMethods = res.data.data
-          })
-        })
-    },
-    /**
-     * Get payment destination
-     * @param {String} value data filter
-     */
-    getPaymentDestinations (value, update) {
-      this.$services.getData(['payment-destinations'], {
-        dataSearch: {
-          name: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.paymentDestinations = res.data.data
-          })
-        })
-    },
-    /**
      * Load data sorting
      * @param  {Object}
      */
@@ -268,7 +230,7 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getexpenses(this.params)
+      this.getbudgetRequests(this.params)
     },
     downloadXML (data) {
       console.log(data)
@@ -278,16 +240,6 @@ export default {
     },
     downloadCDR (data) {
       console.log(data)
-    },
-    /**
-     * Open payment dialog
-     * @param {Boolean} data status dialog
-     */
-    viewPayment (data) {
-      this.pay = true
-      this.expenseSelected = data
-      this.payments = data.expense_payments
-      this.totalPayements()
     },
     viewNote (data) {
       this.$router.push({ name: 'CreditNote', params: { id: data.id } })
@@ -308,14 +260,14 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getexpenses()
+      this.getbudgetRequests()
     },
     /**
      * Get Bill electronis
      */
-    getexpenses () {
+    getbudgetRequests () {
       this.loadingTable = true
-      this.$services.getData(['expenses'], this.params)
+      this.$services.getData(['budget-requests'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.loadingTable = false
@@ -330,7 +282,7 @@ export default {
     },
     modeDetails (data) {
       return data.map(product => {
-        delete product.expense_id
+        delete product.budgetRequest_id
         return product
       })
     },
@@ -339,13 +291,13 @@ export default {
      */
     savePayment () {
       this.loadingPayment = true
-      this.expenseSelected.expense_details = this.modeDetails(this.expenseSelected.expense_details)
-      this.expenseSelected.expense_payments = this.modelPayments(this.payments)
-      this.$services.putData(['expenses', this.expenseSelected.id], this.expenseSelected)
+      this.budgetRequestSelected.budgetRequest_details = this.modeDetails(this.budgetRequestSelected.budgetRequest_details)
+      this.budgetRequestSelected.budgetRequest_payments = this.modelPayments(this.payments)
+      this.$services.putData(['budgetRequests', this.budgetRequestSelected.id], this.budgetRequestSelected)
         .then(({ res }) => {
-          this.notify(this, 'expense.saveSuccessPayment', 'positive', 'mood')
+          this.notify(this, 'budgetRequest.saveSuccessPayment', 'positive', 'mood')
           this.loadingPayment = false
-          this.getexpenses()
+          this.getbudgetRequests()
           this.pay = false
         })
         .catch(err => {
