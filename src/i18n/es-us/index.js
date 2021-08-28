@@ -240,6 +240,7 @@ export default {
     products: 'productos',
     serie: 'serie',
     id: 'serie',
+    expense_reason: 'motivo de gasto',
     saveErrorPayment: 'Ingrese los campos requeridos',
     saveSuccessPayment: 'pago guarado exitosamente!',
     provider: 'proveedor',
