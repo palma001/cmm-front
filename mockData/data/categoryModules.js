@@ -98,13 +98,13 @@ export const categoryModules = [
         route: 'Provider',
         icon: 'group',
         devices: ['mobile', 'desktop']
-      },
-      {
-        name: 'budgetRequest',
-        route: 'BudgetRequest',
-        icon: 'receipt',
-        devices: ['mobile', 'desktop']
       }
+      // {
+      //   name: 'budgetRequest',
+      //   route: 'BudgetRequest',
+      //   icon: 'receipt',
+      //   devices: ['mobile', 'desktop']
+      // }
     ]
   }
   // {
