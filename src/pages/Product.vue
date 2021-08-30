@@ -35,6 +35,7 @@
             v-model="supsec"
             outlined
             @input="filterPrimary"
+            @keyup.enter.native="nextInput('p', 0)"
           />
         </div>
       </div>
@@ -76,7 +77,7 @@
       </div>
       <div class="col-12 row q-col-gutter-xs" v-if="filter">
         <div
-          v-for="attributeType in listAttributeTypes"
+          v-for="(attributeType, index) in listAttributeTypes"
           :key="attributeType.id"
         >
           <q-input
@@ -87,6 +88,8 @@
             outlined
             :label="attributeType.name"
             v-model="attributeTypes[attributeType.id]"
+            :ref="`p-${index}`"
+            @keyup.enter.native="nextInput('p', index)"
             @input="filterSecondary"
           />
         </div>
@@ -724,8 +727,17 @@ export default {
     /**
      * Next input
      */
-    nextInput (ref) {
-      this.$refs[ref].focus()
+    nextInput (ref, index) {
+      if (this.$refs[ref]) {
+        this.$refs[ref].focus()
+      } else {
+        if (!this.$refs[`${ref}-${index + 1}`]) {
+          index += 1
+          this.nextInput(ref, index)
+        } else {
+          this.$refs[`${ref}-${index + 1}`][0].focus()
+        }
+      }
     },
     /**
      * Filter attribute type

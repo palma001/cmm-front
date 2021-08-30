@@ -1,6 +1,7 @@
 <template>
   <div style="width: 100%">
-    <q-table class="primary"
+    <q-table
+      class="q-table"
       :data="data"
       :columns="columnData"
       :title="ucwords($t(`${module}.${title}`))"
@@ -54,7 +55,7 @@
         </q-input>
       </template>
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :props="props" :class="props.rowIndex === bgColor ? 'bg-primary text-white' : ''" @click="color(props.rowIndex)">
           <q-td v-if="toggable">
             <q-toggle
               v-model="props.selected"
@@ -262,6 +263,7 @@ export default {
   },
   data () {
     return {
+      bgColor: 0,
       paginationConfig: null,
       confirm: false,
       filter: '',
@@ -283,6 +285,9 @@ export default {
     this.paginationConfig = this.optionPagination
   },
   methods: {
+    color (index) {
+      this.bgColor = index
+    },
     /**
      * Selected all data
      */
@@ -334,3 +339,7 @@ export default {
   }
 }
 </script>
+<style lang="stylus">
+  .q-table tbody td:after
+    background: lightblue
+</style>
