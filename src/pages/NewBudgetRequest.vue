@@ -1,14 +1,14 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-form @submit="modelExpenseReason" ref="formexpense">
+    <q-form @submit="modelbudgetRequestReason" ref="formbudgetRequest">
       <q-card class="my-card">
         <q-card-section class="q-pb-sm row q-col-gutter-sm">
           <div class="col-8">
             <div class="row justify-between">
               <div class="col-auto">
                 <p class="text-h5">
-                  {{ ucwords($t('expense.newExpense')) }}
+                  {{ ucwords($t('budgetRequest.newBudgetRequest')) }}
                 </p>
               </div>
             </div>
@@ -19,79 +19,15 @@
               dense
               outlined
               label="Fec. Emisión"
-              v-model="expense.created_at"
+              v-model="budgetRequest.created_at"
               @input="getExchange"
             />
           </div>
         </q-card-section>
         <q-separator/>
-        <q-card-section class="q-pb-sm">
-          <div class="row justify-between q-col-gutter-sm">
-            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                input-debounce="0"
-                name="expenseReason"
-                autocomplete="off"
-                ref="expenseReasonRef"
-                v-model="expense.expenseReason"
-                v-validate="'required'"
-                data-vv-as="field"
-                option-value="id"
-                option-label="name"
-                :label="ucwords($t('expense.expenseReason'))"
-                :options="expenseReasons"
-                :rules="[val => val && val !== null || 'Este campo es requerido']"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
-              <q-input
-                v-model="expense.number"
-                outlined
-                dense
-                label="Numero"
-                type="text"
-                :rules="[ val => val && val.length || 'Este campo es requerido']"
-              />
-            </div>
-            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
-              <q-select
-                outlined
-                v-model="coin"
-                dense
-                option-label="name"
-                option-value="id"
-                :label="ucwords($t('expense.coin'))"
-                :options="coins"
-                :rules="[val => val && val !== null || 'Este campo es requerido']"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-          </div>
-        </q-card-section>
-        <q-card-section :class="$q.screen.lt.md ? 'q-py-sm' : 'q-pt-none q-pb-sm'">
-          <div class="row q-col-gutter-md">
-            <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+        <q-card-section>
+          <div class="row q-col-gutter-md" v-for="(providerL, index) in providerList" :key="providerL.id">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
               <q-select
                 autocomplete="off"
                 use-input
@@ -102,12 +38,12 @@
                 clearable
                 input-debounce="20"
                 name="provider"
-                v-model="expense.provider"
+                v-model="providerL.provider"
                 option-label="full_name"
                 option-value="id"
                 v-validate="'required'" data-vv-as="field"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :label="ucwords($t('expense.provider'))"
+                :label="ucwords($t('budgetRequest.provider'))"
                 :options="providers"
                 @filter="getProviders"
               >
@@ -123,19 +59,53 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-xs-6 col-sm-2 col-md-3 col-lg-3 col-xl-3">
-              <q-input
-                v-model="expense.exchange"
-                outlined
+            <div class="col-auto q-gutter-sm">
+              <q-btn
+                icon="delete"
+                color="negative"
+                style="height: 40px;"
+                @click="deleteProvider(index)"
+              />
+            </div>
+          </div>
+          <div class="row q-col-gutter-md">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-select
+                autocomplete="off"
+                use-input
+                hide-selected
+                fill-input
                 dense
-                readonly
-                label="Cambio del dia"
-                type="text"
+                outlined
+                clearable
+                input-debounce="20"
+                name="provider"
+                v-model="budgetRequest.provider"
+                option-label="full_name"
+                option-value="id"
+                :label="ucwords($t('budgetRequest.provider'))"
+                :options="providers"
+                @filter="getProviders"
               >
-              </q-input>
-              <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                Tipo de cambio del día, extraído de SUNAT
-              </q-tooltip>
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialig = true"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-auto q-gutter-sm">
+              <q-btn
+                icon="add"
+                color="orange"
+                style="height: 40px;"
+                @click="addProvider"
+              />
             </div>
             <div class="col-auto q-gutter-sm">
               <q-btn
@@ -325,7 +295,7 @@ import DynamicForm from '../components/DynamicForm.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
 export default {
-  name: 'expense',
+  name: 'budgetRequest',
   mixins: [mixins.containerMixin],
   components: {
     DynamicForm
@@ -333,6 +303,7 @@ export default {
   },
   data () {
     return {
+      providerList: [],
       product: {},
       loadingForm: false,
       provider,
@@ -393,12 +364,12 @@ export default {
         }
       ],
       /**
-       * expense Model
-       * @type {Object} expense model
+       * budgetRequest Model
+       * @type {Object} budgetRequest model
        */
-      expense: {
+      budgetRequest: {
         provider: null,
-        expenseReason: null,
+        budgetRequestReason: null,
         exchange: 0,
         expiration_date: date.formatDate(new Date(), 'YYYY-MM-DD'),
         created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
@@ -414,8 +385,8 @@ export default {
        */
       amount: 1,
       /**
-       * Data product expense
-       * @type {Array} data expense
+       * Data product budgetRequest
+       * @type {Array} data budgetRequest
        */
       dataProduct: [],
       /**
@@ -427,7 +398,7 @@ export default {
        * Type of vouchers
        * @type {Array} type of vouchers
        */
-      expenseReasons: [],
+      budgetRequestReasons: [],
       /**
        * Coin list
        * @type {Array} Coin list
@@ -457,6 +428,15 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    deleteProvider (index) {
+      this.providerList.splice(index, 1)
+    },
+    addProvider () {
+      this.providerList.push({
+        provider: this.budgetRequest.provider
+      })
+      this.budgetRequest.provider = null
+    },
     /**
      * Get all provider
      */
@@ -507,7 +487,7 @@ export default {
       this.loadingForm = true
       this.$services.postData(['providers'], data)
         .then(({ res }) => {
-          this.expense.provider = res.data
+          this.budgetRequest.provider = res.data
           this.addDialig = false
           this.loadingForm = false
           this.notify(this, 'provider.addSuccessfull', 'positive', 'mood')
@@ -533,35 +513,35 @@ export default {
     /**
      * Model bill
      */
-    modelExpenseReason () {
-      const modelExpenseReason = {
-        number: this.expense.number,
-        provider_id: this.expense.provider.id,
-        expense_reason_id: this.expense.expenseReason.id,
+    modelbudgetRequestReason () {
+      const modelbudgetRequestReason = {
+        number: this.budgetRequest.number,
+        provider_id: this.budgetRequest.provider.id,
+        budgetRequest_reason_id: this.budgetRequest.budgetRequestReason.id,
         coin_id: this.coin.id,
-        exchange_rate: this.expense.exchange,
-        expense_details: this.dataProduct,
+        exchange_rate: this.budgetRequest.exchange,
+        budgetRequest_details: this.dataProduct,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
-        created_at: date.formatDate(this.expense.created_at, 'YYYY-MM-DDTHH:mm:ss')
+        created_at: date.formatDate(this.budgetRequest.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
-      this.saveExpense(modelExpenseReason)
+      this.savebudgetRequest(modelbudgetRequestReason)
     },
     /**
      * Save bill
      * @param {Object} data data bill
      */
-    saveExpense (data) {
+    savebudgetRequest (data) {
       this.modalPaid = false
       this.visible = true
-      this.$services.postData(['expenses'], data)
+      this.$services.postData(['budgetRequests'], data)
         .then(res => {
-          this.notify(this, 'expense.saveSuccess', 'positive', 'mood')
+          this.notify(this, 'budgetRequest.saveSuccess', 'positive', 'mood')
           this.cancelBill()
           this.visible = false
         })
         .catch(() => {
-          this.notify(this, 'expense.error', 'negative', 'warning')
+          this.notify(this, 'budgetRequest.error', 'negative', 'warning')
           this.visible = false
         })
     },
@@ -570,17 +550,17 @@ export default {
      */
     cancelBill () {
       this.dataProduct = []
-      this.expense = {}
-      this.expense.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.budgetRequest = {}
+      this.budgetRequest.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.totalSale = 0
       this.totalUnitValue = 0
       this.totalProduct = 0
       this.product = {}
       this.amount = 1
       this.modalProduct = false
-      this.getExpenseReasons()
+      this.getbudgetRequestReasons()
       this.getCoins()
-      this.resetValidations(this.$refs.formexpense)
+      this.resetValidations(this.$refs.formbudgetRequest)
     },
     /**
      * Reset validation
@@ -611,13 +591,13 @@ export default {
     getExchange () {
       this.visible = true
       this.$services.getData(['exchange-rate'], {
-        start_date: this.expense.created_at,
-        final_date: this.expense.created_at,
+        start_date: this.budgetRequest.created_at,
+        final_date: this.budgetRequest.created_at,
         coin: 'PEN'
       })
         .then(({ res }) => {
           if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
-            this.expense.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
+            this.budgetRequest.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
           }
           this.visible = false
         })
@@ -629,7 +609,7 @@ export default {
      * Load data
     */
     loadCreate () {
-      this.getExpenseReasons()
+      this.getbudgetRequestReasons()
       this.getCoins()
       this.getExchange()
     },
@@ -731,11 +711,11 @@ export default {
     /**
      * Get voucher types
      */
-    getExpenseReasons () {
-      this.$services.getData(['expense-reasons'])
+    getbudgetRequestReasons () {
+      this.$services.getData(['budgetRequest-reasons'])
         .then(({ res }) => {
-          this.expenseReasons = res.data
-          this.expense.expenseReason = res.data[0]
+          this.budgetRequestReasons = res.data
+          this.budgetRequest.budgetRequestReason = res.data[0]
         })
     },
     /**
@@ -747,7 +727,7 @@ export default {
       this.totalCalculate()
     },
     /**
-     * Calculate expense total
+     * Calculate budgetRequest total
      */
     totalCalculate () {
       let total = 0

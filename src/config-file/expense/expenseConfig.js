@@ -1,5 +1,5 @@
 import { date } from 'quasar'
-export const budgetRequestConfig = [
+export const expenseConfig = [
   {
     classTag: 'infoUsers',
     index: 0,

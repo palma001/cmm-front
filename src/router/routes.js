@@ -143,8 +143,8 @@ const routes = [
       },
       {
         path: 'new-budget-request',
-        name: 'BudgetRequest',
-        component: () => import('pages/BudgetRequest.vue')
+        name: 'NewBudgetRequest',
+        component: () => import('pages/NewBudgetRequest.vue')
       }
     ]
   },

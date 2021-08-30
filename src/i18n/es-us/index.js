@@ -295,7 +295,7 @@ export default {
     options: 'opciones',
     note: 'Nota',
     guide: 'guía',
-    newExpense: 'Nuevo solicitud diverso'
+    newBudgetRequest: 'Nueva solicitud cotización'
   },
   creditNote: {
     saveSuccess: 'nota de credito creada exitosamente!',
