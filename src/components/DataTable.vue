@@ -278,6 +278,9 @@ export default {
   watch: {
     optionPagination () {
       this.paginationConfig = this.optionPagination
+    },
+    data () {
+      this.bgColor = 0
     }
   },
   created () {
