@@ -237,6 +237,82 @@ export const provider = [
       },
       {
         tabulated: {
+          name: 'residence_condition',
+          align: 'left',
+          field: row => row.residence_condition,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'residence_condition',
+          addible: false,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true,
+              disable: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'status',
+          align: 'left',
+          field: row => row.status,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'status',
+          addible: false,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true,
+              disable: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'action',
           align: 'center'
         }

@@ -129,6 +129,30 @@
             :error-message="errors.first('businessName')"
             v-if="documentType.name === 'RUC'"
           />
+          <q-input
+            label="Estado"
+            v-validate="'required'"
+            data-vv-as="status"
+            name="status"
+            dense
+            outlined
+            v-model="status"
+            :error="errors.has('status')"
+            :error-message="errors.first('status')"
+            v-if="documentType.name === 'RUC'"
+          />
+          <q-input
+            label="Condición de residencia"
+            v-validate="'required'"
+            data-vv-as="residenceCondition"
+            name="residenceCondition"
+            dense
+            outlined
+            v-model="residenceCondition"
+            :error="errors.has('residenceCondition')"
+            :error-message="errors.first('residenceCondition')"
+            v-if="documentType.name === 'RUC'"
+          />
         </template>
       </dynamic-form>
     </q-dialog>
@@ -151,6 +175,8 @@ export default {
   },
   data () {
     return {
+      residenceCondition: null,
+      status: null,
       documentNumber: null,
       lastName: null,
       name: null,
@@ -313,12 +339,14 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
+      data.branch_office_id = this.branchOffice.id
       data.user_id = this.userSession.id
       data.name = this.name ?? this.businessName
       data.last_name = this.lastName
       data.document_number = this.documentNumber
       data.document_type_id = this.documentType.id
-      data.branch_office_id = this.branchOffice.id
+      data.residence_condition = this.residenceCondition
+      data.status = this.status
       this.loadingForm = true
       this.$services.postData(['providers'], data)
         .then(({ res }) => {
@@ -357,6 +385,9 @@ export default {
           if (!res.data.error) {
             if (res.data.nombre_o_razon_social) {
               this.businessName = res.data.nombre_o_razon_social
+              console.log(res.data)
+              this.residenceCondition = res.data.condicion_de_domicilio
+              this.status = res.data.estado_del_contribuyente
             } else {
               const nameDivider = res.data.nombre_completo.split(' ')
               this.lastName = `${nameDivider[0]} ${nameDivider[1]}`

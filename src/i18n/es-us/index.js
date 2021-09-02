@@ -420,6 +420,8 @@ export default {
   provider: {
     name: 'nombre',
     last_name: 'apellido',
+    status: 'Estado',
+    residence_condition: 'Condición de residencia',
     add: 'agregar proveedor',
     list: 'Lista de proveedores',
     addSuccessfull: 'proveedor agregada exitosamente',
