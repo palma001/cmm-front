@@ -704,6 +704,30 @@
             :error-message="errors.first('businessName')"
             v-if="documentType.name === 'RUC'"
           />
+          <q-input
+            label="Estado"
+            v-validate="'required'"
+            data-vv-as="status"
+            name="status"
+            dense
+            outlined
+            v-model="status"
+            :error="errors.has('status')"
+            :error-message="errors.first('status')"
+            v-if="documentType.name === 'RUC'"
+          />
+          <q-input
+            label="Condición de residencia"
+            v-validate="'required'"
+            data-vv-as="residenceCondition"
+            name="residenceCondition"
+            dense
+            outlined
+            v-model="residenceCondition"
+            :error="errors.has('residenceCondition')"
+            :error-message="errors.first('residenceCondition')"
+            v-if="documentType.name === 'RUC'"
+          />
         </template>
       </dynamic-form>
     </q-dialog>
@@ -908,7 +932,9 @@ export default {
       stock: {},
       totalProduct: 0,
       userSession: null,
-      branchOfficeSession: null
+      branchOfficeSession: null,
+      residenceCondition: null,
+      status: null
     }
   },
   computed: {
@@ -947,6 +973,8 @@ export default {
           if (!res.data.error) {
             if (res.data.nombre_o_razon_social) {
               this.businessName = res.data.nombre_o_razon_social
+              this.residenceCondition = res.data.condicion_de_domicilio
+              this.status = res.data.estado_del_contribuyente
             } else {
               const nameDivider = res.data.nombre_completo.split(' ')
               this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
