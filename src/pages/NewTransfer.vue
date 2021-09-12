@@ -133,8 +133,8 @@
         </q-card-section>
         <q-separator/>
         <q-card-actions align="right">
-          <q-btn color="negative" label="Cancelar facturación" @click="cancelBill"/>
-          <q-btn color="primary" label="Generar factura" type="submit" :disable="dataProduct.length <= 0"/>
+          <q-btn color="negative" label="Cancelar traslado" @click="cancelBill"/>
+          <q-btn color="primary" label="Generar traslado" type="submit" :disable="dataProduct.length <= 0"/>
         </q-card-actions>
       </q-card>
     </q-form>
@@ -145,10 +145,10 @@
       <q-card style="width: 700px; max-width: 80vw;">
         <q-form @submit="setTable">
           <q-card-section>
-            <div class="text-h6">Agregar Producto o Servicio</div>
+            <div class="text-h6">Agregar Producto</div>
           </q-card-section>
           <q-card-section class="row justify-between q-col-gutter-x-sm">
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+            <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 col-xl-7">
               <q-select
                 use-input
                 hide-selected
@@ -189,7 +189,7 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
               <q-input
                 label="Cantidad"
                 type="number"
