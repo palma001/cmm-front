@@ -5,6 +5,7 @@ export default {
   registros: 'Registro',
   lastname: 'apellido',
   template: {
+    inventory: 'invenatrio',
     search: 'buscar',
     security: 'seguridad',
     add: 'agregar',
@@ -66,7 +67,13 @@ export default {
     orders: 'Pedidos',
     quotations: 'cotización',
     newPurchase: 'nueva compra',
-    purchase: 'lista compras'
+    purchase: 'lista compras',
+    transfer: 'traslados',
+    movements: 'movimientos',
+    devolutions: 'Devoluciones',
+    inventory: 'inventario',
+    kardex_valued: 'kardex valorizado',
+    kardex: 'kardex'
   },
 
   order: {
@@ -235,6 +242,18 @@ export default {
     note: 'Nota',
     guide: 'guía',
     newPurchase: 'Nueva compra'
+  },
+  transfer: {
+    to_warehouse: 'Almacen destino',
+    from_warehouse: 'Almacen inicial',
+    amount: 'Cantidad de productos',
+    created_at: 'Fecha de traslado',
+    list: 'lista de traslados',
+    options: 'opciones',
+    products: 'productos',
+    fromWarehouse: 'Almacen inicial',
+    toWarehouse: 'Almacen destino',
+    newTransfer: 'nuevo traslado'
   },
   expense: {
     products: 'productos',

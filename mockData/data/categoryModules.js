@@ -106,6 +106,48 @@ export const categoryModules = [
       //   devices: ['mobile', 'desktop']
       // }
     ]
+  },
+  {
+    name: 'inventory',
+    icon: 'all_inbox',
+    modules: [
+      {
+        name: 'transfer',
+        route: 'Transfer',
+        icon: 'all_inbox',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'movements',
+        route: 'Movement',
+        icon: 'all_inbox',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'devolutions',
+        route: 'Devolution',
+        icon: 'all_inbox',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'inventory',
+        route: 'Inventory',
+        icon: 'all_inbox',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'kardex_valued',
+        route: 'KardexValued',
+        icon: 'all_inbox',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'kardex',
+        route: 'Kardex',
+        icon: 'all_inbox',
+        devices: ['mobile', 'desktop']
+      }
+    ]
   }
   // {
   //   name: 'organization',

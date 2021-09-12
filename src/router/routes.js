@@ -142,6 +142,16 @@ const routes = [
         component: () => import('pages/BudgetRequest.vue')
       },
       {
+        path: 'transfers',
+        name: 'Transfer',
+        component: () => import('pages/Transfer.vue')
+      },
+      {
+        path: 'new-transfer',
+        name: 'NewTransfer',
+        component: () => import('pages/NewTransfer.vue')
+      },
+      {
         path: 'new-budget-request',
         name: 'NewBudgetRequest',
         component: () => import('pages/NewBudgetRequest.vue')
