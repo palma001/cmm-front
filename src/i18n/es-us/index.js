@@ -5,7 +5,7 @@ export default {
   registros: 'Registro',
   lastname: 'apellido',
   template: {
-    inventory: 'invenatrio',
+    inventory: 'inventario',
     search: 'buscar',
     security: 'seguridad',
     add: 'agregar',
@@ -267,6 +267,14 @@ export default {
     observation: 'observación',
     newDevolution: 'nueva devolución',
     saveSuccess: 'devolución creada exitosamente'
+  },
+  kardexReport: {
+    created_at: 'Fecha y hora de transacción',
+    list: 'Consulta kardex',
+    amount: 'Entrada + / Salida -',
+    product: 'producto',
+    transaction_type: 'Tipo de transacción',
+    stock: 'saldo'
   },
   expense: {
     products: 'productos',

@@ -143,7 +143,7 @@ export const categoryModules = [
       },
       {
         name: 'kardex',
-        route: 'Kardex',
+        route: 'KardexReport',
         icon: 'all_inbox',
         devices: ['mobile', 'desktop']
       }

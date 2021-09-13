@@ -165,6 +165,11 @@ const routes = [
         path: 'new-budget-request',
         name: 'NewBudgetRequest',
         component: () => import('pages/NewBudgetRequest.vue')
+      },
+      {
+        path: 'kardex-reports',
+        name: 'KardexReport',
+        component: () => import('pages/KardexReport.vue')
       }
     ]
   },
