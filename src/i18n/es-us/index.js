@@ -255,6 +255,19 @@ export default {
     toWarehouse: 'Almacen destino',
     newTransfer: 'nuevo traslado'
   },
+  devolution: {
+    created_at: 'Fecha',
+    list: 'lista de devoluciones',
+    options: 'opciones',
+    products: 'productos',
+    user: 'usuario',
+    code: 'Devolución',
+    devolution_reason: 'motivo',
+    devolutionReason: 'motivo',
+    observation: 'observación',
+    newDevolution: 'nueva devolución',
+    saveSuccess: 'devolución creada exitosamente'
+  },
   expense: {
     products: 'productos',
     serie: 'serie',
