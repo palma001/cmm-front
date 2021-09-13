@@ -131,7 +131,7 @@ export const categoryModules = [
       },
       {
         name: 'inventory',
-        route: 'Inventory',
+        route: 'InventoryReport',
         icon: 'all_inbox',
         devices: ['mobile', 'desktop']
       },

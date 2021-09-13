@@ -71,7 +71,7 @@ export default {
     transfer: 'traslados',
     movements: 'movimientos',
     devolutions: 'Devoluciones',
-    inventory: 'inventario',
+    inventory: 'reporte inventario',
     kardex_valued: 'kardex valorizado',
     kardex: 'kardex'
   },
@@ -268,6 +268,7 @@ export default {
     newDevolution: 'nueva devolución',
     saveSuccess: 'devolución creada exitosamente'
   },
+
   kardexReport: {
     created_at: 'Fecha y hora de transacción',
     list: 'Consulta kardex',
@@ -276,6 +277,16 @@ export default {
     transaction_type: 'Tipo de transacción',
     stock: 'saldo'
   },
+
+  inventoryReport: {
+    created_at: 'Fecha y hora de transacción',
+    list: 'Consulta de inventarios',
+    amount: 'Entrada + / Salida -',
+    product: 'producto',
+    transaction_type: 'Tipo de transacción',
+    stock: 'saldo'
+  },
+
   expense: {
     products: 'productos',
     serie: 'serie',

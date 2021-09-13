@@ -170,6 +170,11 @@ const routes = [
         path: 'kardex-reports',
         name: 'KardexReport',
         component: () => import('pages/KardexReport.vue')
+      },
+      {
+        path: 'inventory-reports',
+        name: 'InventoryReport',
+        component: () => import('src/pages/InventoryReport.vue')
       }
     ]
   },
