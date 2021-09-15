@@ -281,10 +281,12 @@ export default {
   inventoryReport: {
     created_at: 'Fecha y hora de transacción',
     list: 'Consulta de inventarios',
-    amount: 'Entrada + / Salida -',
+    category: 'categoria',
     product: 'producto',
-    transaction_type: 'Tipo de transacción',
-    stock: 'saldo'
+    purchase_price: 'Costo',
+    sale_price: 'precio de venta',
+    brand: 'marca',
+    warehouse_name: 'almacén'
   },
 
   expense: {

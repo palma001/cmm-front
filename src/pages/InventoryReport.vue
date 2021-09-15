@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex-start q-pa-md">
     <div class="row q-col-gutter-sm">
-      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+      <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
         <q-select
           use-input
           hide-selected
@@ -11,16 +11,17 @@
           dense
           autocomplete="off"
           input-debounce="0"
-          name="product"
-          ref="productRef"
-          v-model="product"
+          name="warehouse"
+          ref="warehouseRef"
+          v-model="warehouse"
           data-vv-as="field"
           option-value="id"
-          option-label="full_name"
-          :label="value ? 'C-P-D' : 'Productos'"
-          :options="products"
+          option-label="description"
+          label="Almacén"
+          :options="warehouses"
           :rules="[ val => val || 'Este campo es requerido' ]"
-          @filter="filterProducts"
+          @filter="getWareHouses"
+          @input="getInventoryReports"
         >
           <template v-slot:no-option>
             <q-item>
@@ -29,20 +30,9 @@
               </q-item-section>
             </q-item>
           </template>
-          <template v-slot:append>
-            <q-toggle
-              v-model="value"
-              color="primary"
-              dense
-            >
-              <q-tooltip>
-                Activar filtro por CPD
-              </q-tooltip>
-            </q-toggle>
-          </template>
         </q-select>
       </div>
-      <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+      <!-- <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
         <q-input
           type="date"
           outlined
@@ -59,10 +49,7 @@
           v-model="to"
           hint="Fecha término"
         />
-      </div>
-      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-        <q-btn icon="search" color="primary" @click="filterReport"/>
-      </div>
+      </div> -->
       <div class="col-12">
         <data-table
           title="list"
@@ -89,9 +76,9 @@ export default {
   },
   data () {
     return {
-      product: null,
+      warehouse: null,
       value: false,
-      products: [],
+      warehouses: [],
       from: '2021/12/20',
       to: null,
       /**
@@ -103,7 +90,7 @@ export default {
           name: 'description',
           align: 'left',
           label: 'Descripción',
-          field: row => row.product.description,
+          field: row => row.warehouse.description,
           sortable: true
         },
         {
@@ -121,8 +108,8 @@ export default {
        * @type {Object}
        */
       optionPagination: {
-        rowsPerPage: 0,
-        rowsNumber: 0,
+        rowsPerPage: 100,
+        rowsNumber: 100,
         paginated: true,
         sortBy: 'id',
         sortOrder: 'desc'
@@ -155,70 +142,23 @@ export default {
     }
   },
   methods: {
-    filterReport () {
-      this.params.product_id = this.product.id
-      this.params.dateFilter = {
-        from: this.from,
-        to: this.to,
-        field: 'created_at'
-      }
-      this.getKardexReports()
-    },
     /**
-     * Filter primary
-     */
-    filterPrimary (value, update) {
-      const valeArray = value.split('-')
-      const param = {
-        filterProduct: {
-          code: valeArray[1],
-          'brand.name': valeArray[0],
-          supsec: valeArray[2]
-        }
-      }
-      this.getProducts(param, update)
-    },
-    /**
-     * Filter Products
-     * @param {String} value data filter
-     * @param {Callback} update update select data
-     */
-    filterProducts (value, update) {
-      if (this.value) {
-        this.filterPrimary(value, update)
-      } else {
-        const param = {
-          dataSearch: {
-            description: value,
-            code: value
-          }
-        }
-        this.getProducts(param, update)
-      }
-    },
-    /**
-     * Get products
+     * Get warehouses
      * @param {String} value data filter
      */
-    getProducts (value, update) {
-      this.$services.getData(['products'], {
-        ...value,
+    getWareHouses (value, update) {
+      this.$services.getData(['warehouses'], {
+        dataSearch: {
+          description: value
+        },
         paginate: true,
         perPage: 100
       })
         .then(({ res }) => {
           update(() => {
-            this.products = res.data.data
+            this.warehouses = res.data.data
           })
         })
-    },
-    /**
-      * Get billing
-      * @param {Object} data inventoryReport selected
-      */
-    viewProducts (data) {
-      this.viewProductModal = true
-      this.inventoryReportSelected = data
     },
     /**
      * Load data sorting
@@ -230,23 +170,33 @@ export default {
       this.params.sortinventoryReport = data.sortinventoryReport
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getKardexReports(this.params)
     },
-    options (data) {
-      console.log(data, 'options')
-    },
-    open (position) {
-      this.position = position
-      this.dialog = true
+    modelProduct (products) {
+      const modelProduct = []
+      products.forEach(product => {
+        product.stock.filter(stock => {
+          return this.warehouse.id === stock.warehouse_id || this.warehouse === null
+        })
+          .forEach(stock => {
+            product.stock_product = stock.stock_product
+            product.warehouse_name = stock.warehouse_name
+            product.warehouse_id = stock.warehouse_id
+            product.sale_price = stock.sale_price
+            product.purchase_price = stock.purchase_price
+            modelProduct.push(product)
+          })
+      })
+      return modelProduct
     },
     /**
      * Get Bill electronis
      */
-    getKardexReports () {
+    getInventoryReports () {
       this.loadingTable = true
-      this.$services.getData(['kardex-reports'], this.params)
+      this.$services.getData(['products'], this.params)
         .then(({ res }) => {
-          this.data = res.data
+          this.data = this.modelProduct(res.data.data)
+          console.log(this.data)
           this.loadingTable = false
         })
         .catch(err => {

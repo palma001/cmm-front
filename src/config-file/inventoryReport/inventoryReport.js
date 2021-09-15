@@ -1,4 +1,3 @@
-import { date } from 'quasar'
 export const inventoryReportConfig = [
   {
     classTag: 'infoUsers',
@@ -6,45 +5,54 @@ export const inventoryReportConfig = [
     children: [
       {
         tabulated: {
-          name: 'created_at',
-          align: 'left',
-          field: row => `${date.formatDate(row.created_at, 'DD-MM-YYYY')} ${date.formatDate(row.created_at, 'HH:ss:mm')}`,
-          sortable: true,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
           name: 'product',
           align: 'left',
-          field: row => row.product.description,
+          field: row => row.description,
           sortable: false,
           visible: true
         }
       },
       {
         tabulated: {
-          name: 'transaction_type',
+          name: 'category',
           align: 'left',
-          field: row => row.purchase_id ? 'Compra' : 'Venta',
+          field: row => row.category.name,
           sortable: false,
           visible: true
         }
       },
       {
         tabulated: {
-          name: 'amount',
+          name: 'purchase_price',
           align: 'left',
-          field: row => row.purchase_id ? `+${row.amount}` : `-${row.amount}`,
+          field: row => row.purchase_price,
           sortable: false,
           visible: true
         }
       },
       {
         tabulated: {
-          name: 'stock',
+          name: 'sale_price',
           align: 'left',
-          field: row => row.stock,
+          field: row => row.sale_price,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'brand',
+          align: 'left',
+          field: row => row.brand.name,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'warehouse_name',
+          align: 'left',
+          field: row => row.warehouse_name,
           sortable: false,
           visible: true
         }
