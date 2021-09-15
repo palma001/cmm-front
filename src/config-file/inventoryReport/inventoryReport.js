@@ -56,6 +56,15 @@ export const inventoryReportConfig = [
           sortable: false,
           visible: true
         }
+      },
+      {
+        tabulated: {
+          name: 'stock_product',
+          align: 'left',
+          field: row => row.stock_product,
+          sortable: false,
+          visible: true
+        }
       }
     ]
   }

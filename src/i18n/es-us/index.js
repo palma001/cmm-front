@@ -286,7 +286,8 @@ export default {
     purchase_price: 'Costo',
     sale_price: 'precio de venta',
     brand: 'marca',
-    warehouse_name: 'almacén'
+    warehouse_name: 'almacén',
+    stock_product: 'Stock actual'
   },
 
   expense: {
