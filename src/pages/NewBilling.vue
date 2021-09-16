@@ -349,6 +349,9 @@
                   </q-tooltip>
                 </q-toggle>
               </template>
+              <template v-slot:after>
+                <q-btn color="primary" dense icon="search" @click="openStock" v-if="product"/>
+              </template>
             </q-select>
           </div>
           <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
@@ -901,6 +904,26 @@
         </template>
       </dynamic-form>
     </q-dialog>
+    <q-dialog
+      v-model="modalProductStock"
+      persistent
+    >
+      <q-card style="width: 700px; max-width: 80vw;">
+        <q-card-section>
+          <q-table
+            title="Stock del producto"
+            :data="stockData"
+            :columns="columnsStock"
+            row-key="warehouse_name"
+            selection="single"
+            :selected.sync="selected"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn color="negative" label="Cerrar" @click="modalProductStock = false"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -925,6 +948,20 @@ export default {
   },
   data () {
     return {
+      modalProductStock: false,
+      selected: [],
+      stockData: [],
+      columnsStock: [
+        {
+          name: 'warehouse_name',
+          required: true,
+          label: 'Almacén',
+          align: 'left',
+          field: row => row.warehouse_name,
+          sortable: true
+        },
+        { name: 'stock_product', align: 'right', label: 'Stock', field: 'stock_product', sortable: true }
+      ],
       loadingForm: false,
       client,
       propsPanelEdition,
@@ -1120,6 +1157,10 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    openStock () {
+      this.modalProductStock = true
+      this.stockData = this.product.stock
+    },
     /**
      * Get all client
      */
@@ -1364,6 +1405,7 @@ export default {
     selectProuct (value) {
       if (value.stock.length > 0) {
         this.stock = value.stock[0]
+        this.selected = [this.product.stock[0]]
         this.totalProduct = this.stock.sale_price * this.amount
       } else {
         this.stock = {}
@@ -1428,7 +1470,8 @@ export default {
         price: this.stock.sale_price,
         discount: this.discount,
         subtotal: this.totalProduct,
-        user_created_id: this.userSession.id
+        user_created_id: this.userSession.id,
+        warehouse_id: this.selected[0].warehouse_id
       })
     },
     /**
