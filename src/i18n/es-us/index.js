@@ -26,18 +26,28 @@ export default {
     sucursales: 'sucursales',
     sales: 'ventas',
     errorDocumentNumber: 'Documento invalido',
-    purchase: 'compras'
+    purchase: 'compras',
+    settings: 'Configuración'
   },
 
   // users
-  users: {
-    users: 'usuarios',
-    document: 'documento',
-    first_name: 'nombre',
+  user: {
+    add: 'agregar usuario',
+    sender_type: 'tipo de remitente',
+    name: 'nombre o razón social',
     last_name: 'apellido',
-    number_phone: 'telefono',
-    listUser: 'lista de usuarios',
-    email: 'correo'
+    document_number: 'número de identificación',
+    document_type: 'tipo de documento',
+    phone: 'número de teléfono',
+    email: 'correo',
+    reset: 'Limpiar',
+    cancel: 'Cancelar',
+    saveSuccess: 'usuario agregado exitosamente',
+    password: 'clave',
+    list: 'lista de usuarios',
+    roles: 'roles',
+    branch_offices: 'sucursales',
+    update: 'Editar usuario'
   },
   // modules
   modules: {

@@ -79,6 +79,7 @@
       bordered
       show-if-above
       v-model="leftDrawerOpen"
+      class="q-pa-none"
     >
       <q-scroll-area
         :thumb-style="thumbStyle"
@@ -92,9 +93,9 @@
             v-ripple
           >
             <q-item-section avatar class="">
-              <q-icon name="person"/>
+              <q-icon name="maps_home_work"/>
             </q-item-section>
-            <q-item-section>
+            <q-item-section class="q-mr-xl">
               <q-item-label>
                 {{ ucwords(branchOffice.name) }}
               </q-item-label>
@@ -114,14 +115,14 @@
             :key="list.id"
           >
             <q-list
-              v-for="(divice, index) in list.devices"
+              v-for="(divice, index) in JSON.parse(list.devices)"
               :key="index"
             >
               <q-item
                 clickable
                 v-ripple
                 active-class="my-menu-link"
-                v-if="validateDivice(divice)"
+                v-if="validateDivice(divice) && validateRole(list.roles)"
                 :active="list.route === $route.name"
               >
                 <q-item-section avatar v-if="list.icon" class="q-ml-sm">
@@ -200,7 +201,7 @@ export default {
       thumbStyle: {
         right: '2px',
         borderRadius: '5px',
-        backgroundColor: '#02718D',
+        backgroundColor: '#1976D2',
         width: '7px',
         opacity: 1
       },
@@ -221,12 +222,11 @@ export default {
   },
   watch: {
     data (value) {
-      this.dataMenu = value
-      // this.dataMenu = value.filter(element => {
-      //   return element.modules.filter(module => {
-      //     return this.validateRole(module.roles)
-      //   }).length > 0
-      // })
+      this.dataMenu = value.filter(element => {
+        return element.modules.filter(module => {
+          return this.validateRole(module.roles)
+        }).length > 0
+      })
     }
   },
   created () {
@@ -286,3 +286,9 @@ export default {
   }
 }
 </script>
+
+<style lang="sass">
+.my-menu-link
+  color: white
+  background: #1976D2
+</style>

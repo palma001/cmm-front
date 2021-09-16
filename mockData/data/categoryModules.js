@@ -148,6 +148,30 @@ export const categoryModules = [
         devices: ['mobile', 'desktop']
       }
     ]
+  },
+  {
+    name: 'settings',
+    icon: 'settings',
+    modules: [
+      {
+        name: 'users',
+        route: 'User',
+        icon: 'person',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'roles',
+        route: 'roles',
+        icon: 'group',
+        devices: ['mobile', 'desktop']
+      },
+      {
+        name: 'branch-offices',
+        route: 'branch-offices',
+        icon: 'home',
+        devices: ['mobile', 'desktop']
+      }
+    ]
   }
   // {
   //   name: 'organization',

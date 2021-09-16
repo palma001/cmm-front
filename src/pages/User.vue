@@ -1,110 +1,287 @@
 <template>
-  <q-page class="flex-start q-pa-md">
-    <div align="right">
-      <q-btn color="primary"
-        icon="add"
-        glossy
-        dense
-        size="12px"
-        label="Agregar Modulo"
-        @click="addModule = true" />
+  <q-page padding>
+    <div class="row q-gutter-y-sm">
+      <div class="col-12 text-right">
+        <q-btn
+          color="primary"
+          icon="add_circle"
+          :label="$q.screen.lt.sm ? '' : $t('user.add')"
+          @click="addDialig = true"
+        >
+        <q-tooltip
+          anchor="center right"
+          self="center left"
+          :offset="[10, 10]"
+          v-if="$q.screen.lt.sm"
+        >
+          {{
+            ucwords($t('userConfig.add'))
+          }}
+        </q-tooltip>
+      </q-btn>
+      </div>
+      <div class="col-12">
+        <data-table
+          title="list"
+          module="user"
+          selection="multiple"
+          searchable
+          action
+          :column="userConfig"
+          :data="data"
+          :loading="loadingTable"
+          :optionPagination.sync="optionPagination"
+          @search-data="searchData"
+          @view-details="viewDetails"
+          @on-load-data="loadData"
+        />
+      </div>
     </div>
-    <div class="row q-mt-md">
-      <DataTable module="users"
-        title="listUser"
-        :loading="loading"
-        :column="userConfig"
-        :data="users"
-        :optionPagination="pagination"
-        @on-load-data="sortingTable"
-        @search-data="eventSearch" />
-    </div>
+    <q-dialog
+      position="right"
+      full-height
+      persistent
+      v-model="editDialog"
+    >
+      <dynamic-form-edition
+        module="user"
+        :propsPanelEdition="propsPanelEdition"
+        :config="userConfig"
+        :loading="loadingForm"
+        @cancel="editDialog = false"
+        @update="update"
+      />
+    </q-dialog>
+    <q-dialog
+      position="right"
+      full-height
+      persistent
+      v-model="addDialig"
+    >
+      <dynamic-form
+        module="user"
+        :config="userConfig"
+        :loading="loadingForm"
+        @cancel="addDialig = false"
+        @save="save"
+      />
+    </q-dialog>
   </q-page>
 </template>
 <script>
-import DataTable from 'components/DataTable.vue'
-import { userConfig } from '../config-file/user/userConfig'
+import DataTable from '../components/DataTable.vue'
+import DynamicFormEdition from '../components/DynamicFormEdition.vue'
+import DynamicForm from '../components/DynamicForm.vue'
+import { userConfig, propsPanelEdition, userServices } from '../config-file/user/userConfig.js'
+import { GETTERS } from '../store/module-login/name.js'
+import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
 export default {
-  name: 'User',
-  components: { DataTable },
   mixins: [mixins.containerMixin],
+  components: {
+    DataTable,
+    DynamicFormEdition,
+    DynamicForm
+  },
   data () {
     return {
-      addModule: false,
+      userSession: null,
+      branchOffice: null,
+      loadingForm: false,
       /**
-       * Config module
-       * @type {Array} config module
+       * Selected data
+       * @type {Object}
        */
-      userConfig: userConfig,
+      selectedData: null,
       /**
-       * All Users
-       * @type {Array} Users
+       * Options pagination
+       * @type {Object}
        */
-      users: [],
-      /**
-       * Loading status
-       * @type {Boolean} status
-       */
-      loading: false,
-      /**
-       * Option paginate
-       * @type {Object} Option paginate
-       */
-      pagination: {
-        sortBy: 'desc',
-        descending: false,
-        page: 1,
-        rowsPerPage: 25,
-        search: {}
-        // rowsNumber: xx if getting data from a server
+      optionPagination: {
+        rowsPerPage: 20,
+        paginate: true,
+        sortBy: 'id',
+        sortOrder: 'desc',
+        rowsNumber: 20
       },
       /**
-       * Paramaters for search
+       * Params search
+       * @type {Object}
+       */
+      params: {
+        paginated: true,
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: '',
+          phone_number: '',
+          document_number: ''
+        }
+      },
+      /**
+       * Open add dialog
+       * @type {Boolean}
+       */
+      addDialig: false,
+      /**
+       * Config edition panel
+       * @type {Object}
+       */
+      propsPanelEdition,
+      /**
+       * File config module
+       * @type {Object}
+       */
+      userConfig,
+      /**
+       * RelationalData description
+       * @type {Object}
+       */
+      userServices,
+      /**
+       * Open edit dialog
+       * @type {Boolean}
+       */
+      editDialog: false,
+      /**
+       * Status loading table
+       * @type {Boolean}
+       */
+      loadingTable: false,
+      /**
+       * Data of table
        * @type {Array}
        */
-      search: {
-        name: '',
-        route: ''
-      }
+      data: []
     }
   },
+  computed: {
+    /**
+     * Getters Vuex
+     */
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+  },
   created () {
-    this.getUsers()
+    this.setRelationalData(this.userServices, [], this)
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
     /**
-     * Get Users
-     *
+     * Load data sorting
+     * @param  {Object}
      */
-    getUsers (params) {
-      this.loading = true
-      this.$mockData.getData('users')
-        .then(({ response }) => {
-          this.users = response.data.content
-          this.loading = false
-          this.pagination = params
+    loadData (data) {
+      this.params.page = data.page
+      this.params.sortBy = data.sortBy
+      this.params.sortOrder = data.sortOrder
+      this.params.perPage = data.rowsPerPage
+      this.optionPagination = data
+      this.getUsers(this.params)
+    },
+    /**
+     * Search branch offices
+     * @param  {Object}
+     */
+    searchData (data) {
+      for (const dataSearch in this.params.dataSearch) {
+        this.params.dataSearch[dataSearch] = data
+      }
+      this.getUsers()
+    },
+    /**
+     * Save Branch Office
+     * @param  {Object}
+     */
+    save (data) {
+      data.user_created_id = this.userSession.id
+      data.document_type_id = data.document_type.value
+      data.roles = this.modelRole(data)
+      this.loadingForm = true
+      this.$services.postData(['users'], data)
+        .then(({ res }) => {
+          // this.addDialig = false
+          this.loadingForm = false
+          this.getUsers(this.params)
+        })
+        .catch(() => {
+          this.loadingForm = false
         })
     },
+    modelRole (data) {
+      const roles = {}
+      if (data.branch_offices.value && data.roles.value) {
+        roles.branch_office_id = data.branch_offices.value
+        roles.role_id = data.roles.value
+      }
 
-    /**
-     * Sort and paginate table
-     * @param  {Object} data data paginate
-     */
-    sortingTable (data) {
-      this.getUsers(data)
+      if (data.roles.value && !data.branch_offices.value) {
+        roles.role_id = data.roles.value
+        roles.branch_office_id = data.branch_offices[0].id
+      }
+
+      if (!data.roles.value && data.branch_offices.value) {
+        roles.role_id = data.roles[0].id
+        roles.branch_office_id = data.branch_offices.value
+      }
+      if (!data.roles.value && !data.branch_offices.value) {
+        roles.branch_office_id = data.branch_offices[0].id
+        roles.role_id = data.roles[0].id
+      }
+      return [roles]
     },
     /**
-     * eventSearch searches data in microservices
-     * @param  {String} data data search
+     * Update Branch Office
+     * @param  {Object}
      */
-    eventSearch (data) {
-      for (const field in this.search) {
-        this.search[field] = data
-      }
-      this.pagination.page = 1
-      this.pagination.search = this.search
-      this.getUsers(this.pagination)
+    update (data) {
+      data.user_updated_id = this.userSession.id
+      data.roles = this.modelRole(data)
+      console.log(data)
+      this.loadingForm = true
+      this.$services.putData(['users', this.selectedData.id], data)
+        .then(({ res }) => {
+          this.editDialog = false
+          this.loadingForm = false
+          this.getUsers(this.params)
+        })
+        .catch(() => {
+          this.loadingForm = false
+        })
+    },
+    /**
+     * Set data dialog edition
+     * @param  {Object} data selected
+     */
+    viewDetails (data) {
+      this.editDialog = true
+      this.propsPanelEdition.data = data
+      this.selectedData = data
+    },
+    /**
+     * Open formulary
+     * @param  {String}
+     */
+    changeTitleForm (title) {
+      this.titleForm = title
+    },
+    /**
+     * Get all branch offices
+     */
+    getUsers (params = this.params) {
+      this.loadingTable = true
+      this.$services.getData(['users'], this.params)
+        .then(({ res }) => {
+          this.data = res.data.data
+          this.optionPagination.rowsNumber = res.data.total
+          this.loadingTable = false
+        })
+        .catch(err => {
+          console.log(err)
+          this.data = []
+          this.optionPagination.rowsNumber = 0
+          this.loadingTable = false
+        })
     }
   }
 }

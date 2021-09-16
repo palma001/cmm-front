@@ -55,9 +55,9 @@ export default {
      * Get all products
      */
     getAllModules () {
-      this.$mockData.getData('category-modules')
-        .then(({ response }) => {
-          this.modules = response.data.content
+      this.$services.getData(['sections'])
+        .then(({ res }) => {
+          this.modules = res.data
         })
     },
     /**

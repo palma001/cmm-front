@@ -23,7 +23,7 @@ const routes = [
       },
       {
         path: 'users',
-        name: 'users',
+        name: 'User',
         component: () => import('pages/User.vue')
       },
       {
