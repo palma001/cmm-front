@@ -49,6 +49,13 @@ export default {
     branch_offices: 'sucursales',
     update: 'Editar usuario'
   },
+  role: {
+    acronym: 'acronimo',
+    name: 'nombre',
+    list: 'roles',
+    permissionChangeSuccefull: 'rol modificado exitosamente',
+    permissionChangeError: 'ha ocurrido un error'
+  },
   // modules
   modules: {
     products: 'productos',
@@ -64,7 +71,7 @@ export default {
     route: 'ruta',
     category_module: 'Categoria',
     listModule: 'lista de modulos',
-    'branch-offices': 'sucursales',
+    'branch-offices': 'establecimientos',
     newBilling: 'nuevo factura',
     billing: 'facturas',
     categories: 'categorias',

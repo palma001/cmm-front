@@ -123,43 +123,6 @@ export const roleConfig = [
             ]
           }
         }
-      },
-      {
-        tabulated: {
-          name: 'description',
-          align: 'left',
-          field: row => row.description,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'description',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'textarea',
-              outlined: true,
-              dense: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: false
-                }
-              }
-            ]
-          }
-        }
       }
     ]
   }
