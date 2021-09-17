@@ -20,8 +20,7 @@ const routes = [
       {
         path: 'billing/:module/:id',
         name: 'BillingParam',
-        component: () => import('pages/BillingParam.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/BillingParam.vue')
       },
       {
         path: 'users',
@@ -134,14 +133,12 @@ const routes = [
       {
         path: 'new-guide/:module/:id',
         name: 'ReferralGuide',
-        component: () => import('pages/ReferralGuide.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/ReferralGuide.vue')
       },
       {
         path: 'credit-note/:id',
         name: 'CreditNote',
-        component: () => import('pages/CreditNote.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/CreditNote.vue')
       },
       {
         path: 'expenses',
