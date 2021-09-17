@@ -14,7 +14,7 @@
         color="white"
         text-color="blue"
         unelevated
-        to="/"
+        :to="{ name: module.route }"
         label="Go Home"
         no-caps
       />
@@ -23,7 +23,22 @@
 </template>
 
 <script>
+import { LocalStorage } from 'quasar'
 export default {
-  name: 'Error404'
+  name: 'Error404',
+  data: () => {
+    return {
+      module: null
+    }
+  },
+  created () {
+    this.getModules()
+  },
+  methods: {
+    getModules () {
+      const role = JSON.parse(LocalStorage.getItem('roleSelected'))
+      this.module = role.modules[0]
+    }
+  }
 }
 </script>

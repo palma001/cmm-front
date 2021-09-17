@@ -88,10 +88,7 @@
         style="height: 91vh;"
       >
         <q-list>
-          <q-item
-            clickable
-            v-ripple
-          >
+          <q-item>
             <q-item-section avatar class="">
               <q-icon name="maps_home_work"/>
             </q-item-section>
@@ -99,6 +96,28 @@
               <q-item-label>
                 {{ ucwords(branchOffice.name) }}
               </q-item-label>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-btn rounded flat icon="unfold_more" size="md"/>
+              <q-popup-edit v-model="branchOffice.name" auto-save>
+                <q-select
+                  use-input
+                  fill-input
+                  hide-selected
+                  outlined
+                  dense
+                  autofocus
+                  autocomplete="off"
+                  input-debounce="0"
+                  v-model="branchOffice"
+                  option-value="id"
+                  option-label="name"
+                  label="Establecimiento"
+                  :rules="[val => val || 'El campo metodo de pago es requerido']"
+                  :options="userSession.branch_offices"
+                  @input="chanageBranchOffice"
+                />
+              </q-popup-edit>
             </q-item-section>
           </q-item>
         </q-list>
@@ -190,6 +209,7 @@ export default {
   data () {
     return {
       branchOffice: null,
+      userSession: null,
       contentStyle: {
         backgroundColor: 'rgba(0,0,0,0.02)',
         color: '#555'
@@ -232,6 +252,7 @@ export default {
   created () {
     this.loadingPage()
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.userSession = this[GETTERS.GET_USER]
   },
   computed: {
     /**
@@ -240,6 +261,13 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_ROLE, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    chanageBranchOffice () {
+      this.visible = true
+      setTimeout(() => {
+        this.$q.sessionStorage.set('branchOffice', this.branchOffice)
+        this.visible = false
+      }, 1000)
+    },
     validateRole (roles = []) {
       const rol = this[GETTERS.GET_ROLE]
       if (roles && roles.length > 0 && rol) {

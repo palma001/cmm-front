@@ -7,11 +7,7 @@ export const mutations = {
     state.id_session = null
     state.expires_in = null
     state.token_type = null
-    localStorage.setItem('TOKEN', null)
-    localStorage.setItem('REFRESH_TOKEN', null)
-    localStorage.setItem('expires_in', null)
-    localStorage.setItem('user_session', null)
-    localStorage.setItem('id_session', null)
+    localStorage.clear()
   },
 
   [MUTATIONS.SET_TOKEN]: (state, token) => {
