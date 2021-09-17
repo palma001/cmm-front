@@ -12,6 +12,19 @@
         />
         <q-separator dark vertical inset />
         <q-toolbar-title>{{ titleApp }}</q-toolbar-title>
+        <q-btn
+          flat
+          dense
+          round
+          :icon="this.$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+          aria-label="dark_mode"
+          class="q-mr-sm q-ml-sm"
+          @click="darkMode"
+        >
+          <q-tooltip :offset="[10, 10]">
+            {{ this.$q.dark.isActive ? 'Light Mode' : 'Dark Mode' }}
+          </q-tooltip>
+        </q-btn>
         <q-separator dark vertical inset />
         <q-btn
           flat
@@ -21,52 +34,42 @@
           aria-label="person"
           class="q-mr-sm q-ml-sm">
           <q-menu>
-            <q-list style="min-width: 180px;">
-              <q-item clickable
-                v-close-popup>
+            <q-list>
+              <q-item clickable v-ripple v-close-popup>
+                <q-item-section avatar>
+                  <q-avatar>
+                    <img src="../assets/user.png">
+                  </q-avatar>
+                </q-item-section>
                 <q-item-section>
-                  <div class="row q-pa-xs">
-                    <div class="column">
-                      <q-avatar size="45px">
-                        <img src="../assets/user.png">
-                      </q-avatar>
-                    </div>
-                    <div class="column">
-                      <div class="text-subtitle1 text-primary q-mt-sm q-mb-xs q-ml-sm">
-                        {{ GET_USER ? ucwords(GET_USER.full_name) : '' }}
-                      </div>
-                    </div>
-                  </div>
+                  {{ ucwords(userSession.full_name) }}
                 </q-item-section>
               </q-item>
-              <q-expansion-item expand-separator
-                class="text-primary"
-                icon="people_alt"
-                :label="GET_USER ? `${GET_USER.email}` : ''">
-                <q-item clickable @click="darkMode">
-                  <q-item-section avatar>
-                    <q-icon name="chrome_reader_mode">
-                    </q-icon>
-                  </q-item-section>
-                  <q-item-section>
-                    <span>
-                      {{ ucwords($t('template.darkMode')) }}
-                      <q-badge transparent class="glossy">
-                        {{ ucwords(this.$q.dark.isActive ? $t('template.desactive') : $t('template.active')) }}
-                      </q-badge>
-                    </span>
-                  </q-item-section>
-                </q-item>
-              </q-expansion-item>
-              <q-item clickable
-                v-close-popup>
+              <q-item clickable v-close-popup dense>
+                <q-item-section avatar>
+                  <q-avatar icon="email"/>
+                </q-item-section>
+                 <q-item-section>
+                  {{ GET_USER.email }}
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup dense>
+                <q-item-section avatar>
+                  <q-avatar icon="badge"/>
+                </q-item-section>
+                 <q-item-section>
+                  {{ role.name }}
+                </q-item-section>
+              </q-item>
+              <q-item>
                 <q-item-section>
                   <q-btn color="negative"
-                    label="Logout"
+                    label="Cerrar Sesión"
                     push
                     size="sm"
                     v-close-popup
-                    @click="logout" />
+                    @click="logout"
+                  />
                 </q-item-section>
               </q-item>
             </q-list>
@@ -210,6 +213,7 @@ export default {
     return {
       branchOffice: null,
       userSession: null,
+      role: null,
       contentStyle: {
         backgroundColor: 'rgba(0,0,0,0.02)',
         color: '#555'
@@ -253,6 +257,7 @@ export default {
     this.loadingPage()
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.userSession = this[GETTERS.GET_USER]
+    this.role = this[GETTERS.GET_ROLE]
   },
   computed: {
     /**
