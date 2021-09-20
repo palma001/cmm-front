@@ -5,24 +5,6 @@ export const branchOfficeConfig = [
     children: [
       {
         tabulated: {
-          name: 'business',
-          align: 'left',
-          field: row => row.business.name,
-          sortable: true,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'document',
-          align: 'left',
-          field: row => row.document,
-          sortable: true,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
           name: 'name',
           align: 'left',
           field: row => row.name,
@@ -32,18 +14,9 @@ export const branchOfficeConfig = [
       },
       {
         tabulated: {
-          name: 'address',
+          name: 'description',
           align: 'left',
-          field: row => row.address,
-          sortable: true,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'number_phone',
-          align: 'left',
-          field: row => row.number_phone,
+          field: row => row.description,
           sortable: true,
           visible: true
         }
@@ -51,3 +24,60 @@ export const branchOfficeConfig = [
     ]
   }
 ]
+
+export const propsPanelEdition = {
+  data: {},
+  buttons: [
+    {
+      name: 'cancel',
+      action: 'cancel',
+      label: false,
+      props: {
+        icon: 'highlight_off',
+        color: 'negative',
+        glossy: true,
+        size: '12px'
+      },
+      tooltip: {
+        text: 'cancel',
+        props: {
+          'content-class': 'bg-negative'
+        }
+      }
+    },
+    {
+      name: 'reset',
+      action: 'reset',
+      label: false,
+      props: {
+        icon: 'restore',
+        color: 'positive',
+        glossy: true,
+        size: '12px'
+      },
+      tooltip: {
+        text: 'reset',
+        props: {
+          'content-class': 'bg-positive'
+        }
+      }
+    },
+    {
+      name: 'update',
+      action: 'update',
+      label: false,
+      props: {
+        color: 'primary',
+        glossy: true,
+        size: '12px',
+        icon: 'edit'
+      },
+      tooltip: {
+        text: 'update',
+        props: {
+          'content-class': 'bg-primary'
+        }
+      }
+    }
+  ]
+}

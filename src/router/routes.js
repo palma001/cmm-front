@@ -205,6 +205,12 @@ const routes = [
         name: 'InventoryReport',
         component: () => import('src/pages/InventoryReport.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'branch-offices',
+        name: 'BranchOffice',
+        component: () => import('src/pages/BranchOffice.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },

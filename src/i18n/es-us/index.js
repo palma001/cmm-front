@@ -179,17 +179,24 @@ export default {
     name: 'nombre',
     address: 'dirección',
     number_phone: 'telefono',
-    listBusiness: 'lista de empresas'
+    listBusiness: 'lista de empresas',
+    restore: 'restaurar',
+    reset: 'limpiar',
+    cancel: 'cancelar'
   },
 
   // business
-  'branch-offices': {
-    document: 'documento',
+  branchOffice: {
     name: 'nombre',
-    address: 'dirección',
+    description: 'descripcion',
     number_phone: 'telefono',
-    listBranchOffice: 'lista de sucursales',
-    business: 'empresa'
+    list: 'lista de sucursales',
+    business: 'empresa',
+    add: 'agregar establecimiento',
+    restore: 'restaurar',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    update: 'modificar'
   },
 
   guide: {
