@@ -4,7 +4,7 @@
     <q-form @submit="modelBill">
       <q-card class="my-card">
         <q-card-section class="q-pb-sm row q-col-gutter-sm">
-          <div class="col-8">
+          <div class="col-6">
             <div class="row justify-between">
               <div class="col-auto">
                 <p class="text-h5">
@@ -18,6 +18,19 @@
           </div>
           <div class="col-2">
             <q-input type="date" dense outlined label="Fec. Vencimiento" v-model="billing.expiration_date"/>
+          </div>
+          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+            <q-input
+              v-model="billing.exchange"
+              outlined
+              dense
+              readonly
+              label="Cambio del dia"
+              type="text"
+            />
+            <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
+              Tipo de cambio del día, extraído de SUNAT
+            </q-tooltip>
           </div>
         </q-card-section>
         <q-separator/>
@@ -73,6 +86,37 @@
                 :label="ucwords($t('billing.voucher_type'))"
                 :options="voucherTypes"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
+                @input="getSeries"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+              <q-select
+                use-input
+                hide-selected
+                fill-input
+                outlined
+                clearable
+                dense
+                input-debounce="0"
+                name="serie"
+                autocomplete="off"
+                ref="serieRef"
+                v-model="billing.serie"
+                v-validate="'required'"
+                data-vv-as="field"
+                option-value="id"
+                option-label="name"
+                :label="ucwords($t('billing.series'))"
+                :options="series"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -102,20 +146,6 @@
                   </q-item>
                 </template>
               </q-select>
-            </div>
-            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
-              <q-input
-                v-model="billing.exchange"
-                outlined
-                dense
-                readonly
-                label="Cambio del dia"
-                type="text"
-              >
-              </q-input>
-              <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                Tipo de cambio del día, extraído de SUNAT
-              </q-tooltip>
             </div>
           </div>
         </q-card-section>
@@ -1140,7 +1170,8 @@ export default {
       stock: {},
       totalProduct: 0,
       userSession: null,
-      branchOfficeSession: null
+      branchOfficeSession: null,
+      series: []
     }
   },
   computed: {
@@ -1157,6 +1188,17 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    getSeries () {
+      this.$services.getData(['series'], {
+        dataFilter: {
+          branch_office_id: this.branchOfficeSession.id,
+          voucher_type_id: this.billing.voucherType.id
+        }
+      }).then(({ res }) => {
+        this.series = res.data
+        this.billing.serie = res.data[0]
+      })
+    },
     openStock () {
       this.modalProductStock = true
       this.stockData = this.product.stock
@@ -1238,14 +1280,14 @@ export default {
      */
     modelBill () {
       const billModel = {
-        serie_id: 1,
+        serie_id: this.billing.serie.id,
         client_id: this.billing.client.id,
         voucher_type_id: this.billing.voucherType.id,
         branch_office_id: this.branchOfficeSession.id,
         operation_type_id: this.billing.operationType.id,
         seller_id: this.userSession.id,
         coin_id: this.coin.id,
-        exchange: this.billing.exchange,
+        exchange_rate: this.billing.exchange,
         igv: 12,
         expiration_date: date.formatDate(this.billing.expiration_date, 'YYYY-MM-DD'),
         bill_electronic_details: this.dataProduct,
@@ -1681,6 +1723,7 @@ export default {
         .then(({ res }) => {
           this.voucherTypes = res.data
           this.billing.voucherType = res.data[0]
+          this.getSeries()
         })
     },
     /**

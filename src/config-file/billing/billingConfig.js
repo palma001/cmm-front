@@ -6,9 +6,9 @@ export const billingConfig = [
     children: [
       {
         tabulated: {
-          name: 'id',
+          name: 'serie_id',
           align: 'left',
-          field: row => `F001-${row.id}`,
+          field: row => `${row.serie.name}-${row.number}`,
           sortable: true,
           visible: true
         }

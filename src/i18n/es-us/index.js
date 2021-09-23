@@ -205,7 +205,8 @@ export default {
   },
 
   billing: {
-    serie: 'serie',
+    serie_id: 'serie',
+    series: 'series',
     id: 'serie',
     saveErrorPayment: 'Ingrese los campos requeridos',
     saveSuccessPayment: 'pago guarado exitosamente!',

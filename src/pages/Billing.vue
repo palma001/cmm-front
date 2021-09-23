@@ -166,7 +166,7 @@
       <q-card style="width: 800px; max-width: 80vw;" v-if="billSelected">
         <q-form @submit="savePayment">
           <q-card-section class="row items-center q-pb-none" v-if="billSelected">
-            <div class="text-h6">Pagos de factura: F001-{{ billSelected.id }}</div>
+            <div class="text-h6">Pagos de factura: {{billSelected.serie.name}}-{{ billSelected.number }}</div>
             <q-space />
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
