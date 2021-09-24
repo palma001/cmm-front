@@ -13,7 +13,7 @@ const routes = [
     children: [
       {
         path: '',
-        name: '',
+        name: 'NewBilling',
         component: () => import('pages/NewBilling.vue'),
         beforeEnter: validationSessionUnit
       },
@@ -103,8 +103,7 @@ const routes = [
       {
         path: 'new-order',
         name: 'NewOrder',
-        component: () => import('pages/NewOrder.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/NewOrder.vue')
       },
       {
         path: 'quotations',
@@ -115,8 +114,7 @@ const routes = [
       {
         path: 'new-quotation',
         name: 'NewQuotation',
-        component: () => import('pages/NewQuotation.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/NewQuotation.vue')
       },
       {
         path: 'new-purchase',
@@ -149,8 +147,7 @@ const routes = [
       {
         path: 'new-expense',
         name: 'NewExpense',
-        component: () => import('pages/NewExpense.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/NewExpense.vue')
       },
       {
         path: 'providers',
@@ -173,8 +170,7 @@ const routes = [
       {
         path: 'new-transfer',
         name: 'NewTransfer',
-        component: () => import('pages/NewTransfer.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/NewTransfer.vue')
       },
       {
         path: 'devolutions',
@@ -185,14 +181,12 @@ const routes = [
       {
         path: 'new-devolution',
         name: 'NewDevolution',
-        component: () => import('pages/NewDevolution.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/NewDevolution.vue')
       },
       {
         path: 'new-budget-request',
         name: 'NewBudgetRequest',
-        component: () => import('pages/NewBudgetRequest.vue'),
-        beforeEnter: validationSessionUnit
+        component: () => import('pages/NewBudgetRequest.vue')
       },
       {
         path: 'kardex-reports',

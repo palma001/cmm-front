@@ -387,7 +387,8 @@ export default {
           'seller.last_name': '',
           igv: '',
           created_at: '',
-          expiration_date: ''
+          expiration_date: '',
+          'series.name': ''
         }
       },
       payments: [],
