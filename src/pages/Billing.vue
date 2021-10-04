@@ -1,7 +1,23 @@
 <template>
   <q-page padding>
-    <div class="row q-col-gutter-sm">
-      <div class="col-12 text-right">
+    <div class="row q-col-gutter-sm justify-end">
+      <div class="col-2">
+        <vue-excel-xlsx
+          :data="dataExcel"
+          :columns="columnsExcel"
+          :filename="'filename'"
+          :sheetname="'sheetname'"
+          class="full-height text-center full-width q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-secondary text-white q-btn--actionable q-focusable q-hoverable"
+        >
+          <span class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
+            <span class="block">
+              <q-icon name="file_download"/>
+              Excel
+            </span>
+          </span>
+        </vue-excel-xlsx>
+      </div>
+      <div class="col-auto text-right q-gutter-xs">
         <q-btn
           color="primary"
           icon="add_circle"
@@ -352,6 +368,44 @@ export default {
   },
   data () {
     return {
+      columnsExcel: [
+        {
+          label: 'Fecha de creación',
+          field: 'created_at_excel'
+        },
+        {
+          label: 'Cliente',
+          field: 'client_excel'
+        },
+        {
+          label: 'Cambio del dia',
+          field: 'exchange_rate'
+        },
+        {
+          label: 'Moneda',
+          field: 'coin_excel'
+        },
+        {
+          label: 'Tipo de comprobante',
+          field: 'voucher_type_excel'
+        },
+        {
+          label: 'Serie',
+          field: 'serie_excel'
+        },
+        {
+          label: 'Fecha de expiración',
+          field: 'expiration_date_excel'
+        },
+        {
+          label: 'igv',
+          field: 'igv'
+        },
+        {
+          label: 'Total',
+          field: 'total'
+        }
+      ],
       active: true,
       loadingPayment: false,
       loadingTable: false,
@@ -405,6 +459,7 @@ export default {
       exchange: 0,
       userSession: null,
       branchOfficeSession: null,
+      dataExcel: [],
       totalPaid: 0,
       columsPay: [
         // { name: 'created_at', align: 'left', label: 'Fecha de Pago', field: 'created_at', sortable: true },
@@ -590,6 +645,17 @@ export default {
       this.params.page = 1
       this.getBillElectronics()
     },
+    formatExcel (data) {
+      this.dataExcel = data.map(bill => {
+        bill.client_excel = bill.client.full_name
+        bill.created_at_excel = date.formatDate(bill.created_at, 'DD-MM-YYYY')
+        bill.expiration_date_excel = date.formatDate(bill.expiration_date, 'DD-MM-YYYY')
+        bill.serie_excel = `${bill.serie.name}-${bill.number}`
+        bill.voucher_type_excel = bill.voucher_type.name
+        bill.coin_excel = bill.coin.name
+        return bill
+      })
+    },
     /**
      * Get Bill electronis
      */
@@ -598,6 +664,7 @@ export default {
       this.$services.getData(['bill-electronics'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
+          this.formatExcel(res.data.data)
           this.loadingTable = false
           this.optionPagination.rowsNumber = res.data.total
         })

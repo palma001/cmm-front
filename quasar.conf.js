@@ -26,7 +26,8 @@ module.exports = function (/* ctx */) {
       'vee-validate',
       'apollo',
       'graphql',
-      'axios'
+      'axios',
+      'VueExcelXlsx'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
