@@ -1288,7 +1288,7 @@ export default {
         seller_id: this.userSession.id,
         coin_id: this.coin.id,
         exchange_rate: this.billing.exchange,
-        igv: 12,
+        igv: 18,
         expiration_date: date.formatDate(this.billing.expiration_date, 'YYYY-MM-DD'),
         bill_electronic_details: this.dataProduct,
         bill_electronic_payments: this.modelPayments(this.payments),

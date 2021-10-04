@@ -306,13 +306,23 @@ export default {
   inventoryReport: {
     created_at: 'Fecha y hora de transacción',
     list: 'Consulta de inventarios',
+    product: 'producto',
+    brand: 'marca',
+    warehouse_name: 'almacén',
+    stock_product: 'Stock'
+  },
+
+  movement: {
+    created_at: 'Fecha y hora de transacción',
+    list: 'Listado de Inventario',
     category: 'categoria',
     product: 'producto',
     purchase_price: 'Costo',
     sale_price: 'precio de venta',
     brand: 'marca',
     warehouse_name: 'almacén',
-    stock_product: 'Stock actual'
+    stock_product: 'Stock actual',
+    translate: 'Trasladar'
   },
 
   expense: {

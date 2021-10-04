@@ -205,6 +205,12 @@ const routes = [
         name: 'BranchOffice',
         component: () => import('src/pages/BranchOffice.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'movements',
+        name: 'Movement',
+        component: () => import('src/pages/Movement.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },
