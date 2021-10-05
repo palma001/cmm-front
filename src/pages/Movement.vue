@@ -63,11 +63,11 @@
               <q-input outlined dense v-model="productSelected.warehouse_name" label="Almacen inicial" readonly/>
             </div>
             <div class="col-4">
-              <q-input outlined dense v-model="productSelected.amuntTransfer" label="Cantidad a trasladar"/>
+              <q-input outlined dense v-model="amount" label="Cantidad a trasladar"/>
             </div>
           </q-card-section>
           <q-card-section class="q-pt-none row q-col-gutter-sm">
-            <div class="col-8">
+            <div class="col-12">
               <q-select
                 autocomplete="off"
                 use-input
@@ -94,13 +94,13 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-4">
-              <q-input outlined dense v-model="reason" label="Motivo"/>
+            <div class="col-12">
+              <q-input outlined type="textarea" dense v-model="reason" label="Motivo"/>
             </div>
           </q-card-section>
           <q-card-actions align="right">
-            <q-btn flat label="Cancelar" color="negative" v-close-popup />
-            <q-btn flat label="Trasladar" color="primary" @click="saveTranfer" />
+            <q-btn label="Cancelar" color="negative" v-close-popup />
+            <q-btn label="Trasladar" color="primary" @click="modelTransfer" :loading="visible"/>
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -111,6 +111,8 @@
 <script>
 import { movementConfig } from '../config-file/movement/movement.js'
 import { mixins } from '../mixins'
+import { GETTERS } from '../store/module-login/name.js'
+import { mapGetters } from 'vuex'
 import { date } from 'quasar'
 import DataTable from '../components/DataTable.vue'
 export default {
@@ -122,6 +124,7 @@ export default {
     return {
       reason: null,
       warehouses: [],
+      amount: 0,
       productSelected: {},
       warehouse: null,
       alert: false,
@@ -187,10 +190,21 @@ export default {
       position: 'top',
       model: null,
       date: '',
-      dense: false
+      dense: false,
+      userSession: null,
+      branchOfficeSession: null,
+      visible: false
     }
   },
+  computed: {
+    /**
+     * Getters Vuex
+     */
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+  },
   created () {
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
     this.getInventoryReports()
   },
   methods: {
@@ -198,18 +212,39 @@ export default {
      * Model bill
      */
     modelTransfer () {
+      const product = {
+        product_id: this.productSelected.id,
+        amount: this.amount,
+        user_created_id: this.userSession.id
+      }
       const billModel = {
-        from_warehouse_id: this.transfer.fromWarehouse.id,
-        to_warehouse_id: this.transfer.toWarehouse.id,
-        transferDetails: this.dataProduct,
+        from_warehouse_id: this.productSelected.warehouse_id,
+        to_warehouse_id: this.warehouse.id,
+        transferDetails: [product],
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
-        created_at: date.formatDate(this.transfer.created_at, 'YYYY-MM-DDTHH:mm:ss')
+        created_at: date.formatDate(new Date(), 'YYYY-MM-DDTHH:mm:ss')
       }
       this.saveTransfer(billModel)
     },
-    saveTranfer () {
-
+    /**
+     * Save bill
+     * @param {Object} data data bill
+     */
+    saveTransfer (data) {
+      this.modalPaid = false
+      this.visible = true
+      this.$services.postData(['transfers'], data)
+        .then(res => {
+          this.notify(this, 'transfer.saveSuccess', 'positive', 'mood')
+          this.getInventoryReports()
+          this.alert = false
+          this.visible = false
+        })
+        .catch(() => {
+          this.notify(this, 'transfer.error', 'negative', 'warning')
+          this.visible = false
+        })
     },
     translate (data) {
       this.alert = true
@@ -220,7 +255,7 @@ export default {
      * @param {String} value data filter
      */
     getWareHouses (value, update) {
-      this.$services.getData(['products'], {
+      this.$services.getData(['warehouses'], {
         dataSearch: {
           description: value
         },
@@ -229,7 +264,12 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.warehouses = res.data.data
+            this.warehouses = res.data.data.map(element => {
+              if (this.productSelected.warehouse_id && this.productSelected.warehouse_id === element.id) {
+                element.disable = true
+              }
+              return element
+            })
           })
         })
     },
@@ -248,12 +288,14 @@ export default {
       const modelProduct = []
       products.forEach(product => {
         product.stock.forEach(stock => {
-          product.stock_product = stock.stock_product
-          product.warehouse_name = stock.warehouse_name
-          product.warehouse_id = stock.warehouse_id
-          product.sale_price = stock.sale_price
-          product.purchase_price = stock.purchase_price
-          modelProduct.push(product)
+          const inventory = {}
+          inventory.stock_product = stock.stock_product
+          inventory.warehouse_name = stock.warehouse_name
+          inventory.description = product.description
+          inventory.warehouse_id = stock.warehouse_id
+          inventory.sale_price = stock.sale_price
+          inventory.purchase_price = stock.purchase_price
+          modelProduct.push(inventory)
         })
       })
       return modelProduct
@@ -265,7 +307,6 @@ export default {
       this.loadingTable = true
       this.$services.getData(['products'], this.params)
         .then(({ res }) => {
-          console.log(res)
           this.data = this.modelProduct(res.data.data)
           this.loadingTable = false
         })

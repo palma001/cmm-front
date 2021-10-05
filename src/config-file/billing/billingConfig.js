@@ -87,6 +87,15 @@ export const billingConfig = [
       },
       {
         tabulated: {
+          name: 'total',
+          align: 'left',
+          field: row => row.total.toFixed(2),
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
           name: 'payment',
           align: 'center',
           visible: true,
