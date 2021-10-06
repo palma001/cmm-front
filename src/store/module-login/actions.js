@@ -1,5 +1,4 @@
 import { ACTIONS, MUTATIONS } from './name'
-import gql from 'graphql-tag'
 /**
  * Login
  * @param {Object} context
@@ -48,7 +47,7 @@ export const actions = {
   [ACTIONS.VALID_SESSION]: ({ commit, dispatch }) => {
     const user = JSON.parse(localStorage.getItem('user_session'))
     const role = JSON.parse(localStorage.getItem('roleSelected'))
-    const branchOffice = JSON.parse(localStorage.getItem('branchOffice'))
+    const branchOffice = typeof localStorage.getItem('branchOffice') === 'string' ? JSON.parse(localStorage.getItem('branchOffice')) : localStorage.getItem('branchOffice')
     // const userActive = localStorage.getItem('session_active')
     const invalidUser = !user || user === null || role === null
     if (invalidUser) {
@@ -65,28 +64,28 @@ export const actions = {
    * @param {Object} context
    */
   [ACTIONS.REFRESH_TOKEN]: ({ commit, dispatch }, { self }) => {
-    self.$apollo.mutate({
-      mutation: gql`mutation ($refresh_token: String!) {
-        refreshToken(input: {
-          refresh_token: $refresh_token
-        })
-        {
-          access_token
-          refresh_token
-          expires_in
-          token_type
-        }
-      }`,
-      variables: {
-        refresh_token: localStorage.getItem('REFRESH_TOKEN')
-      },
-      update: (store, { data: { refreshToken } }) => {
-        commit(MUTATIONS.SET_TOKEN, refreshToken.access_token)
-        commit(MUTATIONS.SET_REFRESH_TOKEN, refreshToken.refresh_token)
-        commit(MUTATIONS.SET_EXPIRE_IN, Number(refreshToken.expires_in))
-        dispatch(ACTIONS.AUTO_LOGOUT, Number(refreshToken.expires_in))
-      }
-    })
+    // self.$apollo.mutate({
+    //   mutation: gql`mutation ($refresh_token: String!) {
+    //     refreshToken(input: {
+    //       refresh_token: $refresh_token
+    //     })
+    //     {
+    //       access_token
+    //       refresh_token
+    //       expires_in
+    //       token_type
+    //     }
+    //   }`,
+    //   variables: {
+    //     refresh_token: localStorage.getItem('REFRESH_TOKEN')
+    //   },
+    //   update: (store, { data: { refreshToken } }) => {
+    //     commit(MUTATIONS.SET_TOKEN, refreshToken.access_token)
+    //     commit(MUTATIONS.SET_REFRESH_TOKEN, refreshToken.refresh_token)
+    //     commit(MUTATIONS.SET_EXPIRE_IN, Number(refreshToken.expires_in))
+    //     dispatch(ACTIONS.AUTO_LOGOUT, Number(refreshToken.expires_in))
+    //   }
+    // })
   },
   /**
    * Starts user time session

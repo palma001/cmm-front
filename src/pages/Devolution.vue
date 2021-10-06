@@ -55,6 +55,8 @@
 <script>
 import { devolutionConfig } from '../config-file/devolution/devolutionConfig.js'
 import { mixins } from '../mixins'
+import { GETTERS } from '../store/module-login/name.js'
+import { mapGetters } from 'vuex'
 import DataTable from '../components/DataTable.vue'
 export default {
   mixins: [mixins.containerMixin],
@@ -105,6 +107,7 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc',
         perPage: 1,
+        dataFilter: {},
         dataSearch: {
           'user.name': '',
           'user.last_name': '',
@@ -123,10 +126,23 @@ export default {
       dense: false
     }
   },
+  computed: {
+    /**
+     * Getters Vuex
+     */
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+  },
   created () {
-    this.getBillElectronics()
+    this.getDevolutions()
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
+    this.$root.$on('change_branch_office', this.filterBranchOffice)
   },
   methods: {
+    filterBranchOffice (branchOffice) {
+      this.params.dataFilter.branch_office_id = branchOffice.id
+      this.getDevolutions(this.params)
+    },
     /**
       * Get billing
       * @param {Object} data devolution selected
@@ -145,7 +161,10 @@ export default {
       this.params.sortdevolution = data.sortdevolution
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getBillElectronics(this.params)
+      this.params.dataFilter = {
+        branch_office_id: this.branchOfficeSession.id
+      }
+      this.getDevolutions(this.params)
     },
     options (data) {
       console.log(data, 'options')
@@ -163,12 +182,12 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getBillElectronics()
+      this.getDevolutions()
     },
     /**
      * Get Bill electronis
      */
-    getBillElectronics () {
+    getDevolutions () {
       this.loadingTable = true
       this.$services.getData(['devolutions'], this.params)
         .then(({ res }) => {

@@ -595,6 +595,7 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc',
         perPage: 1,
+        dataFilter: {},
         dataSearch: {
           code: '',
           description: '',
@@ -651,6 +652,7 @@ export default {
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.setRelationalData(this.productServices, [], this)
     this.getAttributeTypes()
+    this.$root.$on('change_branch_office', this.filterBranchOffice)
   },
   computed: {
     /**
@@ -659,6 +661,11 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    filterBranchOffice (branchOffice) {
+      console.log(this.params)
+      this.params.dataFilter.branch_office_id = branchOffice.id
+      this.getProducts(this.params)
+    },
     /**
      * Close modal edition
      */
@@ -862,6 +869,9 @@ export default {
       this.params.sortBy = data.sortBy ?? this.params.sortBy
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
+      this.params.dataFilter = {
+        branch_office_id: this.branchOffice.id
+      }
       this.optionPagination = data
       this.getProducts(this.params)
     },
@@ -916,6 +926,7 @@ export default {
     save (data) {
       data.user_created_id = this.userSession.id
       data.user_id = this.userSession.id
+      data.branch_office_id = this.branchOffice.id
       data.attribute_types = this.modelAttributeModel(this.attributesSeved)
       data.product_prices = this.productPrices
       this.loadingForm = true

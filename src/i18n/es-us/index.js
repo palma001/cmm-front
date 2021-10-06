@@ -325,6 +325,21 @@ export default {
     translate: 'Trasladar'
   },
 
+  kardexValued: {
+    created_at: 'Fecha y hora de transacción',
+    list: 'Kardex valorizado',
+    category: 'categoria',
+    product: 'producto',
+    purchase_price: 'Costo',
+    sale_price: 'precio de venta',
+    brand: 'marca',
+    warehouse_name: 'almacén',
+    stock_product: 'Stock actual',
+    translate: 'Trasladar',
+    stock: 'Stock',
+    physicalUnitsSold: 'Unidades fisicas vendidas'
+  },
+
   expense: {
     products: 'productos',
     serie: 'serie',

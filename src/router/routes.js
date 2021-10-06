@@ -211,6 +211,12 @@ const routes = [
         name: 'Movement',
         component: () => import('src/pages/Movement.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'kardex-valued',
+        name: 'KardexValued',
+        component: () => import('src/pages/KardexValued.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },

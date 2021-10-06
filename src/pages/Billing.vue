@@ -430,6 +430,7 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc',
         perPage: 1,
+        dataFilter: {},
         dataSearch: {
           'client.name': '',
           'client.document_number': '',
@@ -477,6 +478,7 @@ export default {
     this.getExchange()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
+    this.$root.$on('change_branch_office', this.filterBranchOffice)
   },
   computed: {
     /**
@@ -485,6 +487,10 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    filterBranchOffice (branchOffice) {
+      this.params.dataFilter.branch_office_id = branchOffice.id
+      this.getBillElectronics(this.params)
+    },
     validationAmount (value) {
       return value !== '' && (Number(this.billSelected.total) - Number(this.totalPaid)) >= 0
     },
@@ -603,6 +609,9 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
+      this.params.dataFilter = {
+        branch_office_id: this.branchOfficeSession.id
+      }
       this.getBillElectronics(this.params)
     },
     downloadXML (data) {

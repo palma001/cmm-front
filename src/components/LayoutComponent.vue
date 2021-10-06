@@ -100,7 +100,7 @@
                 {{ ucwords(branchOffice.name) }}
               </q-item-label>
             </q-item-section>
-            <q-item-section avatar>
+            <q-item-section avatar v-if="role.acronym === 'super_admin'">
               <q-btn rounded flat icon="unfold_more" size="md"/>
               <q-popup-edit v-model="branchOffice.name" auto-save>
                 <q-select
@@ -112,12 +112,13 @@
                   autofocus
                   autocomplete="off"
                   input-debounce="0"
-                  v-model="branchOffice"
+                  v-model="branchOfficeSelected"
                   option-value="id"
                   option-label="name"
                   label="Establecimiento"
                   :rules="[val => val || 'El campo metodo de pago es requerido']"
-                  :options="userSession.branch_offices"
+                  :options="branchOffices"
+                  @filter="getBranchOffices"
                   @input="chanageBranchOffice"
                 />
               </q-popup-edit>
@@ -164,7 +165,7 @@
     <q-page-container>
       <router-view />
     </q-page-container>
-    <q-inner-loading :showing="visible">
+    <q-inner-loading :showing="visibleLoading">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
   </q-layout>
@@ -172,7 +173,7 @@
 
 <script>
 import { mixins } from '../mixins'
-import { GETTERS } from '../store/module-login/name.js'
+import { GETTERS, MUTATIONS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { SessionStorage } from 'quasar'
 export default {
@@ -212,6 +213,8 @@ export default {
   data () {
     return {
       branchOffice: null,
+      branchOfficeSelected: null,
+      branchOffices: [],
       userSession: null,
       role: null,
       contentStyle: {
@@ -232,7 +235,7 @@ export default {
       labelDrown: null,
       dataMenu: [],
       active: true,
-      visible: false,
+      visibleLoading: false,
       route: '',
       sucursales: SessionStorage.getItem('sucursales'),
       /**
@@ -256,6 +259,7 @@ export default {
   created () {
     this.loadingPage()
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.branchOfficeSelected = this[GETTERS.GET_BRANCH_OFFICE]
     this.userSession = this[GETTERS.GET_USER]
     this.role = this[GETTERS.GET_ROLE]
   },
@@ -266,11 +270,30 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_ROLE, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Get payment method
+     * @param {String} value data filter
+     */
+    getBranchOffices (value, update) {
+      this.$services.getData(['branch-offices'], {
+        dataSearch: {
+          name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.branchOffices = res.data.data
+          })
+        })
+    },
     chanageBranchOffice () {
-      this.visible = true
+      this.visibleLoading = true
+      this.$store.commit(MUTATIONS.SET_BRANCH_OFFICE, this.branchOfficeSelected)
       setTimeout(() => {
-        this.$q.sessionStorage.set('branchOffice', this.branchOffice)
-        this.visible = false
+        this.$root.$emit('change_branch_office', this.branchOfficeSelected)
+        this.visibleLoading = false
       }, 1000)
     },
     validateRole (roles = []) {
