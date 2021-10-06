@@ -1037,7 +1037,7 @@ export default {
         voucher_type_id: this.purchase.voucherType.id,
         coin_id: this.coin.id,
         exchange_rate: this.purchase.exchange,
-        igv: 12,
+        igv: 18,
         expiration_date: date.formatDate(this.purchase.expiration_date, 'YYYY-MM-DD'),
         purchase_details: this.dataProduct,
         purchase_payments: this.modelPayments(this.payments),
@@ -1220,14 +1220,14 @@ export default {
      * @param {Array} array list porduct
      */
     pushArray (array) {
-      const percentage = this.getPercentage(this.totalProduct, this.igv.value)
+      const percentage = this.getPercentage(this.totalProduct, this.product.margin_percentage)
       const unitValue = Number(this.stock.sale_price) + Number(percentage)
       array.push({
         product_id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,
         purchase_price: this.stock.sale_price,
-        igv: isNaN(percentage) ? 0 : percentage,
+        igv: this.getPercentage(this.totalProduct, 18),
         price: unitValue,
         discount: this.discount,
         sale_price: Number(this.totalProduct) + Number(percentage),
