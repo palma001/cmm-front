@@ -1231,7 +1231,7 @@ export default {
         price: unitValue,
         discount: this.discount,
         sale_price: Number(this.totalProduct) + Number(percentage),
-        subtotal: Number(this.totalProduct) + Number(percentage),
+        subtotal: Number(this.totalProduct) + Number(this.getPercentage(this.totalProduct, 18)),
         user_created_id: this.userSession.id,
         warehouse_name: this.warehouse.full_name,
         warehouse_id: this.warehouse.id
