@@ -5,7 +5,7 @@
         <vue-excel-xlsx
           :data="dataExcel"
           :columns="columnsExcel"
-          :filename="'filename'"
+          :filename="`export-${dateFormat}`"
           :sheetname="'sheetname'"
           class="full-height text-center full-width q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-secondary text-white q-btn--actionable q-focusable q-hoverable"
         >
@@ -473,6 +473,7 @@ export default {
       ]
     }
   },
+
   created () {
     this.getBillElectronics()
     this.getExchange()
@@ -481,6 +482,9 @@ export default {
     this.$root.$on('change_branch_office', this.filterBranchOffice)
   },
   computed: {
+    dateFormat () {
+      return date.formatDate(new Date(), 'DD-M-YYYY')
+    },
     /**
      * Getters Vuex
      */
