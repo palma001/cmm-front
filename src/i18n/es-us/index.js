@@ -441,6 +441,7 @@ export default {
     editSuccessfull: 'Categoría editada exitosamente'
   },
   product: {
+    margin_percentage: '% Margen',
     filter: 'filtros',
     stock: 'stock',
     brand_id: 'marca',

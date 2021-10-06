@@ -204,6 +204,45 @@ export const product = [
       },
       {
         tabulated: {
+          name: 'margin_percentage',
+          align: 'left',
+          field: row => row.margin_percentage,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'margin_percentage',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'number',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-6': true,
+              'col-md-6': true,
+              'col-lg-6': true,
+              'col-xl-6': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'category_id',
           align: 'left',
           field: row => row.category ? row.category.name : '-',
