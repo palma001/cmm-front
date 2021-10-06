@@ -97,7 +97,7 @@
             </q-item-section>
             <q-item-section class="q-mr-xl">
               <q-item-label>
-                {{ ucwords(branchOffice.name) }}
+                {{ ucwords(branchOfficeSelected.name) }}
               </q-item-label>
             </q-item-section>
             <q-item-section avatar v-if="role.acronym === 'super_admin'">
