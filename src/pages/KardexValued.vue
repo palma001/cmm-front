@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { kardexValuedConfig } from '../config-file/kardexValued/kardexValued.js'
+import { kardexValuedConfig } from '../config-file/kardexValueds/kardexValued.js'
 import { mixins } from '../mixins'
 import DataTable from '../components/DataTable.vue'
 export default {
