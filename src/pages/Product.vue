@@ -662,8 +662,6 @@ export default {
   },
   methods: {
     filterBranchOffice (branchOffice) {
-      console.log(this.params)
-      this.params.dataFilter.branch_office_id = branchOffice.id
       this.getProducts(this.params)
     },
     /**

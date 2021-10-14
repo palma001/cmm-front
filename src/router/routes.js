@@ -217,6 +217,12 @@ const routes = [
         name: 'KardexValued',
         component: () => import('src/pages/KardexValued.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'warehouses',
+        name: 'Warehouse',
+        component: () => import('src/pages/Warehouse.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },
