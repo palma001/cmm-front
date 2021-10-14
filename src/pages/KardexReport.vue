@@ -136,6 +136,7 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc',
         perPage: 1,
+        filterReports: true,
         dataSearch: {
           'user.name': '',
           'user.last_name': '',

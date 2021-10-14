@@ -130,6 +130,7 @@ export default {
         paginated: true,
         sortBy: 'id',
         sortOrder: 'desc',
+        filterReports: true,
         perPage: 1,
         dataSearch: {
           'user.name': '',

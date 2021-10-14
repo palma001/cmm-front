@@ -309,7 +309,10 @@ export default {
     product: 'producto',
     brand: 'marca',
     warehouse_name: 'almacén',
-    stock_product: 'Stock'
+    stock_product: 'Stock',
+    category: 'categoria',
+    purchase_price: 'precio de compra',
+    sale_price: 'precio de venta'
   },
 
   movement: {
