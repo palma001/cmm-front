@@ -225,9 +225,6 @@
                       />
                     </q-popup-edit>
                   </q-td>
-                  <q-td key="igv" :props="props">
-                    {{ props.row.igv }}
-                  </q-td>
                   <q-td key="price" :props="props">
                     {{ props.row.price }}
                   </q-td>
@@ -245,6 +242,12 @@
                   </q-td>
                   <q-td key="subtotal" :props="props">
                     {{ props.row.subtotal }}
+                  </q-td>
+                  <q-td key="igv" :props="props">
+                    {{ props.row.igv }}
+                  </q-td>
+                  <q-td key="total" :props="props">
+                    {{ props.row.total }}
                   </q-td>
                 </q-tr>
               </template>
@@ -400,10 +403,10 @@
             <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
               <q-input
                 label="Precio Unitario"
-                type="number"
+                type="text"
                 dense
                 outlined
-                v-model="stock.sale_price"
+                v-model="priceSaleProduct"
                 @input="totalCalculateProduct"
               />
             </div>
@@ -757,6 +760,7 @@ export default {
     return {
       warehouse: null,
       loadingForm: false,
+      priceSaleProduct: 0,
       provider,
       propsPanelEdition,
       providerServices,
@@ -840,20 +844,6 @@ export default {
           sortable: true
         },
         {
-          name: 'igv',
-          label: 'Igv',
-          field: 'igv',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
-          name: 'price',
-          label: 'Precio Unitario',
-          field: 'price',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
           name: 'discount',
           label: 'Descuento',
           field: 'discount',
@@ -864,6 +854,20 @@ export default {
           name: 'subtotal',
           label: 'Subtotal',
           field: 'subtotal',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'igv',
+          label: 'Igv',
+          field: 'igv',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'total',
+          label: 'Total',
+          field: 'total',
           headerClasses: 'bg-primary text-white',
           sortable: true
         }
@@ -1159,7 +1163,7 @@ export default {
      * Calculate subtotal products
      */
     totalCalculateProduct () {
-      this.totalProduct = (Number(this.stock.sale_price) * Number(this.amount).toFixed(2))
+      this.totalProduct = (Number(this.priceSaleProduct) * Number(this.amount).toFixed(2))
     },
     /**
      * Selected product
@@ -1168,7 +1172,8 @@ export default {
     selectProuct (value) {
       if (value.stock.length > 0) {
         this.stock = value.stock[0]
-        this.totalProduct = this.stock.sale_price * this.amount
+        this.priceSaleProduct = this.stock.purchase_price
+        this.totalProduct = this.priceSaleProduct * this.amount
       } else {
         this.stock = {}
         this.amount = 1
@@ -1220,18 +1225,17 @@ export default {
      * @param {Array} array list porduct
      */
     pushArray (array) {
-      const percentage = this.getPercentage(this.totalProduct, this.product.margin_percentage)
-      const unitValue = Number(this.stock.sale_price) + Number(percentage)
+      const subtotal = this.priceSaleProduct * this.amount
+      const igv = this.getPercentage(subtotal, 18)
       array.push({
         product_id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,
-        purchase_price: this.stock.sale_price,
-        igv: this.getPercentage(this.totalProduct, 18),
-        price: unitValue,
+        purchase_price: this.priceSaleProduct,
+        igv: igv,
         discount: this.discount,
-        sale_price: Number(this.totalProduct) + Number(percentage),
-        subtotal: (Number(this.totalProduct) + Number(this.getPercentage(this.totalProduct, 18))).toFixed(2),
+        subtotal: subtotal,
+        total: Number(subtotal) + Number(igv),
         user_created_id: this.userSession.id,
         warehouse_name: this.warehouse.full_name,
         warehouse_id: this.warehouse.id
@@ -1484,10 +1488,10 @@ export default {
       this.dataProduct.forEach(element => {
         total = Number(total) + Number(element.subtotal)
         igvTotal = (Number(igvTotal) + (Number(element.igv) * Number(element.amount)))
-        unitValue = (Number(unitValue) + (Number(element.price) * Number(element.amount)))
+        unitValue = (Number(unitValue) + (Number(element.purchase_price) * Number(element.amount)))
       })
       this.igvTotal = igvTotal.toFixed(2)
-      this.totalSale = total
+      this.totalSale = Number(total) + Number(this.igvTotal)
       this.totalUnitValue = unitValue.toFixed(2)
     },
     /**
