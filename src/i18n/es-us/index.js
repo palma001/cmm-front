@@ -444,6 +444,7 @@ export default {
     editSuccessfull: 'Categoría editada exitosamente'
   },
   product: {
+    clear: 'limpiar filtros',
     margin_percentage: '% Margen',
     filter: 'filtros',
     stock: 'stock',

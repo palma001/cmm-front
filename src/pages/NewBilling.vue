@@ -260,9 +260,6 @@
                   <q-td key="purchase_price" :props="props">
                     {{ props.row.purchase_price }}
                   </q-td>
-                  <q-td key="igv" :props="props">
-                    {{ props.row.igv }}
-                  </q-td>
                   <q-td key="price" :props="props">
                     {{ props.row.price }}
                     <q-popup-edit v-model.number="props.row.price" auto-save>
@@ -288,6 +285,12 @@
                   </q-td>
                   <q-td key="subtotal" :props="props">
                     {{ props.row.subtotal }}
+                  </q-td>
+                  <q-td key="igv" :props="props">
+                    {{ props.row.igv }}
+                  </q-td>
+                  <q-td key="total" :props="props">
+                    {{ props.row.total }}
                   </q-td>
                 </q-tr>
               </template>
@@ -426,10 +429,10 @@
           <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
             <q-input
               label="Precio Unitario"
-              type="number"
+              type="text"
               dense
               outlined
-              v-model="stock.sale_price"
+              v-model="productSalePrice"
               @input="totalCalculateProduct"
             />
           </div>
@@ -981,6 +984,7 @@ export default {
       modalProductStock: false,
       selected: [],
       stockData: [],
+      productSalePrice: null,
       columnsStock: [
         {
           name: 'warehouse_name',
@@ -990,6 +994,7 @@ export default {
           field: row => row.warehouse_name,
           sortable: true
         },
+        { name: 'purchase_price', align: 'right', label: 'Precio de compra', field: 'purchase_price', sortable: true },
         { name: 'stock_product', align: 'right', label: 'Stock', field: 'stock_product', sortable: true }
       ],
       loadingForm: false,
@@ -1077,13 +1082,6 @@ export default {
           sortable: true
         },
         {
-          name: 'igv',
-          label: 'Igv',
-          field: 'igv',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
           name: 'price',
           label: 'Precio Unitario',
           field: 'price',
@@ -1101,6 +1099,20 @@ export default {
           name: 'subtotal',
           label: 'Subtotal',
           field: 'subtotal',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'igv',
+          label: 'Igv',
+          field: 'igv',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'total',
+          label: 'Total',
+          field: 'total',
           headerClasses: 'bg-primary text-white',
           sortable: true
         }
@@ -1186,6 +1198,11 @@ export default {
     this.setRelationalData(this.clientServices, [], this)
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
+  },
+  watch: {
+    selected (value) {
+      this.selectProuctPrice(value)
+    }
   },
   methods: {
     getSeries () {
@@ -1438,17 +1455,22 @@ export default {
      * Calculate subtotal products
      */
     totalCalculateProduct () {
-      this.totalProduct = this.stock.sale_price * this.amount
+      this.totalProduct = this.productSalePrice * this.amount
     },
     /**
      * Selected product
      * @param {Object} value product selected
     */
+    selectProuctPrice (value) {
+      this.stock = value[0]
+      this.productSalePrice = this.stock.purchase_price
+      const priceSale = Number(this.productSalePrice) + Number(this.getPercentage(this.productSalePrice, this.product.margin_percentage))
+      this.totalProduct = priceSale
+    },
     selectProuct (value) {
       if (value.stock.length > 0) {
-        this.stock = value.stock[0]
-        this.selected = [this.product.stock[0]]
-        this.totalProduct = this.stock.sale_price * this.amount
+        this.selectProuctPrice(value.stock)
+        this.selected = [value.stock[0]]
       } else {
         this.stock = {}
         this.amount = 1
@@ -1501,17 +1523,19 @@ export default {
      * @param {Array} array list porduct
      */
     pushArray (array) {
-      const percentage = this.getPercentage(this.stock.purchase_price, this.igv.value)
-      const unitValue = this.stock.sale_price - percentage
+      const priceSale = Number(this.productSalePrice) + Number(this.getPercentage(this.productSalePrice, this.product.margin_percentage))
+      const percentage = this.getPercentage(priceSale, 18)
+      this.totalProduct = priceSale * this.amount
       array.push({
         product_id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,
-        purchase_price: isNaN(unitValue) ? 0 : unitValue,
+        purchase_price: this.stock.purchase_price,
         igv: isNaN(percentage) ? 0 : percentage,
-        price: this.stock.sale_price,
+        price: priceSale.toFixed(2),
         discount: this.discount,
-        subtotal: this.totalProduct,
+        subtotal: this.totalProduct.toFixed(2),
+        total: (Number(priceSale) + Number(percentage)).toFixed(2),
         user_created_id: this.userSession.id,
         warehouse_id: this.selected[0].warehouse_id
       })
@@ -1760,10 +1784,10 @@ export default {
       this.dataProduct.forEach(element => {
         total = Number(total) + Number(element.subtotal)
         igvTotal = (Number(igvTotal) + (Number(element.igv) * Number(element.amount)))
-        unitValue = (Number(unitValue) + (Number(element.purchase_price) * Number(element.amount)))
+        unitValue = (Number(unitValue) + (Number(element.price) * Number(element.amount)))
       })
       this.igvTotal = igvTotal.toFixed(2)
-      this.totalSale = total
+      this.totalSale = (Number(total) + Number(this.igvTotal)).toFixed(2)
       this.totalUnitValue = unitValue.toFixed(2)
     },
     /**

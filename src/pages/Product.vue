@@ -41,6 +41,23 @@
       </div>
       <div class="col-6 text-right q-gutter-x-sm">
         <q-btn
+          color="teal"
+          icon="cleaning_services"
+          :label="$q.screen.lt.md ? '' : $t('product.clear')"
+          @click="clearFilter"
+        >
+          <q-tooltip
+            anchor="center right"
+            self="center left"
+            :offset="[10, 10]"
+            v-if="$q.screen.lt.md"
+          >
+            {{
+              ucwords($t('product.clear'))
+            }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn
           :color="filter ? 'negative' : 'orange'"
           :icon="filter ? 'close' : 'filter_alt'"
           :label="$q.screen.lt.md ? '' : $t('product.filter')"
@@ -50,7 +67,7 @@
             anchor="center right"
             self="center left"
             :offset="[10, 10]"
-            v-if="$q.screen.lt.sm"
+            v-if="$q.screen.lt.md"
           >
             {{
               ucwords($t('product.filter'))
@@ -67,7 +84,7 @@
             anchor="center right"
             self="center left"
             :offset="[10, 10]"
-            v-if="$q.screen.lt.sm"
+            v-if="$q.screen.lt.md"
           >
             {{
               ucwords($t('product.add'))
@@ -757,6 +774,15 @@ export default {
         }
       }
       this.getProducts(this.params)
+    },
+    clearFilter () {
+      this.code = null
+      this.brand = null
+      this.supsec = null
+      this.attributeTypes = {}
+      this.params.filterProduct = {}
+      this.params.dataFilter = {}
+      this.getProducts()
     },
     /**
      * Filter primary

@@ -337,7 +337,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="viewProductModal">
-      <q-card v-if="purchaseSelected" style="width: 400px; max-width: 80vw;">
+      <q-card v-if="purchaseSelected" style="width: 600px; max-width: 80vw;">
         <q-card-section class="q-pb-xs">
           <div class="text-h6">
             Productos / {{ purchaseSelected.serie }}-{{ purchaseSelected.number }}
@@ -383,6 +383,13 @@ export default {
        */
       columns: [
         {
+          name: 'cpd',
+          align: 'left',
+          label: 'C-P-D',
+          field: row => `${row.product.brand.name}-${row.product.code}-${row.product.supsec}`,
+          sortable: true
+        },
+        {
           name: 'description',
           align: 'left',
           label: 'Descripción',
@@ -393,6 +400,12 @@ export default {
           name: 'amount',
           label: 'Cantidad',
           field: 'amount',
+          sortable: true
+        },
+        {
+          name: 'purchase_price',
+          label: 'Precio de compra',
+          field: 'purchase_price',
           sortable: true
         }
       ],
