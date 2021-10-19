@@ -214,7 +214,7 @@ export default {
      */
     modelTransfer () {
       const product = {
-        product_id: this.productSelected.id,
+        product_id: this.productSelected.product_id,
         amount: this.amount,
         user_created_id: this.userSession.id
       }
@@ -296,6 +296,7 @@ export default {
           inventory.warehouse_id = stock.warehouse_id
           inventory.sale_price = stock.sale_price
           inventory.purchase_price = stock.purchase_price
+          inventory.product_id = product.id
           modelProduct.push(inventory)
         })
       })

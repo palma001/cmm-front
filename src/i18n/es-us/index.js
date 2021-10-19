@@ -90,6 +90,7 @@ export default {
     devolutions: 'Devoluciones',
     inventory: 'reporte inventario',
     kardex_valued: 'kardex valorizado',
+    'kardex-valued': 'kardex valorizado',
     kardex: 'kardex'
   },
 
@@ -278,7 +279,8 @@ export default {
     products: 'productos',
     fromWarehouse: 'Almacen inicial',
     toWarehouse: 'Almacen destino',
-    newTransfer: 'nuevo traslado'
+    newTransfer: 'nuevo traslado',
+    saveSuccess: 'Translado guardado exitosamente!'
   },
   devolution: {
     created_at: 'Fecha',
