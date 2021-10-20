@@ -1144,7 +1144,7 @@ export default {
      * @param {String} value data filter
      */
     getProducts (value, update) {
-      this.$services.getData(['products'], {
+      this.$services.getData(['select-products'], {
         ...value,
         paginate: true,
         perPage: 100

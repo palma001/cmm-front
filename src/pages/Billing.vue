@@ -1,22 +1,6 @@
 <template>
   <q-page padding>
     <div class="row q-col-gutter-sm justify-end">
-      <div class="col-2">
-        <vue-excel-xlsx
-          :data="dataExcel"
-          :columns="columnsExcel"
-          :filename="`export-${dateFormat}`"
-          :sheetname="'sheetname'"
-          class="full-height text-center full-width q-btn q-btn-item non-selectable no-outline q-btn--standard q-btn--rectangle bg-secondary text-white q-btn--actionable q-focusable q-hoverable"
-        >
-          <span class="q-btn__content text-center col items-center q-anchor--skip justify-center row">
-            <span class="block">
-              <q-icon name="file_download"/>
-              Excel
-            </span>
-          </span>
-        </vue-excel-xlsx>
-      </div>
       <div class="col-auto text-right q-gutter-xs">
         <q-btn
           color="primary"
@@ -361,6 +345,7 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import DataTable from '../components/DataTable.vue'
+import XLSX from 'xlsx'
 export default {
   mixins: [mixins.containerMixin],
   components: {
@@ -480,6 +465,7 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
     this.$root.$on('change_branch_office', this.filterBranchOffice)
+    this.getExcel()
   },
   computed: {
     dateFormat () {
@@ -491,6 +477,19 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    getExcel () {
+      const data = XLSX.utils.json_to_sheet(this.columnsExcel)
+      const workbook = XLSX.utils.book_new()
+      const filename = 'devschile-admins'
+      data.A1.v = 'Fecha:'
+      data.B1.v = date.formatDate(new Date(), 'YYYY')
+      data.A2.v = 'Ruc:'
+      data.B2.v = '26720270'
+      data.A3.v = 'APELLIDO Y NOMBRES, DENOMINACIÓN O RAZON SOCIAL:'
+      data.B3.v = this.branchOfficeSession.name
+      XLSX.utils.book_append_sheet(workbook, data, filename)
+      XLSX.writeFile(workbook, `${filename}.xlsx`)
+    },
     filterBranchOffice (branchOffice) {
       this.params.dataFilter.branch_office_id = branchOffice.id
       this.getBillElectronics(this.params)
