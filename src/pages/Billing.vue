@@ -345,7 +345,7 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import DataTable from '../components/DataTable.vue'
-import XLSX from 'xlsx'
+// import XLSX from 'xlsx'
 export default {
   mixins: [mixins.containerMixin],
   components: {
@@ -465,7 +465,7 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
     this.$root.$on('change_branch_office', this.filterBranchOffice)
-    this.getExcel()
+    // this.getExcel()
   },
   computed: {
     dateFormat () {
@@ -477,19 +477,19 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
-    getExcel () {
-      const data = XLSX.utils.json_to_sheet(this.columnsExcel)
-      const workbook = XLSX.utils.book_new()
-      const filename = 'devschile-admins'
-      data.A1.v = 'Fecha:'
-      data.B1.v = date.formatDate(new Date(), 'YYYY')
-      data.A2.v = 'Ruc:'
-      data.B2.v = '26720270'
-      data.A3.v = 'APELLIDO Y NOMBRES, DENOMINACIÓN O RAZON SOCIAL:'
-      data.B3.v = this.branchOfficeSession.name
-      XLSX.utils.book_append_sheet(workbook, data, filename)
-      XLSX.writeFile(workbook, `${filename}.xlsx`)
-    },
+    // getExcel () {
+    //   const data = XLSX.utils.json_to_sheet(this.columnsExcel)
+    //   const workbook = XLSX.utils.book_new()
+    //   const filename = 'devschile-admins'
+    //   data.A1.v = 'Fecha:'
+    //   data.B1.v = date.formatDate(new Date(), 'YYYY')
+    //   data.A2.v = 'Ruc:'
+    //   data.B2.v = '26720270'
+    //   data.A3.v = 'APELLIDO Y NOMBRES, DENOMINACIÓN O RAZON SOCIAL:'
+    //   data.B3.v = this.branchOfficeSession.name
+    //   XLSX.utils.book_append_sheet(workbook, data, filename)
+    //   XLSX.writeFile(workbook, `${filename}.xlsx`)
+    // },
     filterBranchOffice (branchOffice) {
       this.params.dataFilter.branch_office_id = branchOffice.id
       this.getBillElectronics(this.params)
