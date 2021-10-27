@@ -982,6 +982,15 @@ export default {
             })
             return productData
           })
+          const data2 = this.data
+          data2.forEach(product2 => {
+            this.data.map(product => {
+              if ((product.code === product2.code && product2.brand_id === product.brand_id) && product2.stock.length > 0) {
+                product.stock = product2.stock
+              }
+              return product
+            })
+          })
           this.optionPagination.rowsNumber = res.data.total
           this.loadingTable = false
         })

@@ -517,20 +517,6 @@ export default {
         })
     },
     /**
-     * Filter primary
-     */
-    filterPrimary (value, update) {
-      const valeArray = value.split('-')
-      const param = {
-        filterProduct: {
-          code: valeArray[1],
-          'brand.name': valeArray[0],
-          supsec: valeArray[2]
-        }
-      }
-      this.getProducts(param, update)
-    },
-    /**
      * Model bill
      */
     modelExpenseReason () {
