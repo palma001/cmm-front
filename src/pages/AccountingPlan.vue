@@ -5,7 +5,7 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('warehouse.add')"
+          :label="$q.screen.lt.sm ? '' : $t('accountingPlan.add')"
           @click="addDialig = true"
         >
         <q-tooltip
@@ -15,7 +15,7 @@
           v-if="$q.screen.lt.sm"
         >
           {{
-            ucwords($t('warehouseConfig.add'))
+            ucwords($t('accountingPlanConfig.add'))
           }}
         </q-tooltip>
       </q-btn>
@@ -23,11 +23,11 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="warehouse"
+          module="accountingPlan"
           selection="multiple"
           searchable
           action
-          :column="warehouseConfig"
+          :column="accountingPlanConfig"
           :data="data"
           :loading="loadingTable"
           :optionPagination.sync="optionPagination"
@@ -44,9 +44,9 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="warehouse"
+        module="accountingPlan"
         :propsPanelEdition="propsPanelEdition"
-        :config="warehouseConfig"
+        :config="accountingPlanConfig"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -113,8 +113,8 @@
       v-model="addDialig"
     >
       <dynamic-form
-        module="warehouse"
-        :config="warehouseConfig"
+        module="accountingPlan"
+        :config="accountingPlanConfig"
         :loading="loadingForm"
         @cancel="addDialig = false"
         @save="save"
@@ -180,7 +180,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import DynamicForm from '../components/DynamicForm.vue'
-import { warehouseConfig, propsPanelEdition } from '../config-file/warehouse/warehouseConfig.js'
+import { accountingPlanConfig, propsPanelEdition } from '../config-file/accountingPlan/accountingPlanConfig.js'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
@@ -195,8 +195,8 @@ export default {
     return {
       series: [{ addible: true }],
       voucherTypes: [],
-      warehouseSession: null,
-      warehouse: null,
+      accountingPlanSession: null,
+      accountingPlan: null,
       loadingForm: false,
       /**
        * Selected data
@@ -242,12 +242,12 @@ export default {
        * File config module
        * @type {Object}
        */
-      warehouseConfig,
+      accountingPlanConfig,
       /**
        * RelationalData description
        * @type {Object}
        */
-      // warehouseServices,
+      // accountingPlanServices,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -272,9 +272,9 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   created () {
-    this.setRelationalData(this.warehouseServices, [], this)
+    this.setRelationalData(this.accountingPlanServices, [], this)
     this.userSession = this[GETTERS.GET_USER]
-    this.warehouse = this[GETTERS.GET_BRANCH_OFFICE]
+    this.accountingPlan = this[GETTERS.GET_BRANCH_OFFICE]
     this.getVoucherTypes()
   },
   methods: {
@@ -397,7 +397,7 @@ export default {
      */
     getBranchOffices (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['branch-offices'], this.params)
+      this.$services.getData(['accounting-plans'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
