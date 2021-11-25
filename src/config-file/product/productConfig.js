@@ -165,6 +165,45 @@ export const product = [
       },
       {
         tabulated: {
+          name: 'characteristic',
+          align: 'left',
+          field: row => row.characteristic,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'characteristic',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-6': true,
+              'col-md-6': true,
+              'col-lg-6': true,
+              'col-xl-6': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'numsec',
           align: 'left',
           field: row => row.numsec,

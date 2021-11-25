@@ -447,6 +447,7 @@ export default {
   },
   product: {
     clear: 'limpiar filtros',
+    characteristic: 'carecteristicas',
     margin_percentage: '% Margen',
     filter: 'filtros',
     stock: 'stock',
