@@ -7,7 +7,7 @@ export const product = [
         tabulated: {
           name: 'brand_id',
           align: 'left',
-          field: row => row.brand.name,
+          field: row => row.brand ? row.brand.name : '-',
           sortable: true,
           visible: true
         },
