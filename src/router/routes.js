@@ -223,6 +223,12 @@ const routes = [
         name: 'Warehouse',
         component: () => import('src/pages/Warehouse.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'accounting-plans',
+        name: 'AccountingPlan',
+        component: () => import('src/pages/AccountingPlan.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },
