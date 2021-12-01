@@ -513,7 +513,7 @@
       </dynamic-form>
     </q-dialog>
     <q-dialog v-model="stockDialog">
-      <q-card v-if="productSelected">
+      <q-card v-if="productSelected" style="width: 700px; max-width: 80vw;">
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">
             {{ productSelected.brand.name }} - {{ productSelected.code }} - {{ productSelected.supsec }} / {{ productSelected.description }}
@@ -536,17 +536,19 @@
                 <th class="text-right">Precio de compra</th>
                 <th class="text-right">Precio de venta</th>
                 <th class="text-right">Stock</th>
+                <th class="text-right">Ubicación</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="productSelected.stock.length <= 0">
-                 <td class="text-center" colspan="4">Producto sin stock</td>
+                <td class="text-center" colspan="5">Producto sin stock</td>
               </tr>
               <tr v-else v-for="stockOne in productSelected.stock" :key="stockOne.id">
                 <td class="text-left">{{ stockOne.warehouse_name }}</td>
                 <td class="text-right">{{ stockOne.purchase_price }}</td>
                 <td class="text-right">{{ stockOne.sale_price }}</td>
                 <td class="text-right">{{ stockOne.stock_product }}</td>
+                <td class="text-right">{{ stockOne.location }}</td>
               </tr>
             </tbody>
           </q-markup-table>
@@ -694,6 +696,7 @@ export default {
      * @param {Object} data data product
      */
     viewStock (data) {
+      console.log(data)
       this.productSelected = data
       this.stockDialog = true
     },

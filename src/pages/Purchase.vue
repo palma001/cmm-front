@@ -337,7 +337,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="viewProductModal">
-      <q-card v-if="purchaseSelected" style="width: 600px; max-width: 80vw;">
+      <q-card v-if="purchaseSelected" style="width: 700px; max-width: 80vw;">
         <q-card-section class="q-pb-xs">
           <div class="text-h6">
             Productos / {{ purchaseSelected.serie }}-{{ purchaseSelected.number }}
@@ -345,14 +345,22 @@
         </q-card-section>
         <q-card-section>
           <q-table
-              row-key="name"
-              wrap-cells
-              virtual-scroll
-              :data="purchaseSelected.purchase_details"
-              :columns="columns"
-              :rows-per-page-options="[]"
-              hide-bottom
-            />
+            row-key="name"
+            wrap-cells
+            virtual-scroll
+            :data="purchaseSelected.purchase_details"
+            :columns="columns"
+            :filter="productFilter"
+          >
+            <template v-slot:top>
+              <q-space />
+              <q-input dense debounce="300" color="primary" v-model="productFilter">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
         </q-card-section>
         <q-separator/>
         <q-card-actions align="right">
@@ -377,6 +385,7 @@ export default {
   },
   data () {
     return {
+      productFilter: '',
       /**
        * Columns Table
        * @type {Array} column array
