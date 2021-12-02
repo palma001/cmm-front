@@ -524,13 +524,6 @@
         <q-card-section>
           <q-markup-table>
             <thead>
-              <tr class="text-left">
-                <th colspan="4">
-                  <span class="text-h6">
-                    Stock
-                  </span>
-                </th>
-              </tr>
               <tr>
                 <th class="text-left">Almacen</th>
                 <th class="text-right">Precio de compra</th>
@@ -545,8 +538,8 @@
               </tr>
               <tr v-else v-for="stockOne in productSelected.stock" :key="stockOne.id">
                 <td class="text-left">{{ stockOne.warehouse_name }}</td>
-                <td class="text-right">{{ stockOne.purchase_price }}</td>
-                <td class="text-right">{{ stockOne.sale_price }}</td>
+                <td class="text-right">{{ stockOne.purchase_price.toFixed(2) }}</td>
+                <td class="text-right">{{ stockOne.sale_price.toFixed(2) }}</td>
                 <td class="text-right">{{ stockOne.stock_product }}</td>
                 <td class="text-right">{{ stockOne.location }}</td>
               </tr>
