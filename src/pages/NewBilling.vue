@@ -1463,9 +1463,8 @@ export default {
     */
     selectProuctPrice (value) {
       this.stock = value[0]
-      this.productSalePrice = this.stock.purchase_price
-      const priceSale = Number(this.productSalePrice) + Number(this.getPercentage(this.productSalePrice, this.product.margin_percentage))
-      this.totalProduct = priceSale
+      this.productSalePrice = this.stock.sale_price
+      this.totalProduct = this.stock.sale_price
     },
     selectProuct (value) {
       if (value.stock.length > 0) {
@@ -1523,19 +1522,18 @@ export default {
      * @param {Array} array list porduct
      */
     pushArray (array) {
-      const priceSale = Number(this.productSalePrice) + Number(this.getPercentage(this.productSalePrice, this.product.margin_percentage))
-      const percentage = this.getPercentage(priceSale, 18)
-      this.totalProduct = priceSale * this.amount
+      const percentage = this.getPercentage(this.productSalePrice, 18)
+      this.totalProduct = this.totalProduct * this.amount
       array.push({
         product_id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,
         purchase_price: this.stock.purchase_price,
         igv: isNaN(percentage) ? 0 : percentage,
-        price: priceSale.toFixed(2),
+        price: this.productSalePrice,
         discount: this.discount,
-        subtotal: this.totalProduct.toFixed(2),
-        total: (Number(priceSale) + Number(percentage)).toFixed(2),
+        subtotal: this.totalProduct,
+        total: (this.totalProduct + Number(percentage)).toFixed(2),
         user_created_id: this.userSession.id,
         warehouse_id: this.selected[0].warehouse_id
       })
@@ -1657,7 +1655,6 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            console.log(res.data.data)
             this.products = res.data.data
           })
         })
