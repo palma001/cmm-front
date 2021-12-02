@@ -5,6 +5,15 @@ export const product = [
     children: [
       {
         tabulated: {
+          name: 'id',
+          align: 'left',
+          field: row => row.id,
+          sortable: true,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
           name: 'brand_id',
           align: 'left',
           field: row => row.brand ? row.brand.name : '-',
@@ -126,14 +135,14 @@ export const product = [
       },
       {
         tabulated: {
-          name: 'description',
+          name: 'name',
           align: 'left',
-          field: row => row.description,
+          field: row => row.name,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'description',
+          propTag: 'name',
           addible: true,
           editable: true,
           type: 'String',
@@ -151,6 +160,45 @@ export const product = [
               'col-md-6': true,
               'col-lg-6': true,
               'col-xl-6': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'description',
+          align: 'left',
+          field: row => row.description,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'description',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'textarea',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
             },
             directives: [
               {

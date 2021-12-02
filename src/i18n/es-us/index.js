@@ -446,6 +446,7 @@ export default {
     editSuccessfull: 'Categoría editada exitosamente'
   },
   product: {
+    id: 'id',
     clear: 'limpiar filtros',
     characteristic: 'carecteristicas',
     margin_percentage: '% Margen',
@@ -458,7 +459,8 @@ export default {
     supsec: 'supsec',
     code: 'código',
     numsec: 'numsec',
-    description: 'nombre',
+    name: 'nombre',
+    description: 'descripción',
     add: 'agregar producto',
     list: 'Lista de productos',
     addSuccessfull: 'Producto agregada exitosamente',
