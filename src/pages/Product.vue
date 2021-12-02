@@ -110,6 +110,15 @@
             @input="filterSecondary"
           />
         </div>
+        <div>
+          <q-toggle
+            v-model="value"
+            label="Con Stock"
+            right-label
+            size="md"
+            @input="filterStock"
+          />
+        </div>
       </div>
       <div class="col-12">
         <data-table
@@ -570,6 +579,7 @@ export default {
   },
   data () {
     return {
+      value: false,
       filter: true,
       productSelected: null,
       stockDialog: false,
@@ -673,6 +683,10 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    filterStock () {
+      this.params.filterReports = this.value ? this.value : null
+      this.getProducts(this.params)
+    },
     filterBranchOffice (branchOffice) {
       this.getProducts(this.params)
     },
@@ -704,7 +718,7 @@ export default {
      * Delete attributte product
      * @param {Number} index index attribute
      */
-    deletPrice (index) {
+    deletePrice (index) {
       this.productPrices.splice(index, 1)
     },
     /**
@@ -775,9 +789,11 @@ export default {
       this.code = null
       this.brand = null
       this.supsec = null
+      this.value = false
       this.attributeTypes = {}
       this.params.filterProduct = {}
       this.params.dataFilter = {}
+      this.params.filterReports = null
       this.getProducts()
     },
     /**
