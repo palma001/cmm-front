@@ -244,6 +244,8 @@ export default {
     newBilling: 'Nueva factura'
   },
   purchase: {
+    paid_out: 'pagado',
+    pending: 'pendiente',
     listAccounts: 'Cuentas por pagar',
     products: 'productos',
     serie: 'serie',

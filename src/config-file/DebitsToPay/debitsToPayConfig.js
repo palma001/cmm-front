@@ -60,6 +60,33 @@ export const debitsToPayConfig = [
       },
       {
         tabulated: {
+          name: 'total',
+          align: 'left',
+          field: row => row.total.toFixed(2),
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'paid_out',
+          align: 'left',
+          field: row => row.paid_out.toFixed(2),
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'pending',
+          align: 'left',
+          field: row => row.pending.toFixed(2),
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
           name: 'products',
           align: 'center',
           visible: true,
