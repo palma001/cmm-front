@@ -118,61 +118,7 @@
         :loading="loadingForm"
         @cancel="addDialig = false"
         @save="save"
-      >
-        <template>
-          <div class="text-h6">
-            Series
-          </div>
-          <div class="row q-col-gutter-sm q-gutter-y-sm" v-for="serie in series" :key="serie.id">
-            <div class="col-6">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                input-debounce="0"
-                name="voucherType"
-                autocomplete="off"
-                ref="voucherTypeRef"
-                v-model="serie.voucherType"
-                option-label="name"
-                :label="ucwords($t('billing.voucher_type'))"
-                :options="voucherTypes"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-6">
-              <q-input
-                v-model="serie.name"
-                outlined
-                dense
-                label="Nombre de la serie"
-                type="text"
-              />
-            </div>
-          </div>
-          <div class="row q-mt-sm">
-            <div class="col-12 text-right">
-              <q-btn
-                dense
-                round
-                icon="add"
-                color="primary"
-                @click="addSerie"
-              />
-            </div>
-          </div>
-        </template>
-      </dynamic-form>
+      />
     </q-dialog>
   </q-page>
 </template>
@@ -193,9 +139,6 @@ export default {
   },
   data () {
     return {
-      series: [{ addible: true }],
-      voucherTypes: [],
-      accountingPlanSession: null,
       accountingPlan: null,
       loadingForm: false,
       /**
@@ -223,9 +166,10 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {
-          name: '',
-          phone_number: '',
-          document_number: ''
+          code: '',
+          element: '',
+          description: '',
+          account_type: ''
         }
       },
       /**
@@ -272,27 +216,10 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   created () {
-    this.setRelationalData(this.accountingPlanServices, [], this)
     this.userSession = this[GETTERS.GET_USER]
     this.accountingPlan = this[GETTERS.GET_BRANCH_OFFICE]
-    this.getVoucherTypes()
   },
   methods: {
-    addSerie () {
-      this.series.push({
-        addible: true
-      })
-    },
-    /**
-     * Get voucher types
-     */
-    getVoucherTypes () {
-      this.$services.getData(['voucher-types'])
-        .then(({ res }) => {
-          this.voucherTypes = res.data
-          this.voucherType = res.data[0]
-        })
-    },
     /**
      * Load data sorting
      * @param  {Object}
@@ -303,7 +230,7 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getBranchOffices(this.params)
+      this.getAccountingPlans(this.params)
     },
     /**
      * Search branch offices
@@ -313,22 +240,7 @@ export default {
       for (const dataSearch in this.params.dataSearch) {
         this.params.dataSearch[dataSearch] = data
       }
-      this.getBranchOffices()
-    },
-    /**
-     * Model series
-     * @type {Array} series branch office
-     */
-    modelSerie (series) {
-      return series.filter(serie => {
-        return serie.addible && serie.voucher_type && serie.name
-      }).map(serie => {
-        return {
-          voucher_type_id: serie.voucher_type.id,
-          name: serie.name,
-          user_created_id: this.userSession.id
-        }
-      })
+      this.getAccountingPlans()
     },
     /**
      * Save Branch Office
@@ -336,16 +248,12 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.series = this.modelSerie(this.series)
       this.loadingForm = true
-      this.$services.postData(['branch-offices'], data)
+      this.$services.postData(['accounting-plans'], data)
         .then(({ res }) => {
           // this.addDialig = false
           this.loadingForm = false
-          this.getBranchOffices(this.params)
-          this.series = [{
-            addible: true
-          }]
+          this.getAccountingPlans(this.params)
         })
         .catch(() => {
           this.loadingForm = false
@@ -357,16 +265,12 @@ export default {
      */
     update (data) {
       data.user_updated_id = this.userSession.id
-      data.series = this.modelSerie(this.series)
       this.loadingForm = true
-      this.$services.putData(['branch-offices', this.selectedData.id], data)
+      this.$services.putData(['accounting-plans', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getBranchOffices(this.params)
-          this.series = [{
-            addible: true
-          }]
+          this.getAccountingPlans(this.params)
         })
         .catch(() => {
           this.loadingForm = false
@@ -380,10 +284,6 @@ export default {
       this.editDialog = true
       this.propsPanelEdition.data = data
       this.selectedData = data
-      this.series = data.series.map(serie => {
-        serie.addible = false
-        return serie
-      })
     },
     /**
      * Open formulary
@@ -395,7 +295,7 @@ export default {
     /**
      * Get all branch offices
      */
-    getBranchOffices (params = this.params) {
+    getAccountingPlans (params = this.params) {
       this.loadingTable = true
       this.$services.getData(['accounting-plans'], this.params)
         .then(({ res }) => {

@@ -5,14 +5,51 @@ export const accountingPlanConfig = [
     children: [
       {
         tabulated: {
-          name: 'name',
+          name: 'element',
           align: 'left',
-          field: row => row.name,
+          field: row => row.element,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'name',
+          propTag: 'element',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              outlined: true,
+              dense: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'code',
+          align: 'left',
+          field: row => row.code,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'code',
           addible: true,
           editable: true,
           type: 'String',
@@ -57,7 +94,44 @@ export const accountingPlanConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'textarea',
+              type: 'text',
+              outlined: true,
+              dense: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'account_type',
+          align: 'left',
+          field: row => row.account_type,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'account_type',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
               outlined: true,
               dense: true
             },

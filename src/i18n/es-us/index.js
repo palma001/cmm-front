@@ -207,6 +207,20 @@ export default {
     saveSuccess: 'Guia guardada exitosamente!',
     saveError: 'Error al guardar'
   },
+  accountingPlan: {
+    code: 'código',
+    description: 'descripción',
+    element: 'elemento',
+    account_type: 'tipo de cuenta',
+    add: 'agregar plan',
+    list: 'Lista de planes contables',
+    addSuccessfull: 'Categoría agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessfull: 'Categoría eliminada exitosamente',
+    update: 'Editar Categoría',
+    editSuccessfull: 'Categoría editada exitosamente'
+  },
 
   billing: {
     listAccounts: 'Cuentas por cobrar',

@@ -112,7 +112,7 @@
               @click="$emit(col.button.event, props.row)"
             />
             <span v-else>
-              {{ col.value ? col.value : '-' }}
+              {{ col.value || typeof col.value === 'number' ? col.value : '-' }}
             </span>
           </q-td>
           <q-td v-if="action" align="center">
