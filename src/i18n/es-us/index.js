@@ -29,8 +29,7 @@ export default {
     purchase: 'compras',
     settings: 'Configuración',
     box: 'Caja',
-    accouting: 'contabilidad',
-    'accouting-plan': 'plan contable'
+    accounting: 'contabilidad'
   },
 
   // users
@@ -61,6 +60,7 @@ export default {
   },
   // modules
   modules: {
+    'accouting-plan': 'plan contable',
     'debts-to-pay': 'cuentas por pagar',
     'accounts-receivable': 'cuentas por cobrar',
     products: 'productos',
