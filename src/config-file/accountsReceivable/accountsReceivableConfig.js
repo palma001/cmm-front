@@ -1,5 +1,5 @@
 import { date } from 'quasar'
-export const billingConfig = [
+export const accountsReceivableConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
@@ -180,7 +180,7 @@ export const billingConfig = [
         tabulated: {
           name: 'options',
           align: 'center',
-          visible: true,
+          visible: false,
           button: {
             label: 'options',
             color: 'primary',

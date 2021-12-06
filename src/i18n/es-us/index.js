@@ -27,7 +27,8 @@ export default {
     sales: 'ventas',
     errorDocumentNumber: 'Documento invalido',
     purchase: 'compras',
-    settings: 'Configuración'
+    settings: 'Configuración',
+    box: 'Caja'
   },
 
   // users
@@ -58,6 +59,8 @@ export default {
   },
   // modules
   modules: {
+    'debts-to-pay': 'cuentas por pagar',
+    'accounts-receivable': 'cuentas por cobrar',
     products: 'productos',
     budgetRequest: 'solicitud de cotización',
     provider: 'proveedores',
@@ -206,7 +209,10 @@ export default {
   },
 
   billing: {
+    listAccounts: 'Cuentas por cobrar',
     serie_id: 'serie',
+    paid_out: 'pagado',
+    pending: 'pendiente',
     series: 'series',
     id: 'serie',
     saveErrorPayment: 'Ingrese los campos requeridos',
@@ -238,6 +244,7 @@ export default {
     newBilling: 'Nueva factura'
   },
   purchase: {
+    listAccounts: 'Cuentas por pagar',
     products: 'productos',
     serie: 'serie',
     id: 'serie',

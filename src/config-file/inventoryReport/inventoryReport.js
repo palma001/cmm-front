@@ -50,15 +50,6 @@ export const inventoryReportConfig = [
       },
       {
         tabulated: {
-          name: 'warehouse_name',
-          align: 'left',
-          field: row => row.warehouse_name,
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
           name: 'stock_product',
           align: 'left',
           field: row => row.stock_product,

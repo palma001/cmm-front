@@ -229,6 +229,18 @@ const routes = [
         name: 'AccountingPlan',
         component: () => import('src/pages/AccountingPlan.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'accounts-receivable',
+        name: 'AccountsReceivable',
+        component: () => import('src/pages/AccountsReceivable.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'debits-to-pay',
+        name: 'DebitsToPay',
+        component: () => import('src/pages/DebitsToPay.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },

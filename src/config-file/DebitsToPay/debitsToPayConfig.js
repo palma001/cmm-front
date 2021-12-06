@@ -1,23 +1,23 @@
 import { date } from 'quasar'
-export const billingConfig = [
+export const debitsToPayConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'serie_id',
+          name: 'id',
           align: 'left',
-          field: row => `${row.serie.name}-${row.number}`,
+          field: row => `${row.serie}-${row.number}`,
           sortable: true,
           visible: true
         }
       },
       {
         tabulated: {
-          name: 'client',
+          name: 'provider',
           align: 'left',
-          field: row => row.client.full_name,
+          field: row => row.provider.full_name,
           sortable: false,
           visible: true
         }
@@ -51,15 +51,6 @@ export const billingConfig = [
       },
       {
         tabulated: {
-          name: 'seller',
-          align: 'left',
-          field: row => row.seller.full_name,
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
           name: 'voucher_type',
           align: 'left',
           field: row => row.voucher_type.name,
@@ -69,47 +60,17 @@ export const billingConfig = [
       },
       {
         tabulated: {
-          name: 'operation_type',
-          align: 'left',
-          field: row => row.operation_type.name,
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'igv',
-          align: 'left',
-          field: row => row.igv,
-          sortable: true,
-          visible: false
-        }
-      },
-      {
-        tabulated: {
-          name: 'total',
-          align: 'left',
-          field: row => row.total.toFixed(2),
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'paid_out',
-          align: 'left',
-          field: row => row.paid_out.toFixed(2),
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'pending',
-          align: 'left',
-          field: row => row.pending.toFixed(2),
-          sortable: false,
-          visible: true
+          name: 'products',
+          align: 'center',
+          visible: true,
+          button: {
+            icon: 'search',
+            color: 'orange',
+            type: 'button',
+            size: 'sm',
+            push: true,
+            event: 'viewProduct'
+          }
         }
       },
       {
@@ -180,7 +141,7 @@ export const billingConfig = [
         tabulated: {
           name: 'options',
           align: 'center',
-          visible: true,
+          visible: false,
           button: {
             label: 'options',
             color: 'primary',

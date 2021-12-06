@@ -623,6 +623,7 @@ export default {
           description: '',
           supsec: '',
           numsec: '',
+          id: '',
           'category.name': ''
         }
       },
