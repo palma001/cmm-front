@@ -365,7 +365,7 @@
 
 <script>
 import { date } from 'quasar'
-import { debitsToPayConfig } from '../config-file/debitsToPay/debitsToPayConfig.js'
+import { debitsToPayConfig } from '../config-file/debitToPay/debitsToPayConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
