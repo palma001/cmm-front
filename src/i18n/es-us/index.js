@@ -28,7 +28,9 @@ export default {
     errorDocumentNumber: 'Documento invalido',
     purchase: 'compras',
     settings: 'Configuración',
-    box: 'Caja'
+    box: 'Caja',
+    accouting: 'contabilidad',
+    'accouting-plan': 'plan contable'
   },
 
   // users
