@@ -4,7 +4,7 @@
     <q-form @submit="modelBill">
       <q-card class="my-card">
         <q-card-section class="q-pb-sm row q-col-gutter-sm">
-          <div class="col-6">
+          <div class="col-4">
             <div class="row justify-between">
               <div class="col-auto">
                 <p class="text-h5">
@@ -13,11 +13,24 @@
               </div>
             </div>
           </div>
-          <div class="col-2">
-            <q-input type="date" dense outlined label="Fec. Emisión" v-model="billing.created_at" @input="getExchange"/>
+          <div class="col-3">
+            <q-input
+              type="date"
+              dense
+              outlined
+              label="Fec. Emisión"
+              v-model="billing.created_at"
+              @input="getExchange"
+            />
           </div>
-          <div class="col-2">
-            <q-input type="date" dense outlined label="Fec. Vencimiento" v-model="billing.expiration_date"/>
+          <div class="col-3">
+            <q-input
+              type="date"
+              dense outlined
+              label="Fec. Vencimiento"
+              v-model="billing.expiration_date"
+              :rules="[val => val >= this.billing.created_at || 'La fecha de expiración debe ser mayor o igual a la fecha de emisión']"
+            />
           </div>
           <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
             <q-input
@@ -339,118 +352,130 @@
       persistent
     >
       <q-card style="width: 700px; max-width: 80vw;">
-        <q-card-section>
-          <div class="text-h6">Agregar Producto o Servicio</div>
-        </q-card-section>
-        <q-card-section class="row justify-between q-col-gutter-x-sm">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="product"
-              ref="productRef"
-              v-model="product"
-              data-vv-as="field"
-              option-value="id"
-              option-label="full_name"
-              :label="value ? 'C-P-D' : 'Productos'"
-              :options="products"
-              @input="selectProuct"
-              @filter="filterProducts"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-              <template v-slot:append>
-                <q-toggle
-                  v-model="value"
-                  color="primary"
-                  dense
-                >
-                  <q-tooltip>
-                    Activar filtro por CPD
-                  </q-tooltip>
-                </q-toggle>
-              </template>
-              <template v-slot:after>
-                <q-btn color="primary" dense icon="search" @click="openStock" v-if="product"/>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="igv"
-              ref="igvRef"
-              v-model="igv"
-              v-validate="'required'"
-              data-vv-as="field"
-              label="Afectación igv"
-              :options="igvs"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-        </q-card-section>
-        <q-card-section class="row justify-between q-col-gutter-sm">
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-            <q-input
-              label="Cantidad"
-              type="number"
-              dense
-              outlined
-              v-model="amount"
-              @input="totalCalculateProduct"
-            />
-          </div>
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-            <q-input
-              label="Precio Unitario"
-              type="text"
-              dense
-              outlined
-              v-model="productSalePrice"
-              @input="totalCalculateProduct"
-            />
-          </div>
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-            <q-input
-              label="Total"
-              type="number"
-              dense
-              disable
-              outlined
-              :value="totalProduct"
-            />
-          </div>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn label="Cerrar" color="negative" v-close-popup />
-          <q-btn label="Agregar" color="primary" @click="setTable" />
-        </q-card-actions>
+        <q-form @submit="setTable">
+          <q-card-section>
+            <div class="text-h6">Agregar Producto o Servicio</div>
+          </q-card-section>
+          <q-card-section class="row justify-between q-col-gutter-x-sm">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-select
+                use-input
+                hide-selected
+                fill-input
+                outlined
+                clearable
+                dense
+                autocomplete="off"
+                input-debounce="0"
+                name="product"
+                ref="productRef"
+                v-model="product"
+                data-vv-as="field"
+                option-value="id"
+                option-label="full_name"
+                :label="value ? 'C-P-D' : 'Productos'"
+                :options="products"
+                @input="selectProuct"
+                @filter="filterProducts"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-toggle
+                    v-model="value"
+                    color="primary"
+                    dense
+                  >
+                    <q-tooltip>
+                      Activar filtro por CPD
+                    </q-tooltip>
+                  </q-toggle>
+                </template>
+                <template v-slot:after>
+                  <q-btn color="primary" dense icon="search" @click="openStock" v-if="product"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-select
+                use-input
+                hide-selected
+                fill-input
+                outlined
+                clearable
+                dense
+                autocomplete="off"
+                input-debounce="0"
+                name="igv"
+                ref="igvRef"
+                v-model="igv"
+                v-validate="'required'"
+                data-vv-as="field"
+                label="Afectación igv"
+                :options="igvs"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+          </q-card-section>
+          <q-card-section class="row justify-between q-col-gutter-sm">
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+              <q-input
+                label="Cantidad"
+                type="number"
+                dense
+                outlined
+                v-model="amount"
+                @input="totalCalculateProduct"
+              />
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <q-input
+                label="Precio Unitario"
+                type="text"
+                dense
+                outlined
+                v-model="productSalePrice"
+                @input="totalCalculateProduct"
+              />
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <q-input
+                label="Total"
+                type="number"
+                dense
+                disable
+                outlined
+                :value="totalProduct"
+              />
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+              <q-input
+                label="Stock"
+                type="number"
+                dense
+                disable
+                outlined
+                :value="stockProduct"
+              />
+            </div>
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn label="Cerrar" color="negative" v-close-popup />
+            <q-btn label="Agregar" color="primary" type="submit" :disable="!buttonAdd"/>
+          </q-card-actions>
+        </q-form>
       </q-card>
     </q-dialog>
     <q-dialog
@@ -984,6 +1009,7 @@ export default {
       modalProductStock: false,
       selected: [],
       stockData: [],
+      stockProduct: 0,
       productSalePrice: null,
       columnsStock: [
         {
@@ -1183,7 +1209,8 @@ export default {
       totalProduct: 0,
       userSession: null,
       branchOfficeSession: null,
-      series: []
+      series: [],
+      buttonAdd: false
     }
   },
   computed: {
@@ -1456,6 +1483,10 @@ export default {
      */
     totalCalculateProduct () {
       this.totalProduct = this.productSalePrice * this.amount
+      this.validStock()
+    },
+    validStock () {
+      this.buttonAdd = this.stockProduct >= this.amount
     },
     /**
      * Selected product
@@ -1465,8 +1496,11 @@ export default {
       this.stock = value[0]
       this.productSalePrice = this.stock.sale_price
       this.totalProduct = this.stock.sale_price
+      this.stockProduct = this.stock.stock_product
+      this.validStock()
     },
     selectProuct (value) {
+      console.log(value)
       if (value.stock.length > 0) {
         this.selectProuctPrice(value.stock)
         this.selected = [value.stock[0]]
@@ -1650,8 +1684,9 @@ export default {
     getProducts (value, update) {
       this.$services.getData(['select-products'], {
         ...value,
+        filterReports: true,
         paginate: true,
-        perPage: 100
+        perPage: 30
       })
         .then(({ res }) => {
           update(() => {

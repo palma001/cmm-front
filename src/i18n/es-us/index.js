@@ -100,6 +100,7 @@ export default {
   },
 
   order: {
+    products: 'productos',
     newOrder: 'nuevo pedido',
     createBill: 'Facturar',
     client: 'cliente',

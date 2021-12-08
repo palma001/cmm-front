@@ -51,6 +51,15 @@ export const orderConfig = [
       },
       {
         tabulated: {
+          name: 'total',
+          align: 'left',
+          field: row => row.total,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
           name: 'products',
           align: 'center',
           visible: true,
@@ -62,15 +71,6 @@ export const orderConfig = [
             push: true,
             event: 'viewProduct'
           }
-        }
-      },
-      {
-        tabulated: {
-          name: 'total',
-          align: 'left',
-          field: row => row.total,
-          sortable: false,
-          visible: true
         }
       },
       {
