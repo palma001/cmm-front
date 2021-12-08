@@ -28,7 +28,7 @@ export default {
     errorDocumentNumber: 'Documento invalido',
     purchase: 'compras',
     settings: 'Configuración',
-    box: 'Caja',
+    box: 'tesorería',
     accounting: 'contabilidad'
   },
 
@@ -61,7 +61,7 @@ export default {
   // modules
   modules: {
     'accouting-plan': 'plan contable',
-    'debts-to-pay': 'cuentas por pagar',
+    'debits-to-pay': 'cuentas por pagar',
     'accounts-receivable': 'cuentas por cobrar',
     products: 'productos',
     budgetRequest: 'solicitud de cotización',
@@ -77,8 +77,8 @@ export default {
     category_module: 'Categoria',
     listModule: 'lista de modulos',
     'branch-offices': 'establecimientos',
-    newBilling: 'nuevo factura',
-    billing: 'facturas',
+    newBilling: 'nuevo comprobante',
+    billing: 'lista de comprobantes',
     categories: 'categorias',
     brands: 'marcas',
     clients: 'clientes',
@@ -129,6 +129,9 @@ export default {
   },
 
   quotation: {
+    paid_out: 'pagado',
+    products: 'productos',
+    pending: 'pendiente',
     createBill: 'facturar',
     newQuotation: 'nuevo cotización',
     client: 'cliente',
@@ -225,6 +228,7 @@ export default {
   },
 
   billing: {
+    products: 'productos',
     listAccounts: 'Cuentas por cobrar',
     serie_id: 'serie',
     paid_out: 'pagado',

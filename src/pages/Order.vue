@@ -22,9 +22,42 @@
           @search-data="searchData"
           @options="options"
           @createBill="createBill"
+          @viewProduct="viewProduct"
         />
       </div>
     </div>
+    <q-dialog v-model="viewProductModal">
+      <q-card v-if="orderSelected" style="width: 700px; max-width: 80vw;">
+        <q-card-section class="q-pb-xs">
+          <div class="text-h6">
+            Productos / {{ orderSelected.client.full_name }}
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-table
+            row-key="name"
+            wrap-cells
+            virtual-scroll
+            :data="orderSelected.order_details"
+            :columns="columns"
+            :filter="productFilter"
+          >
+            <template v-slot:top>
+              <q-space />
+              <q-input dense debounce="300" color="primary" v-model="productFilter">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+        </q-card-section>
+        <q-separator/>
+        <q-card-actions align="right">
+          <q-btn color="negative" label="Cerrar" size="md" @click="viewProductModal = false"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -39,6 +72,41 @@ export default {
   },
   data () {
     return {
+      orderSelected: null,
+      productFilter: '',
+      /**
+       * Columns Table
+       * @type {Array} column array
+       */
+      columns: [
+        {
+          name: 'cpd',
+          align: 'left',
+          label: 'C-P-D',
+          field: row => `${row.product.brand.name}-${row.product.code}-${row.product.supsec}`,
+          sortable: true
+        },
+        {
+          name: 'description',
+          align: 'left',
+          label: 'Descripción',
+          field: row => row.product.description,
+          sortable: true
+        },
+        {
+          name: 'amount',
+          label: 'Cantidad',
+          field: 'amount',
+          sortable: true
+        },
+        {
+          name: 'purchase_price',
+          label: 'Precio de compra',
+          field: 'purchase_price',
+          sortable: true
+        }
+      ],
+      viewProductModal: false,
       loadingTable: false,
       /**
        * Options pagination
@@ -82,6 +150,10 @@ export default {
     this.getBillElectronics()
   },
   methods: {
+    viewProduct (data) {
+      this.viewProductModal = true
+      this.orderSelected = data
+    },
     /**
      * Load data sorting
      * @param  {Object}

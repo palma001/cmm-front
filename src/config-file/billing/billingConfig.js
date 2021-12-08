@@ -114,6 +114,21 @@ export const billingConfig = [
       },
       {
         tabulated: {
+          name: 'products',
+          align: 'center',
+          visible: true,
+          button: {
+            icon: 'search',
+            color: 'orange',
+            type: 'button',
+            size: 'sm',
+            push: true,
+            event: 'viewProduct'
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'payment',
           align: 'center',
           visible: true,

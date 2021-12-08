@@ -202,7 +202,7 @@ const routes = [
       },
       {
         path: 'branch-offices',
-        name: 'BranchOffice',
+        name: 'BranchOffices',
         component: () => import('src/pages/BranchOffice.vue'),
         beforeEnter: validationSessionUnit
       },

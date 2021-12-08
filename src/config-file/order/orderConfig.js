@@ -51,6 +51,30 @@ export const orderConfig = [
       },
       {
         tabulated: {
+          name: 'products',
+          align: 'center',
+          visible: true,
+          button: {
+            icon: 'search',
+            color: 'orange',
+            type: 'button',
+            size: 'sm',
+            push: true,
+            event: 'viewProduct'
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'total',
+          align: 'left',
+          field: row => row.total,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
           name: 'options',
           align: 'center',
           visible: true,

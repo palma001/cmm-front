@@ -675,7 +675,6 @@ export default {
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.setRelationalData(this.productServices, [], this)
     this.getAttributeTypes()
-    this.$root.$on('change_branch_office', this.filterBranchOffice)
   },
   computed: {
     /**
@@ -686,9 +685,6 @@ export default {
   methods: {
     filterStock () {
       this.params.filterReports = this.value ? this.value : null
-      this.getProducts(this.params)
-    },
-    filterBranchOffice (branchOffice) {
       this.getProducts(this.params)
     },
     /**
@@ -906,9 +902,6 @@ export default {
       this.params.sortBy = data.sortBy ?? this.params.sortBy
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
-      this.params.dataFilter = {
-        branch_office_id: this.branchOffice.id
-      }
       this.optionPagination = data
       this.getProducts(this.params)
     },

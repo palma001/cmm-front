@@ -21,10 +21,44 @@
           @on-load-data="loadData"
           @search-data="searchData"
           @createBill="createBill"
+          @viewProduct="viewProduct"
           @options="options"
         />
       </div>
     </div>
+    <!-- Ventana Modal para el botón OPCIONES por cada registro de Comprobante-->
+    <q-dialog v-model="viewProductModal">
+      <q-card v-if="quotationSelected" style="width: 700px; max-width: 80vw;">
+        <q-card-section class="q-pb-xs">
+          <div class="text-h6">
+            Productos / {{ quotationSelected.client.full_name }}
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-table
+            row-key="name"
+            wrap-cells
+            virtual-scroll
+            :data="quotationSelected.quotation_details"
+            :columns="columns"
+            :filter="productFilter"
+          >
+            <template v-slot:top>
+              <q-space />
+              <q-input dense debounce="300" color="primary" v-model="productFilter">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+        </q-card-section>
+        <q-separator/>
+        <q-card-actions align="right">
+          <q-btn color="negative" label="Cerrar" size="md" @click="viewProductModal = false"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <div class="q-pa-md">
       <!-- <q-btn label="Filtro de Búsquedas" icon="keyboard_arrow_right" color="primary" @click="open('right')" />
       <q-dialog v-model="dialog" :position="position" seamless>
@@ -111,6 +145,40 @@ export default {
   },
   data () {
     return {
+      viewProductModal: false,
+      productFilter: '',
+      /**
+       * Columns Table
+       * @type {Array} column array
+       */
+      columns: [
+        {
+          name: 'cpd',
+          align: 'left',
+          label: 'C-P-D',
+          field: row => `${row.product.brand.name}-${row.product.code}-${row.product.supsec}`,
+          sortable: true
+        },
+        {
+          name: 'description',
+          align: 'left',
+          label: 'Descripción',
+          field: row => row.product.description,
+          sortable: true
+        },
+        {
+          name: 'amount',
+          label: 'Cantidad',
+          field: 'amount',
+          sortable: true
+        },
+        {
+          name: 'purchase_price',
+          label: 'Precio de compra',
+          field: 'purchase_price',
+          sortable: true
+        }
+      ],
       loadingTable: false,
       /**
        * Options pagination
@@ -142,6 +210,7 @@ export default {
           created_at: ''
         }
       },
+      quotationSelected: null,
       text: '',
       quotationConfig,
       visibleColumns: ['id', 'soap', 'dateEmission', 'dateExp', 'client', 'number', 'noteCd', 'state', 'user', 'coin', 'tGravado', 'tExportacion', 'tGratuita', 'tInafecta', 'tExonerado', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'paid', 'downloads', 'actions'],
@@ -182,6 +251,10 @@ export default {
     this.getBillElectronics()
   },
   methods: {
+    viewProduct (data) {
+      this.viewProductModal = true
+      this.quotationSelected = data
+    },
     /**
       * Get billing
       * @param {Object} data quotation selected

@@ -26,138 +26,40 @@
           @search-data="searchData"
           @viewNote="viewNote"
           @viewGuide="viewGuide"
+          @viewProduct="viewProduct"
         />
       </div>
     </div>
-    <div class="q-pa-md">
-      <!-- <q-btn label="Filtro de Búsquedas" icon="keyboard_arrow_right" color="primary" @click="open('right')" />
-      <q-dialog v-model="dialog" :position="position" seamless>
-        <q-card class="column full-height" style="width: 450px">
-          <q-toolbar>
-            <q-avatar>
-              <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg">
-            </q-avatar>
-
-            <q-toolbar-title><span class="text-weight-bold">Quasar</span> Framework</q-toolbar-title>
-
-            <q-btn flat round dense icon="close" v-close-popup />
-          </q-toolbar>
-
-          <q-card-section class="col scroll">
-            <div class="row q-col-gutter-sm">
-                <div class="col-6">
-                  <q-select outlined v-model="voucherType" :options="voucherTypes" label="Tipo de comprobante" dense />
-                </div>
-                <div class="col-6">
-                  <q-select outlined v-model="serie" :options="series" label="Serie" dense />
-                </div>
-            </div>
-            <div class="row q-col-gutter-sm q-mt-sm">
-                <div class="col-6">
-                  <q-input outlined v-model="text" label="Número" dense/>
-                </div>
-                <div class="col-6">
-                  <q-select outlined v-model="client" :options="clients" label="Clientes" dense />
-                </div>
-            </div>
-            <div class="row q-col-gutter-sm q-mt-sm">
-                <div class="col-6">
-                  <q-input v-model="date" filled type="date" hint="Fecha inicio" dense/>
-                </div>
-                <div class="col-6">
-                  <q-input v-model="date" filled type="date" hint="Fecha término" dense/>
-                </div>
-            </div>
-            <div class="row q-col-gutter-sm q-mt-sm">
-              <div class="col-6">
-                  <q-select outlined v-model="product" :options="products" label="Productos" dense />
-              </div>
-              <div class="col-6">
-                  <q-select outlined v-model="category" :options="categories" label="Categoria" dense />
-              </div>
-            </div>
-            <div class="row q-col-gutter-sm q-mt-sm">
-              <div class="col-6">
-                  <q-input v-model="date" filled type="date" hint="Fecha de emisión" dense />
-                </div>
-                <div class="col-6">
-                  <q-select rounded v-model="state" :options="states" label="Estado"  dense />
-                </div>
-            </div>
-            <div class="row q-col-gutter-sm q-mt-sm">
-              <div class="col-6">
-                  <q-input outlined v-model="text" label="Orden de compra" dense/>
-              </div>
-              <div class="col-6">
-                <q-toggle v-model="dense" label="Pendiente de pago" />
-              </div>
-            </div>
-          </q-card-section>
-          <q-separator/>
-          <q-card-actions align="center">
-            <q-btn color="primary" icon="search" label="Buscar" no-caps glossy/>
-            <q-btn color="primary" icon="highlight_off" label="Limpiar" no-caps glossy/>
-          </q-card-actions>
-        </q-card>
-      </q-dialog> -->
-    </div>
     <!-- Ventana Modal para el botón OPCIONES por cada registro de Comprobante-->
-    <q-dialog v-model="option">
-      <q-card style="width: 600px; max-width: 80vw;">
+    <q-dialog v-model="viewProductModal">
+      <q-card v-if="billSelected" style="width: 700px; max-width: 80vw;">
+        <q-card-section class="q-pb-xs">
+          <div class="text-h6">
+            Productos / {{ billSelected.serie.name }}-{{ billSelected.number }}
+          </div>
+        </q-card-section>
         <q-card-section>
-          <div class="text-h6">Comprobante: F0001-34</div>
+          <q-table
+            row-key="name"
+            wrap-cells
+            virtual-scroll
+            :data="billSelected.bill_electronic_details"
+            :columns="columns"
+            :filter="productFilter"
+          >
+            <template v-slot:top>
+              <q-space />
+              <q-input dense debounce="300" color="primary" v-model="productFilter">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
         </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <div>La factura F001-34, ha sido aceptada</div>
-          <br>
-          <div class="row q-col-gutter-sm">
-            <div class="col-3">
-              <q-btn
-                icon="print"
-                class="full-width"
-                label="Imprimir A4"
-                stack
-                glossy
-                color="primary"
-                no-caps
-                dense
-              />
-            </div>
-            <div class="col-3">
-              <q-btn icon="print" class="full-width" label="Imprimir Ticket 80 mm" stack glossy color="primary" no-caps dense/>
-            </div>
-            <div class="col-3">
-              <q-btn icon="print" class="full-width" label="Imprimir Ticket 50 mm" stack glossy color="primary" no-caps dense />
-            </div>
-            <div class="col-3">
-              <q-btn icon="print" class="full-width" label="Imprimir A5" stack glossy color="primary" no-caps dense />
-            </div>
-          </div>
-          <br>
-          <div class="row q-col-gutter-sm">
-            <div class="col-8">
-              <q-input outlined v-model="text" label="email" dense/>
-            </div>
-           <div class="col-4">
-              <q-btn color="primary" icon-right="mail" label="Enviar" no-caps/>
-            </div>
-          </div>
-          <br>
-          <div class="row q-col-gutter-sm">
-            <div class="col-2">
-              <q-input outlined v-model="text" label="Cód." dense/>
-            </div>
-            <div class="col-6">
-              <q-input outlined v-model="text" label="teléfono" dense/>
-            </div>
-            <div class="col-4">
-              <q-btn color="primary" icon="smartphone" label="Enviar" no-caps/>
-            </div>
-          </div>
-        </q-card-section>
+        <q-separator/>
         <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+          <q-btn color="negative" label="Cerrar" size="md" @click="viewProductModal = false"/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -353,6 +255,40 @@ export default {
   },
   data () {
     return {
+      productFilter: '',
+      /**
+       * Columns Table
+       * @type {Array} column array
+       */
+      columns: [
+        {
+          name: 'cpd',
+          align: 'left',
+          label: 'C-P-D',
+          field: row => `${row.product.brand.name}-${row.product.code}-${row.product.supsec}`,
+          sortable: true
+        },
+        {
+          name: 'description',
+          align: 'left',
+          label: 'Descripción',
+          field: row => row.product.description,
+          sortable: true
+        },
+        {
+          name: 'amount',
+          label: 'Cantidad',
+          field: 'amount',
+          sortable: true
+        },
+        {
+          name: 'purchase_price',
+          label: 'Precio de compra',
+          field: 'purchase_price',
+          sortable: true
+        }
+      ],
+      viewProductModal: false,
       columnsExcel: [
         {
           label: 'Fecha de creación',
@@ -493,6 +429,11 @@ export default {
     filterBranchOffice (branchOffice) {
       this.params.dataFilter.branch_office_id = branchOffice.id
       this.getBillElectronics(this.params)
+    },
+    viewProduct (data) {
+      this.viewProductModal = true
+      this.billSelected = data
+      console.log(data)
     },
     validationAmount (value) {
       return value !== '' && (Number(this.billSelected.total) - Number(this.totalPaid)) >= 0
