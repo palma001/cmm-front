@@ -1264,25 +1264,28 @@ export default {
         })
     },
     getDataApi () {
-      this.$services.getData(['ruc', this.documentNumber], {
-        documentType: this.documentType.name.toLowerCase()
-      })
-        .then(({ res }) => {
-          if (!res.data.error) {
-            if (res.data.nombre_o_razon_social) {
-              this.businessName = res.data.nombre_o_razon_social
-            } else {
-              const nameDivider = res.data.nombre_completo.split(' ')
-              this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
-              this.name = `${nameDivider[2]} ${nameDivider[3]}`
-            }
-          } else {
-            this.notify(this, res.data.error, 'negative', 'warning')
-            this.lastName = null
-            this.name = null
-            this.businessName = null
-          }
+      const r = this.documentType === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)' ? 'dni' : this.documentType === 'REGISTRO UNICO DE CONTRIBUYENTES' ? 'ruc' : null
+      if (r) {
+        this.$services.getData(['ruc', r], {
+          documentType: this.documentType.name.toLowerCase()
         })
+          .then(({ res }) => {
+            if (!res.data.error) {
+              if (res.data.nombre_o_razon_social) {
+                this.businessName = res.data.nombre_o_razon_social
+              } else {
+                const nameDivider = res.data.nombre_completo.split(' ')
+                this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
+                this.name = `${nameDivider[2]} ${nameDivider[3]}`
+              }
+            } else {
+              this.notify(this, res.data.error, 'negative', 'warning')
+              this.lastName = null
+              this.name = null
+              this.businessName = null
+            }
+          })
+      }
     },
     /**
      * Save Branch Office
