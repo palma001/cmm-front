@@ -947,7 +947,7 @@
             v-model="lastName"
             :error="errors.has('last_name')"
             :error-message="errors.first('last_name')"
-            v-if="documentType.name === 'DNI'"
+            v-if="documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)'"
           />
           <q-input
             label="Nombre o razon social"
@@ -959,7 +959,7 @@
             v-model="businessName"
             :error="errors.has('businessName')"
             :error-message="errors.first('businessName')"
-            v-if="documentType.name === 'RUC'"
+            v-if="documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES'"
           />
         </template>
       </dynamic-form>
@@ -1264,7 +1264,7 @@ export default {
         })
     },
     getDataApi () {
-      const r = this.documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)' ? 'dni' : this.documentType === 'REGISTRO UNICO DE CONTRIBUYENTES' ? 'ruc' : null
+      const r = this.documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)' ? 'dni' : this.documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES' ? 'ruc' : null
       if (r) {
         this.$services.getData(['ruc', this.documentNumber], {
           documentType: r
