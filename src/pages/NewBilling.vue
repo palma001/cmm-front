@@ -99,6 +99,7 @@
                 :label="ucwords($t('billing.voucher_type'))"
                 :options="voucherTypes"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
+                @filter="filterVoucherType"
                 @input="getSeries"
               >
                 <template v-slot:no-option>
@@ -461,6 +462,7 @@
               />
             </div>
             <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+
               <q-input
                 label="Stock"
                 type="number"
@@ -1535,7 +1537,6 @@ export default {
     */
     loadCreate () {
       this.getOpeationTypes()
-      this.getVoucherTypes()
       this.getCoins()
       this.getExchange()
     },
@@ -1764,7 +1765,7 @@ export default {
      */
     getCoins () {
       this.$services.getData(['coins'], {
-        sortField: 'id',
+        sortBy: 'id',
         sortOrder: 'desc'
       })
         .then(({ res }) => {
@@ -1775,12 +1776,21 @@ export default {
     /**
      * Get voucher types
      */
-    getVoucherTypes () {
-      this.$services.getData(['voucher-types'])
+    filterVoucherType (value, update) {
+      this.$services.getData(['voucher-types'], {
+        dataSearch: {
+          name: value,
+          number: value
+        },
+        paginate: true,
+        perPage: 100
+      })
         .then(({ res }) => {
-          this.voucherTypes = res.data
-          this.billing.voucherType = res.data[0]
-          this.getSeries()
+          update(() => {
+            this.voucherTypes = res.data.data
+            this.billing.voucherType = res.data.data[0]
+            this.getSeries()
+          })
         })
     },
     /**

@@ -60,7 +60,7 @@ export default {
   },
   // modules
   modules: {
-    'accouting-plan': 'plan contable',
+    'accounting-plan': 'plan contable',
     'debits-to-pay': 'cuentas por pagar',
     'accounts-receivable': 'cuentas por cobrar',
     products: 'productos',
@@ -96,6 +96,8 @@ export default {
     inventory: 'reporte inventario',
     kardex_valued: 'kardex valorizado',
     'kardex-valued': 'kardex valorizado',
+    'voucher-types': 'tipos de comprobante',
+    'documnet-types': 'tipos de documento',
     kardex: 'kardex'
   },
 
@@ -229,6 +231,7 @@ export default {
   },
 
   billing: {
+    book: 'plan contable',
     products: 'productos',
     listAccounts: 'Cuentas por cobrar',
     serie_id: 'serie',
@@ -474,6 +477,31 @@ export default {
     deleteSuccessfull: 'Categoría eliminada exitosamente',
     update: 'Editar Categoría',
     editSuccessfull: 'Categoría editada exitosamente'
+  },
+  voucherType: {
+    accounting_plan_id: 'plan contable',
+    name: 'nombre',
+    number: 'Número',
+    add: 'agregar tipo de comporbante',
+    list: 'tipo de comporbantes',
+    addSuccessfull: 'tipo de comprobante agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessFull: 'tipo de comprobante eliminada exitosamente',
+    update: 'Editar tipo de comprobante',
+    editSuccessfull: 'tipo de comprobante editada exitosamente'
+  },
+  documentType: {
+    name: 'nombre',
+    number: 'Número',
+    add: 'agregar tipo de documento',
+    list: 'tipo de documentos',
+    addSuccessfull: 'tipo de documento agregada exitosamente',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessFull: 'tipo de documento eliminada exitosamente',
+    update: 'Editar tipo de documento',
+    editSuccessfull: 'tipo de documento editada exitosamente'
   },
   product: {
     id: 'id',

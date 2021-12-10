@@ -241,6 +241,18 @@ const routes = [
         name: 'DebitsToPay',
         component: () => import('src/pages/DebitsToPay.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'voucher-types',
+        name: 'VoucherType',
+        component: () => import('src/pages/VoucherType.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'document-types',
+        name: 'DocumentType',
+        component: () => import('src/pages/DocumentType.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },

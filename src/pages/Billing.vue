@@ -27,6 +27,7 @@
           @viewNote="viewNote"
           @viewGuide="viewGuide"
           @viewProduct="viewProduct"
+          @viewPlan="viewPlan"
         />
       </div>
     </div>
@@ -61,6 +62,43 @@
         <q-card-actions align="right">
           <q-btn color="negative" label="Cerrar" size="md" @click="viewProductModal = false"/>
         </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="bookDialog">
+      <q-card class="my-card" flat bordered style="width: 700px; max-width: 80vw;" v-if="book">
+        <q-card-section class="q-pb-none">
+          <div class="text-h6">
+            Comprobante / {{ book.serie.name }}-{{ book.number }}
+          </div>
+        </q-card-section>
+        <q-card-section horizontal class="row">
+          <q-card-section class="col-6">
+            Debe
+            <q-list dense>
+              <q-item clickable v-ripple v-for="b in book.accounting_books.filter(b => b.account_type === 'debe')" :key="b.id">
+                <q-item-section>
+                  {{ b.accounting_plan.description }}
+                </q-item-section>
+                <q-item-section side>
+                  {{ b.amount }}
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card-section>
+          <q-card-section class="col-6">
+            Haber
+            <q-list dense>
+              <q-item clickable v-ripple v-for="b in book.accounting_books.filter(b => b.account_type === 'haber')" :key="b.id">
+                <q-item-section>
+                  {{ b.accounting_plan.description }}
+                </q-item-section>
+                <q-item-section side>
+                  {{ b.amount }}
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card-section>
+        </q-card-section>
       </q-card>
     </q-dialog>
     <!-- Ventana Modal para el botón PAGOS por cada registro de Comprobante-->
@@ -256,6 +294,7 @@ export default {
   data () {
     return {
       productFilter: '',
+      book: null,
       /**
        * Columns Table
        * @type {Array} column array
@@ -288,45 +327,8 @@ export default {
           sortable: true
         }
       ],
+      bookDialog: false,
       viewProductModal: false,
-      columnsExcel: [
-        {
-          label: 'Fecha de creación',
-          field: 'created_at_excel'
-        },
-        {
-          label: 'Cliente',
-          field: 'client_excel'
-        },
-        {
-          label: 'Cambio del dia',
-          field: 'exchange_rate'
-        },
-        {
-          label: 'Moneda',
-          field: 'coin_excel'
-        },
-        {
-          label: 'Tipo de comprobante',
-          field: 'voucher_type_excel'
-        },
-        {
-          label: 'Serie',
-          field: 'serie_excel'
-        },
-        {
-          label: 'Fecha de expiración',
-          field: 'expiration_date_excel'
-        },
-        {
-          label: 'igv',
-          field: 'igv'
-        },
-        {
-          label: 'Total',
-          field: 'total'
-        }
-      ],
       active: true,
       loadingPayment: false,
       loadingTable: false,
@@ -413,22 +415,13 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
-    // getExcel () {
-    //   const data = XLSX.utils.json_to_sheet(this.columnsExcel)
-    //   const workbook = XLSX.utils.book_new()
-    //   const filename = 'devschile-admins'
-    //   data.A1.v = 'Fecha:'
-    //   data.B1.v = date.formatDate(new Date(), 'YYYY')
-    //   data.A2.v = 'Ruc:'
-    //   data.B2.v = '26720270'
-    //   data.A3.v = 'APELLIDO Y NOMBRES, DENOMINACIÓN O RAZON SOCIAL:'
-    //   data.B3.v = this.branchOfficeSession.name
-    //   XLSX.utils.book_append_sheet(workbook, data, filename)
-    //   XLSX.writeFile(workbook, `${filename}.xlsx`)
-    // },
     filterBranchOffice (branchOffice) {
       this.params.dataFilter.branch_office_id = branchOffice.id
       this.getBillElectronics(this.params)
+    },
+    viewPlan (data) {
+      this.book = data
+      this.bookDialog = true
     },
     viewProduct (data) {
       this.viewProductModal = true
