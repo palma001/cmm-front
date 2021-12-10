@@ -1264,10 +1264,9 @@ export default {
         })
     },
     getDataApi () {
-      const r = this.documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)' ? 'dni' : this.documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES' ? 'ruc' : null
-      console.log(r)
+      const r = this.documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)' ? 'dni' : this.documentType === 'REGISTRO UNICO DE CONTRIBUYENTES' ? 'ruc' : null
       if (r) {
-        this.$services.getData(['ruc', r], {
+        this.$services.getData(['ruc', this.documentNumber], {
           documentType: r
         })
           .then(({ res }) => {
