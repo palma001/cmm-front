@@ -985,7 +985,7 @@ export default {
         coin_id: this.coin.id,
         exchange_rate: this.billing.exchange,
         igv: 18,
-        expiration_date: date.formatDate(this.billing.expiration_date, 'YYYY-MM-DD'),
+        expiration_date: this.billing.expiration_date,
         bill_electronic_details: this.dataProduct,
         bill_electronic_guides: [],
         bill_fees: this.fees,

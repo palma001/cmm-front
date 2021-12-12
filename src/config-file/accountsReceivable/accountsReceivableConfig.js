@@ -35,7 +35,7 @@ export const accountsReceivableConfig = [
         tabulated: {
           name: 'expiration_date',
           align: 'left',
-          field: row => date.formatDate(row.expiration_date, 'DD-MM-YYYY'),
+          field: row => date.formatDate(`${row.expiration_date} 12:00:00`, 'DD-MM-YYYY'),
           sortable: true,
           visible: true
         }
