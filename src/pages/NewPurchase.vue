@@ -37,7 +37,7 @@
         <q-card-section class="q-pb-none">
           <div class="row justify-between q-col-gutter-sm">
             <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
-              <q-select
+             <q-select
                 use-input
                 hide-selected
                 fill-input
@@ -56,6 +56,7 @@
                 :label="ucwords($t('purchase.voucher_type'))"
                 :options="voucherTypes"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
+                @filter="filterVoucherType"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -1088,7 +1089,6 @@ export default {
       this.stock = {}
       this.modalProduct = false
       this.modalPaid = false
-      this.getVoucherTypes()
       this.getCoins()
       this.resetValidations(this.$refs.formPurchase)
     },
@@ -1204,7 +1204,6 @@ export default {
      * Load data
     */
     loadCreate () {
-      this.getVoucherTypes()
       this.getCoins()
       this.getExchange()
     },
@@ -1451,11 +1450,21 @@ export default {
     /**
      * Get voucher types
      */
-    getVoucherTypes () {
-      this.$services.getData(['voucher-types'])
+    filterVoucherType (value, update) {
+      this.$services.getData(['voucher-types'], {
+        forAccountingPlan: true,
+        dataSearch: {
+          name: value,
+          number: value
+        },
+        paginate: true,
+        perPage: 100
+      })
         .then(({ res }) => {
-          this.voucherTypes = res.data
-          this.purchase.voucherType = res.data[0]
+          update(() => {
+            this.voucherTypes = res.data.data
+            this.purchase.voucherType = res.data.data[0]
+          })
         })
     },
     /**

@@ -232,6 +232,9 @@
                   <q-td>
                     <q-btn size="xs" color="negative" icon="close" @click="deleteProduct(props.row)"/>
                   </q-td>
+                  <q-td key="item" :props="props">
+                    {{ props.row.item }}
+                  </q-td>
                   <q-td key="description" :props="props">
                     {{ props.row.description }}
                   </q-td>
@@ -752,6 +755,12 @@ export default {
           sortable: true
         },
         {
+          name: 'item',
+          label: 'N. Item',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
           name: 'price',
           label: 'Precio Unitario',
           field: 'price',
@@ -1139,6 +1148,7 @@ export default {
       const percentage = this.getPercentage(this.productSalePrice, 18)
       this.totalProduct = this.totalProduct * this.amount
       array.push({
+        item: this.dataProduct.length + 1,
         product_id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,

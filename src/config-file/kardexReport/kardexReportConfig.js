@@ -24,9 +24,27 @@ export const kardexReportConfig = [
       },
       {
         tabulated: {
+          name: 'voucher_type',
+          align: 'left',
+          field: row => row.voucher_type.name,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
           name: 'transaction_type',
           align: 'left',
           field: row => row.purchase_id ? 'Compra' : 'Venta',
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'item',
+          align: 'left',
+          field: row => row.item,
           sortable: false,
           visible: true
         }

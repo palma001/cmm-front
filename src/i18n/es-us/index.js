@@ -336,7 +336,8 @@ export default {
     amount: 'Entrada + / Salida -',
     product: 'producto',
     transaction_type: 'Tipo de transacción',
-    stock: 'saldo'
+    stock: 'saldo',
+    item: 'N. Item'
   },
 
   inventoryReport: {
