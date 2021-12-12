@@ -234,6 +234,7 @@ export default {
     book: 'plan contable',
     products: 'productos',
     listAccounts: 'Cuentas por cobrar',
+    purchase_price: 'base imponible',
     serie_id: 'serie',
     paid_out: 'pagado',
     pending: 'pendiente',
@@ -480,6 +481,7 @@ export default {
   },
   voucherType: {
     accounting_plan_id: 'plan contable',
+    accounting_plan: 'plan contable',
     name: 'nombre',
     number: 'Número',
     add: 'agregar tipo de comporbante',

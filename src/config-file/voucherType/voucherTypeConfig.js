@@ -86,7 +86,7 @@ export const voucherType = [
           visible: true
         },
         actionable: {
-          propTag: 'accounting_plan_id',
+          propTag: 'accounting_plan',
           addible: true,
           editable: true,
           type: 'String',
@@ -113,7 +113,7 @@ export const voucherType = [
               {
                 name: 'validate',
                 value: {
-                  required: true
+                  required: false
                 }
               }
             ]
@@ -209,7 +209,7 @@ export const propsPanelEdition = {
 
 export const relationalDataConfiguration = [
   {
-    targetPropTag: 'accounting_plan_id',
+    targetPropTag: 'accounting_plan',
     entity: 'accounting_plan',
     services: ['accounting-plans'],
     propData: 'data',

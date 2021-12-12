@@ -37,7 +37,7 @@ export const billingConfig = [
           align: 'left',
           field: row => date.formatDate(row.expiration_date, 'DD-MM-YYYY'),
           sortable: true,
-          visible: true
+          visible: false
         }
       },
       {
@@ -55,7 +55,7 @@ export const billingConfig = [
           align: 'left',
           field: row => row.seller.full_name,
           sortable: false,
-          visible: true
+          visible: false
         }
       },
       {
@@ -73,16 +73,25 @@ export const billingConfig = [
           align: 'left',
           field: row => row.operation_type.name,
           sortable: false,
-          visible: true
+          visible: false
         }
       },
       {
         tabulated: {
           name: 'igv',
           align: 'left',
-          field: row => row.igv,
+          field: row => row.total_igv,
           sortable: true,
-          visible: false
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'purchase_price',
+          align: 'left',
+          field: row => row.purchase_price.toFixed(2),
+          sortable: false,
+          visible: true
         }
       },
       {
@@ -90,24 +99,6 @@ export const billingConfig = [
           name: 'total',
           align: 'left',
           field: row => row.total.toFixed(2),
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'paid_out',
-          align: 'left',
-          field: row => row.paid_out.toFixed(2),
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'pending',
-          align: 'left',
-          field: row => row.pending.toFixed(2),
           sortable: false,
           visible: true
         }

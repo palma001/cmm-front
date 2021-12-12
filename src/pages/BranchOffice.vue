@@ -287,7 +287,9 @@ export default {
      * Get voucher types
      */
     getVoucherTypes () {
-      this.$services.getData(['voucher-types'])
+      this.$services.getData(['voucher-types'], {
+        forAccountingPlan: true
+      })
         .then(({ res }) => {
           this.voucherTypes = res.data
           this.voucherType = res.data[0]
