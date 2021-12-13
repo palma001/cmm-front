@@ -336,8 +336,11 @@ export default {
     amount: 'Entrada + / Salida -',
     product: 'producto',
     transaction_type: 'Tipo de transacción',
+    voucher_type: 'Tipo de comprobante',
     stock: 'saldo',
-    item: 'N. Item'
+    item: 'N. Item',
+    serie: 'serie',
+    providerOrClient: 'Proveerdor o Cliente'
   },
 
   inventoryReport: {

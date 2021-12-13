@@ -71,34 +71,6 @@
             Comprobante / {{ book.serie.name }}-{{ book.number }}
           </div>
         </q-card-section>
-        <q-card-section horizontal class="row">
-          <q-card-section class="col-6">
-            Debe
-            <q-list dense>
-              <q-item clickable v-ripple v-for="b in book.accounting_books.filter(b => b.account_type === 'debe')" :key="b.id">
-                <q-item-section>
-                  {{ b.accounting_plan.description }}
-                </q-item-section>
-                <q-item-section side>
-                  {{ b.amount }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card-section>
-          <q-card-section class="col-6">
-            Haber
-            <q-list dense>
-              <q-item clickable v-ripple v-for="b in book.accounting_books.filter(b => b.account_type === 'haber')" :key="b.id">
-                <q-item-section>
-                  {{ b.accounting_plan.description }}
-                </q-item-section>
-                <q-item-section side>
-                  {{ b.amount }}
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card-section>
-        </q-card-section>
       </q-card>
     </q-dialog>
     <!-- Ventana Modal para el botón PAGOS por cada registro de Comprobante-->

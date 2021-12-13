@@ -205,7 +205,7 @@ export default {
       this.$services.getData(['products'], {
         ...value,
         paginate: true,
-        perPage: 100
+        perPage: 10
       })
         .then(({ res }) => {
           update(() => {
