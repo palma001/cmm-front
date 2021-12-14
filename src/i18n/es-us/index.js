@@ -61,9 +61,14 @@ export default {
   // modules
   modules: {
     'accounting-plan': 'plan contable',
+    formatRegisterSaleSunat: 'Formato 14.1: Registro de ventas e ingresos - SUNAT',
+    formatRegisterPurchaseSunat: 'Formato 8.1: Registro de compras - SUNAT',
+    accountingSeatPurchase: 'Asiento contable de compra',
+    accountingSeatSale: 'Asiento contable de venta',
     'debits-to-pay': 'cuentas por pagar',
     'accounts-receivable': 'cuentas por cobrar',
     products: 'productos',
+    formatRegisterSunat: 'formato 14.1: registro de ventas e ingresos - SUNAT',
     budgetRequest: 'solicitud de cotización',
     provider: 'proveedores',
     users: 'usuarios',
