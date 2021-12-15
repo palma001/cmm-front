@@ -255,9 +255,9 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
-        path: 'accounting-seat-purchase',
-        name: 'AccountingSeatPurchase',
-        component: () => import('src/pages/AccountingSeatPurchase.vue'),
+        path: 'accounting-seat',
+        name: 'AccountingSeat',
+        component: () => import('src/pages/AccountingSeat.vue'),
         beforeEnter: validationSessionUnit
       }
     ]

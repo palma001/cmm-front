@@ -178,6 +178,9 @@
         </q-splitter>
       </q-card-section>
     </q-card>
+    <q-inner-loading :showing="loadingSeat">
+      <q-spinner-gears size="100px" color="primary"/>
+    </q-inner-loading>
   </q-page>
 </template>
 <script>
@@ -308,7 +311,7 @@ export default {
      * Get all voucherType
      */
     getAccountingBook (params = this.params) {
-      this.loadingTable = true
+      this.loadingSeat = true
       this.$services.getData(['accounting-books'], params)
         .then(({ res }) => {
           this.seatAll = res.data
