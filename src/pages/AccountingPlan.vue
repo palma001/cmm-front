@@ -50,61 +50,7 @@
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
-      >
-        <template>
-          <div class="text-h6">
-            Series
-          </div>
-          <div class="row q-col-gutter-sm q-gutter-y-sm" v-for="serie in series" :key="serie.id">
-            <div class="col-6">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                input-debounce="0"
-                name="voucherType"
-                autocomplete="off"
-                ref="voucherTypeRef"
-                v-model="serie.voucher_type"
-                option-label="name"
-                :label="ucwords($t('billing.voucher_type'))"
-                :options="voucherTypes"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-6">
-              <q-input
-                v-model="serie.name"
-                outlined
-                dense
-                label="Nombre de la serie"
-                type="text"
-              />
-            </div>
-          </div>
-          <div class="row q-mt-sm">
-            <div class="col-12 text-right">
-              <q-btn
-                dense
-                round
-                icon="add"
-                color="primary"
-                @click="addSerie"
-              />
-            </div>
-          </div>
-        </template>
-      </dynamic-form-edition>
+      />
     </q-dialog>
     <q-dialog
       position="right"

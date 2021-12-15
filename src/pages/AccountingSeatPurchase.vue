@@ -4,27 +4,48 @@
       <div class="col-5 q-gutter-sm">
         <q-card>
           <q-card-section class="row q-col-gutter-x-xs q-py-sm">
-            <div class="col-6">
-              <q-input
+            <div class="col-5">
+              <q-select
+                use-input
+                hide-selected
+                fill-input
                 outlined
-                :value="`${seatSelected.accounting_plan.code} ${seatSelected.accounting_plan.description}`"
-                label="Sub Diario"
+                clearable
                 dense
-              />
+                autocomplete="off"
+                v-model="originAccount"
+                option-value="id"
+                option-label="description"
+                label="Origen de cuenta"
+                :options="originAccounts"
+                @filter="filterOriginAccounts"
+                @input="getSeat"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
             </div>
             <div class="col-3">
               <q-input
                 outlined
-                v-model="seatSelected.id"
+                v-model="seatData"
                 label="Asiento"
                 type="number"
+                min="1"
+                :max="seatAmount"
+                @input="goSeat"
                 dense
               />
             </div>
-            <div class="col-3">
+            <div class="col-4">
               <q-input
                 outlined
-                v-model="seatSelected.created_at"
+                :value="seatSelected ? formatDate(seatSelected.created_at) : null"
                 label="Fecha"
                 dense
                 type="date"
@@ -35,7 +56,7 @@
             <div class="col-7">
               <q-input
                 outlined
-                v-model="text"
+                :value="seatSelected ? seatSelected.billable.coin.name : ''"
                 label="Moneda"
                 dense
               />
@@ -43,13 +64,13 @@
             <div class="col-5">
               <q-input
                 outlined
-                v-model="text"
+                :value="seatSelected ? seatSelected.billable.exchange_rate : ''"
                 label="T/C"
                 dense
               />
             </div>
           </q-card-section>
-          <q-card-section class="row q-col-gutter-x-xs q-py-sm">
+          <!-- <q-card-section class="row q-col-gutter-x-xs q-py-sm">
             <div class="col-12">
               <q-input
                 outlined
@@ -58,7 +79,7 @@
                 dense
               />
             </div>
-          </q-card-section>
+          </q-card-section> -->
         </q-card>
         <q-card>
           <q-card-section class="row q-col-gutter-xs q-py-sm">
@@ -83,7 +104,7 @@
             <div class="col-6">
               <q-input
                 outlined
-                v-model="text"
+                :value="seatSelected ? seatSelected.billable.voucher_type.name : ''"
                 label="Tipo de documento"
                 dense
               />
@@ -91,7 +112,7 @@
             <div class="col-6">
               <q-input
                 outlined
-                v-model="text"
+                :value="seatSelected ? seatSelected.serie : ''"
                 label="Número del documento"
                 dense
               />
@@ -101,7 +122,8 @@
             <div class="col-6">
               <q-input
                 outlined
-                v-model="text"
+                type="date"
+                :value="seatSelected ? formatDate(seatSelected.billable.created_at) : null"
                 label="Fecha del documento"
                 dense
               />
@@ -109,25 +131,18 @@
             <div class="col-6">
               <q-input
                 outlined
-                v-model="text"
-                label="Fecha de vencimiento"
+                type="date"
+                :value="seatSelected ? formatDate(`${seatSelected.billable.expiration_date} 12:00:00`) : null"
                 dense
               />
             </div>
           </q-card-section>
           <q-card-section class="row q-col-gutter-xs q-py-sm">
-            <div class="col-6">
+            <div class="col-12">
               <q-input
                 outlined
-                v-model="text"
-                label="R.U.C"
-                dense
-              />
-            </div>
-            <div class="col-6">
-              <q-input
-                outlined
-                v-model="text"
+                :value="seatSelected ? seatSelected.user.full_name : ''"
+                label="Cliente/Proveedor"
                 dense
               />
             </div>
@@ -138,7 +153,7 @@
         <q-card>
           <q-card-section>
             <q-table
-              :data="seatSelected.accounting_book_details"
+              :data="seatSelected ? seatSelected.accounting_book_details : []"
               class="dense"
               :columns="columns"
               row-key="name"
@@ -157,6 +172,7 @@
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
+import { date } from 'quasar'
 export default {
   mixins: [mixins.containerMixin],
   components: {
@@ -166,14 +182,18 @@ export default {
   },
   data () {
     return {
+      text: '',
+      originAccount: null,
+      originAccounts: [],
       seatSelected: null,
       rows: [],
+      seatData: 0,
       /**
        * Params search
        * @type {Object}
        */
       params: {
-        paginated: true,
+        paginated: false,
         sortBy: 'id',
         sortOrder: 'desc',
         perPage: 1,
@@ -207,13 +227,19 @@ export default {
           label: 'Haber S/.',
           field: row => row.account_type === 'haber' ? row.amount : '-'
         }
-      ]
+      ],
+      seatAll: [],
+      seatAmount: 1
     }
   },
   created () {
-    this.getAccountingBook()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+  },
+  watch: {
+    seatAll () {
+      this.seatAmount = this.seatAll.length
+    }
   },
   computed: {
     /**
@@ -222,14 +248,52 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    formatDate (data) {
+      if (data) {
+        return date.formatDate(data, 'YYYY-MM-DD')
+      }
+    },
+    getSeat (value) {
+      this.params.dataFilter = {
+        origin_account_id: value.id
+      }
+      this.getAccountingBook(this.params)
+    },
+    /**
+     * Get voucher types
+     */
+    filterOriginAccounts (value, update) {
+      this.$services.getData(['origin-accounts'], {
+        dataSearch: {
+          code: value,
+          description: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.originAccounts = res.data.data.map(origin => {
+              origin.description = `${origin.code} ${origin.description}`
+              return origin
+            })
+          })
+        })
+    },
+    goSeat (data) {
+      this.seatSelected = this.seatAll[Number(data) - 1]
+      console.log(this.seatSelected, this.seatData)
+    },
     /**
      * Get all voucherType
      */
     getAccountingBook (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['accounting-books'], this.params)
+      this.$services.getData(['accounting-books'], params)
         .then(({ res }) => {
-          this.seatSelected = res.data.data[res.data.data.length - 1]
+          this.seatAll = res.data
+          this.seatData = this.seatAll.length
+          this.seatSelected = this.seatAll[this.seatData - 1]
           this.loadingSeat = false
         })
         .catch(err => {
