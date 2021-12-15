@@ -1,167 +1,183 @@
 <template>
   <q-page padding>
-    <div class="row q-col-gutter-sm">
-      <div class="col-5 q-gutter-sm">
-        <q-card>
-          <q-card-section class="row q-col-gutter-x-xs q-py-sm">
-            <div class="col-5">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                autocomplete="off"
-                v-model="originAccount"
-                option-value="id"
-                option-label="description"
-                label="Origen de cuenta"
-                :options="originAccounts"
-                @filter="filterOriginAccounts"
-                @input="getSeat"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
+    <div class="text-h4">Asiento de cuentas</div>
+    <q-card>
+      <q-card-section>
+        <q-splitter
+          v-model="splitterModel"
+          style="height: 100%"
+        >
+          <template v-slot:before>
+            <div>
+              <q-card>
+                <q-card-section class="row q-col-gutter-x-xs q-py-sm">
+                  <div class="col-5">
+                    <q-select
+                      use-input
+                      hide-selected
+                      fill-input
+                      outlined
+                      clearable
+                      dense
+                      autocomplete="off"
+                      v-model="originAccount"
+                      option-value="id"
+                      option-label="description"
+                      label="Origen de cuenta"
+                      :options="originAccounts"
+                      @filter="filterOriginAccounts"
+                      @input="getSeat"
+                    >
+                      <template v-slot:no-option>
+                        <q-item>
+                          <q-item-section class="text-grey">
+                            No results
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </div>
+                  <div class="col-3">
+                    <q-input
+                      outlined
+                      v-model="seatData"
+                      label="Asiento"
+                      type="number"
+                      min="1"
+                      :max="seatAmount"
+                      @input="goSeat"
+                      dense
+                    />
+                  </div>
+                  <div class="col-4">
+                    <q-input
+                      outlined
+                      v-model="dateNow"
+                      label="Fecha"
+                      dense
+                      type="date"
+                      @input="getSeat"
+                    />
+                  </div>
+                </q-card-section>
+                <q-card-section class="row q-col-gutter-x-xs q-py-sm">
+                  <div class="col-7">
+                    <q-input
+                      outlined
+                      :value="seatSelected ? seatSelected.billable.coin.name : ''"
+                      label="Moneda"
+                      dense
+                    />
+                  </div>
+                  <div class="col-5">
+                    <q-input
+                      outlined
+                      :value="seatSelected ? seatSelected.billable.exchange_rate : ''"
+                      label="T/C"
+                      dense
+                    />
+                  </div>
+                </q-card-section>
+                <!-- <q-card-section class="row q-col-gutter-x-xs q-py-sm">
+                  <div class="col-12">
+                    <q-input
+                      outlined
+                      :value="`${seatSelected.register.code} ${seatSelected.register.description}`"
+                      label="L/Registro"
+                      dense
+                    />
+                  </div>
+                </q-card-section> -->
+              </q-card>
+              <q-card>
+                <q-card-section class="row q-col-gutter-xs q-py-sm">
+                  <div class="col-6">
+                    <q-input
+                      outlined
+                      v-model="text"
+                      label="Cuenta"
+                      dense
+                    />
+                  </div>
+                  <div class="col-6">
+                    <q-input
+                      outlined
+                      v-model="text"
+                      label="Libro"
+                      dense
+                    />
+                  </div>
+                </q-card-section>
+                <q-card-section class="row q-col-gutter-xs q-py-sm">
+                  <div class="col-6">
+                    <q-input
+                      outlined
+                      :value="seatSelected ? seatSelected.billable.voucher_type.name : ''"
+                      label="Tipo de documento"
+                      dense
+                    />
+                  </div>
+                  <div class="col-6">
+                    <q-input
+                      outlined
+                      :value="seatSelected ? seatSelected.serie : ''"
+                      label="Número del documento"
+                      dense
+                    />
+                  </div>
+                </q-card-section>
+                <q-card-section class="row q-col-gutter-xs q-py-sm">
+                  <div class="col-6">
+                    <q-input
+                      outlined
+                      type="date"
+                      :value="seatSelected ? formatDate(seatSelected.billable.created_at) : null"
+                      label="Fecha del documento"
+                      dense
+                    />
+                  </div>
+                  <div class="col-6">
+                    <q-input
+                      outlined
+                      type="date"
+                      label="Fecha del expiración"
+                      :value="seatSelected ? formatDate(`${seatSelected.billable.expiration_date} 12:00:00`) : null"
+                      dense
+                    />
+                  </div>
+                </q-card-section>
+                <q-card-section class="row q-col-gutter-xs q-py-sm">
+                  <div class="col-12">
+                    <q-input
+                      outlined
+                      :value="seatSelected ? seatSelected.user.full_name : ''"
+                      label="Cliente/Proveedor"
+                      dense
+                    />
+                  </div>
+                </q-card-section>
+              </q-card>
             </div>
-            <div class="col-3">
-              <q-input
-                outlined
-                v-model="seatData"
-                label="Asiento"
-                type="number"
-                min="1"
-                :max="seatAmount"
-                @input="goSeat"
-                dense
-              />
+          </template>
+          <template v-slot:after>
+            <div>
+              <q-card>
+                <q-card-section>
+                  <q-table
+                    dense
+                    row-key="name"
+                    :data="seatSelected ? seatSelected.accounting_book_details : []"
+                    :columns="columns"
+                    :rows-per-page-options="[0]"
+                    :pagination.sync="pagination"
+                  />
+                </q-card-section>
+              </q-card>
             </div>
-            <div class="col-4">
-              <q-input
-                outlined
-                :value="seatSelected ? formatDate(seatSelected.created_at) : null"
-                label="Fecha"
-                dense
-                type="date"
-              />
-            </div>
-          </q-card-section>
-          <q-card-section class="row q-col-gutter-x-xs q-py-sm">
-            <div class="col-7">
-              <q-input
-                outlined
-                :value="seatSelected ? seatSelected.billable.coin.name : ''"
-                label="Moneda"
-                dense
-              />
-            </div>
-            <div class="col-5">
-              <q-input
-                outlined
-                :value="seatSelected ? seatSelected.billable.exchange_rate : ''"
-                label="T/C"
-                dense
-              />
-            </div>
-          </q-card-section>
-          <!-- <q-card-section class="row q-col-gutter-x-xs q-py-sm">
-            <div class="col-12">
-              <q-input
-                outlined
-                :value="`${seatSelected.register.code} ${seatSelected.register.description}`"
-                label="L/Registro"
-                dense
-              />
-            </div>
-          </q-card-section> -->
-        </q-card>
-        <q-card>
-          <q-card-section class="row q-col-gutter-xs q-py-sm">
-            <div class="col-6">
-              <q-input
-                outlined
-                v-model="text"
-                label="Cuenta"
-                dense
-              />
-            </div>
-            <div class="col-6">
-              <q-input
-                outlined
-                v-model="text"
-                label="Libro"
-                dense
-              />
-            </div>
-          </q-card-section>
-          <q-card-section class="row q-col-gutter-xs q-py-sm">
-            <div class="col-6">
-              <q-input
-                outlined
-                :value="seatSelected ? seatSelected.billable.voucher_type.name : ''"
-                label="Tipo de documento"
-                dense
-              />
-            </div>
-            <div class="col-6">
-              <q-input
-                outlined
-                :value="seatSelected ? seatSelected.serie : ''"
-                label="Número del documento"
-                dense
-              />
-            </div>
-          </q-card-section>
-          <q-card-section class="row q-col-gutter-xs q-py-sm">
-            <div class="col-6">
-              <q-input
-                outlined
-                type="date"
-                :value="seatSelected ? formatDate(seatSelected.billable.created_at) : null"
-                label="Fecha del documento"
-                dense
-              />
-            </div>
-            <div class="col-6">
-              <q-input
-                outlined
-                type="date"
-                :value="seatSelected ? formatDate(`${seatSelected.billable.expiration_date} 12:00:00`) : null"
-                dense
-              />
-            </div>
-          </q-card-section>
-          <q-card-section class="row q-col-gutter-xs q-py-sm">
-            <div class="col-12">
-              <q-input
-                outlined
-                :value="seatSelected ? seatSelected.user.full_name : ''"
-                label="Cliente/Proveedor"
-                dense
-              />
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-7">
-        <q-card>
-          <q-card-section>
-            <q-table
-              :data="seatSelected ? seatSelected.accounting_book_details : []"
-              class="dense"
-              :columns="columns"
-              row-key="name"
-            />
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
+          </template>
+        </q-splitter>
+      </q-card-section>
+    </q-card>
   </q-page>
 </template>
 <script>
@@ -182,6 +198,11 @@ export default {
   },
   data () {
     return {
+      pagination: {
+        rowsPerPage: 0
+      },
+      dateNow: date.formatDate(new Date(), 'YYYY-MM-DD'),
+      splitterModel: 50,
       text: '',
       originAccount: null,
       originAccounts: [],
@@ -253,10 +274,10 @@ export default {
         return date.formatDate(data, 'YYYY-MM-DD')
       }
     },
-    getSeat (value) {
-      this.params.dataFilter = {
-        origin_account_id: value.id
-      }
+    getSeat () {
+      this.params.dataFilter = { origin_account_id: this.originAccount.id }
+      this.params.year = date.formatDate(this.dateNow, 'YYYY')
+      this.params.month = date.formatDate(this.dateNow, 'MM')
       this.getAccountingBook(this.params)
     },
     /**
@@ -282,7 +303,6 @@ export default {
     },
     goSeat (data) {
       this.seatSelected = this.seatAll[Number(data) - 1]
-      console.log(this.seatSelected, this.seatData)
     },
     /**
      * Get all voucherType
