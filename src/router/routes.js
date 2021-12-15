@@ -253,6 +253,12 @@ const routes = [
         name: 'DocumentType',
         component: () => import('src/pages/DocumentType.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'accounting-seat-purchase',
+        name: 'AccountingSeatPurchase',
+        component: () => import('src/pages/AccountingSeatPurchase.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },

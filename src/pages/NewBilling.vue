@@ -641,7 +641,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <excel-report/>
+    <!-- <excel-report/> -->
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -655,15 +655,15 @@ import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { client, propsPanelEdition, clientServices } from '../config-file/client/clientConfig.js'
 import DynamicForm from '../components/DynamicForm.vue'
-import ExcelReport from '../components/ExcelReport.vue'
+// import ExcelReport from '../components/ExcelReport.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
 export default {
   name: 'Billing',
   mixins: [mixins.containerMixin],
   components: {
-    DynamicForm,
-    ExcelReport
+    DynamicForm
+    // ExcelReport
     // DataTable
   },
   data () {
@@ -1279,7 +1279,7 @@ export default {
         ...value,
         filterReports: true,
         paginate: true,
-        perPage: 30
+        perPage: 10
       })
         .then(({ res }) => {
           update(() => {
