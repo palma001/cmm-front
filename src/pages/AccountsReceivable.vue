@@ -369,8 +369,8 @@ export default {
       totalPaid: 0,
       columsPay: [
         // { name: 'created_at', align: 'left', label: 'Fecha de Pago', field: 'created_at', sortable: true },
-        { name: 'payment_method', align: 'left', label: 'Método de Pago', field: 'payment_method', sortable: false },
         { name: 'payment_destination', align: 'left', label: 'Destino', field: 'payment_destination', sortable: false },
+        { name: 'payment_method', align: 'left', label: 'Método de Pago', field: 'payment_method', sortable: false },
         { name: 'reference', align: 'center', label: 'Referencia', field: 'reference', sortable: true },
         // { name: 'archive', align: 'center', label: 'Archivo', field: 'archive' },
         { name: 'amount', align: 'center', label: 'Monto', field: 'amount', sortable: true },

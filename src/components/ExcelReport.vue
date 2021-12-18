@@ -1,6 +1,20 @@
 <template>
   <div>
-    <table ref="tbl_export_table_to_xls" border="2">
+    <q-btn-dropdown color="primary" label="Tipo de archivo">
+      <q-list>
+        <q-item clickable v-close-popup @click="onItemClick('xlsx')">
+          <q-item-section>
+            <q-item-label>Excel</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-close-popup @click="onItemClick('txt')">
+          <q-item-section>
+            <q-item-label>Text</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-btn-dropdown>
+    <table border="2" v-if="tableRow" ref="tbl_export_table_to_xls">
       <thead>
         <tr>
           <th rowspan="3">Número correlativo del registro o código unico de la operación</th>
@@ -37,24 +51,24 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th>01</th>
-          <td>05-12-2021</td>
+        <tr v-for="d in data" :key="d.id">
+          <th>{{ d.id }}</th>
+          <td>{{ d.created_at }}</td>
+          <td>{{ d.expiration_date }}</td>
+          <td>{{ d.voucher_type.number }}</td>
+          <td>{{ d.serie.name }}</td>
+          <td>{{ d.number }}</td>
+          <td>{{ d.client.document_type.number }}</td>
+          <td>{{  d.client.document_number }}</td>
+          <td>{{ `${d.client.name} ${d.client.last_name}` }}</td>
           <td></td>
-          <td>01</td>
-          <td>F001</td>
-          <td>0000001</td>
-          <td>6</td>
-          <td>20603007868</td>
-          <td>DOMITEC SAC</td>
-          <td></td>
-          <td>100</td>
+          <td>{{ d.total_bill }}</td>
           <td></td>
           <td></td>
           <td></td>
-          <td>18</td>
+          <td>{{ d.total_igv }}</td>
           <td></td>
-          <td>118</td>
+          <td>{{ d.total }}</td>
           <td></td>
           <td></td>
           <td></td>
@@ -63,18 +77,37 @@
         </tr>
       </tbody>
     </table>
-    <q-btn color="teal" @click="exportToExcel('xlsx')"/>
   </div>
 </template>
 
 <script>
 import XLSX from 'xlsx'
 export default {
+  props: {
+    data: {
+      type: [],
+      require: true
+    }
+  },
+  data () {
+    return {
+      tableRow: false
+    }
+  },
   methods: {
-    exportToExcel (type, fn, dl) {
-      var elt = this.$refs.tbl_export_table_to_xls
-      var wb = XLSX.utils.table_to_book(elt, { sheet: 'sheet1' })
-      return dl ? XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) : XLSX.writeFile(wb, fn || ('Formato 8.1.' + (type || 'xlsx')))
+    // exportToExcel (type, fn, dl) {
+    //   var elt = this.$refs.tbl_export_table_to_xls
+    //   var wb = XLSX.utils.table_to_book(elt, { sheet: 'sheet1' })
+    //   return dl ? XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) : XLSX.writeFile(wb, fn || ('Formato 8.1.' + (type || 'xlsx')))
+    // }
+    onItemClick (type, fn, dl) {
+      this.tableRow = true
+      setTimeout(() => {
+        var elt = this.$refs.tbl_export_table_to_xls
+        var wb = XLSX.utils.table_to_book(elt, { sheet: 'sheet1' })
+        this.tableRow = false
+        return dl ? XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) : XLSX.writeFile(wb, fn || ('Formato 8.1.' + (type || 'xlsx')))
+      }, 20)
     }
   }
 }

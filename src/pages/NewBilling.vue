@@ -641,7 +641,6 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <!-- <excel-report/> -->
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>

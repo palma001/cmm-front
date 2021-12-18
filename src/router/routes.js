@@ -259,6 +259,12 @@ const routes = [
         name: 'AccountingSeat',
         component: () => import('src/pages/AccountingSeat.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'format-register-sale-Sunat',
+        name: 'FormatRegisterSaleSunat',
+        component: () => import('src/pages/FormatRegisterSaleSunat.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },
