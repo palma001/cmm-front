@@ -682,7 +682,7 @@
             v-model="name"
             :error="errors.has('name')"
             :error-message="errors.first('name')"
-            v-if="documentType.name === 'DNI'"
+            v-if="documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)'"
           />
           <q-input
             label="Apellido"
@@ -694,7 +694,7 @@
             v-model="lastName"
             :error="errors.has('last_name')"
             :error-message="errors.first('last_name')"
-            v-if="documentType.name === 'DNI'"
+            v-if="documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)'"
           />
           <q-input
             label="Nombre o razon social"
@@ -706,7 +706,7 @@
             v-model="businessName"
             :error="errors.has('businessName')"
             :error-message="errors.first('businessName')"
-            v-if="documentType.name === 'RUC'"
+            v-if="documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES'"
           />
           <q-input
             label="Estado"
@@ -718,7 +718,7 @@
             v-model="status"
             :error="errors.has('status')"
             :error-message="errors.first('status')"
-            v-if="documentType.name === 'RUC'"
+            v-if="documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES'"
           />
           <q-input
             label="Condición de residencia"
@@ -730,7 +730,7 @@
             v-model="residenceCondition"
             :error="errors.has('residenceCondition')"
             :error-message="errors.first('residenceCondition')"
-            v-if="documentType.name === 'RUC'"
+            v-if="documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES'"
           />
         </template>
       </dynamic-form>
@@ -971,8 +971,9 @@ export default {
         })
     },
     getDataApi () {
+      const r = this.documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)' ? 'dni' : this.documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES' ? 'ruc' : null
       this.$services.getData(['ruc', this.documentNumber], {
-        documentType: this.documentType.name.toLowerCase()
+        documentType: r
       })
         .then(({ res }) => {
           if (!res.data.error) {
