@@ -37,7 +37,6 @@
               v-model="billing.exchange"
               outlined
               dense
-              readonly
               label="Cambio del dia"
               type="text"
             />

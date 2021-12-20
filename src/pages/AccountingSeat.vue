@@ -314,7 +314,16 @@ export default {
       this.loadingSeat = true
       this.$services.getData(['accounting-books'], params)
         .then(({ res }) => {
-          this.seatAll = res.data
+          this.seatAll = res.data.map(re => {
+            if (re.billable.coin.acronym === 'USD') {
+              console.log(re)
+              re.accounting_book_details.map(seat => {
+                seat.amount = seat.amount * re.billable.exchange_rate
+                return seat
+              })
+            }
+            return re
+          })
           this.seatData = this.seatAll.length
           this.seatSelected = this.seatAll[this.seatData - 1]
           this.loadingSeat = false

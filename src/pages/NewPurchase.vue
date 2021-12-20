@@ -148,7 +148,6 @@
                 v-model="purchase.exchange"
                 outlined
                 dense
-                readonly
                 label="Cambio del dia"
                 type="text"
               >
@@ -1450,7 +1449,7 @@ export default {
      */
     getCoins () {
       this.$services.getData(['coins'], {
-        sortField: 'id',
+        sortBy: 'id',
         sortOrder: 'desc'
       })
         .then(({ res }) => {
