@@ -196,6 +196,9 @@
                   <q-td>
                     <q-btn size="xs" color="negative" icon="close" @click="deleteProduct(props)"/>
                   </q-td>
+                  <q-td key="item" :props="props">
+                    {{ props.row.item }}
+                  </q-td>
                   <q-td key="description" :props="props">
                     {{ props.row.description }}
                   </q-td>
@@ -815,6 +818,12 @@ export default {
           field: 'opciones'
         },
         {
+          name: 'item',
+          label: 'N. Item',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
           name: 'description',
           align: 'left',
           headerClasses: 'bg-primary text-white',
@@ -1228,6 +1237,7 @@ export default {
       const subtotal = this.priceSaleProduct * this.amount
       const igv = this.getPercentage(subtotal, 18)
       array.push({
+        item: this.dataProduct.length + 1,
         product_id: this.product.id,
         description: this.product.full_name,
         amount: this.amount,
@@ -1482,7 +1492,9 @@ export default {
     recalculate (data) {
       this.dataProduct.map(product => {
         if (product.product_id === data.product_id) {
-          product.subtotal = (data.amount * data.price) - data.discount
+          product.subtotal = (data.amount * data.purchase_price) - data.discount
+          product.igv = this.getPercentage(product.subtotal, 18)
+          product.total = Number(product.subtotal) + Number(product.igv)
           return product
         }
       })
