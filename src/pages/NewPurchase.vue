@@ -1497,7 +1497,7 @@ export default {
       let unitValue = 0
       this.dataProduct.forEach(element => {
         total = Number(total) + Number(element.subtotal)
-        igvTotal = (Number(igvTotal) + (Number(element.igv) * Number(element.amount)))
+        igvTotal = Number(igvTotal) + Number(element.igv)
         unitValue = (Number(unitValue) + (Number(element.purchase_price) * Number(element.amount)))
       })
       this.igvTotal = igvTotal.toFixed(2)

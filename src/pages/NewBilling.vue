@@ -735,6 +735,12 @@ export default {
           field: 'opciones'
         },
         {
+          name: 'item',
+          label: 'N. Item',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
           name: 'description',
           align: 'left',
           headerClasses: 'bg-primary text-white',
@@ -753,12 +759,6 @@ export default {
           name: 'purchase_price',
           label: 'Valor Unitario',
           field: 'purchase_price',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
-        },
-        {
-          name: 'item',
-          label: 'N. Item',
           headerClasses: 'bg-primary text-white',
           sortable: true
         },
@@ -1074,7 +1074,7 @@ export default {
      * Calculate subtotal products
      */
     totalCalculateProduct () {
-      this.totalProduct = this.productSalePrice * this.amount
+      this.totalProduct = this.productSalePrice * Number(this.amount)
       this.validStock()
     },
     validStock () {
@@ -1147,19 +1147,18 @@ export default {
      * @param {Array} array list porduct
      */
     pushArray (array) {
-      const percentage = this.getPercentage(this.productSalePrice, 18)
-      this.totalProduct = this.totalProduct * this.amount
+      const percentage = this.getPercentage(this.totalProduct, 18)
       array.push({
         item: this.dataProduct.length + 1,
         product_id: this.product.id,
         description: this.product.full_name,
-        amount: this.amount,
-        purchase_price: this.stock.purchase_price,
-        igv: isNaN(percentage) ? 0 : percentage,
-        price: this.productSalePrice,
-        discount: this.discount,
-        subtotal: this.totalProduct,
-        total: (this.totalProduct + Number(percentage)).toFixed(2),
+        amount: Number(this.amount),
+        purchase_price: Number(this.stock.purchase_price),
+        igv: isNaN(percentage) ? 0 : Number(percentage),
+        price: Number(this.productSalePrice),
+        discount: Number(this.discount),
+        subtotal: Number(this.totalProduct),
+        total: Number((this.totalProduct + Number(percentage)).toFixed(2)),
         user_created_id: this.userSession.id,
         warehouse_id: this.selected[0].warehouse_id
       })
@@ -1227,6 +1226,7 @@ export default {
       product.map(product => {
         if (product.product_id === index.id) {
           product.amount = Number(product.amount) + Number(this.amount) ?? Number(product.amount)
+          product.igv = this.getPercentage(product.subtotal, 18)
           this.recalculate(product)
           return product
         }
@@ -1404,6 +1404,8 @@ export default {
       this.dataProduct.map(product => {
         if (product.product_id === data.product_id) {
           product.subtotal = (data.amount * data.price) - data.discount
+          product.igv = this.getPercentage(product.subtotal, 18)
+          product.total = Number(product.subtotal) + Number(product.igv)
           return product
         }
       })
