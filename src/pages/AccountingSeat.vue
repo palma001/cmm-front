@@ -278,9 +278,13 @@ export default {
       }
     },
     getSeat () {
-      this.params.dataFilter = { origin_account_id: this.originAccount.id }
-      this.params.year = date.formatDate(this.dateNow, 'YYYY')
-      this.params.month = date.formatDate(this.dateNow, 'MM')
+      this.params = {
+        dataFilter: { origin_account_id: this.originAccount.id },
+        sortBy: 'id',
+        sortOrder: 'asc',
+        year: date.formatDate(this.dateNow, 'YYYY'),
+        month: date.formatDate(this.dateNow, 'MM')
+      }
       this.getAccountingBook(this.params)
     },
     /**
