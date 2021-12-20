@@ -130,40 +130,6 @@
                 >
                   <template v-slot:body="props">
                     <q-tr :props="props">
-                      <q-td key="payment_destination" :props="props">
-                        <span v-if="props.row.payment_destination">
-                          {{ props.row.payment_destination.name }}
-                        </span>
-                        <span v-else>
-                          -
-                        </span>
-                        <q-popup-edit
-                          v-model="props.row.payment_destination"
-                          auto-save
-                        >
-                          <q-select
-                            use-input
-                            hide-selected
-                            fill-input
-                            outlined
-                            clearable
-                            dense
-                            autofocus
-                            autocomplete="off"
-                            input-debounce="0"
-                            name="paymentDestination"
-                            ref="paymentDestinationRef"
-                            v-model="props.row.payment_destination"
-                            data-vv-as="field"
-                            option-value="id"
-                            option-label="name"
-                            label="Destino"
-                            :rules="[val => val || 'El campo metodo de pago es requerido']"
-                            :options="paymentDestinations"
-                            @filter="getPaymentDestinations"
-                          />
-                        </q-popup-edit>
-                      </q-td>
                       <q-td key="payment_method" :props="props">
                         <span v-if="props.row.payment_method">
                           {{ props.row.payment_method.name }}
@@ -195,6 +161,40 @@
                             :rules="[val => val || 'El campo metodo de pago es requerido']"
                             :options="paymentMethods"
                             @filter="getPaymentMethods"
+                          />
+                        </q-popup-edit>
+                      </q-td>
+                      <q-td key="payment_destination" :props="props">
+                        <span v-if="props.row.payment_destination">
+                          {{ props.row.payment_destination.name }}
+                        </span>
+                        <span v-else>
+                          -
+                        </span>
+                        <q-popup-edit
+                          v-model="props.row.payment_destination"
+                          auto-save
+                        >
+                          <q-select
+                            use-input
+                            hide-selected
+                            fill-input
+                            outlined
+                            clearable
+                            dense
+                            autofocus
+                            autocomplete="off"
+                            input-debounce="0"
+                            name="paymentDestination"
+                            ref="paymentDestinationRef"
+                            v-model="props.row.payment_destination"
+                            data-vv-as="field"
+                            option-value="id"
+                            option-label="name"
+                            label="Destino"
+                            :rules="[val => val || 'El campo metodo de pago es requerido']"
+                            :options="paymentDestinations"
+                            @filter="getPaymentDestinations"
                           />
                         </q-popup-edit>
                       </q-td>
@@ -273,44 +273,6 @@ export default {
   },
   data () {
     return {
-      columnsExcel: [
-        {
-          label: 'Fecha de creación',
-          field: 'created_at_excel'
-        },
-        {
-          label: 'Cliente',
-          field: 'client_excel'
-        },
-        {
-          label: 'Cambio del dia',
-          field: 'exchange_rate'
-        },
-        {
-          label: 'Moneda',
-          field: 'coin_excel'
-        },
-        {
-          label: 'Tipo de comprobante',
-          field: 'voucher_type_excel'
-        },
-        {
-          label: 'Serie',
-          field: 'serie_excel'
-        },
-        {
-          label: 'Fecha de expiración',
-          field: 'expiration_date_excel'
-        },
-        {
-          label: 'igv',
-          field: 'igv'
-        },
-        {
-          label: 'Total',
-          field: 'total'
-        }
-      ],
       active: true,
       loadingPayment: false,
       loadingTable: false,
@@ -369,8 +331,8 @@ export default {
       totalPaid: 0,
       columsPay: [
         // { name: 'created_at', align: 'left', label: 'Fecha de Pago', field: 'created_at', sortable: true },
-        { name: 'payment_destination', align: 'left', label: 'Destino', field: 'payment_destination', sortable: false },
         { name: 'payment_method', align: 'left', label: 'Método de Pago', field: 'payment_method', sortable: false },
+        { name: 'payment_destination', align: 'left', label: 'Destino', field: 'payment_destination', sortable: false },
         { name: 'reference', align: 'center', label: 'Referencia', field: 'reference', sortable: true },
         // { name: 'archive', align: 'center', label: 'Archivo', field: 'archive' },
         { name: 'amount', align: 'center', label: 'Monto', field: 'amount', sortable: true },
