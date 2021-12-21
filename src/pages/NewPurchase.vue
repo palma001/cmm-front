@@ -1631,13 +1631,15 @@ export default {
       this.totalUnitValue = unitValue.toFixed(2)
     },
     /**
-     * Calculate purchase total
+     * Calculate billing total
      */
     totalPayemnts () {
-      if (this.payments.length > 0) {
+      const data = this.tab === 'contado' ? this.payments : this.fees
+      if (data.length > 0) {
         let total = 0
-        this.payments.forEach(element => {
-          total = Number(total) + Number(element.paymentAmount)
+        data.forEach(element => {
+          const amount = this.tab === 'contado' ? element.paymentAmount : element.amount
+          total = Number(total) + Number(amount)
         })
         this.totalPaid = total
       } else {
