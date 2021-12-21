@@ -169,7 +169,7 @@
                 color="positive"
                 label="pagos"
                 style="height: 40px;"
-                :disable="dataProduct <= 0"
+                :disable="dataProduct.length <= 0"
                 @click="openOptionDialog('payments')"
               >
                 <q-badge color="negative" floating>
@@ -1147,6 +1147,7 @@ export default {
         purchase_payments: this.modelPayments(this.payments),
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
+        purchase_fees: this.fees,
         created_at: date.formatDate(this.purchase.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
       this.savePurchase(billModel)
@@ -1278,6 +1279,30 @@ export default {
         this.amount = 1
         this.totalProduct = 0
       }
+    },
+    /**
+     * Add fees to bill electronic
+     */
+    addFees () {
+      this.payments = []
+      this.fees.push({
+        amount: this.paymentAmount,
+        date: this.dateFees,
+        user_created_id: this.userSession.id
+      })
+      this.totalPayemnts()
+      this.paymentAmount = this.totalSale - this.totalPaid
+      this.resetValidations(this.$refs.fees)
+    },
+
+    /**
+     * Delete payment
+     * @param {Number} index indiex payment
+     */
+    deleteFees (index) {
+      this.fees.splice(index, 1)
+      this.totalPayemnts()
+      this.paymentAmount = this.totalSale - this.totalPaid
     },
     /**
      * Get Data in exchange
