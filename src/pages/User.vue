@@ -195,7 +195,6 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.document_type_id = data.document_type.value
       data.roles = this.modelRole(data)
       this.loadingForm = true
       this.$services.postData(['users'], data)
