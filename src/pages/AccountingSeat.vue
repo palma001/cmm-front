@@ -156,6 +156,19 @@
                     />
                   </div>
                 </q-card-section>
+                <q-card-section class="row q-col-gutter-xs q-py-sm">
+                  <div class="col-12">
+                    <q-input
+                      outlined
+                      v-model="comment"
+                      label="Glosa"
+                      dense
+                    />
+                  </div>
+                </q-card-section>
+                <q-card-actions align="right">
+                  <q-btn @click="saveAccountingBook" color="primary" label="Guardar" class="q-mr-sm" />
+                </q-card-actions>
               </q-card>
             </div>
           </template>
@@ -210,6 +223,7 @@ export default {
       originAccount: null,
       originAccounts: [],
       seatSelected: null,
+      comment: null,
       rows: [],
       seatData: 0,
       /**
@@ -263,6 +277,9 @@ export default {
   watch: {
     seatAll () {
       this.seatAmount = this.seatAll.length
+    },
+    seatSelected (data) {
+      this.comment = data.comment
     }
   },
   computed: {
@@ -310,6 +327,16 @@ export default {
     },
     goSeat (data) {
       this.seatSelected = this.seatAll[Number(data) - 1]
+    },
+    saveAccountingBook () {
+      this.loadingSeat = true
+      this.$services.putData(['accounting-books', this.seatSelected.id], {
+        comment: this.comment
+      })
+        .then(({ res }) => {
+          this.loadingSeat = false
+          this.seatSelected = res.data
+        })
     },
     /**
      * Get all voucherType
