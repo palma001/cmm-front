@@ -441,176 +441,264 @@
             Agregar Pagos
           </div>
         </q-card-section>
-        <q-card-section
-          class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm"
-          v-for="(payment, index) in payments"
-          :key="payment.id"
-        >
-          <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="paymentMethod"
-              ref="paymentMethodRef"
-              v-model="payment.paymentMethod"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              label="Método de pago"
-              :options="paymentMethods"
-              @filter="getPaymentMethods"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-            <q-select
-              use-input
-              hide-selected
-              fill-input
-              outlined
-              clearable
-              dense
-              autocomplete="off"
-              input-debounce="0"
-              name="paymentDestination"
-              ref="paymentDestinationRef"
-              v-model="payment.paymentDestination"
-              data-vv-as="field"
-              option-value="id"
-              option-label="name"
-              label="Destino"
-              :options="paymentDestinations"
-              @filter="getPaymentDestinations"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Referencia" outlined dense v-model="payment.paymentReference"/>
-          </div>
-          <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-            <q-input label="Monto" outlined dense v-model="payment.paymentAmount" @input="totalPayemnts"/>
-          </div>
-          <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
-            <q-btn icon="close" dense round color="negative"  @click="deletePayment(index)"/>
-          </div>
-        </q-card-section>
-        <q-card-section v-if="(totalSale - totalPaid) > 0">
-          <q-form
-            @submit="addPayment"
-            class="row justify-between q-col-gutter-sm q-pa-none"
-            ref="addPayment"
+        <q-card-section>
+          <q-tabs
+            v-model="tab"
+            dense
+            class="bg-primary text-white shadow-2"
+            align="left"
+            narrow-indicator
           >
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                autocomplete="off"
-                input-debounce="0"
-                name="paymentMethod"
-                ref="paymentMethodRef"
-                v-model="paymentMethod"
-                data-vv-as="field"
-                option-value="id"
-                option-label="name"
-                label="Método de pago"
-                :rules="[val => val || 'El campo metodo de pago es requerido']"
-                :options="paymentMethods"
-                @filter="getPaymentMethods"
+            <q-tab name="contado" label="Contado"/>
+            <q-tab name="credito" label="Credito"/>
+          </q-tabs>
+          <q-tab-panels v-model="tab" animated>
+            <q-tab-panel name="contado">
+              <div
+                class="row justify-between q-col-gutter-x-sm q-py-xs q-mt-sm"
+                v-for="(payment, index) in payments"
+                :key="payment.id">
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                  <q-select
+                    use-input
+                    hide-selected
+                    fill-input
+                    outlined
+                    clearable
+                    dense
+                    autocomplete="off"
+                    input-debounce="0"
+                    name="paymentMethod"
+                    ref="paymentMethodRef"
+                    v-model="payment.paymentMethod"
+                    data-vv-as="field"
+                    option-value="id"
+                    option-label="name"
+                    label="Método de pago"
+                    :options="paymentMethods"
+                    @filter="getPaymentMethods"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No results
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                  <q-select
+                    use-input
+                    hide-selected
+                    fill-input
+                    outlined
+                    clearable
+                    dense
+                    autocomplete="off"
+                    input-debounce="0"
+                    name="paymentDestination"
+                    ref="paymentDestinationRef"
+                    v-model="payment.paymentDestination"
+                    data-vv-as="field"
+                    option-value="id"
+                    option-label="name"
+                    label="Destino"
+                    :options="paymentDestinations"
+                    @filter="getPaymentDestinations"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No results
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                  <q-input label="Referencia" outlined dense v-model="payment.paymentReference"/>
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                  <q-input label="Monto" outlined dense v-model="payment.paymentAmount" @input="totalPayemnts"/>
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                  <q-btn icon="close" dense round color="negative"  @click="deletePayment(index)"/>
+                </div>
+              </div>
+              <div v-if="(totalSale - totalPaid) > 0">
+                <q-form
+                  @submit="addPayment"
+                  class="row justify-between q-col-gutter-sm q-pa-none"
+                  ref="addPayment"
+                >
+                  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                    <q-select
+                      use-input
+                      hide-selected
+                      fill-input
+                      outlined
+                      clearable
+                      dense
+                      autocomplete="off"
+                      input-debounce="0"
+                      name="paymentMethod"
+                      ref="paymentMethodRef"
+                      v-model="paymentMethod"
+                      data-vv-as="field"
+                      option-value="id"
+                      option-label="name"
+                      label="Método de pago"
+                      :rules="[val => val || 'El campo metodo de pago es requerido']"
+                      :options="paymentMethods"
+                      @filter="getPaymentMethods"
+                    >
+                      <template v-slot:no-option>
+                        <q-item>
+                          <q-item-section class="text-grey">
+                            No results
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </div>
+                  <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                    <q-select
+                      use-input
+                      hide-selected
+                      fill-input
+                      outlined
+                      clearable
+                      dense
+                      autocomplete="off"
+                      input-debounce="0"
+                      name="paymentDestination"
+                      ref="paymentDestinationRef"
+                      v-model="paymentDestination"
+                      data-vv-as="field"
+                      option-value="id"
+                      option-label="name"
+                      label="Destino"
+                      :rules="[val => val || 'El campo destino es requerido']"
+                      :options="paymentDestinations"
+                      @filter="getPaymentDestinations"
+                    >
+                      <template v-slot:no-option>
+                        <q-item>
+                          <q-item-section class="text-grey">
+                            No results
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </div>
+                  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                    <q-input
+                      label="Referencia"
+                      outlined
+                      dense
+                      v-model="paymentReference"
+                    />
+                  </div>
+                  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                    <q-input
+                      label="Monto"
+                      outlined
+                      dense
+                      :rules="[
+                        val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+                        val => 0 <= (totalSale - totalPaid) || 'El monto no puede superar el total a pagar'
+                      ]"
+                      v-model="paymentAmount"
+                      @input="totalPayemnts"
+                    />
+                  </div>
+                  <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                    <q-btn
+                      icon="add"
+                      dense
+                      round
+                      color="primary"
+                      type="submit"
+                    />
+                  </div>
+                </q-form>
+              </div>
+            </q-tab-panel>
+            <q-tab-panel name="credito">
+              <div
+                class="row q-col-gutter-x-sm q-py-xs q-mt-sm"
+                v-for="(feesOne, index) in fees"
+                :key="feesOne.id"
               >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <q-select
-                use-input
-                hide-selected
-                fill-input
-                outlined
-                clearable
-                dense
-                autocomplete="off"
-                input-debounce="0"
-                name="paymentDestination"
-                ref="paymentDestinationRef"
-                v-model="paymentDestination"
-                data-vv-as="field"
-                option-value="id"
-                option-label="name"
-                label="Destino"
-                :rules="[val => val || 'El campo destino es requerido']"
-                :options="paymentDestinations"
-                @filter="getPaymentDestinations"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-              <q-input
-                label="Referencia"
-                outlined
-                dense
-                v-model="paymentReference"
-              />
-            </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-              <q-input
-                label="Monto"
-                outlined
-                dense
-                :rules="[
-                  val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
-                  val => 0 <= (totalSale - totalPaid) || 'El monto no puede superar el total a pagar'
-                ]"
-                v-model="paymentAmount"
-                @input="totalPayemnts"
-              />
-            </div>
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
-              <q-btn
-                icon="add"
-                dense
-                round
-                color="primary"
-                type="submit"
-              />
-            </div>
-          </q-form>
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                  <q-input
+                    type="date"
+                    label="Fecha de cobro"
+                    outlined
+                    dense
+                    v-model="feesOne.date"
+                  />
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                  <q-input
+                    label="Monto"
+                    outlined
+                    dense
+                    v-model="feesOne.amount"
+                    @input="totalPayemnts"
+                  />
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                  <q-btn
+                    icon="close"
+                    color="negative"
+                    dense
+                    round
+                    @click="deleteFees(index)"
+                  />
+                </div>
+              </div>
+              <div v-if="(totalSale - totalPaid) > 0">
+                <q-form
+                  @submit="addFees"
+                  class="row q-col-gutter-sm"
+                  ref="fees"
+                >
+                  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                    <q-input
+                      type="date"
+                      label="Fecha de cobro"
+                      outlined
+                      dense
+                      v-model="dateFees"
+                    />
+                  </div>
+                  <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                    <q-input
+                      label="Monto"
+                      outlined
+                      dense
+                      v-model="paymentAmount"
+                      :rules="[
+                        val => val !== null && val !== '' && val !== 0 || 'El campo monto de pago es requerido',
+                        val => val <= (totalSale - totalPaid) || 'El monto no puede superar el total a pagar'
+                      ]"
+                    />
+                  </div>
+                  <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                    <q-btn
+                      icon="add"
+                      dense
+                      round
+                      color="primary"
+                      type="submit"
+                    />
+                  </div>
+                </q-form>
+              </div>
+            </q-tab-panel>
+          </q-tab-panels>
         </q-card-section>
         <q-card-section class="q-py-none">
           <q-list separator dense>
@@ -761,6 +849,9 @@ export default {
   },
   data () {
     return {
+      fees: [],
+      dateFees: null,
+      tab: 'contado',
       warehouse: null,
       loadingForm: false,
       priceSaleProduct: 0,
@@ -776,7 +867,6 @@ export default {
       documentTypes: [],
       value: false,
       description: null,
-      tab: 'payments',
       igvs: [{ label: 'Gravado - Operación Onerosa', value: 12 }],
       igv: { label: 'Gravado - Operación Onerosa', value: 12 },
       modalProduct: false,
@@ -1162,7 +1252,7 @@ export default {
         paymentMethod: this.paymentMethod
       })
       this.totalPayemnts()
-      this.paymentAmount = this.totalSale - this.totalPaid
+      this.paymentAmount = (this.totalSale - this.totalPaid).toFixed(2)
       this.paymentReference = null
       this.paymentDestination = null
       this.paymentMethod = null
