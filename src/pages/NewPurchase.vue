@@ -1052,8 +1052,12 @@ export default {
     this.setRelationalData(this.providerServices, [], this)
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
+    this.$root.$on('change_branch_office', this.filterBranchOffice)
   },
   methods: {
+    filterBranchOffice (branchOffice) {
+      this.branchOfficeSession = branchOffice
+    },
     /**
      * Get all provider
      */
@@ -1549,6 +1553,9 @@ export default {
       this.$services.getData(['warehouses'], {
         dataSearch: {
           name: value
+        },
+        dataFilter: {
+          branch_office_id: this.branchOfficeSession.id
         },
         paginate: true,
         perPage: 100

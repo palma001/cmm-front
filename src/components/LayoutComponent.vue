@@ -119,7 +119,7 @@
                   :rules="[val => val || 'El campo metodo de pago es requerido']"
                   :options="branchOffices"
                   @filter="getBranchOffices"
-                  @input="chanageBranchOffice"
+                  @input="changeBranchOffice"
                 />
               </q-popup-edit>
             </q-item-section>
@@ -288,7 +288,7 @@ export default {
           })
         })
     },
-    chanageBranchOffice () {
+    changeBranchOffice () {
       this.visibleLoading = true
       this.$store.commit(MUTATIONS.SET_BRANCH_OFFICE, this.branchOfficeSelected)
       setTimeout(() => {
