@@ -273,6 +273,7 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.$root.$on('change_branch_office', this.filterBranchOffice)
   },
   watch: {
     seatAll () {
@@ -289,6 +290,14 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    filterBranchOffice (branchOffice) {
+      this.params.dataFilter = {
+        branch_office_id: branchOffice.id
+      }
+      if (this.originAccount) {
+        this.getAccountingBook(this.params)
+      }
+    },
     formatDate (data) {
       if (data) {
         return date.formatDate(data, 'YYYY-MM-DD')
@@ -296,7 +305,10 @@ export default {
     },
     getSeat () {
       this.params = {
-        dataFilter: { origin_account_id: this.originAccount.id },
+        dataFilter: {
+          origin_account_id: this.originAccount.id,
+          branch_office_id: this.branchOffice.id
+        },
         sortBy: 'id',
         sortOrder: 'asc',
         year: date.formatDate(this.dateNow, 'YYYY'),
