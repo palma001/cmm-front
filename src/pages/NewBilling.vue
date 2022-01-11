@@ -1091,15 +1091,24 @@ export default {
       this.validStock()
     },
     selectProuct (value) {
-      console.log(value)
-      if (value.stock.length > 0) {
-        this.selectProductPrice(value.stock)
-        this.selected = [value.stock[0]]
+      if (value) {
+        if (value.stock.length > 0) {
+          this.selectProductPrice(value.stock)
+          this.selected = [value.stock[0]]
+        } else {
+          this.stock = {}
+          this.amount = 1
+          this.totalProduct = 0
+          this.resetProductData()
+        }
       } else {
-        this.stock = {}
-        this.amount = 1
-        this.totalProduct = 0
+        this.resetProductData()
       }
+    },
+    resetProductData () {
+      this.productSalePrice = 0
+      this.totalProduct = 0
+      this.stockProduct = 0
     },
     /**
      * Get Data in exchange
@@ -1140,6 +1149,7 @@ export default {
         this.pushArray(this.dataProduct, this.product)
       }
       this.totalCalculate()
+      this.resetProductData()
     },
     /**
      * Set data in table product

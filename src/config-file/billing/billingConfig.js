@@ -89,7 +89,7 @@ export const billingConfig = [
         tabulated: {
           name: 'purchase_price',
           align: 'left',
-          field: row => row.purchase_price.toFixed(2),
+          field: row => row.total_bill.toFixed(2),
           sortable: false,
           visible: true
         }
