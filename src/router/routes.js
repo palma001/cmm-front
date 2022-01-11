@@ -135,7 +135,7 @@ const routes = [
       },
       {
         path: 'credit-note/:id',
-        name: 'CreditNote',
+        name: 'NewCreditNote',
         component: () => import('pages/CreditNote.vue')
       },
       {
@@ -264,6 +264,12 @@ const routes = [
         path: 'format-register-sale-Sunat',
         name: 'FormatRegisterSaleSunat',
         component: () => import('src/pages/FormatRegisterSaleSunat.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'credit-notes',
+        name: 'CreditNote',
+        component: () => import('src/pages/ListCreditNote.vue'),
         beforeEnter: validationSessionUnit
       }
     ]

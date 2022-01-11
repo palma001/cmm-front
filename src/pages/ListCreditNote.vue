@@ -1,20 +1,12 @@
 <template>
   <q-page padding>
     <div class="row q-col-gutter-sm justify-end">
-      <div class="col-auto text-right q-gutter-xs">
-        <q-btn
-          color="primary"
-          icon="add_circle"
-          label="agregar factura"
-          @click="$router.push({ name: 'NewBilling' })"
-        />
-      </div>
       <div class="col-12">
         <data-table
           title="list"
-          module="billing"
+          module="creditNote"
           searchable
-          :column="billingConfig"
+          :column="creditNoteConfig"
           :data="data"
           :loading="loadingTable"
           :optionPagination="optionPagination"
@@ -34,17 +26,17 @@
     <!-- Ventana Modal para el botón OPCIONES por cada registro de Comprobante-->
     <q-dialog v-model="viewProductModal">
       <q-card v-if="billSelected" style="width: 700px; max-width: 80vw;">
-        <q-card-section class="q-pb-xs">
-          <div class="text-h6">
-            Productos / {{ billSelected.serie.name }}-{{ billSelected.number }}
-          </div>
+        <q-card-section class="row items-center q-pb-none" v-if="billSelected">
+          <div class="text-h6">Pagos de factura: {{billSelected.serie.name}}-{{ billSelected.number }}</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
         <q-card-section>
           <q-table
             row-key="name"
             wrap-cells
             virtual-scroll
-            :data="billSelected.bill_electronic_details"
+            :data="billSelected.credit_note_details"
             :columns="columns"
             :filter="productFilter"
           >
@@ -252,7 +244,7 @@
 
 <script>
 import { date } from 'quasar'
-import { billingConfig } from '../config-file/billing/billingConfig.js'
+import { creditNoteConfig } from '../config-file/creditNote/creditNoteConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -343,7 +335,7 @@ export default {
       },
       payments: [],
       text: '',
-      billingConfig,
+      creditNoteConfig,
       visibleColumns: ['id', 'soap', 'dateEmission', 'dateExp', 'client', 'number', 'noteCd', 'state', 'user', 'coin', 'tGravado', 'tExportacion', 'tGratuita', 'tInafecta', 'tExonerado', 'tGravado', 'tIgv', 'total', 'saldo', 'ordenCompra', 'paid', 'downloads', 'actions'],
       data: [],
       dialog: false,
@@ -397,14 +389,14 @@ export default {
     },
     viewProduct (data) {
       this.viewProductModal = true
-      this.billSelected = data
-      console.log(data)
+      this.billSelected = data.bill_electronic
+      this.billSelected.credit_note_details = data.credit_note_details
     },
     validationAmount (value) {
       return value !== '' && (Number(this.billSelected.total) - Number(this.totalPaid)) >= 0
     },
     /**
-     * Calculate billing total
+     * Calculate creditNote total
      */
     totalPayements () {
       let total = 0
@@ -435,7 +427,7 @@ export default {
             created_at: payment.created_at
           }
         } else {
-          this.notify(this, 'billing.saveErrorPayment', 'negative', 'warning')
+          this.notify(this, 'creditNote.saveErrorPayment', 'negative', 'warning')
         }
       })
     },
@@ -538,12 +530,12 @@ export default {
      */
     viewPayment (data) {
       this.pay = true
-      this.billSelected = data
-      this.payments = data.bill_electronic_payments
+      this.billSelected = data.bill_electronic
+      this.payments = this.billSelected.bill_electronic_payments
       this.totalPayements()
     },
     viewNote (data) {
-      this.$router.push({ name: 'NewCreditNote', params: { id: data.id } })
+      this.$router.push({ name: 'CreditNote', params: { id: data.id } })
     },
     viewGuide (data) {
       this.$router.push({ name: 'ReferralGuide', params: { id: data.id, module: 'bill-electronics' } })
@@ -579,10 +571,10 @@ export default {
      */
     getBillElectronics () {
       this.loadingTable = true
-      this.$services.getData(['bill-electronics'], this.params)
+      this.$services.getData(['credit-notes'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
-          this.formatExcel(res.data.data)
+          console.log(this.data)
           this.loadingTable = false
           this.optionPagination.rowsNumber = res.data.total
         })
@@ -602,7 +594,7 @@ export default {
         bill_electronic_payments: this.modelPayments(this.payments)
       })
         .then(({ res }) => {
-          this.notify(this, 'billing.saveSuccessPayment', 'positive', 'mood')
+          this.notify(this, 'creditNote.saveSuccessPayment', 'positive', 'mood')
           this.loadingPayment = false
           this.getBillElectronics()
           this.pay = false
