@@ -179,6 +179,21 @@
             </div>
           </div>
         </q-card-section>
+        <q-card-section :class="$q.screen.lt.md ? 'q-py-sm' : 'q-pt-none q-pb-sm'">
+          <div class="row q-col-gutter-md">
+            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
+              <q-input
+                v-model="purchase.comment"
+                outlined
+                dense
+                label="Glosa"
+                type="textarea"
+                autogrow
+                :rules="[ val => val && val.length || 'Este campo es requerido']"
+              />
+            </div>
+          </div>
+        </q-card-section>
         <q-separator/>
         <q-card-section class="row justify-between q-col-gutter-sm">
           <div class="q-pa-xs col-xs-12 col-md-10 col-sm-12 col-lg-10">
@@ -1152,6 +1167,7 @@ export default {
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
         purchase_fees: this.fees,
+        comment: this.expense.comment,
         created_at: date.formatDate(this.purchase.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
       this.savePurchase(billModel)
