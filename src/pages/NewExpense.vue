@@ -27,7 +27,38 @@
         <q-separator/>
         <q-card-section class="q-pb-sm">
           <div class="row justify-between q-col-gutter-sm">
-            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
+            <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+              <q-select
+                use-input
+                hide-selected
+                fill-input
+                outlined
+                clearable
+                dense
+                input-debounce="0"
+                name="voucherType"
+                autocomplete="off"
+                ref="voucherTypeRef"
+                v-model="voucherType"
+                v-validate="'required'"
+                data-vv-as="field"
+                option-value="id"
+                option-label="name"
+                :label="ucwords($t('billing.voucher_type'))"
+                :options="voucherTypes"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                @filter="filterVoucherType"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-4">
               <q-select
                 use-input
                 hide-selected
@@ -231,6 +262,17 @@
                       />
                     </q-popup-edit>
                   </q-td>
+                  <q-td key="amount" :props="props">
+                    {{ props.row.amount }}
+                    <q-popup-edit v-model.number="props.row.amount" auto-save>
+                      <q-input
+                        type="number"
+                        dense
+                        autofocus
+                        v-model.number="props.row.amount"
+                      />
+                    </q-popup-edit>
+                  </q-td>
                   <q-td key="price" :props="props">
                     {{ props.row.price }}
                     <q-popup-edit v-model.number="props.row.price" auto-save>
@@ -241,6 +283,15 @@
                         v-model.number="props.row.price"
                       />
                     </q-popup-edit>
+                  </q-td>
+                  <q-td key="subtotal" :props="props">
+                    {{ props.row.subtotal }}
+                  </q-td>
+                  <q-td key="igv" :props="props">
+                    {{ props.row.igv }}
+                  </q-td>
+                  <q-td key="total" :props="props">
+                    {{ props.row.total }}
                   </q-td>
                 </q-tr>
               </template>
@@ -271,12 +322,20 @@
           <q-card-section>
             <div class="text-h6">Agregar Producto o Servicio</div>
           </q-card-section>
-          <q-card-section class="row justify-between q-col-gutter-x-sm">
+          <q-card-section class="row justify-between q-col-gutter-x-sm q-py-sm">
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
               <q-input outlined type="text" v-model="product.description" dense label="Descripción"/>
             </div>
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+              <q-input outlined type="number" v-model="product.amount" dense label="Cantidad"/>
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
               <q-input outlined type="text" v-model="product.price" dense label="Precio"/>
+            </div>
+          </q-card-section>
+          <q-card-section class="row justify-between q-col-gutter-x-sm q-py-sm">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-input outlined type="text" v-model="igv" dense label="% Igv"/>
             </div>
           </q-card-section>
           <q-card-actions align="right">
@@ -389,6 +448,12 @@ export default {
   },
   data () {
     return {
+      /**
+       * Type of vouchers
+       * @type {Array} type of vouchers
+       */
+      voucherTypes: [],
+      voucherType: null,
       accountingPlan: null,
       accountingPlans: [],
       product: {},
@@ -406,8 +471,6 @@ export default {
       value: false,
       description: null,
       tab: 'payments',
-      igvs: [{ label: 'Gravado - Operación Onerosa', value: 12 }],
-      igv: { label: 'Gravado - Operación Onerosa', value: 12 },
       modalProduct: false,
       loadingCLose: false,
       /**
@@ -443,9 +506,37 @@ export default {
           sortable: true
         },
         {
+          name: 'amount',
+          label: 'Cantidad',
+          field: 'amount',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
           name: 'price',
           label: 'Precio',
           field: 'price',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'subtotal',
+          label: 'Subtotal',
+          field: 'subtotal',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'igv',
+          label: 'Igv',
+          field: 'igv',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
+          name: 'total',
+          label: 'Total',
+          field: 'total',
           headerClasses: 'bg-primary text-white',
           sortable: true
         }
@@ -496,6 +587,7 @@ export default {
        * @type {Object} coin value
        */
       coin: null,
+      igv: 18,
       totalProduct: 0,
       userSession: null,
       branchOfficeSession: null
@@ -515,6 +607,26 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    /**
+     * Get voucher types
+     */
+    filterVoucherType (value, update) {
+      this.$services.getData(['voucher-types'], {
+        forAccountingPlan: true,
+        dataSearch: {
+          name: value,
+          number: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.voucherTypes = res.data.data
+            this.voucherType = res.data.data[0]
+          })
+        })
+    },
     /**
      * Get all provider
      */
@@ -589,6 +701,8 @@ export default {
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
         accountingPlan: this.accountingPlan.id,
+        branch_office_id: this.branchOfficeSession.id,
+        voucher_type_id: this.voucherType.id,
         comment: this.expense.comment,
         created_at: date.formatDate(this.expense.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
@@ -686,6 +800,9 @@ export default {
      */
     setTable () {
       this.product.user_created_id = this.userSession.id
+      this.product.subtotal = this.product.price * this.product.amount
+      this.product.igv = this.getPercentage(this.product.subtotal, this.igv)
+      this.product.total = Number(this.product.igv) + Number(this.product.subtotal)
       this.dataProduct.push(this.product)
       this.totalCalculate()
     },
@@ -767,7 +884,7 @@ export default {
      */
     getCoins () {
       this.$services.getData(['coins'], {
-        sortField: 'id',
+        sortBy: 'id',
         sortOrder: 'desc'
       })
         .then(({ res }) => {

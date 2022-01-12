@@ -8,7 +8,7 @@ export const expenseConfig = [
         tabulated: {
           name: 'id',
           align: 'left',
-          field: row => row.number,
+          field: row => `${row.serie}-${row.number}`,
           sortable: true,
           visible: true
         }
