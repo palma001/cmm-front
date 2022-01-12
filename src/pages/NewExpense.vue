@@ -57,7 +57,17 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
+            <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
+              <q-input
+                v-model="expense.serie"
+                outlined
+                dense
+                label="Serie"
+                type="text"
+                :rules="[ val => val && val.length || 'Este campo es requerido']"
+              />
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-2 col-lg-2 col-xl-2">
               <q-input
                 v-model="expense.number"
                 outlined
@@ -137,6 +147,37 @@
                 Tipo de cambio del día, extraído de SUNAT
               </q-tooltip>
             </div>
+            <div class="col-xs-6 col-sm-2 col-md-3 col-lg-3 col-xl-3">
+              <q-select
+                use-input
+                hide-selected
+                fill-input
+                outlined
+                clearable
+                dense
+                input-debounce="0"
+                name="accountingPlan"
+                autocomplete="off"
+                ref="accountingPlanRef"
+                v-model="accountingPlan"
+                v-validate="'required'"
+                data-vv-as="field"
+                option-value="id"
+                option-label="description"
+                :label="ucwords($t('expense.accountingPlan'))"
+                :options="accountingPlans"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                @filter="getAccountingPlans"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
             <div class="col-auto q-gutter-sm">
               <q-btn
                 icon="add"
@@ -144,6 +185,21 @@
                 label="producto"
                 style="height: 40px;"
                 @click="modalProduct = true"
+              />
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-section :class="$q.screen.lt.md ? 'q-py-sm' : 'q-pt-none q-pb-sm'">
+          <div class="row q-col-gutter-md">
+            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-4">
+              <q-input
+                v-model="expense.comment"
+                outlined
+                dense
+                label="Glosa"
+                type="textarea"
+                autogrow
+                :rules="[ val => val && val.length || 'Este campo es requerido']"
               />
             </div>
           </div>
@@ -333,6 +389,8 @@ export default {
   },
   data () {
     return {
+      accountingPlan: null,
+      accountingPlans: [],
       product: {},
       loadingForm: false,
       provider,
@@ -522,6 +580,7 @@ export default {
     modelExpenseReason () {
       const modelExpenseReason = {
         number: this.expense.number,
+        serie: this.expense.serie,
         provider_id: this.expense.provider.id,
         expense_reason_id: this.expense.expenseReason.id,
         coin_id: this.coin.id,
@@ -529,6 +588,8 @@ export default {
         expense_details: this.dataProduct,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
+        accountingPlan: this.accountingPlan.id,
+        comment: this.expense.comment,
         created_at: date.formatDate(this.expense.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
       this.saveExpense(modelExpenseReason)
@@ -722,6 +783,26 @@ export default {
         .then(({ res }) => {
           this.expenseReasons = res.data
           this.expense.expenseReason = res.data[0]
+        })
+    },
+    /**
+     * Get voucher types
+     */
+    getAccountingPlans (value, update) {
+      this.$services.getData(['accounting-plans'], {
+        dataSearch: {
+          code: value,
+          element: value,
+          description: value
+        }
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.accountingPlans = res.data.map(element => {
+              element.description = `${element.code}-${element.description}`
+              return element
+            })
+          })
         })
     },
     /**
