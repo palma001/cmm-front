@@ -75,6 +75,55 @@ export const orderConfig = [
       },
       {
         tabulated: {
+          name: 'download',
+          align: 'center',
+          visible: true,
+          button: {
+            label: 'download',
+            color: 'primary',
+            type: 'dropdown',
+            icon: 'file_download',
+            push: true,
+            splits: true,
+            glossy: true,
+            size: 'sm',
+            options: [
+              // {
+              //   label: 'XML',
+              //   event: 'downloadXML',
+              //   avatar: {
+              //     icon: 'file_download',
+              //     color: 'secondary',
+              //     textColor: 'white',
+              //     size: 'md'
+              //   }
+              // },
+              {
+                label: 'PDF',
+                event: 'downloadPDF',
+                avatar: {
+                  icon: 'file_download',
+                  color: 'secondary',
+                  textColor: 'white',
+                  size: 'md'
+                }
+              }
+              // {
+              //   label: 'CDR',
+              //   event: 'downloadCDR',
+              //   avatar: {
+              //     icon: 'file_download',
+              //     color: 'secondary',
+              //     textColor: 'white',
+              //     size: 'md'
+              //   }
+              // }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'options',
           align: 'center',
           visible: true,

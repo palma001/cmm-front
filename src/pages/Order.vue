@@ -23,6 +23,7 @@
           @options="options"
           @createBill="createBill"
           @viewProduct="viewProduct"
+          @downloadPDF="downloadPDF"
         />
       </div>
     </div>
@@ -58,6 +59,27 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <vue-html2pdf
+      :show-layout="false"
+      :float-layout="true"
+      :enable-download="false"
+      :preview-modal="true"
+      :paginate-elements-by-height="1000"
+      filename="hee hee"
+      :pdf-quality="2"
+      :manual-pagination="false"
+      pdf-format="a4"
+      pdf-orientation="portrait"
+      pdf-content-width="900px"
+      ref="html2Pdf"
+    >
+        <!-- @progress="onProgress($event)"
+        @hasStartedGeneration="hasStartedGeneration()"
+        @hasGenerated="hasGenerated($event)" -->
+        <section slot="pdf-content">
+          <pdf-print :data="modelPdf"/>
+        </section>
+    </vue-html2pdf>
   </q-page>
 </template>
 
@@ -65,15 +87,21 @@
 import { orderConfig } from '../config-file/order/orderConfig.js'
 import { mixins } from '../mixins'
 import DataTable from '../components/DataTable.vue'
+import PdfPrint from '../components/PdfPrint.vue'
+import VueHtml2pdf from 'vue-html2pdf'
+import { date } from 'quasar'
 export default {
   mixins: [mixins.containerMixin],
   components: {
-    DataTable
+    DataTable,
+    PdfPrint,
+    VueHtml2pdf
   },
   data () {
     return {
       orderSelected: null,
       productFilter: '',
+      modelPdf: null,
       /**
        * Columns Table
        * @type {Array} column array
@@ -150,6 +178,34 @@ export default {
     this.getBillElectronics()
   },
   methods: {
+    downloadPDF (data) {
+      this.modelPdf = this.setModelPdf(data)
+      setTimeout(() => {
+        this.$refs.html2Pdf.generatePdf()
+      }, 200)
+    },
+    setModelPdf (data) {
+      const pdfData = {
+        title: 'COMPROBANTE DE PEDIDO',
+        seller: `${data.seller.name} ${data.seller.last_name}`,
+        branchOffice: data.branch_office,
+        date: date.formatDate(data.created_at, 'DD/MM/YYYY'),
+        expirationDate: date.formatDate(`${data.expiration_date} 00:00:00`, 'DD/MM/YYYY'),
+        serie: `P${data.id}`,
+        products: data.order_details,
+        coin: data.coin.name,
+        total: data.total,
+        total_igv: data.total_igv,
+        subtotal: data.total_order,
+        client: {
+          fullName: `${data.client.name} ${data.client.last_name}`,
+          documentType: data.client.document_type.name,
+          documentNumber: data.client.document_number
+        }
+      }
+      console.log(pdfData)
+      return pdfData
+    },
     viewProduct (data) {
       this.viewProductModal = true
       this.orderSelected = data
