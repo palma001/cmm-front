@@ -1,8 +1,8 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-form @submit="modelPurchase" ref="formPurchase">
-      <q-card class="my-card">
+    <q-form @submit="modelPurchase" ref="formPurchase" class="row q-col-gutter-x-xs">
+      <q-card class="my-card col-10">
         <q-card-section class="q-pb-sm row q-col-gutter-sm">
           <div class="col-8">
             <div class="row justify-between">
@@ -37,7 +37,7 @@
         <q-card-section class="q-pb-none">
           <div class="row justify-between q-col-gutter-sm">
             <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 col-xl-3">
-             <q-select
+            <q-select
                 use-input
                 hide-selected
                 fill-input
@@ -294,6 +294,52 @@
           <q-btn color="primary" label="Generar factura" type="submit" :disable="dataProduct.length <= 0"/>
         </q-card-actions>
       </q-card>
+      <div class="col-2">
+        <q-card>
+          <q-card-section class="q-pb-none">
+            Detracción
+          </q-card-section>
+          <q-card-section class="q-py-xs">
+            <q-input v-model="text" label="N" dense outlined/>
+          </q-card-section>
+          <q-card-section class="q-py-xs">
+            <q-input type="date" v-model="text" dense outlined/>
+          </q-card-section>
+          <q-card-section class="q-py-xs row q-col-gutter-xs">
+            <q-input v-model="text" dense outlined class="col-6" label="% Det."/>
+            <q-input v-model="text" dense outlined class="col-6" label="S/"/>
+          </q-card-section>
+          <q-card-section class="q-pt-xs row q-col-gutter-xs">
+            <q-input v-model="text" dense outlined class="col-6" label="T N1"/>
+            <q-input v-model="text" dense outlined class="col-6" label="T N2"/>
+          </q-card-section>
+        </q-card>
+        <q-card class="q-mt-xs">
+          <q-card-section class="q-pb-none">
+            Percepción
+          </q-card-section>
+          <q-card-section class="q-py-xs">
+            <q-input v-model="text" label="%" dense outlined/>
+          </q-card-section>
+          <q-card-section class="q-py-xs">
+            <q-input  label="S/" v-model="text" dense outlined/>
+          </q-card-section>
+          <q-card-section class="q-pt-xs">
+            <q-input v-model="text" dense outlined label="Datos adicionales"/>
+          </q-card-section>
+        </q-card>
+        <q-card class="q-mt-xs">
+          <q-card-section class="q-pb-none">
+            Retención
+          </q-card-section>
+          <q-card-section class="q-py-xs">
+            <q-input v-model="text" label="%" dense outlined/>
+          </q-card-section>
+          <q-card-section class="q-pt-xs">
+            <q-input  label="S/" v-model="text" dense outlined/>
+          </q-card-section>
+        </q-card>
+      </div>
     </q-form>
     <q-dialog
       v-model="modalProduct"
