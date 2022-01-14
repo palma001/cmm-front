@@ -9,7 +9,7 @@
       </div>
       <div id="project" class="col-5">
         <div>
-          <span>CLIENTE</span>
+          <span>{{ data.client.fieldName }}</span>
           {{ data.client.fullName }}
         </div>
         <div>
@@ -46,7 +46,7 @@
           <span>RUC</span>
           J-412902318
         </div>
-        <div>
+        <div v-if="data.seller">
           <span>VENDEDOR</span>
           {{ data.seller }}
         </div>

@@ -198,12 +198,12 @@ export default {
         total_igv: data.total_igv,
         subtotal: data.total_order,
         client: {
+          fieldName: 'CLIENTE',
           fullName: `${data.client.name} ${data.client.last_name}`,
           documentType: data.client.document_type.name,
           documentNumber: data.client.document_number
         }
       }
-      console.log(pdfData)
       return pdfData
     },
     viewProduct (data) {
