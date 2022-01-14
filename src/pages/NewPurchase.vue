@@ -1229,7 +1229,7 @@ export default {
         branchOffice: data.branch_office,
         date: date.formatDate(data.created_at, 'DD/MM/YYYY'),
         expirationDate: date.formatDate(`${data.expiration_date} 00:00:00`, 'DD/MM/YYYY'),
-        serie: `P${data.id}`,
+        serie: `${data.serie}${data.number}`,
         products: this.modelPurchaseDetails(data.purchase_details),
         coin: data.coin.name,
         total: data.total,
