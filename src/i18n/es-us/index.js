@@ -389,7 +389,7 @@ export default {
   },
 
   expense: {
-    accountingPlan: 'tipo de asiento',
+    seatType: 'tipo de asiento',
     products: 'productos',
     serie: 'serie',
     id: 'serie',

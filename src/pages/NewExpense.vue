@@ -187,18 +187,18 @@
                 clearable
                 dense
                 input-debounce="0"
-                name="accountingPlan"
+                name="seatType"
                 autocomplete="off"
-                ref="accountingPlanRef"
-                v-model="accountingPlan"
+                ref="seatTypeRef"
+                v-model="seatType"
                 v-validate="'required'"
                 data-vv-as="field"
                 option-value="id"
                 option-label="description"
-                :label="ucwords($t('expense.accountingPlan'))"
-                :options="accountingPlans"
+                :label="ucwords($t('expense.seatType'))"
+                :options="seatTypes"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                @filter="getAccountingPlans"
+                @filter="getSeatTypes"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -478,8 +478,8 @@ export default {
        */
       voucherTypes: [],
       voucherType: null,
-      accountingPlan: null,
-      accountingPlans: [],
+      seatType: null,
+      seatTypes: [],
       product: {},
       loadingForm: false,
       provider,
@@ -729,7 +729,7 @@ export default {
         expense_details: this.dataProduct,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
-        accountingPlan: this.accountingPlan.id,
+        seat_type_id: this.seatType.id,
         branch_office_id: this.branchOfficeSession.id,
         voucher_type_id: this.voucherType.id,
         comment: this.expense.comment,
@@ -930,8 +930,8 @@ export default {
     /**
      * Get voucher types
      */
-    getAccountingPlans (value, update) {
-      this.$services.getData(['accounting-plans'], {
+    getSeatTypes (value, update) {
+      this.$services.getData(['seat-types'], {
         dataSearch: {
           code: value,
           element: value,
@@ -940,8 +940,8 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.accountingPlans = res.data.map(element => {
-              element.description = `${element.code}-${element.description}`
+            this.seatTypes = res.data.map(element => {
+              element.description = `${element.name} | ${element.number} | ${element.description}`
               return element
             })
           })
