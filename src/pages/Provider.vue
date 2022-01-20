@@ -103,7 +103,7 @@
             v-model="name"
             :error="errors.has('name')"
             :error-message="errors.first('name')"
-            v-if="documentType.name === 'DNI'"
+            v-if="documentType.number === '1'"
           />
           <q-input
             label="Apellido"
@@ -115,7 +115,7 @@
             v-model="lastName"
             :error="errors.has('last_name')"
             :error-message="errors.first('last_name')"
-            v-if="documentType.name === 'DNI'"
+            v-if="documentType.number === '1'"
           />
           <q-input
             label="Nombre o razon social"
@@ -127,7 +127,7 @@
             v-model="businessName"
             :error="errors.has('businessName')"
             :error-message="errors.first('businessName')"
-            v-if="documentType.name === 'RUC'"
+            v-if="documentType.number === '6'"
           />
           <q-input
             label="Estado"
@@ -139,7 +139,7 @@
             v-model="status"
             :error="errors.has('status')"
             :error-message="errors.first('status')"
-            v-if="documentType.name === 'RUC'"
+            v-if="documentType.number === '6'"
           />
           <q-input
             label="Condición de residencia"
@@ -151,7 +151,7 @@
             v-model="residenceCondition"
             :error="errors.has('residenceCondition')"
             :error-message="errors.first('residenceCondition')"
-            v-if="documentType.name === 'RUC'"
+            v-if="documentType.number === '6'"
           />
         </template>
       </dynamic-form>
@@ -378,28 +378,30 @@ export default {
         })
     },
     getDataApi () {
-      this.$services.getData(['ruc', this.documentNumber], {
-        documentType: this.documentType.name.toLowerCase()
-      })
-        .then(({ res }) => {
-          if (!res.data.error) {
-            if (res.data.nombre_o_razon_social) {
-              this.businessName = res.data.nombre_o_razon_social
-              console.log(res.data)
-              this.residenceCondition = res.data.condicion_de_domicilio
-              this.status = res.data.estado_del_contribuyente
-            } else {
-              const nameDivider = res.data.nombre_completo.split(' ')
-              this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
-              this.name = `${nameDivider[2]} ${nameDivider[3]}`
-            }
-          } else {
-            this.notify(this, res.data.error, 'negative', 'warning')
-            this.lastName = null
-            this.name = null
-            this.businessName = null
-          }
+      const r = this.documentType.number === '1' ? 'dni' : this.documentType.number === '6' ? 'ruc' : null
+      if (r) {
+        this.$services.getData(['ruc', this.documentNumber], {
+          documentType: r
         })
+          .then(({ res }) => {
+            if (!res.data.error) {
+              if (this.documentType.number === '6') {
+                this.businessName = res.data.nombre
+                this.status = res.data.estado
+                this.residenceCondition = res.data.condicion
+              } else {
+                const nameDivider = res.data.nombre.split(' ')
+                this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
+                this.name = `${nameDivider[2]} ${nameDivider[3]}`
+              }
+            } else {
+              this.notify(this, res.data.error, 'negative', 'warning')
+              this.lastName = null
+              this.name = null
+              this.businessName = null
+            }
+          })
+      }
     },
     /**
      * Get all provider

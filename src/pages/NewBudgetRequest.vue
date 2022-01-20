@@ -577,14 +577,10 @@ export default {
     getExchange () {
       this.visible = true
       this.$services.getData(['exchange-rate'], {
-        start_date: this.budgetRequest.created_at,
-        final_date: this.budgetRequest.created_at,
-        coin: 'PEN'
+        start_date: this.budgetRequest.created_at
       })
         .then(({ res }) => {
-          if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
-            this.budgetRequest.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
-          }
+          this.budgetRequest.exchange = res.data.venta
           this.visible = false
         })
         .catch(() => {

@@ -661,15 +661,16 @@ export default {
      * Get Data in exchange
      */
     getExchange () {
+      this.visible = true
       this.$services.getData(['exchange-rate'], {
-        start_date: date.formatDate(date.subtractFromDate(new Date(), { month: 1 }), 'DD/MM/YYYY'),
-        final_date: date.formatDate(new Date(), 'DD/MM/YYYY'),
-        coin: 'PEN'
+        start_date: this.order.created_at
       })
         .then(({ res }) => {
-          if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
-            this.order.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
-          }
+          this.order.exchange = res.data.venta
+          this.visible = false
+        })
+        .catch(() => {
+          this.visible = false
         })
     },
     /**

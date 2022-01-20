@@ -833,7 +833,7 @@
             v-model="name"
             :error="errors.has('name')"
             :error-message="errors.first('name')"
-            v-if="documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)'"
+            v-if="documentType.number === '1'"
           />
           <q-input
             label="Apellido"
@@ -845,7 +845,7 @@
             v-model="lastName"
             :error="errors.has('last_name')"
             :error-message="errors.first('last_name')"
-            v-if="documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)'"
+            v-if="documentType.number === '1'"
           />
           <q-input
             label="Nombre o razon social"
@@ -857,7 +857,7 @@
             v-model="businessName"
             :error="errors.has('businessName')"
             :error-message="errors.first('businessName')"
-            v-if="documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES'"
+            v-if="documentType.number === '6'"
           />
           <q-input
             label="Estado"
@@ -869,7 +869,7 @@
             v-model="status"
             :error="errors.has('status')"
             :error-message="errors.first('status')"
-            v-if="documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES'"
+            v-if="documentType.number === '6'"
           />
           <q-input
             label="Condición de residencia"
@@ -881,7 +881,7 @@
             v-model="residenceCondition"
             :error="errors.has('residenceCondition')"
             :error-message="errors.first('residenceCondition')"
-            v-if="documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES'"
+            v-if="documentType.number === '6'"
           />
         </template>
       </dynamic-form>
@@ -918,8 +918,8 @@ import { date } from 'quasar'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import PdfPrint from '../components/PdfPrint.vue'
-import { mapGetters } from 'vuex'
 import VueHtml2pdf from 'vue-html2pdf'
+import { mapGetters } from 'vuex'
 import { provider, propsPanelEdition, providerServices } from '../config-file/provider/providerConfig.js'
 import DynamicForm from '../components/DynamicForm.vue'
 // import DynamicForm from '../components/DynamicForm'
@@ -1162,28 +1162,30 @@ export default {
         })
     },
     getDataApi () {
-      const r = this.documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)' ? 'dni' : this.documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES' ? 'ruc' : null
-      this.$services.getData(['ruc', this.documentNumber], {
-        documentType: r
-      })
-        .then(({ res }) => {
-          if (!res.data.error) {
-            if (res.data.nombre_o_razon_social) {
-              this.businessName = res.data.nombre_o_razon_social
-              this.residenceCondition = res.data.condicion_de_domicilio
-              this.status = res.data.estado_del_contribuyente
-            } else {
-              const nameDivider = res.data.nombre_completo.split(' ')
-              this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
-              this.name = `${nameDivider[2]} ${nameDivider[3]}`
-            }
-          } else {
-            this.notify(this, res.data.error, 'negative', 'warning')
-            this.lastName = null
-            this.name = null
-            this.businessName = null
-          }
+      const r = this.documentType.number === '1' ? 'dni' : this.documentType.number === '6' ? 'ruc' : null
+      if (r) {
+        this.$services.getData(['ruc', this.documentNumber], {
+          documentType: r
         })
+          .then(({ res }) => {
+            if (!res.data.error) {
+              if (this.documentType.number === '6') {
+                this.businessName = res.data.nombre
+                this.status = res.data.estado
+                this.residenceCondition = res.data.condicion
+              } else {
+                const nameDivider = res.data.nombre.split(' ')
+                this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
+                this.name = `${nameDivider[2]} ${nameDivider[3]}`
+              }
+            } else {
+              this.notify(this, res.data.error, 'negative', 'warning')
+              this.lastName = null
+              this.name = null
+              this.businessName = null
+            }
+          })
+      }
     },
     /**
      * Save Branch Office
@@ -1229,7 +1231,7 @@ export default {
         branchOffice: data.branch_office,
         date: date.formatDate(data.created_at, 'DD/MM/YYYY'),
         expirationDate: date.formatDate(`${data.expiration_date} 00:00:00`, 'DD/MM/YYYY'),
-        serie: `${data.serie}${data.number}`,
+        serie: `${data.serie}-${data.number}`,
         products: this.modelPurchaseDetails(data.purchase_details),
         coin: data.coin.name,
         total: data.total,
@@ -1442,14 +1444,10 @@ export default {
     getExchange () {
       this.visible = true
       this.$services.getData(['exchange-rate'], {
-        start_date: this.purchase.created_at,
-        final_date: this.purchase.created_at,
-        coin: 'PEN'
+        start_date: this.purchase.created_at
       })
         .then(({ res }) => {
-          if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
-            this.purchase.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
-          }
+          this.purchase.exchange = res.data.venta
           this.visible = false
         })
         .catch(() => {

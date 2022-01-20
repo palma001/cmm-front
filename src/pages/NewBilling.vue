@@ -591,7 +591,7 @@
             v-model="name"
             :error="errors.has('name')"
             :error-message="errors.first('name')"
-            v-if="documentType.name === 'DNI'"
+            v-if="documentType.number === '1'"
           />
           <q-input
             label="Apellido"
@@ -603,7 +603,7 @@
             v-model="lastName"
             :error="errors.has('last_name')"
             :error-message="errors.first('last_name')"
-            v-if="documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)'"
+            v-if="documentType.number === '1'"
           />
           <q-input
             label="Nombre o razon social"
@@ -615,7 +615,7 @@
             v-model="businessName"
             :error="errors.has('businessName')"
             :error-message="errors.first('businessName')"
-            v-if="documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES'"
+            v-if="documentType.number === '6'"
           />
         </template>
       </dynamic-form>
@@ -643,6 +643,27 @@
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
+    <vue-html2pdf
+      :show-layout="false"
+      :float-layout="true"
+      :enable-download="false"
+      :preview-modal="true"
+      :paginate-elements-by-height="1000"
+      filename="hee hee"
+      :pdf-quality="2"
+      :manual-pagination="false"
+      pdf-format="a4"
+      pdf-orientation="portrait"
+      pdf-content-width="900px"
+      ref="html2Pdf"
+    >
+      <!-- @progress="onProgress($event)"
+      @hasStartedGeneration="hasStartedGeneration()"
+      @hasGenerated="hasGenerated($event)" -->
+      <section slot="pdf-content">
+        <pdf-print :data="modelPdf"/>
+      </section>
+    </vue-html2pdf>
   </q-page>
 </template>
 
@@ -653,6 +674,8 @@ import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { client, propsPanelEdition, clientServices } from '../config-file/client/clientConfig.js'
 import DynamicForm from '../components/DynamicForm.vue'
+import PdfPrint from '../components/PdfPrint.vue'
+import VueHtml2pdf from 'vue-html2pdf'
 // import ExcelReport from '../components/ExcelReport.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
@@ -660,7 +683,9 @@ export default {
   name: 'Billing',
   mixins: [mixins.containerMixin],
   components: {
-    DynamicForm
+    DynamicForm,
+    VueHtml2pdf,
+    PdfPrint
     // ExcelReport
     // DataTable
   },
@@ -670,6 +695,7 @@ export default {
       modalProductStock: false,
       selected: [],
       stockData: [],
+      modelPdf: null,
       stockProduct: 0,
       productSalePrice: null,
       columnsStock: [
@@ -920,18 +946,17 @@ export default {
         })
     },
     getDataApi () {
-      const r = this.documentType.name === 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)' ? 'dni' : this.documentType.name === 'REGISTRO UNICO DE CONTRIBUYENTES' ? 'ruc' : null
-      console.log(r)
+      const r = this.documentType.number === '1' ? 'dni' : this.documentType.number === '6' ? 'ruc' : null
       if (r) {
         this.$services.getData(['ruc', this.documentNumber], {
           documentType: r
         })
           .then(({ res }) => {
             if (!res.data.error) {
-              if (res.data.nombre_o_razon_social) {
-                this.businessName = res.data.nombre_o_razon_social
+              if (this.documentType.number === '6') {
+                this.businessName = res.data.nombre
               } else {
-                const nameDivider = res.data.nombre_completo.split(' ')
+                const nameDivider = res.data.nombre.split(' ')
                 this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
                 this.name = `${nameDivider[2]} ${nameDivider[3]}`
               }
@@ -1013,9 +1038,10 @@ export default {
       this.modalPaid = false
       this.visible = true
       this.$services.postData(['bill-electronics'], data)
-        .then(res => {
+        .then(({ res }) => {
           this.notify(this, 'billing.saveSuccess', 'positive', 'mood')
           this.cancelBill()
+          this.downloadPDF(res.data)
           this.visible = false
         })
         .catch(() => {
@@ -1116,14 +1142,10 @@ export default {
     getExchange () {
       this.visible = true
       this.$services.getData(['exchange-rate'], {
-        start_date: this.billing.created_at,
-        final_date: this.billing.created_at,
-        coin: 'PEN'
+        start_date: this.billing.created_at
       })
         .then(({ res }) => {
-          if (res.data.exchange_rates && res.data.exchange_rates.length > 0) {
-            this.billing.exchange = res.data.exchange_rates[res.data.exchange_rates.length - 1].venta
-          }
+          this.billing.exchange = res.data.venta
           this.visible = false
         })
         .catch(() => {
@@ -1372,6 +1394,35 @@ export default {
           this.coins = res.data
           this.coin = res.data[0]
         })
+    },
+    async downloadPDF (data) {
+      const { res } = await this.$services.getOneData(['bill-electronics', data.id])
+      console.log(data, res.data)
+      this.modelPdf = this.setModelPdf(res.data)
+      setTimeout(() => {
+        this.$refs.html2Pdf.generatePdf()
+      }, 200)
+    },
+    setModelPdf (data) {
+      const pdfData = {
+        title: 'COMPROBANTE DE VENTA',
+        branchOffice: data.branch_office,
+        date: date.formatDate(data.created_at, 'DD/MM/YYYY'),
+        expirationDate: date.formatDate(`${data.expiration_date} 00:00:00`, 'DD/MM/YYYY'),
+        serie: `${data.serie.name}-${data.number}`,
+        products: data.bill_electronic_details,
+        coin: data.coin.name,
+        total: data.total,
+        total_igv: data.total_igv,
+        subtotal: data.total_bill,
+        client: {
+          fieldName: 'CLIENTE',
+          fullName: `${data.client.name} ${data.client.last_name}`,
+          documentType: data.client.document_type.name,
+          documentNumber: data.client.document_number
+        }
+      }
+      return pdfData
     },
     /**
      * Get voucher types

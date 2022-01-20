@@ -295,7 +295,7 @@ export default {
         {
           name: 'purchase_price',
           label: 'Precio de compra',
-          field: 'purchase_price',
+          field: 'price',
           sortable: true
         }
       ],

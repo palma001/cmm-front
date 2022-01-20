@@ -187,7 +187,7 @@ export default {
     setModelPdf (data) {
       const pdfData = {
         title: 'COMPROBANTE DE PEDIDO',
-        seller: `${data.seller.name} ${data.seller.last_name}`,
+        seller: `${data.seller.name}-${data.seller.last_name}`,
         branchOffice: data.branch_office,
         date: date.formatDate(data.created_at, 'DD/MM/YYYY'),
         expirationDate: date.formatDate(`${data.expiration_date} 00:00:00`, 'DD/MM/YYYY'),
