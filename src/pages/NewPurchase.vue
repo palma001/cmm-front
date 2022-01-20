@@ -899,16 +899,28 @@
       pdf-orientation="portrait"
       pdf-content-width="900px"
       ref="html2Pdf"
+      @progress="onProgress($event)"
     >
-      <!-- @progress="onProgress($event)"
-      @hasStartedGeneration="hasStartedGeneration()"
-      @hasGenerated="hasGenerated($event)" -->
       <section slot="pdf-content">
         <pdf-print :data="modelPdf"/>
       </section>
     </vue-html2pdf>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
+    </q-inner-loading>
+    <q-inner-loading :showing="visiblePurchase">
+      <q-circular-progress
+        show-value
+        class="text-white q-ma-md"
+        :value="valueLoading"
+        size="150px"
+        :thickness="0.2"
+        color="white"
+        center-color="primary"
+        track-color="transparent"
+      >
+        <q-icon name="receipt" />
+      </q-circular-progress>
     </q-inner-loading>
   </q-page>
 </template>
@@ -935,6 +947,7 @@ export default {
   },
   data () {
     return {
+      visiblePurchase: false,
       comment: null,
       modelPdf: null,
       fees: [],
@@ -1126,14 +1139,18 @@ export default {
       branchOfficeSession: null,
       residenceCondition: null,
       status: null,
-      text: ''
+      text: '',
+      timeLoading: 0
     }
   },
   computed: {
     /**
      * Getters Vuex
      */
-    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
+    valueLoading () {
+      return this.timeLoading
+    }
   },
   created () {
     this.loadCreate()
@@ -1146,6 +1163,12 @@ export default {
   methods: {
     filterBranchOffice (branchOffice) {
       this.branchOfficeSession = branchOffice
+    },
+    onProgress (data) {
+      this.timeLoading = data
+      if (data === 100) {
+        this.visiblePurchase = false
+      }
     },
     /**
      * Get all provider
@@ -1290,18 +1313,18 @@ export default {
      */
     savePurchase (data) {
       this.modalPaid = false
-      this.visible = true
+      this.visiblePurchase = true
       this.$services.postData(['purchases'], data)
         .then(({ res }) => {
           this.notify(this, 'purchase.saveSuccess', 'positive', 'mood')
           this.downloadPDF(res.data)
           this.cancelBill()
-          this.visible = false
+          this.visiblePurchase = false
         })
         .catch((e) => {
           console.log(e)
           this.notify(this, 'purchase.error', 'negative', 'warning')
-          this.visible = false
+          this.visiblePurchase = false
         })
     },
     /**
@@ -1325,6 +1348,7 @@ export default {
       this.modalPaid = false
       this.getCoins()
       this.resetValidations(this.$refs.formPurchase)
+      this.getExchange()
     },
     /**
      * Model paymnets

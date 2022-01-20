@@ -672,8 +672,6 @@
       ref="html2Pdf"
       @progress="onProgress($event)"
     >
-      @hasStartedGeneration="hasStartedGeneration()"
-      @hasGenerated="hasGenerated($event)" -->
       <section slot="pdf-content">
         <pdf-print :data="modelPdf"/>
       </section>
