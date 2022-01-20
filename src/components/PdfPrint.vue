@@ -93,7 +93,7 @@
               {{ product.amount * product.price }}
             </td>
             <td class="igv">
-              {{ product.igv }}
+              {{ product.igv.toFixed(2) }}
             </td>
             <td class="total">
               {{ (product.amount * product.price) + product.igv }}
@@ -105,7 +105,7 @@
         </tr>
         <tr>
           <td colspan="7" class="grand total">TOTAL IGV</td>
-          <td class="grand total">{{ data.total_igv }}</td>
+          <td class="grand total">{{ data.total_igv.toFixed(2) }}</td>
         </tr>
         <tr>
           <td colspan="7" class="grand total">TOTAL A PAGAR</td>

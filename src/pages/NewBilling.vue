@@ -643,6 +643,20 @@
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
+    <q-inner-loading :showing="visibleBilling">
+      <q-circular-progress
+        show-value
+        class="text-white q-ma-md"
+        :value="valueLoading"
+        size="150px"
+        :thickness="0.2"
+        color="white"
+        center-color="primary"
+        track-color="transparent"
+      >
+        <q-icon name="receipt" />
+      </q-circular-progress>
+    </q-inner-loading>
     <vue-html2pdf
       :show-layout="false"
       :float-layout="true"
@@ -656,8 +670,8 @@
       pdf-orientation="portrait"
       pdf-content-width="900px"
       ref="html2Pdf"
+      @progress="onProgress($event)"
     >
-      <!-- @progress="onProgress($event)"
       @hasStartedGeneration="hasStartedGeneration()"
       @hasGenerated="hasGenerated($event)" -->
       <section slot="pdf-content">
@@ -691,6 +705,7 @@ export default {
   },
   data () {
     return {
+      visibleBilling: false,
       modalPaid: false,
       modalProductStock: false,
       selected: [],
@@ -890,14 +905,19 @@ export default {
       userSession: null,
       branchOfficeSession: null,
       series: [],
-      buttonAdd: false
+      buttonAdd: false,
+      timeLoading: 0
     }
   },
   computed: {
     /**
      * Getters Vuex
      */
-    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
+
+    valueLoading () {
+      return this.timeLoading
+    }
   },
   created () {
     this.loadCreate()
@@ -915,6 +935,12 @@ export default {
   methods: {
     setBranchOffice (data) {
       this.branchOfficeSession = data
+    },
+    onProgress (data) {
+      this.timeLoading = data
+      if (data === 100) {
+        this.visibleBilling = false
+      }
     },
     getSeries () {
       this.$services.getData(['series'], {
@@ -1036,17 +1062,16 @@ export default {
      */
     saveBill (data) {
       this.modalPaid = false
-      this.visible = true
+      this.visibleBilling = true
       this.$services.postData(['bill-electronics'], data)
         .then(({ res }) => {
           this.notify(this, 'billing.saveSuccess', 'positive', 'mood')
           this.cancelBill()
           this.downloadPDF(res.data)
-          this.visible = false
         })
         .catch(() => {
           this.notify(this, 'billing.error', 'negative', 'warning')
-          this.visible = false
+          this.visibleBilling = false
         })
     },
     /**
@@ -1397,11 +1422,8 @@ export default {
     },
     async downloadPDF (data) {
       const { res } = await this.$services.getOneData(['bill-electronics', data.id])
-      console.log(data, res.data)
       this.modelPdf = this.setModelPdf(res.data)
-      setTimeout(() => {
-        this.$refs.html2Pdf.generatePdf()
-      }, 200)
+      this.$refs.html2Pdf.generatePdf()
     },
     setModelPdf (data) {
       const pdfData = {
