@@ -915,7 +915,7 @@
         :value="valueLoading"
         size="150px"
         :thickness="0.2"
-        color="white"
+        color="orange"
         center-color="primary"
         track-color="transparent"
       >
@@ -1168,6 +1168,7 @@ export default {
       this.timeLoading = data
       if (data === 100) {
         this.visiblePurchase = false
+        this.timeLoading = 0
       }
     },
     /**

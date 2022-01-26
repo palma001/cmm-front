@@ -342,7 +342,3 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
-  .q-table tbody td:after
-    background: lightblue
-</style>

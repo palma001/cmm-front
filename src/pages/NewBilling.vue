@@ -650,7 +650,7 @@
         :value="valueLoading"
         size="150px"
         :thickness="0.2"
-        color="white"
+        color="orange"
         center-color="primary"
         track-color="transparent"
       >
@@ -714,7 +714,6 @@ export default {
       columnsStock: [
         {
           name: 'warehouse_name',
-          required: true,
           label: 'Almacén',
           align: 'left',
           field: row => row.warehouse_name,
@@ -938,6 +937,7 @@ export default {
       this.timeLoading = data
       if (data === 100) {
         this.visibleBilling = false
+        this.timeLoading = 0
       }
     },
     getSeries () {
@@ -953,7 +953,7 @@ export default {
     },
     openStock () {
       this.modalProductStock = true
-      this.stockData = this.product.stock
+      this.stockData = this.product.stock.filter(element => element.branch_office_id === this.branchOfficeSession.id)
     },
     /**
      * Get all client
@@ -1141,9 +1141,10 @@ export default {
     },
     selectProuct (value) {
       if (value) {
-        if (value.stock.length > 0) {
-          this.selectProductPrice(value.stock)
-          this.selected = [value.stock[0]]
+        const stock = value.stock.filter(element => element.branch_office_id === this.branchOfficeSession.id)
+        if (stock.length > 0) {
+          this.selectProductPrice(stock)
+          this.selected = stock
         } else {
           this.stock = {}
           this.amount = 1
@@ -1332,6 +1333,7 @@ export default {
         ...value,
         filterReports: true,
         paginate: true,
+        branch_office_id: this.branchOfficeSession.id,
         perPage: 10
       })
         .then(({ res }) => {

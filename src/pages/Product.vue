@@ -979,6 +979,7 @@ export default {
      */
     getProducts (params = this.params) {
       this.loadingTable = true
+      params.branch_office_id = this.branchOffice.id
       this.$services.getData(['products'], params)
         .then(({ res }) => {
           this.data = res.data.data.map(productData => {

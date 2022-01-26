@@ -280,7 +280,9 @@ export default {
       this.seatAmount = this.seatAll.length
     },
     seatSelected (data) {
-      this.comment = data.comment
+      if (data) {
+        this.comment = data.comment
+      }
     }
   },
   computed: {
@@ -359,7 +361,6 @@ export default {
         .then(({ res }) => {
           this.seatAll = res.data.map(re => {
             if (re.billable.coin.acronym === 'USD') {
-              console.log(re)
               re.accounting_book_details.map(seat => {
                 seat.amount = seat.amount * re.billable.exchange_rate
                 return seat
@@ -368,7 +369,7 @@ export default {
             return re
           })
           this.seatData = this.seatAll.length
-          this.seatSelected = this.seatAll[this.seatData - 1]
+          this.seatSelected = this.seatAll[this.seatData - 1] ?? null
           this.loadingSeat = false
         })
         .catch(err => {

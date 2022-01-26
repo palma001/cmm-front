@@ -94,6 +94,9 @@
                   <q-td key="description" :props="props">
                     {{ props.row.description }}
                   </q-td>
+                  <q-td key="description_warehouse" :props="props">
+                    {{ props.row.description_warehouse }}
+                  </q-td>
                   <q-td key="amount" :props="props">
                     {{ props.row.amount }}
                     <q-popup-edit v-model.number="props.row.amount" auto-save>
@@ -127,7 +130,7 @@
           <q-card-section>
             <div class="text-h6">Agregar Producto</div>
           </q-card-section>
-          <q-card-section class="row justify-between q-col-gutter-x-sm">
+          <q-card-section class="row justify-between q-col-gutter-x-sm q-pb-none">
             <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 col-xl-7">
               <q-select
                 use-input
@@ -179,6 +182,37 @@
               />
             </div>
           </q-card-section>
+          <q-card-section>
+            <q-select
+              use-input
+              hide-selected
+              fill-input
+              outlined
+              clearable
+              dense
+              autocomplete="off"
+              input-debounce="0"
+              name="warehouse"
+              ref="warehouse"
+              v-model="warehouse"
+              v-validate="'required'"
+              data-vv-as="field"
+              label="Almacen"
+              option-value="id"
+              option-label="full_name"
+              :rules="[ val => val || 'Este campo es requerido' ]"
+              :options="warehouses"
+              @filter="getWarehouse"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </q-card-section>
           <q-card-actions align="right">
             <q-btn label="Cerrar" color="negative" v-close-popup />
             <q-btn label="Agregar" color="primary" type="submit" />
@@ -202,6 +236,7 @@ export default {
   mixins: [mixins.containerMixin],
   data () {
     return {
+      warehouses: [],
       devolutionReasons: [],
       warehouse: null,
       loadingForm: false,
@@ -263,6 +298,14 @@ export default {
           sortable: true
         },
         {
+          name: 'description_warehouse',
+          align: 'left',
+          headerClasses: 'bg-primary text-white',
+          label: 'Almacén',
+          field: 'description_warehouse',
+          sortable: true
+        },
+        {
           name: 'amount',
           label: 'Cantidad',
           field: 'amount',
@@ -275,19 +318,12 @@ export default {
        * @type {Object} devolution model
        */
       devolution: {
-        toWarehouse: null,
         devolutionReason: null,
         voucherType: null,
         exchange: 0,
         expiration_date: date.formatDate(new Date(), 'YYYY-MM-DD'),
         created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
       },
-      /**
-       * toWarehouse List
-       * @type {Array} toWarehouse List
-       */
-      toWarehouses: [],
-      warehouses: [],
       /**
        * Product List
        * @type {Array} Product List
@@ -351,6 +387,27 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    /**
+     * Get payment destination
+     * @param {String} value data filter
+     */
+    getWarehouse (value, update) {
+      this.$services.getData(['warehouses'], {
+        dataSearch: {
+          name: value
+        },
+        dataFilter: {
+          branch_office_id: this.branchOfficeSession.id
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.warehouses = res.data.data
+          })
+        })
+    },
     /**
      * Filter primary
      */
@@ -462,7 +519,9 @@ export default {
       array.push({
         id: this.product.id,
         product_id: this.product.id,
+        warehouse_id: this.warehouse.id,
         description: this.product.full_name,
+        description_warehouse: this.warehouse.full_name,
         amount: this.amount,
         user_created_id: this.userSession.id
       })
