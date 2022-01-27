@@ -522,7 +522,7 @@
       </dynamic-form>
     </q-dialog>
     <q-dialog v-model="stockDialog">
-      <q-card v-if="productSelected" style="width: 700px; max-width: 80vw;">
+      <q-card v-if="productSelected" style="width: 1000px; max-width: 80vw;">
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">
             {{ productSelected.brand.name }} - {{ productSelected.code }} - {{ productSelected.supsec }} / {{ productSelected.description }}
