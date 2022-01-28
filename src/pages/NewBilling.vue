@@ -1047,6 +1047,7 @@ export default {
         expiration_date: this.billing.expiration_date,
         bill_electronic_details: this.dataProduct,
         bill_electronic_guides: [],
+        bill_electronic_payments: [],
         bill_fees: this.fees,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
