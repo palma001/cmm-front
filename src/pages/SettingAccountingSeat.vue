@@ -5,8 +5,8 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('sellerCommission.add')"
-          @click="addDialig = true"
+          :label="$q.screen.lt.sm ? '' : $t('settingAccountingSeat.add')"
+          @click="addDialog = true"
         >
         <q-tooltip
           anchor="center right"
@@ -15,7 +15,7 @@
           v-if="$q.screen.lt.sm"
         >
           {{
-            ucwords($t('sellerCommission.add'))
+            ucwords($t('settingAccountingSeatConfig.add'))
           }}
         </q-tooltip>
       </q-btn>
@@ -23,18 +23,17 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="sellerCommission"
+          module="settingAccountingSeat"
+          selection="multiple"
           searchable
           action
-          :column="sellerCommission"
+          :column="settingAccountingSeatConfig"
           :data="data"
           :loading="loadingTable"
-          :buttonsActions="buttonsActions"
-          :optionPagination="optionPagination"
-          @view-details="viewDetails"
+          :optionPagination.sync="optionPagination"
           @search-data="searchData"
+          @view-details="viewDetails"
           @on-load-data="loadData"
-          @delete="deleteData"
         />
       </div>
     </div>
@@ -45,9 +44,9 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="sellerCommission"
+        module="settingAccountingSeat"
         :propsPanelEdition="propsPanelEdition"
-        :config="sellerCommission"
+        :config="settingAccountingSeatConfig"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -57,13 +56,13 @@
       position="right"
       full-height
       persistent
-      v-model="addDialig"
+      v-model="addDialog"
     >
       <dynamic-form
-        module="sellerCommission"
-        :config="sellerCommission"
+        module="settingAccountingSeat"
+        :config="settingAccountingSeatConfig"
         :loading="loadingForm"
-        @cancel="addDialig = false"
+        @cancel="addDialog = false"
         @save="save"
       />
     </q-dialog>
@@ -71,24 +70,23 @@
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { sellerCommission, buttonsActions, propsPanelEdition, sellerCommissionServices } from '../config-file/sellerCommission/sellerCommissionConfig.js'
-import { mixins } from '../mixins'
+import DynamicForm from '../components/DynamicForm.vue'
+import { settingAccountingSeatConfig, propsPanelEdition, settingAccountingSeatServices } from '../config-file/settingAccountingSeat/settingAccountingSeatConfig.js'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
+import { mixins } from '../mixins'
 export default {
   mixins: [mixins.containerMixin],
   components: {
     DataTable,
-    DynamicForm,
-    DynamicFormEdition
+    DynamicFormEdition,
+    DynamicForm
   },
   data () {
     return {
-      buttonsActions,
-      propsPanelEdition,
-      sellerCommissionServices,
+      settingAccountingSeatServices,
+      settingAccountingSeat: null,
       loadingForm: false,
       /**
        * Selected data
@@ -101,10 +99,10 @@ export default {
        */
       optionPagination: {
         rowsPerPage: 20,
-        rowsNumber: 20,
         paginate: true,
         sortBy: 'id',
-        sortOrder: 'desc'
+        sortOrder: 'desc',
+        rowsNumber: 20
       },
       /**
        * Params search
@@ -114,23 +112,33 @@ export default {
         paginated: true,
         sortBy: 'id',
         sortOrder: 'desc',
-        perPage: 1,
         dataSearch: {
-          'seller.name': '',
-          commission_type: '',
-          amount: ''
+          code: '',
+          element: '',
+          description: '',
+          account_type: ''
         }
       },
       /**
        * Open add dialog
        * @type {Boolean}
        */
-      addDialig: false,
+      addDialog: false,
+      /**
+       * Config edition panel
+       * @type {Object}
+       */
+      propsPanelEdition,
       /**
        * File config module
        * @type {Object}
        */
-      sellerCommission,
+      settingAccountingSeatConfig,
+      /**
+       * RelationalData description
+       * @type {Object}
+       */
+      // settingAccountingSeatServices,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -145,14 +153,10 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      userSession: null,
+      branchOfficeSession: null
     }
-  },
-  created () {
-    this.userSession = this[GETTERS.GET_USER]
-    this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.getSellerCommissions()
-    this.setRelationalData(this.sellerCommissionServices, [], this)
   },
   computed: {
     /**
@@ -160,111 +164,92 @@ export default {
      */
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
+  created () {
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
+    this.setRelationalData(this.settingAccountingSeatServices, [], this)
+  },
   methods: {
-    /**
-     * Set data dialog edition
-     * @param  {Object} data selected
-     */
-    viewDetails (data) {
-      data.commission_type_select = {
-        label: data.commission_type === 'p' ? 'Porcentaje' : 'Monto',
-        value: data.commission_type
-      }
-      console.log(data)
-      this.editDialog = true
-      this.propsPanelEdition.data = data
-      this.selectedData = data
-    },
-    /**
-     * Delete data
-     * @param {Object} data data selected
-     */
-    deleteData (data) {
-      this.$q.dialog({
-        title: 'Confirmación',
-        message: '¿Desea eliminar la comisión del vendedor?',
-        cancel: {
-          label: 'Cancelar',
-          color: 'negative'
-        },
-        persistent: true,
-        ok: {
-          label: 'Aceptar',
-          color: 'primary'
-        }
-      }).onOk(async () => {
-        await this.$services.deleteData(['seller-commissions', data.id])
-        this.notify(this, 'sellerCommission.deleteSuccessfull', 'positive', 'mood')
-        this.getSellerCommissions()
-      })
-    },
     /**
      * Load data sorting
      * @param  {Object}
      */
     loadData (data) {
       this.params.page = data.page
-      this.params.sortBy = data.sortBy ?? this.params.sortBy
+      this.params.sortBy = data.sortBy
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getSellerCommissions(this.params)
+      this.getSettingAccountingSeats(this.params)
     },
     /**
-     * Search sellerCommission
+     * Search branch offices
      * @param  {Object}
      */
     searchData (data) {
       for (const dataSearch in this.params.dataSearch) {
         this.params.dataSearch[dataSearch] = data
       }
-      this.params.page = 1
-      this.getSellerCommissions()
-    },
-    /**
-     * Update Branch Office
-     * @param  {Object}
-     */
-    update (data) {
-      data.user_updated_id = this.userSession.id
-      data.commission_type = data.commission_type_select_id
-      this.loadingForm = true
-      this.$services.putData(['seller-commissions', this.selectedData.id], data)
-        .then(({ res }) => {
-          this.editDialog = false
-          this.loadingForm = false
-          this.getSellerCommissions(this.params)
-          this.notify(this, 'sellerCommission.editSuccessfull', 'positive', 'mood')
-        })
-        .catch(() => {
-          this.loadingForm = false
-        })
+      this.getSettingAccountingSeats(this.params)
     },
     /**
      * Save Branch Office
      * @param  {Object}
      */
     save (data) {
-      data.user_created_id = this.userSession.id
-      data.commission_type = data.commission_type_select_id
+      data.name_field = data.name_field.value
+      data.account_type = data.account_type.value
       this.loadingForm = true
-      this.$services.postData(['seller-commissions'], data)
+      this.$services.postData(['setting-accounting-seats'], data)
         .then(({ res }) => {
-          this.addDialig = false
+          this.addDialog = false
           this.loadingForm = false
-          this.getSellerCommissions(this.params)
-          this.notify(this, 'sellerCommission.addSuccessfull', 'positive', 'mood')
+          this.getSettingAccountingSeats(this.params)
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Get all sellerCommission
+     * Update Branch Office
+     * @param  {Object}
      */
-    getSellerCommissions (params = this.params) {
+    update (data) {
+      this.loadingForm = true
+      data.name_field = data.name_field.value
+      data.account_type = data.account_type.value
+      this.$services.putData(['setting-accounting-seats', this.selectedData.id], data)
+        .then(({ res }) => {
+          this.editDialog = false
+          this.loadingForm = false
+          this.getSettingAccountingSeats(this.params)
+        })
+        .catch(() => {
+          this.loadingForm = false
+        })
+    },
+    /**
+     * Set data dialog edition
+     * @param  {Object} data selected
+     */
+    viewDetails (data) {
+      this.editDialog = true
+      this.propsPanelEdition.data = data
+      this.selectedData = data
+    },
+    /**
+     * Open formulary
+     * @param  {String}
+     */
+    changeTitleForm (title) {
+      this.titleForm = title
+    },
+    /**
+     * Get all branch offices
+     */
+    getSettingAccountingSeats (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['seller-commissions'], this.params)
+      this.$services.getData(['setting-accounting-seats'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
@@ -273,8 +258,8 @@ export default {
         .catch(err => {
           console.log(err)
           this.data = []
-          this.loadingTable = false
           this.optionPagination.rowsNumber = 0
+          this.loadingTable = false
         })
     }
   }

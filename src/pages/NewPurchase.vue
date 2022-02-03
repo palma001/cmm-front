@@ -886,25 +886,6 @@
         </template>
       </dynamic-form>
     </q-dialog>
-    <vue-html2pdf
-      :show-layout="false"
-      :float-layout="true"
-      :enable-download="false"
-      :preview-modal="true"
-      :paginate-elements-by-height="1000"
-      filename="hee hee"
-      :pdf-quality="2"
-      :manual-pagination="false"
-      pdf-format="a4"
-      pdf-orientation="portrait"
-      pdf-content-width="900px"
-      ref="html2Pdf"
-      @progress="onProgress($event)"
-    >
-      <section slot="pdf-content">
-        <pdf-print :data="modelPdf"/>
-      </section>
-    </vue-html2pdf>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -929,8 +910,6 @@
 import { date } from 'quasar'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
-import PdfPrint from '../components/PdfPrint.vue'
-import VueHtml2pdf from 'vue-html2pdf'
 import { mapGetters } from 'vuex'
 import { provider, propsPanelEdition, providerServices } from '../config-file/provider/providerConfig.js'
 import DynamicForm from '../components/DynamicForm.vue'
@@ -940,16 +919,13 @@ export default {
   name: 'purchase',
   mixins: [mixins.containerMixin],
   components: {
-    DynamicForm,
-    VueHtml2pdf,
-    PdfPrint
+    DynamicForm
     // DataTable
   },
   data () {
     return {
       visiblePurchase: false,
       comment: null,
-      modelPdf: null,
       fees: [],
       dateFees: null,
       tab: 'contado',
@@ -1249,27 +1225,6 @@ export default {
       }
       this.getProducts(param, update)
     },
-    setModelPdf (data) {
-      const pdfData = {
-        title: 'COMPROBANTE DE COMPRA',
-        branchOffice: data.branch_office,
-        date: date.formatDate(data.created_at, 'DD/MM/YYYY'),
-        expirationDate: date.formatDate(`${data.expiration_date} 00:00:00`, 'DD/MM/YYYY'),
-        serie: `${data.serie}-${data.number}`,
-        products: this.modelPurchaseDetails(data.purchase_details),
-        coin: data.coin.name,
-        total: data.total,
-        total_igv: data.total_igv,
-        subtotal: data.purchase_price,
-        client: {
-          fieldName: 'PROVEEDOR',
-          fullName: `${data.provider.name} ${data.provider.last_name}`,
-          documentType: data.provider.document_type.name,
-          documentNumber: data.provider.document_number
-        }
-      }
-      return pdfData
-    },
     modelPurchaseDetails (data) {
       return data.map(element => {
         element.price = element.purchase_price
@@ -1300,14 +1255,6 @@ export default {
       }
       this.savePurchase(billModel)
     },
-    async downloadPDF (data) {
-      const { res } = await this.$services.getOneData(['purchases', data.id])
-      console.log(data, res.data)
-      this.modelPdf = this.setModelPdf(res.data)
-      setTimeout(() => {
-        this.$refs.html2Pdf.generatePdf()
-      }, 200)
-    },
     /**
      * Save bill
      * @param {Object} data data bill
@@ -1318,7 +1265,6 @@ export default {
       this.$services.postData(['purchases'], data)
         .then(({ res }) => {
           this.notify(this, 'purchase.saveSuccess', 'positive', 'mood')
-          this.downloadPDF(res.data)
           this.cancelBill()
           this.visiblePurchase = false
         })

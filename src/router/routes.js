@@ -271,6 +271,12 @@ const routes = [
         name: 'CreditNote',
         component: () => import('src/pages/ListCreditNote.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'setting-accounting-seats',
+        name: 'SettingAccountingSeat',
+        component: () => import('src/pages/SettingAccountingSeat.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },

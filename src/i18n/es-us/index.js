@@ -60,6 +60,7 @@ export default {
   },
   // modules
   modules: {
+    settingAccountingSeat: 'Configurar Plan Contable',
     'accounting-plan': 'plan contable',
     formatRegisterSaleSunat: 'Formato 14.1: Registro de ventas e ingresos - SUNAT',
     formatRegisterPurchaseSunat: 'Formato 8.1: Registro de compras - SUNAT',
@@ -178,6 +179,20 @@ export default {
     listPermission: 'lista de permisos'
   },
 
+  // roles
+  settingAccountingSeat: {
+    name_field: 'nombre del campo',
+    accounting_plan: 'plan contable',
+    origin_account: 'origen de cuenta',
+    list: 'configuración de asientos contables',
+    description: 'descripción',
+    add: 'agregar configuración',
+    account_type: 'transacción',
+    update: 'modoficar configuración',
+    restore: 'restaurar',
+    reset: 'limpiar',
+    cancel: 'cancelar'
+  },
   // roles
   roles: {
     acronym: 'acrónimo',

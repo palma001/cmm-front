@@ -633,7 +633,6 @@ export default {
      */
     viewPayment (data) {
       this.pay = true
-      console.log(data)
       this.purchaseSelected = data
       this.payments = data.purchase_payments
       this.totalPayements()
