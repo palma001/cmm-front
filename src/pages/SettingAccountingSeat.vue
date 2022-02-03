@@ -27,6 +27,7 @@
           selection="multiple"
           searchable
           action
+          :buttonsActions="buttonsActions"
           :column="settingAccountingSeatConfig"
           :data="data"
           :loading="loadingTable"
@@ -34,6 +35,7 @@
           @search-data="searchData"
           @view-details="viewDetails"
           @on-load-data="loadData"
+          @delete="deleteData"
         />
       </div>
     </div>
@@ -72,7 +74,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import DynamicForm from '../components/DynamicForm.vue'
-import { settingAccountingSeatConfig, propsPanelEdition, settingAccountingSeatServices } from '../config-file/settingAccountingSeat/settingAccountingSeatConfig.js'
+import { settingAccountingSeatConfig, propsPanelEdition, settingAccountingSeatServices, buttonsActions } from '../config-file/settingAccountingSeat/settingAccountingSeatConfig.js'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
@@ -85,6 +87,7 @@ export default {
   },
   data () {
     return {
+      buttonsActions,
       settingAccountingSeatServices,
       settingAccountingSeat: null,
       loadingForm: false,
@@ -170,6 +173,29 @@ export default {
     this.setRelationalData(this.settingAccountingSeatServices, [], this)
   },
   methods: {
+    /**
+     * Delete data
+     * @param {Object} data data selected
+     */
+    deleteData (data) {
+      this.$q.dialog({
+        title: 'Confirmación',
+        message: '¿Desea eliminar la configuración?',
+        cancel: {
+          label: 'Cancelar',
+          color: 'negative'
+        },
+        persistent: true,
+        ok: {
+          label: 'Aceptar',
+          color: 'primary'
+        }
+      }).onOk(async () => {
+        await this.$services.deleteData(['setting-accounting-seats', data.id])
+        this.notify(this, 'settingAccountingSeat.deleteSuccessFul', 'positive', 'mood')
+        this.getSettingAccountingSeats(this.params)
+      })
+    },
     /**
      * Load data sorting
      * @param  {Object}

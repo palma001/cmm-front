@@ -197,6 +197,22 @@ export const settingAccountingSeatConfig = [
   }
 ]
 
+export const buttonsActions = [
+  {
+    color: 'primary',
+    icon: 'edit',
+    size: 'sm',
+    event: 'view-details'
+  },
+  {
+    color: 'negative',
+    icon: 'delete',
+    size: 'sm',
+    event: 'delete',
+    class: 'q-ml-sm'
+  }
+]
+
 export const propsPanelEdition = {
   data: {},
   buttons: [

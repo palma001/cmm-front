@@ -191,7 +191,8 @@ export default {
     update: 'modoficar configuración',
     restore: 'restaurar',
     reset: 'limpiar',
-    cancel: 'cancelar'
+    cancel: 'cancelar',
+    deleteSuccessFul: 'Eliminado exitosamente'
   },
   // roles
   roles: {
