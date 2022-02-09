@@ -267,6 +267,12 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
+        path: 'format-register-purchase-Sunat',
+        name: 'FormatRegisterPurchaseSunat',
+        component: () => import('src/pages/FormatRegisterPurchaseSunat.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
         path: 'credit-notes',
         name: 'CreditNote',
         component: () => import('src/pages/ListCreditNote.vue'),

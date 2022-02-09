@@ -106,7 +106,7 @@ export default {
         var elt = this.$refs.tbl_export_table_to_xls
         var wb = XLSX.utils.table_to_book(elt, { sheet: 'sheet1' })
         this.tableRow = false
-        return dl ? XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) : XLSX.writeFile(wb, fn || ('Formato 8.1.' + (type || 'xlsx')))
+        return dl ? XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) : XLSX.writeFile(wb, fn || ('Formato 14.1.' + (type || 'xlsx')))
       }, 20)
     }
   }

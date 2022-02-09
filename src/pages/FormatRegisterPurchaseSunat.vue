@@ -32,11 +32,11 @@
         </q-input>
       </div>
       <div class="col-4">
-        <excel-report :data="data"/>
+        <format-purchase :data="data"/>
       </div>
       <div class="col-12">
         <q-table
-          title="Registro de ventas de Sunat"
+          title="Registro de compra de Sunat"
           :data="data"
           :columns="columns"
           row-key="name"
@@ -47,12 +47,12 @@
 </template>
 
 <script>
-import ExcelReport from '../components/ExcelReport.vue'
+import FormatPurchase from '../components/FormatPurchase.vue'
 import { date } from 'quasar'
 export default {
   // name: 'PageName',
   components: {
-    ExcelReport
+    FormatPurchase
   },
   data () {
     return {
@@ -94,7 +94,7 @@ export default {
           label: 'Nº Serie',
           align: 'center',
           name: 'serie_name',
-          field: row => row.serie.name,
+          field: row => row.serie,
           sortable: true
         },
         {
@@ -108,21 +108,21 @@ export default {
           label: 'Documento',
           align: 'center',
           name: 'client_document__number',
-          field: row => row.client.document_number,
+          field: row => row.provider.document_number,
           sortable: true
         },
         {
           label: 'Apellidos y nombres',
           align: 'center',
           name: 'full_name',
-          field: row => `${row.client.name} ${row.client.last_name}`,
+          field: row => `${row.provider.name} ${row.provider.last_name}`,
           sortable: true
         },
         {
           label: 'Base imponible de la operación gravada',
           align: 'center',
           name: 'total_bill',
-          field: row => row.total_bill,
+          field: row => row.subtotal,
           sortable: true
         },
         {
@@ -157,7 +157,7 @@ export default {
           field: 'created_at'
         }
       }
-      this.$services.getData(['bill-electronics'], params)
+      this.$services.getData(['purchases'], params)
         .then(({ res }) => {
           this.data = res.data
         })
