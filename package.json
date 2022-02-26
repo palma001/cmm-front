@@ -23,6 +23,7 @@
     "graphql": "^15.5.1",
     "graphql-tag": "^2.12.5",
     "node-fetch": "^2.6.1",
+    "numero-a-letras": "^1.0.6",
     "quasar": "^1.15.23",
     "vee-validate": "^2.2.15",
     "vue-apollo": "^3.0.7",

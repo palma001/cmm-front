@@ -18,6 +18,12 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
+        path: 'new-egress',
+        name: 'NewEgress',
+        component: () => import('src/pages/NewEgress.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
         path: 'entries',
         name: 'Entries',
         component: () => import('src/pages/Entries.vue'),
@@ -27,6 +33,18 @@ const routes = [
         path: 'partners',
         name: 'Partner',
         component: () => import('src/pages/Partner.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'workers',
+        name: 'Worker',
+        component: () => import('src/pages/Worker.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'egresses',
+        name: 'Egresses',
+        component: () => import('src/pages/Egresses.vue'),
         beforeEnter: validationSessionUnit
       }
     ]

@@ -39,8 +39,11 @@ export default {
   modules: {
     egress: 'egreso',
     'new-entry': 'nuevo ingreso',
+    'new-egress': 'nuevo egreso',
     partner: 'socios',
-    entries: 'Lista de ingreso'
+    entries: 'Lista de ingreso',
+    egresses: 'lista de egresos',
+    workers: 'trabajadores'
   },
   partner: {
     add: 'agregar socio',
@@ -54,7 +57,23 @@ export default {
     deleteSuccessful: 'eliminado exitosamente',
     editSuccessful: 'Modificado exitosamente',
     addSuccessful: 'Agregado exitosamente',
-    list: 'Lista de socios'
+    list: 'Lista de socios',
+    update: 'modificar'
+  },
+  worker: {
+    add: 'agregar trabajdor',
+    name: 'nombre',
+    last_name: 'apellido',
+    email: 'correo',
+    phone: 'telefono',
+    document_number: 'número de documento',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessful: 'eliminado exitosamente',
+    editSuccessful: 'Modificado exitosamente',
+    addSuccessful: 'Agregado exitosamente',
+    list: 'Lista de trabajdores',
+    update: 'modificar'
   },
   // roles
   roles: {
@@ -67,7 +86,16 @@ export default {
     reset: 'limpiar',
     cancel: 'cancelar'
   },
-
+  egress: {
+    newEgress: 'nuevo egreso',
+    add: 'agregar egreso',
+    worker: 'trabajador',
+    created_at: 'fecha',
+    concept: 'concepto',
+    list: 'Lista de egresos',
+    amount: 'monto',
+    saveSuccess: 'Recibo creado exitosamente'
+  },
   entry: {
     saveErrorPayment: 'Ingrese los campos requeridos',
     created_at: 'fecha',
@@ -75,7 +103,6 @@ export default {
     total: 'total',
     cash: 'efectivo',
     add: 'agregar ingreso',
-    cancelBilling: 'cancelar factura',
     saveBilling: 'guardar factura',
     saveSuccess: 'Recibo creado exitosamente',
     error: 'A ocurrido un error',
@@ -85,6 +112,6 @@ export default {
     options: 'opciones',
     partner: 'Socio',
     concepts: 'conceptos',
-    newEntry: 'Nueva entrada'
+    newEntry: 'Nuevo ingreso'
   }
 }

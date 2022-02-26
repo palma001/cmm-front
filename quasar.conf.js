@@ -27,7 +27,7 @@ module.exports = function (/* ctx */) {
       'apollo',
       'graphql',
       'axios',
-      'vueExcelXlsxs'
+      'numberLetter'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
