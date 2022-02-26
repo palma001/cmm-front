@@ -1,6 +1,6 @@
 <template>
   <LayoutComponent
-    titleApp="Sudamerica"
+    titleApp="Mercado"
     titleMenu="Opciones"
     :data="modules"
     @logout="logout"
