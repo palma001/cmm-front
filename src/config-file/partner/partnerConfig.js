@@ -1,51 +1,8 @@
-export const client = [
+export const partner = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
-      {
-        tabulated: {
-          name: 'document_type_id',
-          align: 'left',
-          field: row => row.document_type ? row.document_type.name : '-',
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'document_type',
-          addible: false,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true,
-              disable: true,
-              readonly: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
       {
         tabulated: {
           name: 'document_number',
@@ -56,7 +13,7 @@ export const client = [
         },
         actionable: {
           propTag: 'document_number',
-          addible: false,
+          addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
@@ -65,8 +22,7 @@ export const client = [
             props: {
               type: 'text',
               dense: true,
-              outlined: true,
-              disable: true
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -94,7 +50,7 @@ export const client = [
         },
         actionable: {
           propTag: 'name',
-          addible: false,
+          addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
@@ -103,8 +59,7 @@ export const client = [
             props: {
               type: 'text',
               dense: true,
-              outlined: true,
-              disable: true
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -132,7 +87,7 @@ export const client = [
         },
         actionable: {
           propTag: 'last_name',
-          addible: false,
+          addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
@@ -141,8 +96,7 @@ export const client = [
             props: {
               type: 'text',
               dense: true,
-              outlined: true,
-              disable: true
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -153,7 +107,7 @@ export const client = [
               {
                 name: 'validate',
                 value: {
-                  required: false
+                  required: true
                 }
               }
             ]
@@ -217,47 +171,6 @@ export const client = [
             props: {
               type: 'text',
               dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'client_type_id',
-          align: 'left',
-          field: row => row.client_type ? row.client_type.name : '-',
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'client_type',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
               outlined: true
             },
             class: {
@@ -364,29 +277,20 @@ export const propsPanelEdition = {
 }
 
 export const relationalDataConfiguration = [
-  {
-    targetPropTag: 'client_type',
-    entity: 'client_type',
-    services: ['client-types'],
-    propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
-  },
-  {
-    targetPropTag: 'document_type',
-    entity: 'document_type',
-    services: ['document-types'],
-    propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
-  }
+  // {
+  //   targetPropTag: 'document_type',
+  //   entity: 'document_type',
+  //   services: ['document-types'],
+  //   propData: 'data',
+  //   petitionParams: {
+  //     paginate: false
+  //   }
+  // }
 ]
 
-export const clientServices = {
+export const partnerServices = {
   props: propsPanelEdition,
-  config: client,
+  config: partner,
   propData: 'data',
   relationalData: relationalDataConfiguration
 }

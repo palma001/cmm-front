@@ -90,41 +90,6 @@
         :content-active-style="contentActiveStyle"
         style="height: 91vh;"
       >
-        <q-list>
-          <q-item>
-            <q-item-section avatar class="">
-              <q-icon name="maps_home_work"/>
-            </q-item-section>
-            <q-item-section class="q-mr-xl">
-              <q-item-label>
-                {{ ucwords(branchOfficeSelected.name) }}
-              </q-item-label>
-            </q-item-section>
-            <q-item-section avatar v-if="role.acronym === 'super_admin'">
-              <q-btn rounded flat icon="unfold_more" size="md"/>
-              <q-popup-edit v-model="branchOffice.name" auto-save>
-                <q-select
-                  use-input
-                  fill-input
-                  hide-selected
-                  outlined
-                  dense
-                  autofocus
-                  autocomplete="off"
-                  input-debounce="0"
-                  v-model="branchOfficeSelected"
-                  option-value="id"
-                  option-label="name"
-                  label="Establecimiento"
-                  :rules="[val => val || 'El campo metodo de pago es requerido']"
-                  :options="branchOffices"
-                  @filter="getBranchOffices"
-                  @input="changeBranchOffice"
-                />
-              </q-popup-edit>
-            </q-item-section>
-          </q-item>
-        </q-list>
         <q-expansion-item
           expand-separator
           v-for="category_module in dataMenu"
@@ -173,7 +138,7 @@
 
 <script>
 import { mixins } from '../mixins'
-import { GETTERS, MUTATIONS } from '../store/module-login/name.js'
+import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { SessionStorage } from 'quasar'
 export default {
@@ -237,7 +202,6 @@ export default {
       active: true,
       visibleLoading: false,
       route: '',
-      sucursales: SessionStorage.getItem('sucursales'),
       /**
        * Status menu
        *
@@ -270,32 +234,6 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_ROLE, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
-    /**
-     * Get payment method
-     * @param {String} value data filter
-     */
-    getBranchOffices (value, update) {
-      this.$services.getData(['branch-offices'], {
-        dataSearch: {
-          name: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.branchOffices = res.data.data
-          })
-        })
-    },
-    changeBranchOffice () {
-      this.visibleLoading = true
-      this.$store.commit(MUTATIONS.SET_BRANCH_OFFICE, this.branchOfficeSelected)
-      setTimeout(() => {
-        this.$root.$emit('change_branch_office', this.branchOfficeSelected)
-        this.visibleLoading = false
-      }, 1000)
-    },
     validateRole (roles = []) {
       const rol = this[GETTERS.GET_ROLE]
       if (roles && roles.length > 0 && rol) {

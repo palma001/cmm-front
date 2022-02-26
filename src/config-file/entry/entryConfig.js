@@ -1,23 +1,14 @@
 import { date } from 'quasar'
-export const billingConfig = [
+export const entry = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'serie_id',
+          name: 'partner',
           align: 'left',
-          field: row => `${row.serie.name}-${row.number}`,
-          sortable: true,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'client',
-          align: 'left',
-          field: row => row.client.full_name,
+          field: row => row.partner.full_name,
           sortable: false,
           visible: true
         }
@@ -33,69 +24,6 @@ export const billingConfig = [
       },
       {
         tabulated: {
-          name: 'expiration_date',
-          align: 'left',
-          field: row => date.formatDate(`${row.expiration_date} 12:00:00`, 'DD-MM-YYYY'),
-          sortable: true,
-          visible: false
-        }
-      },
-      {
-        tabulated: {
-          name: 'coin',
-          align: 'left',
-          field: row => row.coin.name,
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'seller',
-          align: 'left',
-          field: row => row.seller.full_name,
-          sortable: false,
-          visible: false
-        }
-      },
-      {
-        tabulated: {
-          name: 'voucher_type',
-          align: 'left',
-          field: row => row.voucher_type.name,
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'operation_type',
-          align: 'left',
-          field: row => row.operation_type.name,
-          sortable: false,
-          visible: false
-        }
-      },
-      {
-        tabulated: {
-          name: 'igv',
-          align: 'left',
-          field: row => row.total_igv.toFixed(2),
-          sortable: true,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'purchase_price',
-          align: 'left',
-          field: row => row.total_bill.toFixed(2),
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
           name: 'total',
           align: 'left',
           field: row => row.total.toFixed(2),
@@ -105,7 +33,7 @@ export const billingConfig = [
       },
       {
         tabulated: {
-          name: 'products',
+          name: 'concepts',
           align: 'center',
           visible: true,
           button: {
@@ -114,7 +42,7 @@ export const billingConfig = [
             type: 'button',
             size: 'sm',
             push: true,
-            event: 'viewProduct'
+            event: 'viewConcepts'
           }
         }
       },
@@ -135,21 +63,6 @@ export const billingConfig = [
       // },
       {
         tabulated: {
-          name: 'payment',
-          align: 'center',
-          visible: true,
-          button: {
-            label: 'payment',
-            color: 'primary',
-            type: 'button',
-            size: 'sm',
-            push: true,
-            event: 'viewPayment'
-          }
-        }
-      },
-      {
-        tabulated: {
           name: 'download',
           align: 'center',
           visible: false,
@@ -164,28 +77,8 @@ export const billingConfig = [
             size: 'sm',
             options: [
               {
-                label: 'XML',
-                event: 'downloadXML',
-                avatar: {
-                  icon: 'file_download',
-                  color: 'secondary',
-                  textColor: 'white',
-                  size: 'md'
-                }
-              },
-              {
                 label: 'PDF',
                 event: 'downloadPDF',
-                avatar: {
-                  icon: 'file_download',
-                  color: 'secondary',
-                  textColor: 'white',
-                  size: 'md'
-                }
-              },
-              {
-                label: 'CDR',
-                event: 'downloadCDR',
                 avatar: {
                   icon: 'file_download',
                   color: 'secondary',
@@ -201,7 +94,7 @@ export const billingConfig = [
         tabulated: {
           name: 'options',
           align: 'center',
-          visible: true,
+          visible: false,
           button: {
             label: 'options',
             color: 'primary',

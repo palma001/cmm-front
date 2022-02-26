@@ -5,8 +5,8 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('category.add')"
-          @click="addDialig = true"
+          :label="$q.screen.lt.sm ? '' : $t('partner.add')"
+          @click="addDialog = true"
         >
         <q-tooltip
           anchor="center right"
@@ -15,7 +15,7 @@
           v-if="$q.screen.lt.sm"
         >
           {{
-            ucwords($t('category.add'))
+            ucwords($t('partner.add'))
           }}
         </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="category"
+          module="partner"
           searchable
           action
-          :column="category"
+          :column="partner"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -45,9 +45,9 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="category"
+        module="partner"
         :propsPanelEdition="propsPanelEdition"
-        :config="category"
+        :config="partner"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -57,13 +57,13 @@
       position="right"
       full-height
       persistent
-      v-model="addDialig"
+      v-model="addDialog"
     >
       <dynamic-form
-        module="category"
-        :config="category"
+        module="partner"
+        :config="partner"
         :loading="loadingForm"
-        @cancel="addDialig = false"
+        @cancel="addDialog = false"
         @save="save"
       />
     </q-dialog>
@@ -73,7 +73,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { category, buttonsActions, propsPanelEdition } from '../config-file/category/categoryConfig.js'
+import { partner, buttonsActions, propsPanelEdition, partnerServices } from '../config-file/partner/partnerConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -86,6 +86,15 @@ export default {
   },
   data () {
     return {
+      residenceCondition: null,
+      status: null,
+      documentNumber: null,
+      lastName: null,
+      name: null,
+      businessName: null,
+      documentType: null,
+      documentTypes: [],
+      partnerServices,
       buttonsActions,
       propsPanelEdition,
       loadingForm: false,
@@ -101,7 +110,7 @@ export default {
       optionPagination: {
         rowsPerPage: 20,
         rowsNumber: 20,
-        paginated: true,
+        paginate: true,
         sortBy: 'id',
         sortOrder: 'desc'
       },
@@ -116,19 +125,22 @@ export default {
         perPage: 1,
         dataSearch: {
           name: '',
-          description: ''
+          last_name: '',
+          document_number: '',
+          email: '',
+          phone: ''
         }
       },
       /**
        * Open add dialog
        * @type {Boolean}
        */
-      addDialig: false,
+      addDialog: false,
       /**
        * File config module
        * @type {Object}
        */
-      category,
+      partner,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -147,9 +159,10 @@ export default {
     }
   },
   created () {
-    this.getCategories()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.getDocumentTypes()
+    this.setRelationalData(this.partnerServices, [], this)
   },
   computed: {
     /**
@@ -163,7 +176,6 @@ export default {
      * @param  {Object} data selected
      */
     viewDetails (data) {
-      console.log(data)
       this.editDialog = true
       this.propsPanelEdition.data = data
       this.selectedData = data
@@ -175,7 +187,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar categoría?',
+        message: '¿Desea eliminar el socio?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -186,9 +198,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['categories', data.id])
-        this.notify(this, 'category.deleteSuccessfull', 'positive', 'mood')
-        this.getCategories()
+        await this.$services.deleteData(['partners', data.id])
+        this.notify(this, 'partner.deleteSuccessful', 'positive', 'mood')
+        this.getPartners()
       })
     },
     /**
@@ -201,10 +213,10 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getCategories(this.params)
+      this.getPartners(this.params)
     },
     /**
-     * Search category
+     * Search partner
      * @param  {Object}
      */
     searchData (data) {
@@ -212,7 +224,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getCategories()
+      this.getPartners()
     },
     /**
      * Update Branch Office
@@ -221,12 +233,12 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['categories', this.selectedData.id], data)
+      this.$services.putData(['partners', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getCategories(this.params)
-          this.notify(this, 'category.editSuccessfull', 'positive', 'mood')
+          this.getPartners(this.params)
+          this.notify(this, 'partner.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -238,25 +250,25 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.user_id = this.userSession.id
+      data.branch_office_id = this.branchOffice.id
       this.loadingForm = true
-      this.$services.postData(['categories'], data)
+      this.$services.postData(['partners'], data)
         .then(({ res }) => {
-          this.addDialig = false
+          this.addDialog = false
           this.loadingForm = false
-          this.getCategories(this.params)
-          this.notify(this, 'category.addSuccessfull', 'positive', 'mood')
+          this.getPartners(this.params)
+          this.notify(this, 'partner.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Get all category
+     * Get all partner
      */
-    getCategories (params = this.params) {
+    getPartners (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['categories'], this.params)
+      this.$services.getData(['partners'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
@@ -267,6 +279,46 @@ export default {
           this.data = []
           this.loadingTable = false
           this.optionPagination.rowsNumber = 0
+        })
+    },
+    getDataApi () {
+      const r = this.documentType.number === '1' ? 'dni' : this.documentType.number === '6' ? 'ruc' : null
+      if (r) {
+        this.$services.getData(['ruc', this.documentNumber], {
+          documentType: r
+        })
+          .then(({ res }) => {
+            if (!res.data.error) {
+              if (this.documentType.number === '6') {
+                this.businessName = res.data.nombre
+                this.status = res.data.estado
+                this.residenceCondition = res.data.condicion
+              } else {
+                const nameDivider = res.data.nombre.split(' ')
+                this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
+                this.name = `${nameDivider[2]} ${nameDivider[3]}`
+              }
+            } else {
+              this.notify(this, res.data.error, 'negative', 'warning')
+              this.lastName = null
+              this.name = null
+              this.businessName = null
+            }
+          })
+      }
+    },
+    /**
+     * Get all partner
+     */
+    getDocumentTypes () {
+      this.loadingTable = true
+      this.$services.getData(['document-types'])
+        .then(({ res }) => {
+          this.documentTypes = res.data
+          this.documentType = res.data[0]
+        })
+        .catch(err => {
+          console.log(err)
         })
     }
   }

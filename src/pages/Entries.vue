@@ -5,8 +5,8 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('documentType.add')"
-          @click="addDialig = true"
+          :label="$q.screen.lt.sm ? '' : $t('entry.add')"
+          @click="$router.push({ name: 'NewEntry' })"
         >
           <q-tooltip
             anchor="center right"
@@ -15,7 +15,7 @@
             v-if="$q.screen.lt.sm"
           >
             {{
-              ucwords($t('documentType.add'))
+              ucwords($t('entry.add'))
             }}
           </q-tooltip>
       </q-btn>
@@ -23,72 +23,96 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="documentType"
+          module="entry"
           searchable
-          action
-          :column="documentType"
+          :column="entry"
           :data="data"
           :loading="loadingTable"
-          :buttonsActions="buttonsActions"
           :optionPagination="optionPagination"
           @view-details="viewDetails"
+          @viewConcepts="viewConcepts"
           @search-data="searchData"
           @on-load-data="loadData"
           @delete="deleteData"
         />
       </div>
     </div>
-    <q-dialog
-      position="right"
-      full-height
-      persistent
-      v-model="editDialog"
-    >
-      <dynamic-form-edition
-        module="documentType"
-        :propsPanelEdition="propsPanelEdition"
-        :config="documentType"
-        :loading="loadingForm"
-        @cancel="editDialog = false"
-        @update="update"
-      />
-    </q-dialog>
-    <q-dialog
-      position="right"
-      full-height
-      persistent
-      v-model="addDialig"
-    >
-      <dynamic-form
-        module="documentType"
-        :config="documentType"
-        :loading="loadingForm"
-        @cancel="addDialig = false"
-        @save="save"
-      />
+    <q-dialog v-model="viewConceptModal">
+      <q-card v-if="entrySelected" style="width: 700px; max-width: 80vw;">
+        <q-card-section class="q-pb-xs">
+          <div class="text-h6">
+            Recibo Nro <span class="text-red">{{ entrySelected.id }}</span>
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-table
+            row-key="name"
+            wrap-cells
+            virtual-scroll
+            :data="entrySelected.entry_details"
+            :columns="columns"
+            :filter="conceptFilter"
+          >
+            <template v-slot:top>
+              <span class="text-h6">Lista de conceptos</span>
+              <q-space />
+              <q-input dense debounce="300" color="primary" v-model="conceptFilter">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+        </q-card-section>
+        <q-separator/>
+        <q-card-actions align="right">
+          <q-btn color="negative" label="Cerrar" size="md" @click="viewConceptModal = false"/>
+        </q-card-actions>
+      </q-card>
     </q-dialog>
   </q-page>
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import DynamicForm from '../components/DynamicForm.vue'
-import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { documentType, buttonsActions, propsPanelEdition } from '../config-file/documentType/documentTypeConfig.js'
+import { entry } from '../config-file/entry/entryConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 export default {
   mixins: [mixins.containerMixin],
   components: {
-    DataTable,
-    DynamicForm,
-    DynamicFormEdition
+    DataTable
   },
   data () {
     return {
-      buttonsActions,
-      propsPanelEdition,
-      loadingForm: false,
+      /**
+       * Columns Table
+       * @type {Array} column array
+       */
+      columns: [
+        {
+          name: 'name',
+          align: 'left',
+          label: 'Nombre',
+          field: row => row.concept.name,
+          sortable: true
+        },
+        {
+          name: 'amount',
+          label: 'Importe S/',
+          field: 'amount',
+          sortable: true
+        },
+        {
+          name: 'period',
+          label: 'Periodo',
+          field: 'period',
+          sortable: true
+        }
+      ],
+      conceptFilter: '',
+      entrySelected: null,
+      viewConceptModal: false,
       /**
        * Selected data
        * @type {Object}
@@ -120,20 +144,10 @@ export default {
         }
       },
       /**
-       * Open add dialog
-       * @type {Boolean}
-       */
-      addDialig: false,
-      /**
        * File config module
        * @type {Object}
        */
-      documentType,
-      /**
-       * Open edit dialog
-       * @type {Boolean}
-       */
-      editDialog: false,
+      entry,
       /**
        * Status loading table
        * @type {Boolean}
@@ -147,7 +161,7 @@ export default {
     }
   },
   created () {
-    this.getBrands()
+    this.getEntries()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
   },
@@ -158,6 +172,10 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    viewConcepts (data) {
+      this.entrySelected = data
+      this.viewConceptModal = true
+    },
     /**
      * Set data dialog edition
      * @param  {Object} data selected
@@ -174,7 +192,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar el tipo documento?',
+        message: '¿Desea eliminar la ingreso?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -185,9 +203,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['document-types', data.id])
-        this.notify(this, 'documentType.deleteSuccessFull', 'positive', 'mood')
-        this.getBrands()
+        await this.$services.deleteData(['entrys', data.id])
+        this.notify(this, 'entry.deleteSuccessful', 'positive', 'mood')
+        this.getEntries()
       })
     },
     /**
@@ -200,10 +218,10 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getBrands(this.params)
+      this.getEntries(this.params)
     },
     /**
-     * Search documentType
+     * Search entry
      * @param  {Object}
      */
     searchData (data) {
@@ -211,51 +229,14 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getBrands()
+      this.getEntries()
     },
     /**
-     * Update Branch Office
-     * @param  {Object}
+     * Get all entry
      */
-    update (data) {
-      data.user_updated_id = this.userSession.id
-      this.loadingForm = true
-      this.$services.putData(['document-types', this.selectedData.id], data)
-        .then(({ res }) => {
-          this.editDialog = false
-          this.loadingForm = false
-          this.getBrands(this.params)
-          this.notify(this, 'documentType.editSuccessfull', 'positive', 'mood')
-        })
-        .catch(() => {
-          this.loadingForm = false
-        })
-    },
-    /**
-     * Save Branch Office
-     * @param  {Object}
-     */
-    save (data) {
-      data.user_created_id = this.userSession.id
-      data.user_id = this.userSession.id
-      this.loadingForm = true
-      this.$services.postData(['document-types'], data)
-        .then(({ res }) => {
-          this.addDialig = false
-          this.loadingForm = false
-          this.getBrands(this.params)
-          this.notify(this, 'documentType.addSuccessfull', 'positive', 'mood')
-        })
-        .catch(() => {
-          this.loadingForm = false
-        })
-    },
-    /**
-     * Get all documentType
-     */
-    getBrands (params = this.params) {
+    getEntries (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['document-types'], this.params)
+      this.$services.getData(['entries'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
