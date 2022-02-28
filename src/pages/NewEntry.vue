@@ -10,7 +10,7 @@
         <q-separator/>
         <q-card-section class="q-pb-sm">
           <div class="row q-col-gutter-sm">
-            <div class="col-4">
+            <div class="col-6">
               <q-select
                 autocomplete="off"
                 use-input
@@ -42,7 +42,7 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-3">
+            <div class="col-4">
               <q-input
                 type="date"
                 dense
@@ -217,12 +217,74 @@
       :manual-pagination="false"
       pdf-format="a4"
       pdf-orientation="portrait"
-      pdf-content-width="900px"
+      pdf-content-width="800px"
       ref="html2Pdf"
       @progress="onProgress($event)"
     >
-      <section slot="pdf-content">
-        <pdf-print :data="modelPdf"/>
+      <section slot="pdf-content" class="text-uppercase">
+        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.id" title="recibo de ingreso" :dateNow="modelPdf.created_at">
+          <template v-slot:content>
+            <table class="table text-center" border="1">
+              <tr class="bg-blue-2 text-primary text-bold">
+                <td>Nombre</td>
+                <td>Apellido</td>
+                <td>Puesto</td>
+              </tr>
+              <tr class="text-dark">
+                <td class="q-pa-xs">
+                  {{ modelPdf.partner.name }}
+                </td>
+                <td class="q-pa-xs">
+                  {{ modelPdf.partner.last_name }}
+                </td>
+                <td class="q-pa-xs"></td>
+              </tr>
+            </table>
+            <table class="table text-center" border="1">
+              <thead class="bg-blue-2">
+                <tr class="text-primary text-bold">
+                  <td>Concepto</td>
+                  <td>Periodo</td>
+                  <td>Importe</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="entryDetail in modelPdf.entry_details" :key="entryDetail.id" class="text-dark">
+                  <td class="q-pa-sm">{{ entryDetail.concept.name }}</td>
+                  <td class="q-pa-sm">{{ entryDetail.period }}</td>
+                  <td class="q-pa-sm">{{ entryDetail.amount }}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="text-dark">
+                  <td class="text-right q-pa-sm" colspan="2">
+                    Total S/
+                  </td>
+                  <td class="q-pa-sm">
+                    {{  modelPdf.total }}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+            <div
+              class="row text-center q-mt-md q-pt-xl q-px-md justify-between text-dark"
+              style="border: 1px solid"
+            >
+              <div class="col-3">
+                <hr>
+                socio
+              </div>
+              <div class="col-3">
+                <hr>
+                tesorero
+              </div>
+              <div class="col-3">
+                <hr>
+                vb presidente
+              </div>
+            </div>
+          </template>
+        </pdf-print>
       </section>
     </vue-html2pdf>
   </q-page>
@@ -412,8 +474,7 @@ export default {
         .then(({ res }) => {
           this.notify(this, 'entry.saveSuccess', 'positive', 'mood')
           this.cancelBill()
-          this.visibleEntry = false
-          // this.downloadPDF(res.data)
+          this.downloadPDF(res.data)
         })
         .catch(() => {
           this.notify(this, 'entry.error', 'negative', 'warning')
@@ -571,30 +632,9 @@ export default {
         })
     },
     async downloadPDF (data) {
-      const { res } = await this.$services.getOneData(['bill-electronics', data.id])
-      this.modelPdf = this.setModelPdf(res.data)
+      const { res } = await this.$services.getOneData(['entries', data.id])
+      this.modelPdf = res.data
       this.$refs.html2Pdf.generatePdf()
-    },
-    setModelPdf (data) {
-      const pdfData = {
-        title: 'COMPROBANTE DE VENTA',
-        branchOffice: data.branch_office,
-        date: date.formatDate(data.created_at, 'DD/MM/YYYY'),
-        expirationDate: date.formatDate(`${data.expiration_date} 00:00:00`, 'DD/MM/YYYY'),
-        serie: `${data.serie.name}-${data.number}`,
-        concepts: data.bill_electronic_details,
-        coin: data.coin.name,
-        total: data.total,
-        total_igv: data.total_igv,
-        subtotal: data.total_bill,
-        partner: {
-          fieldName: 'CLIENTE',
-          fullName: `${data.partner.name} ${data.partner.last_name}`,
-          documentType: data.partner.document_type.name,
-          documentNumber: data.partner.document_number
-        }
-      }
-      return pdfData
     },
     /**
      * Delete concept

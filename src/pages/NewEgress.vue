@@ -152,7 +152,10 @@
       @progress="onProgress($event)"
     >
       <section slot="pdf-content">
-        <pdf-print :data="modelPdf"/>
+        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.id" title="recibo de ingreso" :dateNow="modelPdf.created_at">
+          <template v-slot:content>
+          </template>
+        </pdf-print>
       </section>
     </vue-html2pdf>
   </q-page>
