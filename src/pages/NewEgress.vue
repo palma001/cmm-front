@@ -147,13 +147,46 @@
       :manual-pagination="false"
       pdf-format="a4"
       pdf-orientation="portrait"
-      pdf-content-width="900px"
+      pdf-content-width="800px"
       ref="html2Pdf"
       @progress="onProgress($event)"
     >
       <section slot="pdf-content">
-        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.id" title="recibo de ingreso" :dateNow="modelPdf.created_at">
+        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.id" title="recibo de egreso" :dateNow="modelPdf.created_at">
           <template v-slot:content>
+            <div style="border: solid 1px;" class="q-pa-md text-dark">
+              <span style="border: solid 1px;" class="q-pa-sm float-right">S/ {{ modelPdf.amount }}</span><br>
+              <span class="text-primary">La Suma de:</span> {{ $numberLetter.NumerosALetras(modelPdf.amount) }}<br>
+              <span class="text-primary">Por Concepto de:</span> {{ modelPdf.concept }}<br>
+              <span class="text-primary">En el Periodo:</span> {{ modelPdf.period }}
+            </div>
+            <div style="border: solid 1px;" class="row text-dark q-mb-sm q-mt-sm">
+              <div class="col-4">
+                <table class="table text-center" border="1">
+                  <tr>
+                    <td colspan="2" class="text-center bg-blue-4 text-white">AUTORIZADO</td>
+                  </tr>
+                  <tr>
+                    <td class="q-pt-xl">PRESIDENTE</td>
+                    <td class="q-pt-xl">TESORERO</td>
+                  </tr>
+                </table>
+                <table class="table text-center" border="1">
+                  <tr>
+                    <td colspan="2" class="bg-blue-4 q-pa-md full-width"></td>
+                  </tr>
+                  <tr>
+                    <td class="q-pt-xl">FISCAL</td>
+                    <td class="q-pt-xl">FECHA</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-6 q-pl-xs q-pt-md">
+                Firma: <hr>
+                Nombre y Apellido: {{ modelPdf.worker.name }} {{ modelPdf.worker.last_name }} <br>
+                Doc. de Identidad: {{ modelPdf.worker.document_number }}
+              </div>
+            </div>
           </template>
         </pdf-print>
       </section>
@@ -240,11 +273,6 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
-  watch: {
-    selected (value) {
-      this.selectConceptPrice(value)
-    }
-  },
   methods: {
     onProgress (data) {
       this.timeLoading = data
@@ -296,9 +324,8 @@ export default {
       this.$services.postData(['egresses'], data)
         .then(({ res }) => {
           this.notify(this, 'egress.saveSuccess', 'positive', 'mood')
+          this.downloadPDF(res.data)
           this.cancelBill()
-          this.visibleEgress = false
-          // this.downloadPDF(res.data)
         })
         .catch(() => {
           this.notify(this, 'egress.error', 'negative', 'warning')
@@ -456,30 +483,10 @@ export default {
         })
     },
     async downloadPDF (data) {
-      const { res } = await this.$services.getOneData(['bill-electronics', data.id])
-      this.modelPdf = this.setModelPdf(res.data)
+      const { res } = await this.$services.getOneData(['egresses', data.id])
+      console.log(res.data)
+      this.modelPdf = res.data
       this.$refs.html2Pdf.generatePdf()
-    },
-    setModelPdf (data) {
-      const pdfData = {
-        title: 'COMPROBANTE DE VENTA',
-        branchOffice: data.branch_office,
-        date: date.formatDate(data.created_at, 'DD/MM/YYYY'),
-        expirationDate: date.formatDate(`${data.expiration_date} 00:00:00`, 'DD/MM/YYYY'),
-        serie: `${data.serie.name}-${data.number}`,
-        concepts: data.bill_electronic_details,
-        coin: data.coin.name,
-        total: data.total,
-        total_igv: data.total_igv,
-        subtotal: data.total_bill,
-        worker: {
-          fieldName: 'CLIENTE',
-          fullName: `${data.worker.name} ${data.worker.last_name}`,
-          documentType: data.worker.document_type.name,
-          documentNumber: data.worker.document_number
-        }
-      }
-      return pdfData
     },
     /**
      * Delete concept
