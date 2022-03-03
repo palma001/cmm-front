@@ -208,26 +208,12 @@ export default {
         })
     },
     modelRole (data) {
-      const roles = {}
-      if (data.branch_offices.value && data.roles.value) {
-        roles.branch_office_id = data.branch_offices.value
-        roles.role_id = data.roles.value
-      }
-
-      if (data.roles.value && !data.branch_offices.value) {
-        roles.role_id = data.roles.value
-        roles.branch_office_id = data.branch_offices[0].id
-      }
-
-      if (!data.roles.value && data.branch_offices.value) {
-        roles.role_id = data.roles[0].id
-        roles.branch_office_id = data.branch_offices.value
-      }
-      if (!data.roles.value && !data.branch_offices.value) {
-        roles.branch_office_id = data.branch_offices[0].id
-        roles.role_id = data.roles[0].id
-      }
-      return [roles]
+      return [
+        {
+          branch_office_id: 1,
+          role_id: 1
+        }
+      ]
     },
     /**
      * Update Branch Office
