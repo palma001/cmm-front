@@ -43,7 +43,8 @@ export default {
     partner: 'socios',
     entries: 'Lista de ingreso',
     egresses: 'lista de egresos',
-    workers: 'trabajadores'
+    workers: 'trabajadores',
+    users: 'usuarios'
   },
   partner: {
     add: 'agregar socio',

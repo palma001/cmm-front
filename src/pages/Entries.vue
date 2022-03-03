@@ -1,7 +1,36 @@
 <template>
   <q-page padding>
-    <div class="row q-gutter-y-sm">
-      <div class="col-12 text-right">
+    <div class="row q-col-gutter-sm">
+      <div class="col-lg-3 col-md-3 col-xl-3">
+        <q-input type="date" v-model="from" dense outlined hint="Desde"/>
+      </div>
+      <div class="col-lg-3 col-md-3 col-xl-3">
+        <q-input type="date" v-model="to" dense outlined hint="Hasta"/>
+      </div>
+      <div class="col-lg-1 col-md-1 col-xl-1">
+        <q-btn color="primary" icon="search" @click="filterBetween"/>
+      </div>
+      <div class="col-lg-1 col-md-1 col-xl-1">
+        <excel-report :data="dataExport" title="Recibos de Ingresos">
+          <template v-slot:table>
+            <thead>
+              <tr>
+                <td>Socio</td>
+                <td>Fecha</td>
+                <td>Total</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="d in dataExport" :key="d.id">
+                <td>{{ d.partner.full_name }}</td>
+                <td>{{ formatDate(d.created_at) }}</td>
+                <td>{{ d.total }}</td>
+              </tr>
+            </tbody>
+          </template>
+        </excel-report>
+      </div>
+      <div class="col-lg-4 col-md-4 col-xl-4 text-right">
         <q-btn
           color="primary"
           icon="add_circle"
@@ -78,10 +107,13 @@ import { entry } from '../config-file/entry/entryConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
+import ExcelReport from '../components/ExcelReport.vue'
+import { date } from 'quasar'
 export default {
   mixins: [mixins.containerMixin],
   components: {
-    DataTable
+    DataTable,
+    ExcelReport
   },
   data () {
     return {
@@ -129,6 +161,8 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc'
       },
+      to: null,
+      from: null,
       /**
        * Params search
        * @type {Object}
@@ -157,7 +191,8 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      dataExport: []
     }
   },
   created () {
@@ -172,6 +207,9 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    formatDate (datee, format) {
+      return date.formatDate(datee, format)
+    },
     viewConcepts (data) {
       this.entrySelected = data
       this.viewConceptModal = true
@@ -220,6 +258,10 @@ export default {
       this.optionPagination = data
       this.getEntries(this.params)
     },
+    filterBetween () {
+      this.params.dateFilter = { from: this.from, to: this.to, field: 'created_at' }
+      this.getEntries(this.params)
+    },
     /**
      * Search entry
      * @param  {Object}
@@ -229,18 +271,29 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getEntries()
+      this.getEntries(this.params)
+    },
+    async getFullEntries () {
+      const { res } = await this.$services.getData(['entries'], {
+        dateFilter: {
+          to: this.to,
+          from: this.from,
+          field: 'created_at'
+        }
+      })
+      this.dataExport = res.data
     },
     /**
      * Get all entry
      */
     getEntries (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['entries'], this.params)
+      this.$services.getData(['entries'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
           this.loadingTable = false
+          this.getFullEntries(params)
         })
         .catch(err => {
           console.log(err)

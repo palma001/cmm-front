@@ -26,7 +26,7 @@
             {{ title }}
           </td>
         </tr>
-        <tr class="text-red-13">
+        <tr class="text-red-13" v-if="numberReceipt">
           <td class="q-pa-sm">Nro {{ numberReceipt }}</td>
         </tr>
       </table>

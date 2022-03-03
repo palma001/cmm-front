@@ -1,7 +1,38 @@
 <template>
   <q-page padding>
-    <div class="row q-gutter-y-sm">
-      <div class="col-12 text-right">
+    <div class="row q-col-gutter-sm">
+      <div class="col-lg-3 col-md-3 col-xl-3">
+        <q-input type="date" v-model="from" dense outlined hint="Desde"/>
+      </div>
+      <div class="col-lg-3 col-md-3 col-xl-3">
+        <q-input type="date" v-model="to" dense outlined hint="Hasta"/>
+      </div>
+      <div class="col-lg-1 col-md-1 col-xl-1">
+        <q-btn color="primary" icon="search" @click="filterBetween"/>
+      </div>
+      <div class="col-lg-1 col-md-1 col-xl-1">
+        <excel-report :data="dataExport" title="Recibos de Egresos">
+          <template v-slot:table>
+            <thead>
+              <tr>
+                <td>Trabajador</td>
+                <td>Concepto</td>
+                <td>Fecha</td>
+                <td>Monto</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="d in dataExport" :key="d.id">
+                <td>{{ d.worker.full_name }}</td>
+                <td>{{ d.concept }}</td>
+                <td>{{ formatDate(d.created_at) }}</td>
+                <td>{{ d.amount }}</td>
+              </tr>
+            </tbody>
+          </template>
+        </excel-report>
+      </div>
+      <div class="col-lg-4 col-md-4 col-xl-4 text-right">
         <q-btn
           color="primary"
           icon="add_circle"
@@ -45,13 +76,19 @@ import { egress } from '../config-file/egress/egressConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
+import ExcelReport from '../components/ExcelReport.vue'
+import { date } from 'quasar'
 export default {
   mixins: [mixins.containerMixin],
   components: {
-    DataTable
+    DataTable,
+    ExcelReport
   },
   data () {
     return {
+      to: null,
+      from: null,
+      dataExport: [],
       conceptFilter: '',
       egressSelected: null,
       viewConceptModal: false,
@@ -114,6 +151,13 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    formatDate (datee, format) {
+      return date.formatDate(datee, format)
+    },
+    filterBetween () {
+      this.params.dateFilter = { from: this.from, to: this.to, field: 'created_at' }
+      this.getEntries(this.params)
+    },
     viewConcepts (data) {
       this.egressSelected = data
       this.viewConceptModal = true
@@ -173,6 +217,16 @@ export default {
       this.params.page = 1
       this.getEgresses()
     },
+    async getFullEgresses () {
+      const { res } = await this.$services.getData(['egresses'], {
+        dateFilter: {
+          to: this.to,
+          from: this.from,
+          field: 'created_at'
+        }
+      })
+      this.dataExport = res.data
+    },
     /**
      * Get all egress
      */
@@ -183,6 +237,7 @@ export default {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
           this.loadingTable = false
+          this.getFullEgresses()
         })
         .catch(err => {
           console.log(err)
