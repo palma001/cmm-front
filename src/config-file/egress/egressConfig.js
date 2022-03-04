@@ -40,6 +40,34 @@ export const egress = [
           visible: true
         }
       },
+      {
+        tabulated: {
+          name: 'download',
+          align: 'center',
+          visible: true,
+          button: {
+            label: 'download',
+            color: 'primary',
+            type: 'dropdown',
+            icon: 'file_download',
+            push: true,
+            splits: true,
+            size: 'sm',
+            options: [
+              {
+                label: 'PDF',
+                event: 'downloadPDF',
+                avatar: {
+                  icon: 'file_download',
+                  color: 'secondary',
+                  textColor: 'white',
+                  size: 'md'
+                }
+              }
+            ]
+          }
+        }
+      },
       // {
       //   tabulated: {
       //     name: 'book',

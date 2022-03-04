@@ -65,7 +65,7 @@ export const entry = [
         tabulated: {
           name: 'download',
           align: 'center',
-          visible: false,
+          visible: true,
           button: {
             label: 'download',
             color: 'primary',
@@ -73,7 +73,6 @@ export const entry = [
             icon: 'file_download',
             push: true,
             splits: true,
-            glossy: true,
             size: 'sm',
             options: [
               {

@@ -62,6 +62,7 @@
           @viewConcepts="viewConcepts"
           @search-data="searchData"
           @on-load-data="loadData"
+          @downloadPDF="downloadPDF"
           @delete="deleteData"
         />
       </div>
@@ -99,6 +100,101 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <vue-html2pdf
+      :show-layout="false"
+      :float-layout="true"
+      :enable-download="false"
+      :preview-modal="true"
+      :paginate-elements-by-height="1000"
+      filename="hee hee"
+      :pdf-quality="2"
+      :manual-pagination="false"
+      pdf-format="a4"
+      pdf-orientation="portrait"
+      pdf-content-width="800px"
+      ref="html2Pdf"
+      @progress="onProgress($event)"
+    >
+      <section slot="pdf-content" class="text-uppercase">
+        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.id" title="recibo de ingreso" :dateNow="modelPdf.created_at">
+          <template v-slot:content>
+            <table class="table text-center" border="1">
+              <tr class="bg-blue-2 text-primary text-bold">
+                <td>Nombre</td>
+                <td>Apellido</td>
+                <td>Puesto</td>
+              </tr>
+              <tr class="text-dark">
+                <td class="q-pa-xs">
+                  {{ modelPdf.partner.name }}
+                </td>
+                <td class="q-pa-xs">
+                  {{ modelPdf.partner.last_name }}
+                </td>
+                <td class="q-pa-xs"></td>
+              </tr>
+            </table>
+            <table class="table text-center" border="1">
+              <thead class="bg-blue-2">
+                <tr class="text-primary text-bold">
+                  <td>Concepto</td>
+                  <td>Periodo</td>
+                  <td>Importe</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="entryDetail in modelPdf.entry_details" :key="entryDetail.id" class="text-dark">
+                  <td class="q-pa-sm">{{ entryDetail.concept.name }}</td>
+                  <td class="q-pa-sm">{{ entryDetail.period }}</td>
+                  <td class="q-pa-sm">{{ entryDetail.amount }}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="text-dark">
+                  <td class="text-right q-pa-sm" colspan="2">
+                    Total S/
+                  </td>
+                  <td class="q-pa-sm">
+                    {{  modelPdf.total }}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+            <div
+              class="row text-center q-mt-md q-pt-xl q-px-md justify-between text-dark"
+              style="border: 1px solid"
+            >
+              <div class="col-3">
+                <hr>
+                socio
+              </div>
+              <div class="col-3">
+                <hr>
+                tesorero
+              </div>
+              <div class="col-3">
+                <hr>
+                vb presidente
+              </div>
+            </div>
+          </template>
+        </pdf-print>
+      </section>
+    </vue-html2pdf>
+    <q-inner-loading :showing="visibleEntry">
+      <q-circular-progress
+        show-value
+        class="text-white q-ma-md"
+        :value="valueLoading"
+        size="150px"
+        :thickness="0.2"
+        color="orange"
+        center-color="primary"
+        track-color="transparent"
+      >
+        <q-icon name="receipt" />
+      </q-circular-progress>
+    </q-inner-loading>
   </q-page>
 </template>
 <script>
@@ -108,15 +204,22 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import ExcelReport from '../components/ExcelReport.vue'
+import VueHtml2pdf from 'vue-html2pdf'
+import PdfPrint from '../components/PdfPrint.vue'
 import { date } from 'quasar'
 export default {
   mixins: [mixins.containerMixin],
   components: {
     DataTable,
-    ExcelReport
+    ExcelReport,
+    VueHtml2pdf,
+    PdfPrint
   },
   data () {
     return {
+      modelPdf: null,
+      timeLoading: 0,
+      visibleEntry: false,
       /**
        * Columns Table
        * @type {Array} column array
@@ -201,12 +304,27 @@ export default {
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
   },
   computed: {
+    valueLoading () {
+      return this.timeLoading
+    },
     /**
      * Getters Vuex
      */
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    onProgress (data) {
+      this.timeLoading = data
+      if (data === 100) {
+        this.visibleEntry = false
+        this.timeLoading = 0
+      }
+    },
+    downloadPDF (data) {
+      this.visibleEntry = true
+      this.modelPdf = data
+      this.$refs.html2Pdf.generatePdf()
+    },
     formatDate (datee, format) {
       return date.formatDate(datee, format)
     },

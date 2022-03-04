@@ -64,10 +64,80 @@
           @viewConcepts="viewConcepts"
           @search-data="searchData"
           @on-load-data="loadData"
+          @downloadPDF="downloadPDF"
           @delete="deleteData"
         />
       </div>
     </div>
+    <vue-html2pdf
+      :show-layout="false"
+      :float-layout="true"
+      :enable-download="false"
+      :preview-modal="true"
+      :paginate-elements-by-height="1000"
+      filename="hee hee"
+      :pdf-quality="2"
+      :manual-pagination="false"
+      pdf-format="a4"
+      pdf-orientation="portrait"
+      pdf-content-width="800px"
+      ref="html2Pdf"
+      @progress="onProgress($event)"
+    >
+      <section slot="pdf-content">
+        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.id" title="recibo de egreso" :dateNow="modelPdf.created_at">
+          <template v-slot:content>
+            <div style="border: solid 1px;" class="q-pa-md text-dark">
+              <span style="border: solid 1px;" class="q-pa-sm float-right">S/ {{ modelPdf.amount }}</span><br>
+              <span class="text-primary">La Suma de:</span> {{ $numberLetter.NumerosALetras(modelPdf.amount) }}<br>
+              <span class="text-primary">Por Concepto de:</span> {{ modelPdf.concept }}<br>
+              <span class="text-primary">En el Periodo:</span> {{ modelPdf.period }}
+            </div>
+            <div style="border: solid 1px;" class="row text-dark q-mb-sm q-mt-sm">
+              <div class="col-4">
+                <table class="table text-center" border="1">
+                  <tr>
+                    <td colspan="2" class="text-center bg-blue-4 text-white">AUTORIZADO</td>
+                  </tr>
+                  <tr>
+                    <td class="q-pt-xl">PRESIDENTE</td>
+                    <td class="q-pt-xl">TESORERO</td>
+                  </tr>
+                </table>
+                <table class="table text-center" border="1">
+                  <tr>
+                    <td colspan="2" class="bg-blue-4 q-pa-md full-width"></td>
+                  </tr>
+                  <tr>
+                    <td class="q-pt-xl">FISCAL</td>
+                    <td class="q-pt-xl">FECHA</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-6 q-pl-xs q-pt-md">
+                Firma: <hr>
+                Nombre y Apellido: {{ modelPdf.worker.name }} {{ modelPdf.worker.last_name }} <br>
+                Doc. de Identidad: {{ modelPdf.worker.document_number }}
+              </div>
+            </div>
+          </template>
+        </pdf-print>
+      </section>
+    </vue-html2pdf>
+    <q-inner-loading :showing="visibleEgress">
+      <q-circular-progress
+        show-value
+        class="text-white q-ma-md"
+        :value="valueLoading"
+        size="150px"
+        :thickness="0.2"
+        color="orange"
+        center-color="primary"
+        track-color="transparent"
+      >
+        <q-icon name="receipt" />
+      </q-circular-progress>
+    </q-inner-loading>
   </q-page>
 </template>
 <script>
@@ -77,15 +147,22 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import ExcelReport from '../components/ExcelReport.vue'
+import VueHtml2pdf from 'vue-html2pdf'
+import PdfPrint from '../components/PdfPrint.vue'
 import { date } from 'quasar'
 export default {
   mixins: [mixins.containerMixin],
   components: {
     DataTable,
+    VueHtml2pdf,
+    PdfPrint,
     ExcelReport
   },
   data () {
     return {
+      modelPdf: null,
+      visibleEgress: false,
+      timeLoading: 0,
       to: null,
       from: null,
       dataExport: [],
@@ -145,12 +222,27 @@ export default {
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
   },
   computed: {
+    valueLoading () {
+      return this.timeLoading
+    },
     /**
      * Getters Vuex
      */
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    downloadPDF (data) {
+      this.visibleEgress = true
+      this.modelPdf = data
+      this.$refs.html2Pdf.generatePdf()
+    },
+    onProgress (data) {
+      this.timeLoading = data
+      if (data === 100) {
+        this.visibleEgress = false
+        this.timeLoading = 0
+      }
+    },
     formatDate (datee, format) {
       return date.formatDate(datee, format)
     },

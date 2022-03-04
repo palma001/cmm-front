@@ -95,7 +95,9 @@ export default {
     concept: 'concepto',
     list: 'Lista de egresos',
     amount: 'monto',
-    saveSuccess: 'Recibo creado exitosamente'
+    saveSuccess: 'Recibo creado exitosamente',
+    download: 'descargas',
+    PDF: 'PDF'
   },
   entry: {
     saveErrorPayment: 'Ingrese los campos requeridos',
