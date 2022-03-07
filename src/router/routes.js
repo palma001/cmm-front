@@ -52,6 +52,12 @@ const routes = [
         name: 'User',
         component: () => import('src/pages/User.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'concepts',
+        name: 'Concept',
+        component: () => import('src/pages/Concept.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },

@@ -44,7 +44,8 @@ export default {
     entries: 'Lista de ingreso',
     egresses: 'lista de egresos',
     workers: 'trabajadores',
-    users: 'usuarios'
+    users: 'usuarios',
+    concepts: 'conceptos'
   },
   partner: {
     add: 'agregar socio',
@@ -98,6 +99,24 @@ export default {
     saveSuccess: 'Recibo creado exitosamente',
     download: 'descargas',
     PDF: 'PDF'
+  },
+  concept: {
+    newConcept: 'nuevo concepto',
+    add: 'agregar concepto',
+    created_at: 'fecha',
+    concept: 'concepto',
+    list: 'Lista de conceptos',
+    price: 'precio',
+    saveSuccess: 'Concepto creado exitosamente',
+    deleteSuccessful: 'eliminado exitosamente',
+    editSuccessful: 'Modificado exitosamente',
+    addSuccessful: 'Agregado exitosamente',
+    download: 'descargas',
+    PDF: 'PDF',
+    restore: 'restaurar',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    name: 'nombre'
   },
   entry: {
     saveErrorPayment: 'Ingrese los campos requeridos',

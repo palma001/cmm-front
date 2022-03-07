@@ -217,6 +217,7 @@ export default {
   },
   data () {
     return {
+      addDialogEntry: false,
       modelPdf: null,
       timeLoading: 0,
       visibleEntry: false,

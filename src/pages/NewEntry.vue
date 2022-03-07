@@ -189,6 +189,20 @@
         @save="save"
       />
     </q-dialog>
+    <q-dialog
+      position="right"
+      persistent
+      full-height
+      v-model="addDialogConcept"
+    >
+      <dynamic-form
+        module="concept"
+        :config="conceptConfig"
+        :loading="loadingForm"
+        @cancel="addDialogConcept = false"
+        @save="saveConcept"
+      />
+    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -299,6 +313,7 @@ import { partner, propsPanelEdition, partnerServices } from '../config-file/part
 import DynamicForm from '../components/DynamicForm.vue'
 import PdfPrint from '../components/PdfPrint.vue'
 import VueHtml2pdf from 'vue-html2pdf'
+import { conceptConfig } from '../config-file/concept/conceptConfig.js'
 // import ExcelReport from '../components/ExcelReport.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
@@ -314,6 +329,7 @@ export default {
   },
   data () {
     return {
+      conceptConfig,
       addDialogConcept: false,
       addDialogPartner: false,
       modelPdf: null,
@@ -420,8 +436,8 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   watch: {
-    selected (value) {
-      this.selectConceptPrice(value)
+    concept (data) {
+      this.price = data.price
     }
   },
   methods: {
@@ -446,6 +462,24 @@ export default {
           this.addDialogPartner = false
           this.loadingForm = false
           this.notify(this, 'partner.addSuccessfull', 'positive', 'mood')
+        })
+        .catch(() => {
+          this.loadingForm = false
+        })
+    },
+    /**
+     * Save Branch Office
+     * @param  {Object}
+     */
+    saveConcept (data) {
+      this.loadingForm = true
+      data.user_created_id = this.userSession.id
+      this.$services.postData(['concepts'], data)
+        .then(({ res }) => {
+          this.concept = res.data
+          this.addDialogConcept = false
+          this.loadingForm = false
+          this.notify(this, 'concept.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
