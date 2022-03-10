@@ -125,21 +125,6 @@ export const currentAccount = [
       },
       {
         tabulated: {
-          name: 'payments',
-          align: 'center',
-          visible: true,
-          button: {
-            icon: 'search',
-            color: 'teal',
-            type: 'button',
-            size: 'sm',
-            push: true,
-            event: 'viewConcepts'
-          }
-        }
-      },
-      {
-        tabulated: {
           name: 'accountStatus',
           align: 'center',
           visible: true,
