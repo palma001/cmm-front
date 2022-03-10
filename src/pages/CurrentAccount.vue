@@ -299,7 +299,6 @@ export default {
     }
   },
   created () {
-    this.getCurrentAccounts()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.setPartner()
@@ -338,6 +337,7 @@ export default {
       this.$services.postData(['entry-payments'], data)
         .then(({ res }) => {
           this.accountStatus(this.partnerSelected)
+          this.getCurrentAccounts(this.params)
           this.entry = null
           this.loadingFormPayment = false
           this.notify(this, 'entryPayment.addSuccessful', 'positive', 'mood')
@@ -406,29 +406,6 @@ export default {
       this.dialog = true
     },
     /**
-     * Delete data
-     * @param {Object} data data selected
-     */
-    deleteData (data) {
-      this.$q.dialog({
-        title: 'Confirmación',
-        message: '¿Desea eliminar la marca?',
-        cancel: {
-          label: 'Cancelar',
-          color: 'negative'
-        },
-        persistent: true,
-        ok: {
-          label: 'Aceptar',
-          color: 'primary'
-        }
-      }).onOk(async () => {
-        await this.$services.deleteData(['current-accounts', data.id])
-        this.notify(this, 'currentAccount.deleteSuccessfull', 'positive', 'mood')
-        this.getCurrentAccounts()
-      })
-    },
-    /**
      * Load data sorting
      * @param  {Object}
      */
@@ -449,51 +426,14 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getCurrentAccounts()
-    },
-    /**
-     * Update Branch Office
-     * @param  {Object}
-     */
-    update (data) {
-      data.user_updated_id = this.userSession.id
-      this.loadingForm = true
-      this.$services.putData(['current-accounts', this.selectedData.id], data)
-        .then(({ res }) => {
-          this.editDialog = false
-          this.loadingForm = false
-          this.getCurrentAccounts(this.params)
-          this.notify(this, 'currentAccount.editSuccessfull', 'positive', 'mood')
-        })
-        .catch(() => {
-          this.loadingForm = false
-        })
-    },
-    /**
-     * Save Branch Office
-     * @param  {Object}
-     */
-    save (data) {
-      data.user_created_id = this.userSession.id
-      data.user_id = this.userSession.id
-      this.loadingForm = true
-      this.$services.postData(['current-accounts'], data)
-        .then(({ res }) => {
-          this.addDialig = false
-          this.loadingForm = false
-          this.getCurrentAccounts(this.params)
-          this.notify(this, 'currentAccount.addSuccessfull', 'positive', 'mood')
-        })
-        .catch(() => {
-          this.loadingForm = false
-        })
+      this.getCurrentAccounts(this.params)
     },
     /**
      * Get all currentAccount
      */
     getCurrentAccounts (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['current-accounts'], this.params)
+      this.$services.getData(['current-accounts'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total

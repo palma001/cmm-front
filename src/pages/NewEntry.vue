@@ -40,6 +40,7 @@
                 option-label="full_name"
                 option-value="id"
                 :label="ucwords('Socio')"
+                :disable="!$route.query.partner ? false : true"
                 v-validate="'required'" data-vv-as="field"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
                 :options="partners"
@@ -534,6 +535,7 @@ export default {
         .then(({ res }) => {
           this.notify(this, 'entry.saveSuccess', 'positive', 'mood')
           this.cancelBill()
+          this.setPartner()
           this.downloadPDF(res.data)
         })
         .catch(() => {
