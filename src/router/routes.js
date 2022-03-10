@@ -13,6 +13,7 @@ const routes = [
     children: [
       {
         path: 'new-entry',
+        props: route => ({ query: route.query.partner }),
         name: 'NewEntry',
         component: () => import('src/pages/NewEntry.vue'),
         beforeEnter: validationSessionUnit
@@ -57,6 +58,13 @@ const routes = [
         path: 'concepts',
         name: 'Concept',
         component: () => import('src/pages/Concept.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'current-accounts',
+        name: 'CurrentAccount',
+        props: route => ({ query: route.query.partner }),
+        component: () => import('src/pages/CurrentAccount.vue'),
         beforeEnter: validationSessionUnit
       }
     ]

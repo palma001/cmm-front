@@ -3,9 +3,24 @@
   <q-page padding>
     <q-form @submit="modelBill">
       <q-card class="my-card">
-        <q-card-section class="text-h4 row">
-          <span class="col-11">{{ ucwords($t('entry.newEntry')) }}</span>
-          <q-btn icon="menu" class="col-auto" color="primary" @click="$router.push({ name: 'Entries' })"/>
+        <q-card-section class="text-h4 row q-gutter-sm">
+          <span class="col-10">{{ ucwords($t('entry.newEntry')) }}</span>
+          <q-btn
+            icon="receipt"
+            class="col-auto"
+            color="orange"
+            v-if="entry.partner"
+            @click="$router.push({ name: 'CurrentAccount', query: { partner: entry.partner.id } })"
+          >
+            <q-tooltip>
+             Cuenta Corriente de {{ entry.partner.name }} {{ entry.partner.last_name }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn icon="menu" class="col-auto" color="primary" @click="$router.push({ name: 'Entries' })">
+            <q-tooltip>
+             Lista de ingreso
+            </q-tooltip>
+          </q-btn>
         </q-card-section>
         <q-separator/>
         <q-card-section class="q-pb-sm">
@@ -434,6 +449,7 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
+    this.setPartner()
   },
   watch: {
     concept (data) {
@@ -441,6 +457,16 @@ export default {
     }
   },
   methods: {
+    setPartner () {
+      if (this.$route.query.partner) {
+        this.visible = true
+        this.$services.getOneData(['partners', this.$route.query.partner])
+          .then(({ res }) => {
+            this.entry.partner = res.data
+            this.visible = false
+          })
+      }
+    },
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {

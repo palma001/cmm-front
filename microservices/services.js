@@ -21,8 +21,10 @@ export const getData = function (url, params) {
   })
 }
 
-export const getOneData = function (url) {
-  return axiosInstance.get(url.join('/')).then((res) => {
+export const getOneData = function (url, params = {}) {
+  return axiosInstance.get(url.join('/'), {
+    params
+  }).then((res) => {
     return {
       status: true,
       res: res

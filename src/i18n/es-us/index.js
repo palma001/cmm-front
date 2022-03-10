@@ -6,7 +6,8 @@ export default {
     personal: 'personal',
     management: 'administración',
     actions: 'acciones',
-    search: 'buscar'
+    search: 'buscar',
+    noResults: 'sin datos'
   },
 
   // users
@@ -45,6 +46,7 @@ export default {
     egresses: 'lista de egresos',
     workers: 'trabajadores',
     users: 'usuarios',
+    'current-accounts': 'cuenta corriente',
     concepts: 'conceptos'
   },
   partner: {
@@ -61,6 +63,37 @@ export default {
     addSuccessful: 'Agregado exitosamente',
     list: 'Lista de socios',
     update: 'modificar'
+  },
+  currentAccount: {
+    add: 'agregar socio',
+    name: 'nombre',
+    last_name: 'apellido',
+    email: 'correo',
+    phone: 'telefono',
+    document_number: 'número de documento',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessful: 'eliminado exitosamente',
+    editSuccessful: 'Modificado exitosamente',
+    addSuccessful: 'Agregado exitosamente',
+    list: 'Cuentas corrientes',
+    update: 'modificar',
+    pending: 'Por pagar',
+    payments: 'Pagos',
+    accountStatus: 'Estado de cuenta'
+  },
+  entryPayment: {
+    add: 'agregar pago',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessful: 'eliminado exitosamente',
+    editSuccessful: 'Modificado exitosamente',
+    addSuccessful: 'Agregado exitosamente',
+    list: 'Pagos de recibo',
+    update: 'modificar',
+    payment_method: 'Metodos de pago',
+    amount: 'monto',
+    description: 'descripción'
   },
   worker: {
     add: 'agregar trabajdor',
