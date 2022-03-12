@@ -39,10 +39,10 @@ export default {
   // modules
   modules: {
     egress: 'egreso',
-    'new-entry': 'nuevo ingreso',
+    'new-entry': 'nuevo recibos',
     'new-egress': 'nuevo egreso',
     partner: 'socios',
-    entries: 'Lista de ingreso',
+    entries: 'Lista de recibos',
     egresses: 'lista de egresos',
     workers: 'trabajadores',
     users: 'usuarios',
@@ -154,10 +154,10 @@ export default {
   entry: {
     saveErrorPayment: 'Ingrese los campos requeridos',
     created_at: 'fecha',
-    list: 'lista de ingresos',
+    list: 'lista de reciboss',
     total: 'total',
     cash: 'efectivo',
-    add: 'agregar ingreso',
+    add: 'agregar recibos',
     saveBilling: 'guardar factura',
     saveSuccess: 'Recibo creado exitosamente',
     error: 'A ocurrido un error',
@@ -167,6 +167,6 @@ export default {
     options: 'opciones',
     partner: 'Socio',
     concepts: 'conceptos',
-    newEntry: 'Nuevo ingreso'
+    newEntry: 'Nuevo recibos'
   }
 }

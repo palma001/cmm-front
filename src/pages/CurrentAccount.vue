@@ -51,7 +51,7 @@
               @click="addDialogEntryPayment = true"
             />
             <q-btn
-              label="Agregar Ingreso"
+              label="Agregar Recibo"
               @click="$router.push({ name: 'NewEntry', query: { partner: partnerSelected.id } })"
               color="primary"
             />
@@ -288,11 +288,11 @@ export default {
       accountable_type: null,
       accountable_types: [
         {
-          label: 'Ingreso',
+          label: 'Recibos',
           value: 'App\\Models\\Entry'
         },
         {
-          label: 'Pagos',
+          label: 'Ingresos',
           value: 'App\\Models\\EntryPayment'
         }
       ]
@@ -386,9 +386,9 @@ export default {
     translate (data) {
       switch (data) {
         case 'App\\Models\\Entry':
-          return 'Ingreso'
+          return 'Recibo'
         default:
-          return 'Pago'
+          return 'Ingreso'
       }
     },
     /**

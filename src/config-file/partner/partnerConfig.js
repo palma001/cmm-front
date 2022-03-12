@@ -13,8 +13,8 @@ export const partner = [
         },
         actionable: {
           propTag: 'document_number',
-          addible: true,
-          editable: true,
+          addible: false,
+          editable: false,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -50,8 +50,8 @@ export const partner = [
         },
         actionable: {
           propTag: 'name',
-          addible: true,
-          editable: true,
+          addible: false,
+          editable: false,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -87,8 +87,8 @@ export const partner = [
         },
         actionable: {
           propTag: 'last_name',
-          addible: true,
-          editable: true,
+          addible: false,
+          editable: false,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -120,12 +120,12 @@ export const partner = [
           align: 'left',
           field: row => row.email,
           sortable: true,
-          visible: true
+          visible: false
         },
         actionable: {
           propTag: 'email',
-          addible: true,
-          editable: true,
+          addible: false,
+          editable: false,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -162,8 +162,8 @@ export const partner = [
         },
         actionable: {
           propTag: 'phone',
-          addible: true,
-          editable: true,
+          addible: false,
+          editable: false,
           type: 'String',
           visibleLabel: true,
           component: {

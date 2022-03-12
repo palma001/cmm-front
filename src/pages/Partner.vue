@@ -42,62 +42,51 @@
       position="right"
       full-height
       persistent
-      v-model="editDialog"
-    >
-      <dynamic-form-edition
-        module="partner"
-        :propsPanelEdition="propsPanelEdition"
-        :config="partner"
-        :loading="loadingForm"
-        @cancel="editDialog = false"
-        @update="update"
-      />
-    </q-dialog>
-    <q-dialog
-      position="right"
-      full-height
-      persistent
       v-model="addDialog"
     >
-      <dynamic-form
-        module="partner"
-        :config="partner"
-        :loading="loadingForm"
-        @cancel="addDialog = false"
-        @save="save"
-      />
+      <q-card style="width: 400px">
+        <q-form @submit="save" class="column full-height">
+          <q-card-section class="bg-primary text-white row items-center q-pb-sm">
+            <div class="text-h6">{{ titleForm }}</div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
+          <q-card-section class="col q-pt-md">
+            <q-input outlined @blur="getDataApi" :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.document_number" label="Numbero de documento" dense/>
+            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.name" label="Nombre" dense/>
+            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.last_name" label="Apellido" dense/>
+            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.phone" label="Telefono" dense/>
+          </q-card-section>
+          <q-separator dark />
+          <q-card-actions align="right">
+            <q-btn color="primary" type="submit" v-if="titleForm === 'Agregar Trabajo'">Agregar</q-btn>
+            <q-btn color="primary" @click="update" v-else>Modificar</q-btn>
+          </q-card-actions>
+        </q-form>
+        <q-inner-loading :showing="loadingApi">
+          <q-spinner-gears size="100px" color="primary"/>
+        </q-inner-loading>
+      </q-card>
     </q-dialog>
   </q-page>
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import DynamicForm from '../components/DynamicForm.vue'
-import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { partner, buttonsActions, propsPanelEdition, partnerServices } from '../config-file/partner/partnerConfig.js'
+import { partner, buttonsActions } from '../config-file/partner/partnerConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 export default {
   mixins: [mixins.containerMixin],
   components: {
-    DataTable,
-    DynamicForm,
-    DynamicFormEdition
+    DataTable
   },
   data () {
     return {
-      residenceCondition: null,
-      status: null,
-      documentNumber: null,
-      lastName: null,
-      name: null,
-      businessName: null,
-      documentType: null,
-      documentTypes: [],
-      partnerServices,
       buttonsActions,
-      propsPanelEdition,
-      loadingForm: false,
+      partner,
+      loadingApi: false,
+      partnerSave: {},
       /**
        * Selected data
        * @type {Object}
@@ -137,16 +126,6 @@ export default {
        */
       addDialog: false,
       /**
-       * File config module
-       * @type {Object}
-       */
-      partner,
-      /**
-       * Open edit dialog
-       * @type {Boolean}
-       */
-      editDialog: false,
-      /**
        * Status loading table
        * @type {Boolean}
        */
@@ -155,7 +134,8 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      titleForm: 'Agregar Socio'
     }
   },
   created () {
@@ -171,14 +151,48 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    getDataApi () {
+      const r = this.partnerSave.document_number && this.partnerSave.document_number.length <= 8 ? 'dni' : 'ruc'
+      if (r && this.partnerSave.document_number) {
+        this.loadingApi = true
+        this.$services.getData(['ruc', this.partnerSave.document_number], {
+          documentType: r
+        })
+          .then(({ res }) => {
+            if (!res.data.error) {
+              if (r === 'ruc') {
+                this.partnerSave.name = res.data.nombre
+              } else {
+                this.partnerSave.name = res.data.nombres
+                this.partnerSave.last_name = `${res.data.apellidoPaterno} ${res.data.apellidoMaterno}`
+                this.loadingApi = false
+              }
+              this.$forceUpdate()
+            } else {
+              this.notify(this, res.data.error, 'negative', 'warning')
+              this.partnerSave = {}
+              this.loadingApi = false
+            }
+          })
+          .catch(() => {
+            this.partnerSave = {}
+            this.loadingApi = false
+          })
+      }
+    },
+    cancel () {
+      this.titleForm = 'Agregar Socio'
+      this.addDialog = false
+    },
     /**
      * Set data dialog edition
      * @param  {Object} data selected
      */
     viewDetails (data) {
-      this.editDialog = true
-      this.propsPanelEdition.data = data
+      this.addDialog = true
+      this.partnerSave = data
       this.selectedData = data
+      this.titleForm = 'Modificar Socio'
     },
     /**
      * Delete data
@@ -231,9 +245,9 @@ export default {
      * @param  {Object}
      */
     update (data) {
-      data.user_updated_id = this.userSession.id
+      this.partnerSave.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['partners', this.selectedData.id], data)
+      this.$services.putData(['partners', this.selectedData.id], this.partnerSave)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
@@ -248,11 +262,11 @@ export default {
      * Save Branch Office
      * @param  {Object}
      */
-    save (data) {
-      data.user_created_id = this.userSession.id
-      data.branch_office_id = this.branchOffice.id
+    save () {
+      this.partnerSave.user_created_id = this.userSession.id
+      this.partnerSave.branch_office_id = this.branchOffice.id
       this.loadingForm = true
-      this.$services.postData(['partners'], data)
+      this.$services.postData(['partners'], this.partnerSave)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
@@ -280,32 +294,6 @@ export default {
           this.loadingTable = false
           this.optionPagination.rowsNumber = 0
         })
-    },
-    getDataApi () {
-      const r = this.documentType.number === '1' ? 'dni' : this.documentType.number === '6' ? 'ruc' : null
-      if (r) {
-        this.$services.getData(['ruc', this.documentNumber], {
-          documentType: r
-        })
-          .then(({ res }) => {
-            if (!res.data.error) {
-              if (this.documentType.number === '6') {
-                this.businessName = res.data.nombre
-                this.status = res.data.estado
-                this.residenceCondition = res.data.condicion
-              } else {
-                const nameDivider = res.data.nombre.split(' ')
-                this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
-                this.name = `${nameDivider[2]} ${nameDivider[3]}`
-              }
-            } else {
-              this.notify(this, res.data.error, 'negative', 'warning')
-              this.lastName = null
-              this.name = null
-              this.businessName = null
-            }
-          })
-      }
     },
     /**
      * Get all partner

@@ -111,13 +111,29 @@
       persistent
       v-model="addDialogWorker"
     >
-      <dynamic-form
-        module="worker"
-        :config="worker"
-        :loading="loadingForm"
-        @cancel="addDialogWorker = false"
-        @save="save"
-      />
+      <q-card style="width: 400px">
+        <q-form @submit="save" class="column full-height">
+          <q-card-section class="bg-primary text-white row items-center q-pb-sm">
+            <div class="text-h6">Agregar Trabajador</div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
+          <q-card-section class="col q-pt-md">
+            <q-input outlined @blur="getDataApi" :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="workerSave.document_number" label="Numbero de documento" dense/>
+            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="workerSave.name" label="Nombre" dense/>
+            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="workerSave.last_name" label="Apellido" dense/>
+            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="workerSave.phone" label="Telefono" dense/>
+          </q-card-section>
+          <q-separator dark />
+          <q-card-actions align="right">
+            <q-btn color="negative" v-close-popup>Cancelar</q-btn>
+            <q-btn color="primary" type="submit">Agregar</q-btn>
+          </q-card-actions>
+        </q-form>
+        <q-inner-loading :showing="loadingApi">
+          <q-spinner-gears size="100px" color="primary"/>
+        </q-inner-loading>
+      </q-card>
     </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
@@ -200,7 +216,6 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { worker, propsPanelEdition, workerServices } from '../config-file/worker/workerConfig.js'
-import DynamicForm from '../components/DynamicForm.vue'
 import PdfPrint from '../components/PdfPrint.vue'
 import VueHtml2pdf from 'vue-html2pdf'
 // import ExcelReport from '../components/ExcelReport.vue'
@@ -210,7 +225,6 @@ export default {
   name: 'Entry',
   mixins: [mixins.containerMixin],
   components: {
-    DynamicForm,
     VueHtml2pdf,
     PdfPrint
     // ExcelReport
@@ -218,6 +232,8 @@ export default {
   },
   data () {
     return {
+      loadingApi: false,
+      workerSave: {},
       addDialogWorker: false,
       modelPdf: null,
       loadingForm: false,
@@ -274,6 +290,35 @@ export default {
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
   },
   methods: {
+    getDataApi () {
+      const r = this.workerSave.document_number && this.workerSave.document_number.length <= 8 ? 'dni' : 'ruc'
+      if (r && this.workerSave.document_number) {
+        this.loadingApi = true
+        this.$services.getData(['ruc', this.workerSave.document_number], {
+          documentType: r
+        })
+          .then(({ res }) => {
+            if (!res.data.error) {
+              if (r === 'ruc') {
+                this.workerSave.name = res.data.nombre
+              } else {
+                this.workerSave.name = res.data.nombres
+                this.workerSave.last_name = `${res.data.apellidoPaterno} ${res.data.apellidoMaterno}`
+                this.loadingApi = false
+              }
+              this.$forceUpdate()
+            } else {
+              this.notify(this, res.data.error, 'negative', 'warning')
+              this.workerSave = {}
+              this.loadingApi = false
+            }
+          })
+          .catch(() => {
+            this.partnerSave = {}
+            this.loadingApi = false
+          })
+      }
+    },
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {
@@ -285,16 +330,16 @@ export default {
      * Save Branch Office
      * @param  {Object}
      */
-    save (data) {
+    save () {
       this.loadingForm = true
-      data.branch_office_id = this.branchOfficeSession.id
-      data.user_created_id = this.userSession.id
-      this.$services.postData(['workers'], data)
+      this.workerSave.branch_office_id = this.branchOfficeSession.id
+      this.workerSave.user_created_id = this.userSession.id
+      this.$services.postData(['workers'], this.workerSave)
         .then(({ res }) => {
           this.egress.worker = res.data
           this.addDialogWorker = false
           this.loadingForm = false
-          this.notify(this, 'worker.addSuccessfull', 'positive', 'mood')
+          this.notify(this, 'worker.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false

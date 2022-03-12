@@ -132,8 +132,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Grupo Sudamerica',
-        short_name: 'Grupo Sudamerica',
+        name: 'Mercado',
+        short_name: 'Mercado',
         description: 'software accounting software',
         display: 'standalone',
         orientation: 'portrait',

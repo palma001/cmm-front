@@ -1,7 +1,7 @@
 <template>
   <div class="row q-py-sm justify-center">
     <div id="logo" class="col-2">
-      <img src="logo.png" class="img">
+      <img src="logo-aprobado.png" class="img">
     </div>
     <div class="col-5 row text-center text-primary">
       <div class="col-12 text-bold text-uppercase">
