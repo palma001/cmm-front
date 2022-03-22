@@ -36,6 +36,19 @@ export default {
     permissionChangeSuccefull: 'rol modificado exitosamente',
     permissionChangeError: 'ha ocurrido un error'
   },
+  boxClosure: {
+    from_date: 'Desde',
+    to_date: 'Hasta',
+    list: 'Lista de cierres',
+    add: 'Agregar cierre',
+    reset: 'limpiar',
+    cancel: 'cancelar',
+    deleteSuccessful: 'eliminado exitosamente',
+    editSuccessful: 'Modificado exitosamente',
+    addSuccessful: 'Agregado exitosamente',
+    update: 'Modificar',
+    user: 'responsable'
+  },
   // modules
   modules: {
     egress: 'egreso',
@@ -47,7 +60,8 @@ export default {
     workers: 'trabajadores',
     users: 'usuarios',
     'current-accounts': 'cuenta corriente',
-    concepts: 'conceptos'
+    concepts: 'conceptos',
+    'box-closures': 'cierre de caja'
   },
   partner: {
     add: 'agregar socio',

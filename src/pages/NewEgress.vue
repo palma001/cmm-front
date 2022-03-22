@@ -1,16 +1,16 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-form @submit="modelBill">
+    <q-form @submit="modelBill" ref="egress">
       <q-card class="my-card">
         <q-card-section class="text-h4 row">
           <span class="col-11">{{ ucwords($t('egress.newEgress')) }}</span>
           <q-btn icon="menu" class="col-auto" color="primary" @click="$router.push({ name: 'Egresses' })"/>
         </q-card-section>
         <q-separator/>
-        <q-card-section class="q-pb-sm">
+        <q-card-section class="q-pb-none">
           <div class="row q-col-gutter-sm">
-            <div class="col-3">
+            <div class="col-4">
               <q-select
                 autocomplete="off"
                 use-input
@@ -42,7 +42,51 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-3">
+            <div class="col-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                hide-selected
+                fill-input
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="voucherType"
+                v-model="egress.voucherType"
+                option-label="name"
+                option-value="id"
+                :label="ucwords('tipo de documento')"
+                v-validate="'required'" data-vv-as="field"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="voucherTypes"
+                @filter="getVoucherTypes"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogWorker = true"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-4">
+              <q-input
+                dense
+                outlined
+                label="Numbero o Codigo"
+                v-model="egress.number"
+              />
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-section class="q-pb-none">
+          <div class="row q-col-gutter-sm">
+            <div class="col-4">
               <q-input
                 type="date"
                 dense
@@ -52,7 +96,7 @@
                 :rules="[val => val && val !== null && val !== '' || 'Este campo es requerido']"
               />
             </div>
-            <div class="col-3">
+            <div class="col-4">
               <q-input
                 type="month"
                 dense
@@ -62,7 +106,7 @@
                 :rules="[val => val && val !== null && val !== '' || 'Este campo es requerido']"
               />
             </div>
-            <div class="col-3">
+            <div class="col-4">
               <q-input
                 type="text"
                 dense
@@ -177,14 +221,14 @@
               <span class="text-primary">En el Periodo:</span> {{ modelPdf.period }}
             </div>
             <div style="border: solid 1px;" class="row text-dark q-mb-sm q-mt-sm">
-              <div class="col-4">
+              <div class="col-6">
                 <table class="table text-center" border="1">
                   <tr>
                     <td colspan="2" class="text-center bg-blue-4 text-white">AUTORIZADO</td>
                   </tr>
                   <tr>
                     <td class="q-pt-xl">PRESIDENTE</td>
-                    <td class="q-pt-xl">TESORERO</td>
+                    <td class="q-pt-xl">SECRETARIO DE ECONOMIA</td>
                   </tr>
                 </table>
                 <table class="table text-center" border="1">
@@ -260,6 +304,7 @@ export default {
        * @type {Array} Client List
        */
       workers: [],
+      voucherTypes: [],
       /**
        * Amount concept
        * @type {Number} amuntconcept
@@ -351,7 +396,9 @@ export default {
     modelBill () {
       const billModel = {
         worker_id: this.egress.worker.id,
+        voucher_type_id: this.egress.voucherType.id,
         amount: this.egress.amount,
+        number: this.egress.number,
         concept: this.egress.concept,
         period: this.egress.period,
         user_created_id: this.userSession.id,
@@ -382,11 +429,12 @@ export default {
      */
     cancelBill () {
       this.dataConcept = []
-      this.egress.worker = null
+      this.egress = {}
       this.egress.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.egress.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.totalSale = 0
       this.amount = 1
+      this.resetValidations(this.$refs.egress)
     },
     /**
      * Reset validation
@@ -394,9 +442,7 @@ export default {
      */
     resetValidations (ref) {
       setTimeout(() => {
-        if (this.paymentAmount) {
-          ref.resetValidation()
-        }
+        ref.resetValidation()
       }, 100)
     },
     /**
@@ -512,6 +558,25 @@ export default {
         })
     },
     /**
+     * All CLient
+     */
+    getVoucherTypes (value, update) {
+      this.$services.getData(['voucher-types'], {
+        dataSearch: {
+          document_number: value,
+          name: value,
+          last_name: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.voucherTypes = res.data.data
+          })
+        })
+    },
+    /**
      * Get concepts
      * @param {String} value data filter
      */
@@ -529,7 +594,6 @@ export default {
     },
     async downloadPDF (data) {
       const { res } = await this.$services.getOneData(['egresses', data.id])
-      console.log(res.data)
       this.modelPdf = res.data
       this.$refs.html2Pdf.generatePdf()
     },

@@ -49,7 +49,7 @@
           <q-card-section class="bg-primary text-white row items-center q-pb-sm">
             <div class="text-h6">{{ titleForm }}</div>
             <q-space />
-            <q-btn icon="close" flat round dense v-close-popup />
+            <q-btn icon="close" flat round dense @click="cancel" />
           </q-card-section>
           <q-card-section class="col q-pt-md">
             <q-input outlined @blur="getDataApi" :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.document_number" label="Numbero de documento" dense/>
@@ -59,7 +59,7 @@
           </q-card-section>
           <q-separator dark />
           <q-card-actions align="right">
-            <q-btn color="primary" type="submit" v-if="titleForm === 'Agregar Trabajo'">Agregar</q-btn>
+            <q-btn color="primary" type="submit" v-if="titleForm === 'Agregar Socio'">Agregar</q-btn>
             <q-btn color="primary" @click="update" v-else>Modificar</q-btn>
           </q-card-actions>
         </q-form>
@@ -182,6 +182,7 @@ export default {
     },
     cancel () {
       this.titleForm = 'Agregar Socio'
+      this.partnerSave = {}
       this.addDialog = false
     },
     /**

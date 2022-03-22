@@ -60,7 +60,7 @@
           <q-separator dark />
           <q-card-actions align="right">
             <q-btn color="negative" @click="cancel">Cancelar</q-btn>
-            <q-btn color="primary" type="submit" v-if="titleForm === 'Agregar Trabajo'">Agregar</q-btn>
+            <q-btn color="primary" type="submit" v-if="titleForm === 'Agregar Trabajador'">Agregar</q-btn>
             <q-btn color="primary" @click="update" v-else>Modificar</q-btn>
           </q-card-actions>
         </q-form>
@@ -164,6 +164,7 @@ export default {
     cancel () {
       this.titleForm = 'Agregar Trabajador'
       this.addDialog = false
+      this.workerSave = {}
     },
     getDataApi () {
       const r = this.workerSave.document_number && this.workerSave.document_number.length <= 8 ? 'dni' : 'ruc'

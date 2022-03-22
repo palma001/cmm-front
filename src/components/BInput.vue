@@ -12,6 +12,7 @@
     :dense="dense"
     :disable="disable"
     :readonly="readonly"
+    :hint="hint"
     @input="input"
     @blur="blur"
   />
@@ -25,6 +26,10 @@ export default {
       required: false
     },
     errorMessage: {
+      type: String,
+      default: ''
+    },
+    hint: {
       type: String,
       default: ''
     },
@@ -42,7 +47,7 @@ export default {
     },
     label: {
       type: String,
-      required: true
+      required: false
     },
     type: {
       type: String,

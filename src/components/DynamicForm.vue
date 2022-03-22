@@ -335,13 +335,16 @@ export default {
               if (prop.actionable && prop.actionable.addible) {
                 const propTag = prop.actionable.propTag
                 prop.actionable.component.props.value = (prop.actionable.component.props.defaultValue) ? prop.actionable.component.props.defaultValue : self.objectToBind[propTag]
+                if (prop.actionable.visibleLabel) {
+                  prop.actionable.component.props.label = prop.actionable.visibleLabel ? self.ucwords(self.$t(`${self.module}.${propTag}`)) : ''
+                }
                 return createElement(
                   prop.actionable.component.name,
                   {
                     ref: propTag,
                     props: {
                       ...prop.actionable.component.props,
-                      label: prop.actionable.visibleLabel ? self.ucwords(self.$t(`${self.module}.${propTag}`)) : '',
+                      hint: prop.actionable.component.props.hint ? self.ucwords(self.$t(`${self.module}.${prop.actionable.component.props.hint}`)) : '',
                       errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
                       error: this.errors.has(propTag)
                     },

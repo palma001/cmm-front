@@ -66,6 +66,13 @@ const routes = [
         props: route => ({ query: route.query.partner }),
         component: () => import('src/pages/CurrentAccount.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'box-closures',
+        name: 'BoxClosure',
+        props: route => ({ query: route.query.partner }),
+        component: () => import('src/pages/BoxClosure.vue'),
+        beforeEnter: validationSessionUnit
       }
     ]
   },

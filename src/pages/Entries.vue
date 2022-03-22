@@ -166,15 +166,15 @@
             >
               <div class="col-3">
                 <hr>
-                socio
-              </div>
-              <div class="col-3">
-                <hr>
-                tesorero
-              </div>
-              <div class="col-3">
-                <hr>
                 vb presidente
+              </div>
+              <div class="col-3">
+                <hr>
+                fiscal
+              </div>
+              <div class="col-3">
+                <hr>
+                secretario de economia
               </div>
             </div>
           </template>

@@ -342,13 +342,16 @@ export default {
               if (prop.actionable && prop.actionable.editable) {
                 const propTag = prop.actionable.propTag
                 prop.actionable.component.props.value = self.objectToBind[propTag] !== undefined ? self.objectToBind[propTag] : self.propsPanelEdition.data[propTag]
+                if (prop.actionable.visibleLabel) {
+                  prop.actionable.component.props.label = prop.actionable.visibleLabel ? self.ucwords(self.$t(`${self.module}.${propTag}`)) : ''
+                }
                 return createElement(
                   prop.actionable.component.name,
                   {
                     ref: propTag,
                     props: {
                       ...prop.actionable.component.props,
-                      label: prop.actionable.visibleLabel ? self.ucwords(self.$t(`${self.module}.${String(propTag)}`)) : '',
+                      hint: prop.actionable.component.props.hint ? self.ucwords(self.$t(`${self.module}.${prop.actionable.component.props.hint}`)) : '',
                       errorMessage: (self.errorValidation(propTag)) ? (self.errorValidation(propTag)) : '',
                       error: this.errors.has(propTag)
                     },

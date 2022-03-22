@@ -15,17 +15,20 @@
           <template v-slot:table>
             <thead>
               <tr>
-                <td>Trabajador</td>
+                <td>F. Emision</td>
+                <td>Documento</td>
+                <td>Ruc</td>
+                <td>Razon Social</td>
                 <td>Concepto</td>
-                <td>Fecha</td>
-                <td>Monto</td>
+                <td>Mon</td>
+                <td>Total</td>
               </tr>
             </thead>
             <tbody>
               <tr v-for="d in dataExport" :key="d.id">
+                <td>{{ formatDate(d.created_at, 'DD-MM-YYYY') }}</td>
                 <td>{{ d.worker.full_name }}</td>
                 <td>{{ d.concept }}</td>
-                <td>{{ formatDate(d.created_at) }}</td>
                 <td>{{ d.amount }}</td>
               </tr>
             </tbody>
@@ -94,14 +97,14 @@
               <span class="text-primary">En el Periodo:</span> {{ modelPdf.period }}
             </div>
             <div style="border: solid 1px;" class="row text-dark q-mb-sm q-mt-sm">
-              <div class="col-4">
+              <div class="col-6">
                 <table class="table text-center" border="1">
                   <tr>
                     <td colspan="2" class="text-center bg-blue-4 text-white">AUTORIZADO</td>
                   </tr>
                   <tr>
                     <td class="q-pt-xl">PRESIDENTE</td>
-                    <td class="q-pt-xl">TESORERO</td>
+                    <td class="q-pt-xl">SECRETARIO DE ECONOMIA</td>
                   </tr>
                 </table>
                 <table class="table text-center" border="1">
@@ -243,8 +246,8 @@ export default {
         this.timeLoading = 0
       }
     },
-    formatDate (datee, format) {
-      return date.formatDate(datee, format)
+    formatDate (data, format) {
+      return date.formatDate(data, format)
     },
     filterBetween () {
       this.params.dateFilter = { from: this.from, to: this.to, field: 'created_at' }
