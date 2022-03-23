@@ -13,7 +13,7 @@
       <div class="col-lg-1 col-md-1 col-xl-1">
         <excel-report :data="dataExport" title="Recibos de Egresos">
           <template v-slot:table>
-            <thead>
+            <thead class="text-bold">
               <tr>
                 <td>F. Emision</td>
                 <td>Documento</td>
@@ -21,17 +21,41 @@
                 <td>Razon Social</td>
                 <td>Concepto</td>
                 <td>Mon</td>
-                <td>Total</td>
+                <td class="text-right">Total</td>
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="d in dataExport" :key="d.id">
+            <tbody v-for="voucherType in voucherTypes" :key="voucherType.id">
+              <tr v-for="d in filterData(dataExport, voucherType.acronym)" :key="d.id">
                 <td>{{ formatDate(d.created_at, 'DD-MM-YYYY') }}</td>
-                <td>{{ d.worker.full_name }}</td>
+                <td>{{ d.serie_number }}</td>
+                <td>{{ d.worker.document_number }}</td>
+                <td>{{ d.worker.name }} {{ d.worker.last_name }}</td>
                 <td>{{ d.concept }}</td>
-                <td>{{ d.amount }}</td>
+                <td>S/.</td>
+                <td class="text-right">{{ d.amount }}</td>
+              </tr>
+              <tr class="text-right text-bold">
+                <td colspan="5">
+                  {{ voucherType.name }}
+                </td>
+                <td>
+                  Total
+                </td>
+                <td>
+                  {{ totalArray(filterData(dataExport, voucherType.acronym)) }}
+                </td>
               </tr>
             </tbody>
+            <tfoot>
+              <tr class="text-right text-bold text-h6">
+                <td colspan="6">
+                  Total S/.
+                </td>
+                <td>
+                  {{ totalArray(dataExport) }}
+                </td>
+              </tr>
+            </tfoot>
           </template>
         </excel-report>
       </div>
@@ -198,8 +222,9 @@ export default {
         sortOrder: 'desc',
         perPage: 1,
         dataSearch: {
-          name: '',
-          description: ''
+          'worker.name': '',
+          'worker.document_number': '',
+          'worker.last_name': ''
         }
       },
       /**
@@ -216,13 +241,14 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      voucherTypes: []
     }
   },
   created () {
-    this.getEgresses()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.getVoucherTypes()
   },
   computed: {
     valueLoading () {
@@ -234,6 +260,29 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * All CLient
+     */
+    getVoucherTypes () {
+      this.$services.getData(['voucher-types'])
+        .then(({ res }) => {
+          this.voucherTypes = res.data.filter(element => {
+            return this.filterData(this.dataExport, element.acronym).length > 0
+          })
+        })
+    },
+    filterData (dataExport, acronym) {
+      return dataExport.filter(element => {
+        return element.voucher_type.acronym === acronym
+      })
+    },
+    totalArray (dataExport) {
+      let total = 0
+      dataExport.forEach(element => {
+        total += element.amount
+      })
+      return total
+    },
     downloadPDF (data) {
       this.visibleEgress = true
       this.modelPdf = data
@@ -314,6 +363,8 @@ export default {
     },
     async getFullEgresses () {
       const { res } = await this.$services.getData(['egresses'], {
+        sortBy: 'voucher_type_id',
+        sortOrder: 'asc',
         dateFilter: {
           to: this.to,
           from: this.from,
@@ -321,6 +372,7 @@ export default {
         }
       })
       this.dataExport = res.data
+      this.getVoucherTypes()
     },
     /**
      * Get all egress
