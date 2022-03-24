@@ -212,7 +212,7 @@
       @progress="onProgress($event)"
     >
       <section slot="pdf-content">
-        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.id" title="recibo de egreso" :dateNow="modelPdf.created_at">
+        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.serie_number" title="recibo de egreso" :dateNow="modelPdf.created_at">
           <template v-slot:content>
             <div style="border: solid 1px;" class="q-pa-md text-dark">
               <span style="border: solid 1px;" class="q-pa-sm float-right">S/ {{ modelPdf.amount }}</span><br>

@@ -27,7 +27,7 @@
           </td>
         </tr>
         <tr class="text-red-13" v-if="numberReceipt">
-          <td class="q-pa-sm">Nro {{ numberReceipt }}</td>
+          <td class="q-pa-sm">{{ numberReceipt }}</td>
         </tr>
       </table>
       <table class="table q-mt-sm" border="1">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-btn-dropdown color="orange" label="Descarga" icon="download">
+    <q-btn-dropdown color="orange" label="Descargas" icon="download">
       <q-list>
         <q-item clickable v-close-popup @click="onItemClick('xlsx')">
           <q-item-section>

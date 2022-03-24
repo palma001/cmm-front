@@ -10,7 +10,7 @@
       <div class="col-lg-1 col-md-1 col-xl-1">
         <q-btn color="primary" icon="search" @click="filterBetween"/>
       </div>
-      <div class="col-lg-1 col-md-1 col-xl-1">
+      <div class="col-lg-3 col-md-3 col-xl-3 text-right">
         <excel-report :data="dataExport" title="Recibos de Egresos">
           <template v-slot:table>
             <thead class="text-bold">
@@ -59,7 +59,7 @@
           </template>
         </excel-report>
       </div>
-      <div class="col-lg-4 col-md-4 col-xl-4 text-right">
+      <div class="col-lg-2 col-md-2 col-xl-2 text-right">
         <q-btn
           color="primary"
           icon="add_circle"
@@ -112,7 +112,7 @@
       @progress="onProgress($event)"
     >
       <section slot="pdf-content">
-        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.id" title="recibo de egreso" :dateNow="modelPdf.created_at">
+        <pdf-print v-if="modelPdf" :numberReceipt="modelPdf.serie_number" title="recibo de egreso" :dateNow="modelPdf.created_at">
           <template v-slot:content>
             <div style="border: solid 1px;" class="q-pa-md text-dark">
               <span style="border: solid 1px;" class="q-pa-sm float-right">S/ {{ modelPdf.amount }}</span><br>

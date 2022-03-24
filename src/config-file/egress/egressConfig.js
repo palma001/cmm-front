@@ -6,15 +6,6 @@ export const egress = [
     children: [
       {
         tabulated: {
-          name: 'worker',
-          align: 'left',
-          field: row => row.worker.full_name,
-          sortable: false,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
           name: 'created_at',
           align: 'left',
           field: row => date.formatDate(row.created_at, 'DD-MM-YYYY'),
@@ -24,9 +15,27 @@ export const egress = [
       },
       {
         tabulated: {
-          name: 'amount',
+          name: 'serie_number',
           align: 'left',
-          field: row => row.amount,
+          field: row => row.serie_number,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'document_number',
+          align: 'left',
+          field: row => row.worker.document_number,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'business_name',
+          align: 'left',
+          field: row => `${row.worker.name} ${row.worker.last_name}`,
           sortable: false,
           visible: true
         }
@@ -36,7 +45,16 @@ export const egress = [
           name: 'concept',
           align: 'left',
           field: row => row.concept,
-          sortable: false,
+          sortable: true,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'amount',
+          align: 'left',
+          field: row => row.amount,
+          sortable: true,
           visible: true
         }
       },
