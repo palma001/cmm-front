@@ -6,19 +6,37 @@ export const entry = [
     children: [
       {
         tabulated: {
-          name: 'partner',
+          name: 'created_at',
           align: 'left',
-          field: row => row.partner.full_name,
+          field: row => date.formatDate(row.created_at, 'DD-MM-YYYY'),
+          sortable: true,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'document',
+          align: 'left',
+          field: row => row.document,
           sortable: false,
           visible: true
         }
       },
       {
         tabulated: {
-          name: 'created_at',
+          name: 'partner',
           align: 'left',
-          field: row => date.formatDate(row.created_at, 'DD-MM-YYYY'),
-          sortable: true,
+          field: row => `${row.partner.name} ${row.partner.last_name} `,
+          sortable: false,
+          visible: true
+        }
+      },
+      {
+        tabulated: {
+          name: 'period',
+          align: 'left',
+          field: row => row.period,
+          sortable: false,
           visible: true
         }
       },

@@ -10,27 +10,53 @@
       <div class="col-lg-1 col-md-1 col-xl-1">
         <q-btn color="primary" icon="search" @click="filterBetween"/>
       </div>
-      <div class="col-lg-1 col-md-1 col-xl-1">
-        <excel-report :data="dataExport" title="Recibos de Ingresos">
+      <div class="col-lg-3 col-md-3 col-xl-3 text-right">
+        <excel-report :data="dataExport" title="Registros de Ventas por Producto" format="A3" orientation="landscape">
           <template v-slot:table>
             <thead>
-              <tr>
-                <td>Socio</td>
+              <tr class="text-bold">
                 <td>Fecha</td>
-                <td>Total</td>
+                <td>Documento</td>
+                <td>Razon Social</td>
+                <td>Periodo</td>
+                <td>M</td>
+                <td v-for="concept in concepts" :key="concept.id">
+                  {{ concept.name }}
+                </td>
+                <td class="text-right text-bold">
+                  Total
+                </td>
+                <td class="text-right text-bold">
+                  Por Cobrar
+                </td>
               </tr>
             </thead>
             <tbody>
               <tr v-for="d in dataExport" :key="d.id">
-                <td>{{ d.partner.full_name }}</td>
-                <td>{{ formatDate(d.created_at) }}</td>
-                <td>{{ d.total }}</td>
+                <td>{{ formatDate(d.created_at, 'DD-MM-YYYY') }}</td>
+                <td>{{ d.document }}</td>
+                <td>{{ d.partner.name }} {{ d.partner.last_name }}</td>
+                <td>{{ d.period }}</td>
+                <td>S/</td>
+                <td v-for="concept in concepts" :key="concept.id">
+                  <span v-for="entryDetail in d.entry_details" :key="entryDetail.id">
+                    <span v-if="entryDetail.concept_id === concept.id">
+                      {{ entryDetail.amount }}
+                    </span>
+                  </span>
+                </td>
+                <td class="text-right">
+                  {{ d.total }}
+                </td>
+                <td class="text-right">
+                  {{ d.pending }}
+                </td>
               </tr>
             </tbody>
           </template>
         </excel-report>
       </div>
-      <div class="col-lg-4 col-md-4 col-xl-4 text-right">
+      <div class="col-lg-2 col-md-2 col-xl-2 text-right">
         <q-btn
           color="primary"
           icon="add_circle"
@@ -145,7 +171,7 @@
               <tbody>
                 <tr v-for="entryDetail in modelPdf.entry_details" :key="entryDetail.id" class="text-dark">
                   <td class="q-pa-sm">{{ entryDetail.concept.name }}</td>
-                  <td class="q-pa-sm">{{ entryDetail.period }}</td>
+                  <td class="q-pa-sm">{{ modelPdf.period }}</td>
                   <td class="q-pa-sm">{{ entryDetail.amount }}</td>
                 </tr>
               </tbody>
@@ -238,12 +264,6 @@ export default {
           label: 'Importe S/',
           field: 'amount',
           sortable: true
-        },
-        {
-          name: 'period',
-          label: 'Periodo',
-          field: 'period',
-          sortable: true
         }
       ],
       conceptFilter: '',
@@ -296,13 +316,14 @@ export default {
        * @type {Array}
        */
       data: [],
-      dataExport: []
+      dataExport: [],
+      concepts: []
     }
   },
   created () {
-    this.getEntries()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.getConcepts()
   },
   computed: {
     valueLoading () {
@@ -401,6 +422,10 @@ export default {
         }
       })
       this.dataExport = res.data
+    },
+    async getConcepts () {
+      const { res } = await this.$services.getData(['concepts'])
+      this.concepts = res.data
     },
     /**
      * Get all entry

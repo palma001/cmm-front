@@ -11,7 +11,7 @@
         <q-btn color="primary" icon="search" @click="filterBetween"/>
       </div>
       <div class="col-lg-3 col-md-3 col-xl-3 text-right">
-        <excel-report :data="dataExport" title="Recibos de Egresos">
+        <excel-report :data="dataExport" title="Registros de Compras con Glosa">
           <template v-slot:table>
             <thead class="text-bold">
               <tr>

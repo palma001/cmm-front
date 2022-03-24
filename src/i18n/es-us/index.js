@@ -171,7 +171,7 @@ export default {
   entry: {
     saveErrorPayment: 'Ingrese los campos requeridos',
     created_at: 'fecha',
-    list: 'lista de reciboss',
+    list: 'lista de recibos',
     total: 'total',
     cash: 'efectivo',
     add: 'agregar recibos',
@@ -182,8 +182,10 @@ export default {
     download: 'descargas',
     PDF: 'PDF',
     options: 'opciones',
-    partner: 'Socio',
+    partner: 'razon social',
     concepts: 'conceptos',
-    newEntry: 'Nuevo recibos'
+    newEntry: 'Nuevo recibos',
+    period: 'periodo',
+    document_number: 'número de documento'
   }
 }

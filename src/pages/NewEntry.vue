@@ -1,7 +1,7 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-form @submit="modelBill">
+    <q-form @submit="entryModel">
       <q-card class="my-card">
         <q-card-section class="text-h4 row q-gutter-sm">
           <span class="col-10">{{ ucwords($t('entry.newEntry')) }}</span>
@@ -25,7 +25,7 @@
         <q-separator/>
         <q-card-section class="q-pb-sm">
           <div class="row q-col-gutter-sm">
-            <div class="col-6">
+            <div class="col-4">
               <q-select
                 autocomplete="off"
                 use-input
@@ -57,6 +57,15 @@
                   <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogPartner = true"/>
                 </template>
               </q-select>
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <q-input
+                type="month"
+                dense
+                outlined
+                hint="Periodo"
+                v-model="entry.period"
+              />
             </div>
             <div class="col-4">
               <q-input
@@ -103,15 +112,6 @@
                   <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogConcept = true"/>
                 </template>
               </q-select>
-            </div>
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
-              <q-input
-                type="month"
-                dense
-                outlined
-                hint="Periodo"
-                v-model="period"
-              />
             </div>
             <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
               <q-input
@@ -297,7 +297,7 @@
               <tbody>
                 <tr v-for="entryDetail in modelPdf.entry_details" :key="entryDetail.id" class="text-dark">
                   <td class="q-pa-sm">{{ entryDetail.concept.name }}</td>
-                  <td class="q-pa-sm">{{ entryDetail.period }}</td>
+                  <td class="q-pa-sm">{{ modelPdf.period }}</td>
                   <td class="q-pa-sm">{{ entryDetail.amount }}</td>
                 </tr>
               </tbody>
@@ -375,7 +375,6 @@ export default {
       concept: null,
       totalSale: 0,
       price: 0,
-      period: null,
       /**
        * Visible loading page
        * @type {Boolean} status loading page
@@ -563,14 +562,15 @@ export default {
     /**
      * Model bill
      */
-    modelBill () {
-      const billModel = {
+    entryModel () {
+      const entryModel = {
         partner_id: this.entry.partner.id,
+        period: this.entry.period,
         entryDetails: this.dataConcept,
         user_created_id: this.userSession.id,
         created_at: date.formatDate(this.entry.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
-      this.saveEntry(billModel)
+      this.saveEntry(entryModel)
     },
     /**
      * Save bill
@@ -634,7 +634,7 @@ export default {
         item: this.dataConcept.length + 1,
         concept_id: this.concept.id,
         name: this.concept.name,
-        period: this.period,
+        period: this.entry.period,
         amount: Number(this.price),
         user_created_id: this.userSession.id
       })

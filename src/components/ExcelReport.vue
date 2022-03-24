@@ -23,9 +23,9 @@
       filename="hee hee"
       :pdf-quality="2"
       :manual-pagination="false"
-      pdf-format="a4"
-      pdf-orientation="portrait"
-      pdf-content-width="800px"
+      :pdf-format="format"
+      :pdf-orientation="orientation"
+      pdf-content-width="100%"
       ref="html2Pdf"
     >
       <section slot="pdf-content" class="text-uppercase text-dark">
@@ -55,6 +55,14 @@ export default {
     PdfPrint
   },
   props: {
+    format: {
+      type: String,
+      default: 'a4'
+    },
+    orientation: {
+      type: String,
+      default: 'portrait'
+    },
     data: {
       type: Array,
       require: true
