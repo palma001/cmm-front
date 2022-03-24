@@ -116,15 +116,6 @@ export const currentAccount = [
       },
       {
         tabulated: {
-          name: 'pending',
-          align: 'center',
-          field: row => `S/ ${row.pending}`,
-          sortable: true,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
           name: 'accountStatus',
           align: 'center',
           visible: true,

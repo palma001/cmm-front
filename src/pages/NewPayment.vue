@@ -4,7 +4,7 @@
     <q-form @submit="entryModel">
       <q-card class="my-card">
         <q-card-section class="text-h5 row q-gutter-sm">
-          <span class="col-10">{{ ucwords($t('entry.newEntry')) }}</span>
+          <span class="col-10">Nuevo Ingreso</span>
           <q-btn
             icon="receipt"
             class="col-auto"
@@ -43,8 +43,7 @@
                 :disable="!$route.query.partner ? false : true"
                 v-validate="'required'" data-vv-as="field"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="partners"
-                @filter="getPartners"
+                readonly
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -52,9 +51,6 @@
                       No results
                     </q-item-section>
                   </q-item>
-                </template>
-                <template v-slot:append>
-                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogPartner = true"/>
                 </template>
               </q-select>
             </div>
@@ -65,6 +61,8 @@
                 outlined
                 hint="Periodo"
                 v-model="entry.period"
+                readonly
+                disabled
               />
             </div>
             <div class="col-4">
@@ -76,30 +74,18 @@
                 v-model="entry.created_at"
               />
             </div>
-          </div>
-        </q-card-section>
-        <q-separator/>
-        <q-card-section>
-          <div class="row q-col-gutter-sm">
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <div class="col-4">
               <q-select
-                autocomplete="off"
-                use-input
-                hide-selected
                 fill-input
                 dense
                 outlined
-                clearable
-                input-debounce="20"
-                name="concept"
-                v-model="concept"
+                name="paymentMethod"
+                v-model="paymentMethod"
                 option-label="name"
                 option-value="id"
-                v-validate="'required'" data-vv-as="field"
-                label="Concepto"
+                label="Metodo de pago"
+                :options="paymentMethods"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="concepts"
-                @filter="getConcepts"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -108,25 +94,21 @@
                     </q-item-section>
                   </q-item>
                 </template>
-                <template v-slot:append>
-                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogConcept = true"/>
-                </template>
               </q-select>
             </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+            <div class="col-4">
               <q-input
                 type="text"
                 dense
                 outlined
-                label="Importe"
-                v-model="price"
+                label="Description"
+                v-model="description"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
               />
-            </div>
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
-              <q-btn icon="add" color="primary" @click="setTable"/>
             </div>
           </div>
         </q-card-section>
+        <q-separator/>
         <q-separator/>
         <q-card-section class="row justify-between q-col-gutter-sm">
           <div class="q-pa-xs col-xs-12 col-md-9 col-sm-12 col-lg-9">
@@ -143,29 +125,21 @@
                   <q-td>
                     <q-btn size="xs" color="negative" icon="close" @click="deleteConcept(props.row)"/>
                   </q-td>
-                  <q-td key="item" :props="props">
-                    {{ props.row.item }}
-                  </q-td>
                   <q-td key="name" :props="props">
-                    {{ props.row.name }}
+                    {{ props.row.concept.name }}
                   </q-td>
                   <q-td key="period" :props="props">
-                    {{ props.row.period }}
-                    <q-popup-edit v-model="props.row.period" auto-save>
-                      <q-input
-                        type="month"
-                        v-model="props.row.period"
-                        dense
-                        autofocus
-                      />
-                    </q-popup-edit>
+                    {{ entry.period }}
                   </q-td>
                   <q-td key="amount" :props="props">
                     {{ props.row.amount }}
-                    <q-popup-edit v-model.number="props.row.amount" auto-save>
+                  </q-td>
+                  <q-td key="amountPayment" :props="props">
+                    {{ props.row.amountPayment }}
+                    <q-popup-edit v-model.number="props.row.amountPayment" auto-save>
                       <q-input
                         type="number"
-                        v-model.number="props.row.amount"
+                        v-model.number="props.row.amountPayment"
                         dense autofocus
                         @input="totalCalculate"
                       />
@@ -179,7 +153,15 @@
             <q-list separator dense>
               <q-item clickable v-ripple active>
                 <q-item-section>TOTAL </q-item-section>
-                <q-item-section side>S/ {{ totalSale }}</q-item-section>
+                <q-item-section side>S/ {{ total }}</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple active>
+                <q-item-section>TOTAL PAGADO </q-item-section>
+                <q-item-section side>S/ {{ totalPayment }}</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple active>
+                <q-item-section>TOTAL POR PAGAR</q-item-section>
+                <q-item-section side>S/ {{ total - totalPayment }}</q-item-section>
               </q-item>
             </q-list>
           </div>
@@ -191,50 +173,6 @@
         </q-card-actions>
       </q-card>
     </q-form>
-    <q-dialog
-      position="right"
-      full-height
-      persistent
-      v-model="addDialogPartner"
-    >
-      <q-card style="width: 400px">
-        <q-form @submit="save" class="column full-height">
-          <q-card-section class="bg-primary text-white row items-center q-pb-sm">
-            <div class="text-h6">Agregar Socio</div>
-            <q-space />
-            <q-btn icon="close" flat round dense v-close-popup />
-          </q-card-section>
-          <q-card-section class="col q-pt-md">
-            <q-input outlined @blur="getDataApi" :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.document_number" label="Numbero de documento" dense/>
-            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.name" label="Nombre" dense/>
-            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.last_name" label="Apellido" dense/>
-            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.phone" label="Telefono" dense/>
-          </q-card-section>
-          <q-separator dark />
-          <q-card-actions align="right">
-            <q-btn color="negative" v-close-popup>Cancelar</q-btn>
-            <q-btn color="primary" type="submit">Agregar</q-btn>
-          </q-card-actions>
-        </q-form>
-        <q-inner-loading :showing="loadingApi">
-          <q-spinner-gears size="100px" color="primary"/>
-        </q-inner-loading>
-      </q-card>
-    </q-dialog>
-    <q-dialog
-      position="right"
-      persistent
-      full-height
-      v-model="addDialogConcept"
-    >
-      <dynamic-form
-        module="concept"
-        :config="conceptConfig"
-        :loading="loadingForm"
-        @cancel="addDialogConcept = false"
-        @save="saveConcept"
-      />
-    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -295,7 +233,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="entryDetail in modelPdf.entry_details" :key="entryDetail.id" class="text-dark">
+                <tr v-for="entryDetail in modelPdf.entry_payments" :key="entryDetail.id" class="text-dark">
                   <td class="q-pa-sm">{{ entryDetail.concept.name }}</td>
                   <td class="q-pa-sm">{{ modelPdf.period }}</td>
                   <td class="q-pa-sm">{{ entryDetail.amount }}</td>
@@ -341,11 +279,8 @@ import { date } from 'quasar'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
-import { partner, propsPanelEdition, partnerServices } from '../config-file/partner/partnerConfig.js'
-import DynamicForm from '../components/DynamicForm.vue'
 import PdfPrint from '../components/PdfPrint.vue'
 import VueHtml2pdf from 'vue-html2pdf'
-import { conceptConfig } from '../config-file/concept/conceptConfig.js'
 // import ExcelReport from '../components/ExcelReport.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
@@ -353,7 +288,6 @@ export default {
   name: 'Entry',
   mixins: [mixins.containerMixin],
   components: {
-    DynamicForm,
     VueHtml2pdf,
     PdfPrint
     // ExcelReport
@@ -361,25 +295,13 @@ export default {
   },
   data () {
     return {
-      loadingApi: false,
-      partnerSave: {},
-      conceptConfig,
-      addDialogConcept: false,
-      addDialogPartner: false,
       modelPdf: null,
-      loadingForm: false,
-      partner,
-      propsPanelEdition,
-      partnerServices,
-      loadingCLose: false,
-      concept: null,
-      totalSale: 0,
-      price: 0,
       /**
        * Visible loading page
        * @type {Boolean} status loading page
        */
       visible: false,
+      paymentMethod: null,
       /**
        * Columns Table
        * @type {Array} column array
@@ -391,13 +313,6 @@ export default {
           align: 'left',
           label: 'Opciones',
           field: 'opciones'
-        },
-        {
-          name: 'item',
-          label: 'N. Item',
-          align: 'left',
-          headerClasses: 'bg-primary text-white',
-          sortable: true
         },
         {
           name: 'name',
@@ -421,6 +336,13 @@ export default {
           field: 'amount',
           headerClasses: 'bg-primary text-white',
           sortable: true
+        },
+        {
+          name: 'amountPayment',
+          label: 'Total a pagar',
+          field: 'amountPayment',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
         }
       ],
       /**
@@ -432,26 +354,15 @@ export default {
         created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
       },
       /**
-       * Client List
-       * @type {Array} Client List
-       */
-      partners: [],
-      /**
-       * Concept List
-       * @type {Array} Concept List
-       */
-      concepts: [],
-      /**
-       * Amount concept
-       * @type {Number} amuntconcept
-       */
-      amount: 1,
-      /**
        * Data concept entry
        * @type {Array} data entry
        */
       dataConcept: [],
-      visibleEntry: false
+      visibleEntry: false,
+      totalPayment: 0,
+      total: 0,
+      paymentMethods: [],
+      description: ''
     }
   },
   computed: {
@@ -467,7 +378,8 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
-    this.setPartner()
+    this.setReceipt()
+    this.getPaymemtMethods()
   },
   watch: {
     concept (data) {
@@ -475,15 +387,29 @@ export default {
     }
   },
   methods: {
-    setPartner () {
-      if (this.$route.query.partner) {
-        this.visible = true
-        this.$services.getOneData(['partners', this.$route.query.partner])
-          .then(({ res }) => {
-            this.entry.partner = res.data
-            this.visible = false
+    setReceipt () {
+      this.visible = true
+      this.$services.getOneData(['entries', this.$route.params.id])
+        .then(({ res }) => {
+          this.entry = res.data
+          this.dataConcept = res.data.entry_details.map(element => {
+            res.data.entry_payments.forEach(pay => {
+              if (element.concept_id === pay.concept_id) {
+                element.amountPayment = pay.amount
+              }
+            })
+            return element
           })
-      }
+          this.totalCalculate()
+          this.visible = false
+        })
+    },
+    getPaymemtMethods () {
+      this.visible = true
+      this.$services.getOneData(['payment-methods'])
+        .then(({ res }) => {
+          this.paymentMethods = res.data
+        })
     },
     onProgress (data) {
       this.timeLoading = data
@@ -492,73 +418,6 @@ export default {
         this.timeLoading = 0
       }
     },
-    getDataApi () {
-      const r = this.partnerSave.document_number && this.partnerSave.document_number.length <= 8 ? 'dni' : 'ruc'
-      if (r && this.partnerSave.document_number) {
-        this.loadingApi = true
-        this.$services.getData(['ruc', this.partnerSave.document_number], {
-          documentType: r
-        })
-          .then(({ res }) => {
-            if (!res.data.error) {
-              if (r === 'ruc') {
-                this.partnerSave.name = res.data.nombre
-              } else {
-                this.partnerSave.name = res.data.nombres
-                this.partnerSave.last_name = `${res.data.apellidoPaterno} ${res.data.apellidoMaterno}`
-                this.loadingApi = false
-              }
-              this.$forceUpdate()
-            } else {
-              this.notify(this, res.data.error, 'negative', 'warning')
-              this.partnerSave = {}
-              this.loadingApi = false
-            }
-          })
-          .catch(() => {
-            this.partnerSave = {}
-            this.loadingApi = false
-          })
-      }
-    },
-    /**
-     * Save Branch Office
-     * @param  {Object}
-     */
-    save () {
-      this.loadingForm = true
-      this.partnerSave.branch_office_id = this.branchOfficeSession.id
-      this.partnerSave.user_created_id = this.userSession.id
-      this.$services.postData(['partners'], this.partnerSave)
-        .then(({ res }) => {
-          this.entry.partner = res.data
-          this.addDialogPartner = false
-          this.loadingForm = false
-          this.partnerSave = {}
-          this.notify(this, 'partner.addSuccessfull', 'positive', 'mood')
-        })
-        .catch(() => {
-          this.loadingForm = false
-        })
-    },
-    /**
-     * Save Branch Office
-     * @param  {Object}
-     */
-    saveConcept (data) {
-      this.loadingForm = true
-      data.user_created_id = this.userSession.id
-      this.$services.postData(['concepts'], data)
-        .then(({ res }) => {
-          this.concept = res.data
-          this.addDialogConcept = false
-          this.loadingForm = false
-          this.notify(this, 'concept.addSuccessful', 'positive', 'mood')
-        })
-        .catch(() => {
-          this.loadingForm = false
-        })
-    },
     /**
      * Model bill
      */
@@ -566,8 +425,12 @@ export default {
       const entryModel = {
         partner_id: this.entry.partner.id,
         period: this.entry.period,
-        entryDetails: this.dataConcept,
-        user_created_id: this.userSession.id,
+        entryPayments: this.dataConcept.map(element => {
+          element.payment_method_id = this.paymentMethod.id
+          element.description = this.description
+          return element
+        }),
+        user_updated_id: this.userSession.id,
         created_at: date.formatDate(this.entry.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
       this.saveEntry(entryModel)
@@ -579,11 +442,11 @@ export default {
     saveEntry (data) {
       this.modalPaid = false
       this.visibleEntry = true
-      this.$services.postData(['entries'], data)
+      this.$services.putData(['entries', this.$route.params.id], data)
         .then(({ res }) => {
           this.notify(this, 'entry.saveSuccess', 'positive', 'mood')
           this.cancelBill()
-          this.setPartner()
+          this.setReceipt()
           this.downloadPDF(res.data)
         })
         .catch(() => {
@@ -611,169 +474,23 @@ export default {
         ref.resetValidation()
       }, 100)
     },
-    /**
-     * Set Data in table
-     * @param {Object} val value concept
-     */
-    setTable () {
-      if (this.validateArray(this.dataConcept, this.concept)) {
-        this.addAmountConcept(this.dataConcept, this.concept)
-      } else {
-        this.pushArray(this.dataConcept, this.concept)
-      }
-      this.totalCalculate()
-    },
-    /**
-     * Set data in table concept
-     * @param {Array} array list porduct
-     */
-    pushArray (array) {
-      array.push({
-        item: this.dataConcept.length + 1,
-        concept_id: this.concept.id,
-        name: this.concept.name,
-        period: this.entry.period,
-        amount: Number(this.price),
-        user_created_id: this.userSession.id
-      })
-    },
-    /**
-     * Print concept error
-     * @param {Number} code concept code
-     */
-    errorSearch (code) {
-      this.$q.notify({
-        message: `(${code}) - ${this.ucwords(this.$t('template.errorSearchConcept'))}`,
-        color: 'negative',
-        position: 'top',
-        icon: 'warning'
-      })
-    },
-    /**
-     * Format number less than ten
-     * @param {Number} number number format
-     * @return {Number} number formated
-     */
-    formatOnCero (number) {
-      if (number < 10) {
-        return `0${number}`
-      }
-      return number
-    },
-    /**
-     * Validations the errors
-     * @param  {String} propTag data fromulary
-     * @return {String} errors
-     */
-    errorValidation (propTag) {
-      if (this.errors.has(propTag)) {
-        return this.errors.first(propTag)
-      }
-    },
-    /**
-     * Verify formulary error
-     * * @return {String} errors
-     */
-    validateBeforeSubmit () {
-      return this.$validator.validateAll()
-        .then((result) => {
-          return result
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    },
-    /**
-     * Validate array in concept table
-     * @param {Array} data the concept table
-     * @param {Object} index concept table index
-     */
-    validateArray (data, index) {
-      return data.find((concept) => concept.concept_id === index.id)
-    },
-    /**
-     * Add concept price in table
-     * @param {Array} concept table
-     * @param {Object} index concept table index
-     */
-    addAmountConcept (concept, index) {
-      concept.map(concept => {
-        if (concept.concept_id === index.id) {
-          concept.amount = Number(concept.amount) + Number(this.price)
-          return concept
-        }
-      })
-    },
-    /**
-     * All CLient
-     */
-    getPartners (value, update) {
-      this.$services.getData(['partners'], {
-        dataSearch: {
-          document_number: value,
-          name: value,
-          last_name: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.partners = res.data.data
-          })
-        })
-    },
-    /**
-     * Get concepts
-     * @param {String} value data filter
-     */
-    getConcepts (value, update) {
-      this.$services.getData(['concepts'], {
-        ...value,
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.concepts = res.data.data
-          })
-        })
-    },
     async downloadPDF (data) {
       const { res } = await this.$services.getOneData(['entries', data.id])
       this.modelPdf = res.data
       this.$refs.html2Pdf.generatePdf()
     },
     /**
-     * Delete concept
-     * @param {Object} data data concept
-     */
-    deleteConcept (data) {
-      this.dataConcept.map((concept, index) => {
-        if (concept.id === data.id) {
-          this.dataConcept.splice(index, 1)
-        }
-      })
-      this.totalCalculate()
-    },
-    /**
      * Calculate entry total
      */
     totalCalculate () {
       let total = 0
+      let totalPayment = 0
       this.dataConcept.forEach(element => {
         total = Number(total) + Number(element.amount)
+        totalPayment = Number(totalPayment) + Number(element.amountPayment)
       })
-      this.totalSale = total
-    },
-    /**
-     * Get percentage
-     * @param {Number} price price concepts
-     * @param {Number} percentage percentage calculate
-     * @returns {Number} percentage calculated
-     */
-    getPercentage (price, percentage) {
-      return ((percentage / 100) * price).toFixed(2)
+      this.total = total
+      this.totalPayment = totalPayment
     }
   }
 }

@@ -70,9 +70,19 @@ const routes = [
       {
         path: 'box-closures',
         name: 'BoxClosure',
-        props: route => ({ query: route.query.partner }),
         component: () => import('src/pages/BoxClosure.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'reports',
+        name: 'Report',
+        component: () => import('src/pages/Report.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'new-payment/:id',
+        name: 'NewPayment',
+        component: () => import('src/pages/NewPayment.vue')
       }
     ]
   },

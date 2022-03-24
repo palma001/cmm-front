@@ -14,7 +14,6 @@
           @accountStatus="accountStatus"
           @search-data="searchData"
           @on-load-data="loadData"
-          @delete="deleteData"
         />
       </div>
     </div>

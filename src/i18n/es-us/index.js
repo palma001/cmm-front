@@ -52,16 +52,17 @@ export default {
   // modules
   modules: {
     egress: 'egreso',
-    'new-entry': 'nuevo recibos',
+    'new-entry': 'nuevo recibo de cobro',
     'new-egress': 'nuevo egreso',
     partner: 'socios',
-    entries: 'Lista de recibos',
+    entries: 'Lista de recibos de cobro',
     egresses: 'lista de egresos',
     workers: 'trabajadores',
     users: 'usuarios',
     'current-accounts': 'cuenta corriente',
     concepts: 'conceptos',
-    'box-closures': 'cierre de caja'
+    'box-closures': 'cierre de caja',
+    reports: 'reportes'
   },
   partner: {
     add: 'agregar socio',
@@ -171,7 +172,7 @@ export default {
   entry: {
     saveErrorPayment: 'Ingrese los campos requeridos',
     created_at: 'fecha',
-    list: 'lista de recibos',
+    list: 'lista de recibos de cobro',
     total: 'total',
     cash: 'efectivo',
     add: 'agregar recibos',
@@ -184,8 +185,9 @@ export default {
     options: 'opciones',
     partner: 'razon social',
     concepts: 'conceptos',
-    newEntry: 'Nuevo recibos',
+    newEntry: 'Nuevo recibo de cobro',
     period: 'periodo',
+    entry: 'Pagar recibo',
     document_number: 'número de documento'
   }
 }
