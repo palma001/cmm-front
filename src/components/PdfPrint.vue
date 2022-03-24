@@ -27,7 +27,7 @@
           </td>
         </tr>
         <tr class="text-red-13" v-if="numberReceipt">
-          <td class="q-pa-sm">Nro {{ numberReceipt }}</td>
+          <td class="q-pa-sm">{{ numberReceipt }}</td>
         </tr>
       </table>
       <table class="table q-mt-sm" border="1">
@@ -53,7 +53,7 @@ import { date } from 'quasar'
 export default {
   props: {
     dateNow: {
-      type: String,
+      type: [String, Object],
       require: true
     },
     numberReceipt: {
@@ -66,8 +66,8 @@ export default {
     }
   },
   methods: {
-    formatDate (datee, format) {
-      return date.formatDate(datee, format)
+    formatDate (data, format) {
+      return date.formatDate(data, format)
     }
   }
 }

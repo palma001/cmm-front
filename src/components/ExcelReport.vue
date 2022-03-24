@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-btn-dropdown color="orange" label="Descarga" icon="download">
+    <q-btn-dropdown color="orange" label="Descargas" icon="download">
       <q-list>
         <q-item clickable v-close-popup @click="onItemClick('xlsx')">
           <q-item-section>
@@ -29,9 +29,9 @@
       ref="html2Pdf"
     >
       <section slot="pdf-content" class="text-uppercase text-dark">
-        <pdf-print :title="title" :dateNow="formatDate(new Date())">
+        <pdf-print :title="title" :dateNow="Date()">
           <template v-slot:content>
-            <table style="width: 100%; border-collapse: collapse; border-spacing: 0;" border="1">
+            <table style="width: 100%; border-collapse: collapse; border-spacing: 0; font-size: 10px;">
               <slot name="table"></slot>
             </table>
           </template>

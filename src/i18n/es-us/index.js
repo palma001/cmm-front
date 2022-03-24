@@ -145,7 +145,10 @@ export default {
     amount: 'monto',
     saveSuccess: 'Recibo creado exitosamente',
     download: 'descargas',
-    PDF: 'PDF'
+    PDF: 'PDF',
+    business_name: 'rasón social',
+    serie_number: 'Número de recibo',
+    document_number: 'Documento'
   },
   concept: {
     newConcept: 'nuevo concepto',
