@@ -44,6 +44,7 @@
                 v-validate="'required'" data-vv-as="field"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
                 :options="partners"
+                @input="selectPartner"
                 @filter="getPartners"
               >
                 <template v-slot:no-option>
@@ -457,6 +458,10 @@ export default {
     }
   },
   methods: {
+    selectPartner () {
+      this.collectionReceipts = []
+      this.collectionReceipt = null
+    },
     deleteDataDuplicate (data) {
       return data.reduce((acumulador, valorActual) => {
         const elementoYaExiste = acumulador.find(elemento => elemento.concept_id === valorActual.concept_id)
@@ -751,7 +756,7 @@ export default {
      */
     getCollectionReceipts (value, update) {
       this.$services.getData(['collection-receipts'], {
-        filterSearch: {
+        dataFilter: {
           number: value,
           serie: value,
           partner_id: this.entry.partner.id ?? null
