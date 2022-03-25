@@ -90,7 +90,6 @@
           @on-load-data="loadData"
           @downloadPDF="downloadPDF"
           @delete="deleteData"
-          @entry="payment"
         />
       </div>
     </div>
@@ -336,14 +335,6 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
-    payment (data) {
-      this.$router.push({
-        name: 'NewPayment',
-        params: {
-          id: data.id
-        }
-      })
-    },
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {

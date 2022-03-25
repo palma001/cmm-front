@@ -64,21 +64,6 @@ export const entry = [
           }
         }
       },
-      {
-        tabulated: {
-          name: 'entry',
-          align: 'center',
-          visible: true,
-          button: {
-            icon: 'money',
-            color: 'teal',
-            type: 'button',
-            size: 'sm',
-            push: true,
-            event: 'entry'
-          }
-        }
-      },
       // {
       //   tabulated: {
       //     name: 'book',
