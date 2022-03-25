@@ -10,7 +10,7 @@
         <q-separator/>
         <q-card-section class="q-pb-none">
           <div class="row q-col-gutter-sm">
-            <div class="col-4">
+            <div class="col-3">
               <q-select
                 autocomplete="off"
                 use-input
@@ -42,7 +42,39 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-4">
+            <div class="col-3">
+              <q-select
+                autocomplete="off"
+                use-input
+                hide-selected
+                fill-input
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="egressType"
+                v-model="egress.egressType"
+                option-label="name"
+                option-value="id"
+                :label="ucwords('tipo de egreso')"
+                v-validate="'required'" data-vv-as="field"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="egressTypes"
+                @filter="getEgressTypes"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogWorker = true"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-3">
               <q-select
                 autocomplete="off"
                 use-input
@@ -74,7 +106,7 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-4">
+            <div class="col-3">
               <q-input
                 dense
                 outlined
@@ -286,6 +318,7 @@ export default {
       workerServices,
       loadingCLose: false,
       period: null,
+      egressTypes: [],
       /**
        * Visible loading page
        * @type {Boolean} status loading page
@@ -397,6 +430,7 @@ export default {
       const billModel = {
         worker_id: this.egress.worker.id,
         voucher_type_id: this.egress.voucherType.id,
+        egress_type_id: this.egress.egressType.id,
         amount: this.egress.amount,
         number: this.egress.number,
         concept: this.egress.concept,
@@ -573,6 +607,24 @@ export default {
         .then(({ res }) => {
           update(() => {
             this.voucherTypes = res.data.data
+          })
+        })
+    },
+    /**
+     * All CLient
+     */
+    getEgressTypes (value, update) {
+      this.$services.getData(['egress-types'], {
+        dataSearch: {
+          name: value,
+          description: value
+        },
+        paginate: true,
+        perPage: 100
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.egressTypes = res.data.data
           })
         })
     },
