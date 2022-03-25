@@ -12,7 +12,7 @@
           <div class="col-3 q-gutter-xs">
             <q-btn color="primary" icon="search" type="submit"/>
             <q-btn color="negative" icon="close" type="reset"/>
-            <q-btn color="orange" icon="print" @click="print"/>
+            <q-btn color="orange" icon="print" @click="downloadPDF"/>
           </div>
         </q-form>
       </q-card-section>
@@ -36,12 +36,12 @@
               <q-list dense>
                 <q-item clickable v-ripple v-for="concept in concepts" :key="concept.id">
                   <q-item-section>{{ concept.name }}</q-item-section>
-                  <q-item-section side>{{ concept.total }}</q-item-section>
+                  <q-item-section side>{{ concept.total_entry }}</q-item-section>
                 </q-item>
                 <q-separator spaced />
                 <q-item clickable>
                   <q-item-section>Total</q-item-section>
-                  <q-item-section side>{{ totalCalculate(concepts, 'total') }}</q-item-section>
+                  <q-item-section side>{{ totalCalculate(concepts, 'total_entry') }}</q-item-section>
                 </q-item>
               </q-list>
             </div>
@@ -61,7 +61,7 @@
                 <q-item clickable class="text-bold">
                   <q-item-section>UTILIDAD DEL EJERCICIO</q-item-section>
                   <q-item-section side>
-                    {{ totalCalculate(concepts, 'total') - totalCalculate(egresses, 'amount') }}
+                    {{ totalCalculate(concepts, 'total_entry') - totalCalculate(egresses, 'amount') }}
                   </q-item-section>
                 </q-item>
                 <q-separator/>
@@ -91,7 +91,6 @@
             </q-item>
           </q-list>
         </q-tab-panel>
-
         <q-tab-panel name="movies">
           <div class="text-h6">Movies</div>
           <q-list bordered separator>
@@ -116,13 +115,79 @@
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
+      <!-- @progress="onProgress($event)" -->
+    <vue-html2pdf
+      :show-layout="false"
+      :float-layout="true"
+      :enable-download="false"
+      :preview-modal="true"
+      :paginate-elements-by-height="1000"
+      filename="hee hee"
+      :pdf-quality="2"
+      :manual-pagination="false"
+      pdf-format="a4"
+      pdf-orientation="portrait"
+      pdf-content-width="100%"
+      ref="html2Pdf"
+    >
+      <section slot="pdf-content" class="text-uppercase text-dark">
+        <pdf-print title="estado de ganancia y perdidas" :dateNow="Date()">
+          <template v-slot:content>
+            <div class="q-col-gutter-md">
+              <div>
+                <div class="text-h6">Ingresos Diversos</div>
+                <ul style="list-style:none;">
+                  <li clickable v-ripple v-for="concept in concepts" :key="concept.id">
+                    <span>{{ concept.name }}</span>
+                    <span class="float-right">{{ concept.total_entry }}</span>
+                  </li>
+                  <hr/>
+                  <li clickable>
+                    <span>Total</span>
+                    <span class="float-right">{{ totalCalculate(concepts, 'total_entry') }}</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <div class="text-h6">Egresos</div>
+                <ul style="list-style:none;">
+                  <li clickable v-ripple v-for="egress in egresses" :key="egress.id">
+                    <span>{{ egress.concept }}</span>
+                    <span class="float-right">{{ egress.amount }}</span>
+                  </li>
+                  <hr/>
+                  <li clickable>
+                    <span>Total</span>
+                    <span class="float-right">{{ totalCalculate(egresses, 'amount') }}</span>
+                  </li>
+                  <hr/>
+                  <li clickable class="text-bold">
+                    <span>UTILIDAD DEL EJERCICIO</span>
+                    <span class="float-right">
+                      {{ totalCalculate(concepts, 'total_entry') - totalCalculate(egresses, 'amount') }}
+                    </span>
+                  </li>
+                  <q-separator/>
+                </ul>
+              </div>
+            </div>
+          </template>
+        </pdf-print>
+      </section>
+    </vue-html2pdf>
   </q-page>
 </template>
 
 <script>
 import { date } from 'quasar'
+import VueHtml2pdf from 'vue-html2pdf'
+import PdfPrint from '../components/PdfPrint.vue'
 export default {
   // name: 'PageName',
+  components: {
+    VueHtml2pdf,
+    PdfPrint
+  },
   data () {
     return {
       tab: 'earningsLoses',
@@ -143,6 +208,9 @@ export default {
       this.to = null
       this.from = null
       this.getData()
+    },
+    downloadPDF () {
+      this.$refs.html2Pdf.generatePdf()
     },
     async getConcepts () {
       const { res } = await this.$services.getData(['reports', 'earnings-loses'], {
