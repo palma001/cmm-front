@@ -57,7 +57,7 @@ export default {
       require: true
     },
     numberReceipt: {
-      type: Number,
+      type: [Number, String],
       require: true
     },
     title: {

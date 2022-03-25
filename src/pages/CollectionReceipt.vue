@@ -35,13 +35,13 @@
               <tr v-for="d in dataExport" :key="d.id">
                 <td>{{ formatDate(d.created_at, 'DD-MM-YYYY') }}</td>
                 <td>{{ d.document }}</td>
-                <td>{{ d.collection_receipt.partner.name }} {{ d.collection_receipt.partner.last_name }}</td>
-                <td>{{ d.collection_receipt.period }}</td>
+                <td>{{ d.partner.name }} {{ d.partner.last_name }}</td>
+                <td>{{ d.period }}</td>
                 <td>S/</td>
                 <td v-for="concept in concepts" :key="concept.id">
-                  <span v-for="entryDetail in d.entry_details" :key="entryDetail.id">
-                    <span v-if="entryDetail.concept_id === concept.id">
-                      {{ entryDetail.amount }}
+                  <span v-for="collectionReceiptDetail in d.collectionReceipt_details" :key="collectionReceiptDetail.id">
+                    <span v-if="collectionReceiptDetail.concept_id === concept.id">
+                      {{ collectionReceiptDetail.amount }}
                     </span>
                   </span>
                 </td>
@@ -49,7 +49,7 @@
                   {{ d.total }}
                 </td>
                 <td class="text-right">
-                  {{ d.collection_receipt.pending }}
+                  {{ d.pending }}
                 </td>
               </tr>
             </tbody>
@@ -60,8 +60,8 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('entry.add')"
-          @click="$router.push({ name: 'NewEntry' })"
+          :label="$q.screen.lt.sm ? '' : $t('collectionReceipt.add')"
+          @click="$router.push({ name: 'NewcollectionReceipt' })"
         >
           <q-tooltip
             anchor="center right"
@@ -70,7 +70,7 @@
             v-if="$q.screen.lt.sm"
           >
             {{
-              ucwords($t('entry.add'))
+              ucwords($t('collectionreceipt.add'))
             }}
           </q-tooltip>
       </q-btn>
@@ -78,9 +78,9 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="entry"
+          module="collectionReceipt"
           searchable
-          :column="entry"
+          :column="collectionReceipt"
           :data="data"
           :loading="loadingTable"
           :optionPagination="optionPagination"
@@ -90,15 +90,15 @@
           @on-load-data="loadData"
           @downloadPDF="downloadPDF"
           @delete="deleteData"
-          @entry="payment"
+          @collectionReceipt="payment"
         />
       </div>
     </div>
     <q-dialog v-model="viewConceptModal">
-      <q-card v-if="entrySelected" style="width: 700px; max-width: 80vw;">
+      <q-card v-if="collectionReceiptSelected" style="width: 700px; max-width: 80vw;">
         <q-card-section class="q-pb-xs">
           <div class="text-h6">
-            Recibo Nro <span class="text-red">{{ entrySelected.id }}</span>
+            Recibo <span class="text-red">{{ collectionReceiptSelected.serie_number }}</span>
           </div>
         </q-card-section>
         <q-card-section>
@@ -106,7 +106,7 @@
             row-key="name"
             wrap-cells
             virtual-scroll
-            :data="entrySelected.entry_details"
+            :data="collectionReceiptSelected.collection_receipt_details"
             :columns="columns"
             :filter="conceptFilter"
           >
@@ -153,10 +153,10 @@
               </tr>
               <tr class="text-dark">
                 <td class="q-pa-xs">
-                  {{ modelPdf.collection_receipt.partner.name }}
+                  {{ modelPdf.partner.name }}
                 </td>
                 <td class="q-pa-xs">
-                  {{ modelPdf.collection_receipt.partner.last_name }}
+                  {{ modelPdf.partner.last_name }}
                 </td>
                 <td class="q-pa-xs"></td>
               </tr>
@@ -170,10 +170,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="entryDetail in modelPdf.entry_details" :key="entryDetail.id" class="text-dark">
-                  <td class="q-pa-sm">{{ entryDetail.concept.name }}</td>
-                  <td class="q-pa-sm">{{ modelPdf.collection_receipt.period }}</td>
-                  <td class="q-pa-sm">{{ entryDetail.amount }}</td>
+                <tr v-for="collectionReceiptDetail in modelPdf.collection_receipt_details" :key="collectionReceiptDetail.id" class="text-dark">
+                  <td class="q-pa-sm">{{ collectionReceiptDetail.concept.name }}</td>
+                  <td class="q-pa-sm">{{ modelPdf.period }}</td>
+                  <td class="q-pa-sm">{{ collectionReceiptDetail.amount }}</td>
                 </tr>
               </tbody>
               <tfoot>
@@ -208,7 +208,7 @@
         </pdf-print>
       </section>
     </vue-html2pdf>
-    <q-inner-loading :showing="visibleEntry">
+    <q-inner-loading :showing="visiblecollectionReceipt">
       <q-circular-progress
         show-value
         class="text-white q-ma-md"
@@ -226,7 +226,7 @@
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import { entry } from '../config-file/entry/entryConfig.js'
+import { collectionReceipt } from '../config-file/collectionReceipt/collectionReceiptConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -244,10 +244,10 @@ export default {
   },
   data () {
     return {
-      addDialogEntry: false,
+      addDialogcollectionReceipt: false,
       modelPdf: null,
       timeLoading: 0,
-      visibleEntry: false,
+      visiblecollectionReceipt: false,
       /**
        * Columns Table
        * @type {Array} column array
@@ -268,7 +268,7 @@ export default {
         }
       ],
       conceptFilter: '',
-      entrySelected: null,
+      collectionReceiptSelected: null,
       viewConceptModal: false,
       /**
        * Selected data
@@ -306,7 +306,7 @@ export default {
        * File config module
        * @type {Object}
        */
-      entry,
+      collectionReceipt,
       /**
        * Status loading table
        * @type {Boolean}
@@ -347,12 +347,12 @@ export default {
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {
-        this.visibleEntry = false
+        this.visiblecollectionReceipt = false
         this.timeLoading = 0
       }
     },
     downloadPDF (data) {
-      this.visibleEntry = true
+      this.visiblecollectionReceipt = true
       this.modelPdf = data
       this.$refs.html2Pdf.generatePdf()
     },
@@ -360,7 +360,7 @@ export default {
       return date.formatDate(datee, format)
     },
     viewConcepts (data) {
-      this.entrySelected = data
+      this.collectionReceiptSelected = data
       this.viewConceptModal = true
     },
     /**
@@ -390,9 +390,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['entrys', data.id])
-        this.notify(this, 'entry.deleteSuccessful', 'positive', 'mood')
-        this.getEntries()
+        await this.$services.deleteData(['collectionReceipts', data.id])
+        this.notify(this, 'collectionReceipt.deleteSuccessful', 'positive', 'mood')
+        this.getCollectionReceipts()
       })
     },
     /**
@@ -405,14 +405,14 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getEntries(this.params)
+      this.getCollectionReceipts(this.params)
     },
     filterBetween () {
       this.params.dateFilter = { from: this.from, to: this.to, field: 'created_at' }
-      this.getEntries(this.params)
+      this.getCollectionReceipts(this.params)
     },
     /**
-     * Search entry
+     * Search collectionReceipt
      * @param  {Object}
      */
     searchData (data) {
@@ -420,10 +420,10 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getEntries(this.params)
+      this.getCollectionReceipts(this.params)
     },
     async getFullEntries () {
-      const { res } = await this.$services.getData(['entries'], {
+      const { res } = await this.$services.getData(['collection-receipts'], {
         dateFilter: {
           to: this.to,
           from: this.from,
@@ -437,11 +437,11 @@ export default {
       this.concepts = res.data
     },
     /**
-     * Get all entry
+     * Get all collectionReceipt
      */
-    getEntries (params = this.params) {
+    getCollectionReceipts (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['entries'], params)
+      this.$services.getData(['collection-receipts'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total

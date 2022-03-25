@@ -52,17 +52,19 @@ export default {
   // modules
   modules: {
     egress: 'egreso',
-    'new-entry': 'nuevo recibo de cobro',
+    'new-entry': 'nuevo ingreso',
     'new-egress': 'nuevo egreso',
     partner: 'socios',
-    entries: 'Lista de recibos de cobro',
+    entries: 'Lista de ingreso',
     egresses: 'lista de egresos',
     workers: 'trabajadores',
     users: 'usuarios',
     'current-accounts': 'cuenta corriente',
     concepts: 'conceptos',
     'box-closures': 'cierre de caja',
-    reports: 'reportes'
+    reports: 'reportes',
+    'collection-receipts': 'lista recibos de cobro',
+    'new-collection-receipt': 'nuevo recibo de cobro'
   },
   partner: {
     add: 'agregar socio',
@@ -169,13 +171,36 @@ export default {
     cancel: 'cancelar',
     name: 'nombre'
   },
-  entry: {
+  collectionReceipt: {
+    collectionReceipt: 'pagar recibo',
+    serie_number: 'Numero de documento',
     saveErrorPayment: 'Ingrese los campos requeridos',
     created_at: 'fecha',
     list: 'lista de recibos de cobro',
     total: 'total',
     cash: 'efectivo',
     add: 'agregar recibos',
+    saveBilling: 'guardar factura',
+    saveSuccess: 'Ingreso creado exitosamente',
+    error: 'A ocurrido un error',
+    expiration_date: 'fecha de expiración',
+    download: 'descargas',
+    PDF: 'PDF',
+    options: 'opciones',
+    partner: 'razon social',
+    concepts: 'conceptos',
+    newCollectionReceipt: 'Nuevo recibo de cobro',
+    period: 'periodo',
+    entry: 'Pagar recibo',
+    document_number: 'número de documento'
+  },
+  entry: {
+    saveErrorPayment: 'Ingrese los campos requeridos',
+    created_at: 'fecha',
+    list: 'lista de ingresos',
+    total: 'total',
+    cash: 'efectivo',
+    add: 'agregar ingreso',
     saveBilling: 'guardar factura',
     saveSuccess: 'Recibo creado exitosamente',
     error: 'A ocurrido un error',
@@ -185,9 +210,9 @@ export default {
     options: 'opciones',
     partner: 'razon social',
     concepts: 'conceptos',
-    newEntry: 'Nuevo recibo de cobro',
+    newEntry: 'Nuevo ingreso',
     period: 'periodo',
     entry: 'Pagar recibo',
-    document_number: 'número de documento'
+    document: 'número de documento'
   }
 }

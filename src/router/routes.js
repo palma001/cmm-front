@@ -13,15 +13,27 @@ const routes = [
     children: [
       {
         path: 'new-entry',
-        props: route => ({ query: route.query.partner }),
+        props: route => ({ query: route.query.collectionReceipt }),
         name: 'NewEntry',
         component: () => import('src/pages/NewEntry.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'new-collection-receipt',
+        name: 'NewCollectionReceipt',
+        component: () => import('src/pages/NewCollectionReceipt.vue'),
         beforeEnter: validationSessionUnit
       },
       {
         path: 'new-egress',
         name: 'NewEgress',
         component: () => import('src/pages/NewEgress.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'collection-receipts',
+        name: 'CollectionReceipt',
+        component: () => import('src/pages/CollectionReceipt.vue'),
         beforeEnter: validationSessionUnit
       },
       {

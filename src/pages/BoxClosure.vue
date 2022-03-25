@@ -142,7 +142,7 @@
       @progress="onProgress($event)"
     >
       <section slot="pdf-content" class="text-uppercase">
-        <pdf-print v-if="print" :numberReceipt="printData.id" title="Cierre de caja" :dateNow="printData.created_at">
+        <pdf-print v-if="printData" :numberReceipt="printData.id" title="Cierre de caja" :dateNow="printData.created_at">
           <template v-slot:content>
             <q-card bordered>
               <q-card-section horizontal>
@@ -297,7 +297,7 @@ export default {
       visibleEntry: false,
       boxClosureData: {},
       boxClosureDataRequest: {},
-      printData: {}
+      printData: null
     }
   },
   created () {

@@ -1,24 +1,24 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-form @submit="entryModel" ref="saveEntry">
+    <q-form @submit="collectionReceiptModel">
       <q-card class="my-card">
         <q-card-section class="text-h5 row q-gutter-sm">
-          <span class="col-10">{{ ucwords($t('entry.newEntry')) }}</span>
+          <span class="col-10">{{ ucwords($t('collectionReceipt.newCollectionReceipt')) }}</span>
           <q-btn
             icon="receipt"
             class="col-auto"
             color="orange"
-            v-if="entry.partner"
-            @click="$router.push({ name: 'CurrentAccount', query: { partner: entry.partner.id } })"
+            v-if="collectionReceipt.partner"
+            @click="$router.push({ name: 'CurrentAccount', query: { partner: collectionReceipt.partner.id } })"
           >
             <q-tooltip>
-             Cuenta Corriente de {{ entry.partner.name }} {{ entry.partner.last_name }}
+             Cuenta Corriente de {{ collectionReceipt.partner.name }} {{ collectionReceipt.partner.last_name }}
             </q-tooltip>
           </q-btn>
           <q-btn icon="menu" class="col-auto" color="primary" @click="$router.push({ name: 'Entries' })">
             <q-tooltip>
-             Lista de ingresos
+             Lista de recibos de cobro
             </q-tooltip>
           </q-btn>
         </q-card-section>
@@ -36,7 +36,7 @@
                 clearable
                 input-debounce="20"
                 name="partner"
-                v-model="entry.partner"
+                v-model="collectionReceipt.partner"
                 option-label="full_name"
                 option-value="id"
                 :label="ucwords('Socio')"
@@ -58,70 +58,14 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-4">
-              <q-select
-                autocomplete="off"
-                use-input
-                hide-selected
-                fill-input
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <q-input
+                type="month"
                 dense
                 outlined
-                clearable
-                input-debounce="20"
-                name="collectionReceipt"
-                v-model="collectionReceipt"
-                option-label="serie_number"
-                option-value="id"
-                :label="ucwords('Recibos por cobrar')"
-                :disable="entry.partner ? false : true"
-                v-validate="'required'" data-vv-as="field"
-                :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="collectionReceipts"
-                @filter="getCollectionReceipts"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-                <template v-slot:append>
-                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogPartner = true"/>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-4">
-              <q-select
-                autocomplete="off"
-                use-input
-                hide-selected
-                fill-input
-                dense
-                outlined
-                clearable
-                input-debounce="20"
-                name="entryType"
-                v-model="entryType"
-                option-label="name"
-                option-value="id"
-                :label="ucwords('Tipo de ingreso')"
-                v-validate="'required'" data-vv-as="field"
-                :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="entryTypes"
-                @filter="getEntryTypes"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-                <template v-slot:append>
-                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogPartner = true"/>
-                </template>
-              </q-select>
+                hint="Periodo"
+                v-model="collectionReceipt.period"
+              />
             </div>
             <div class="col-4">
               <q-input
@@ -129,22 +73,60 @@
                 dense
                 outlined
                 label="Fec. Emisión"
-                v-model="entry.created_at"
-              />
-            </div>
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4" v-if="collectionReceipt">
-              <q-input
-                type="month"
-                dense
-                outlined
-                hint="Periodo"
-                disable
-                v-model="collectionReceipt.period"
+                v-model="collectionReceipt.created_at"
               />
             </div>
           </div>
         </q-card-section>
         <q-separator/>
+        <q-card-section>
+          <div class="row q-col-gutter-sm">
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                hide-selected
+                fill-input
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="concept"
+                v-model="concept"
+                option-label="name"
+                option-value="id"
+                v-validate="'required'" data-vv-as="field"
+                label="Concepto"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="concepts"
+                @filter="getConcepts"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogConcept = true"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+              <q-input
+                type="text"
+                dense
+                outlined
+                label="Importe"
+                v-model="price"
+              />
+            </div>
+            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+              <q-btn icon="add" color="primary" @click="setTable"/>
+            </div>
+          </div>
+        </q-card-section>
         <q-separator/>
         <q-card-section class="row justify-between q-col-gutter-sm">
           <div class="q-pa-xs col-xs-12 col-md-9 col-sm-12 col-lg-9">
@@ -161,11 +143,22 @@
                   <q-td>
                     <q-btn size="xs" color="negative" icon="close" @click="deleteConcept(props.row)"/>
                   </q-td>
-                  <q-td key="name" :props="props">
-                    {{ props.row.concept.name }}
+                  <q-td key="item" :props="props">
+                    {{ props.row.item }}
                   </q-td>
-                  <q-td key="amountCollectionReceipt" :props="props">
-                    {{ props.row.amountCollectionReceipt }}
+                  <q-td key="name" :props="props">
+                    {{ props.row.name }}
+                  </q-td>
+                  <q-td key="period" :props="props">
+                    {{ props.row.period }}
+                    <q-popup-edit v-model="props.row.period" auto-save>
+                      <q-input
+                        type="month"
+                        v-model="props.row.period"
+                        dense
+                        autofocus
+                      />
+                    </q-popup-edit>
                   </q-td>
                   <q-td key="amount" :props="props">
                     {{ props.row.amount }}
@@ -193,7 +186,7 @@
         </q-card-section>
         <q-separator/>
         <q-card-actions align="right">
-          <q-btn color="negative" label="Cancelar recibo" @click="cancelEntry"/>
+          <q-btn color="negative" label="Cancelar recibo" @click="cancelBill"/>
           <q-btn color="primary" label="Generar recibo" type="submit" :disable="dataConcept.length <= 0"/>
         </q-card-actions>
       </q-card>
@@ -228,10 +221,24 @@
         </q-inner-loading>
       </q-card>
     </q-dialog>
+    <q-dialog
+      position="right"
+      persistent
+      full-height
+      v-model="addDialogConcept"
+    >
+      <dynamic-form
+        module="concept"
+        :config="conceptConfig"
+        :loading="loadingForm"
+        @cancel="addDialogConcept = false"
+        @save="saveConcept"
+      />
+    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
-    <q-inner-loading :showing="visibleEntry">
+    <q-inner-loading :showing="visiblecollectionReceipt">
       <q-circular-progress
         show-value
         class="text-white q-ma-md"
@@ -271,10 +278,10 @@
               </tr>
               <tr class="text-dark">
                 <td class="q-pa-xs">
-                  {{ modelPdf.collection_receipt.partner.name }}
+                  {{ modelPdf.partner.name }}
                 </td>
                 <td class="q-pa-xs">
-                  {{ modelPdf.collection_receipt.partner.last_name }}
+                  {{ modelPdf.partner.last_name }}
                 </td>
                 <td class="q-pa-xs"></td>
               </tr>
@@ -288,10 +295,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="entryDetail in modelPdf.entry_details" :key="entryDetail.id" class="text-dark">
-                  <td class="q-pa-sm">{{ entryDetail.concept.name }}</td>
-                  <td class="q-pa-sm">{{ modelPdf.collection_receipt.period }}</td>
-                  <td class="q-pa-sm">{{ entryDetail.amount }}</td>
+                <tr v-for="collectionReceiptDetail in modelPdf.collection_receipt_details" :key="collectionReceiptDetail.id" class="text-dark">
+                  <td class="q-pa-sm">{{ collectionReceiptDetail.concept.name }}</td>
+                  <td class="q-pa-sm">{{ modelPdf.period }}</td>
+                  <td class="q-pa-sm">{{ collectionReceiptDetail.amount }}</td>
                 </tr>
               </tbody>
               <tfoot>
@@ -335,15 +342,18 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { partner, propsPanelEdition, partnerServices } from '../config-file/partner/partnerConfig.js'
+import DynamicForm from '../components/DynamicForm.vue'
 import PdfPrint from '../components/PdfPrint.vue'
 import VueHtml2pdf from 'vue-html2pdf'
+import { conceptConfig } from '../config-file/concept/conceptConfig.js'
 // import ExcelReport from '../components/ExcelReport.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
 export default {
-  name: 'Entry',
+  name: 'collectionReceipt',
   mixins: [mixins.containerMixin],
   components: {
+    DynamicForm,
     VueHtml2pdf,
     PdfPrint
     // ExcelReport
@@ -351,10 +361,9 @@ export default {
   },
   data () {
     return {
-      collectionReceipt: null,
-      collectionReceipts: [],
       loadingApi: false,
       partnerSave: {},
+      conceptConfig,
       addDialogConcept: false,
       addDialogPartner: false,
       modelPdf: null,
@@ -362,6 +371,8 @@ export default {
       partner,
       propsPanelEdition,
       partnerServices,
+      loadingCLose: false,
+      concept: null,
       totalSale: 0,
       price: 0,
       /**
@@ -382,6 +393,13 @@ export default {
           field: 'opciones'
         },
         {
+          name: 'item',
+          label: 'N. Item',
+          align: 'left',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
           name: 'name',
           align: 'left',
           headerClasses: 'bg-primary text-white',
@@ -390,18 +408,26 @@ export default {
           sortable: true
         },
         {
+          name: 'period',
+          align: 'left',
+          label: 'Periodo',
+          field: 'period',
+          headerClasses: 'bg-primary text-white',
+          sortable: true
+        },
+        {
           name: 'amount',
-          label: 'Importe por cobrar',
+          label: 'Importe',
           field: 'amount',
           headerClasses: 'bg-primary text-white',
           sortable: true
         }
       ],
       /**
-       * Entry Model
-       * @type {Object} entry model
+       * collectionReceipt Model
+       * @type {Object} collectionReceipt model
        */
-      entry: {
+      collectionReceipt: {
         partner: null,
         created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
       },
@@ -410,10 +436,22 @@ export default {
        * @type {Array} Client List
        */
       partners: [],
-      visibleEntry: false,
-      entryTypes: [],
-      entryType: null,
-      dataConcept: []
+      /**
+       * Concept List
+       * @type {Array} Concept List
+       */
+      concepts: [],
+      /**
+       * Amount concept
+       * @type {Number} amuntconcept
+       */
+      amount: 1,
+      /**
+       * Data concept collectionReceipt
+       * @type {Array} data collectionReceipt
+       */
+      dataConcept: [],
+      visiblecollectionReceipt: false
     }
   },
   computed: {
@@ -432,54 +470,17 @@ export default {
     this.setPartner()
   },
   watch: {
-    collectionReceipt (data) {
-      if (data) {
-        const entries = []
-        data.entries.forEach(entry => {
-          if (entry.entry_details) {
-            entry.entry_details.forEach(entryDetail => {
-              entries.push(entryDetail)
-            })
-          }
-        })
-        this.dataConcept = data.collection_receipt_details.map(collection => {
-          this.deleteDataDuplicate(entries).forEach(entry => {
-            if (collection.concept_id === entry.concept_id) {
-              collection.amount = collection.amount - entry.amount
-            }
-          })
-          return collection
-        }).filter(collection => {
-          return collection.amount > 0
-        })
-        this.totalCalculate()
-      }
+    concept (data) {
+      this.price = data.price
     }
   },
   methods: {
-    deleteDataDuplicate (data) {
-      return data.reduce((acumulador, valorActual) => {
-        const elementoYaExiste = acumulador.find(elemento => elemento.concept_id === valorActual.concept_id)
-        if (elementoYaExiste) {
-          return acumulador.map((elemento) => {
-            if (elemento.concept_id === valorActual.concept_id) {
-              return {
-                ...elemento,
-                amount: elemento.amount + valorActual.amount
-              }
-            }
-            return elemento
-          })
-        }
-        return [...acumulador, valorActual]
-      }, [])
-    },
     setPartner () {
       if (this.$route.query.partner) {
         this.visible = true
         this.$services.getOneData(['partners', this.$route.query.partner])
           .then(({ res }) => {
-            this.entry.partner = res.data
+            this.collectionReceipt.partner = res.data
             this.visible = false
           })
       }
@@ -487,7 +488,7 @@ export default {
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {
-        this.visibleEntry = false
+        this.visiblecollectionReceipt = false
         this.timeLoading = 0
       }
     },
@@ -530,11 +531,11 @@ export default {
       this.partnerSave.user_created_id = this.userSession.id
       this.$services.postData(['partners'], this.partnerSave)
         .then(({ res }) => {
-          this.entry.partner = res.data
+          this.collectionReceipt.partner = res.data
           this.addDialogPartner = false
           this.loadingForm = false
           this.partnerSave = {}
-          this.notify(this, 'partner.addSuccessfull', 'positive', 'mood')
+          this.notify(this, 'partner.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -561,50 +562,45 @@ export default {
     /**
      * Model bill
      */
-    entryModel () {
-      const entryModel = {
-        partner_id: this.entry.partner.id,
-        collection_receipt_id: this.collectionReceipt.id,
-        entry_type_id: this.entryType.id,
-        entryDetails: this.dataConcept,
+    collectionReceiptModel () {
+      const collectionReceiptModel = {
+        partner_id: this.collectionReceipt.partner.id,
+        period: this.collectionReceipt.period,
+        collectionReceiptDetails: this.dataConcept,
         user_created_id: this.userSession.id,
-        created_at: date.formatDate(this.entry.created_at, 'YYYY-MM-DDTHH:mm:ss')
+        created_at: date.formatDate(this.collectionReceipt.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
-      this.saveEntry(entryModel)
+      this.saveCollectionReceipt(collectionReceiptModel)
     },
     /**
      * Save bill
      * @param {Object} data data bill
      */
-    saveEntry (data) {
+    saveCollectionReceipt (data) {
       this.modalPaid = false
-      this.visibleEntry = true
-      this.$services.postData(['entries'], data)
+      this.visiblecollectionReceipt = true
+      this.$services.postData(['collection-receipts'], data)
         .then(({ res }) => {
-          this.notify(this, 'entry.saveSuccess', 'positive', 'mood')
-          this.cancelEntry()
+          this.notify(this, 'collectionReceipt.saveSuccess', 'positive', 'mood')
+          this.cancelBill()
           this.setPartner()
           this.downloadPDF(res.data)
         })
         .catch(() => {
-          this.notify(this, 'entry.error', 'negative', 'warning')
-          this.visibleEntry = false
+          this.notify(this, 'collectionReceipt.error', 'negative', 'warning')
+          this.visiblecollectionReceipt = false
         })
     },
     /**
      * Clean bill data
      */
-    cancelEntry () {
+    cancelBill () {
       this.dataConcept = []
-      this.entry = {}
-      this.collectionReceipts = []
-      this.collectionReceipt = null
-      this.entryType = null
-      this.entry.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
-      this.entry.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.collectionReceipt.partner = null
+      this.collectionReceipt.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.collectionReceipt.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.totalSale = 0
       this.amount = 1
-      this.resetValidations(this.$refs.saveEntry)
     },
     /**
      * Reset validation
@@ -636,7 +632,7 @@ export default {
         item: this.dataConcept.length + 1,
         concept_id: this.concept.id,
         name: this.concept.name,
-        period: this.entry.period,
+        period: this.collectionReceipt.period,
         amount: Number(this.price),
         user_created_id: this.userSession.id
       })
@@ -730,44 +726,6 @@ export default {
         })
     },
     /**
-     * All CLient
-     */
-    getEntryTypes (value, update) {
-      this.$services.getData(['entry-types'], {
-        dataSearch: {
-          name: value
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.entryTypes = res.data.data
-          })
-        })
-    },
-    /**
-     * All CLient
-     */
-    getCollectionReceipts (value, update) {
-      this.$services.getData(['collection-receipts'], {
-        filterSearch: {
-          number: value,
-          serie: value,
-          partner_id: this.entry.partner.id ?? null
-        },
-        paginate: true,
-        perPage: 100
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.collectionReceipts = res.data.data.filter(collection => {
-              return collection.pending > 0
-            })
-          })
-        })
-    },
-    /**
      * Get concepts
      * @param {String} value data filter
      */
@@ -784,7 +742,7 @@ export default {
         })
     },
     async downloadPDF (data) {
-      const { res } = await this.$services.getOneData(['entries', data.id])
+      const { res } = await this.$services.getOneData(['collection-receipts', data.id])
       this.modelPdf = res.data
       this.$refs.html2Pdf.generatePdf()
     },
@@ -801,7 +759,7 @@ export default {
       this.totalCalculate()
     },
     /**
-     * Calculate entry total
+     * Calculate collectionReceipt total
      */
     totalCalculate () {
       let total = 0

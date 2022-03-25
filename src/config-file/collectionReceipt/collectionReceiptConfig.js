@@ -1,5 +1,5 @@
 import { date } from 'quasar'
-export const entry = [
+export const collectionReceipt = [
   {
     classTag: 'infoUsers',
     index: 0,
@@ -15,7 +15,7 @@ export const entry = [
       },
       {
         tabulated: {
-          name: 'document',
+          name: 'serie_number',
           align: 'left',
           field: row => row.serie_number,
           sortable: false,
@@ -26,7 +26,7 @@ export const entry = [
         tabulated: {
           name: 'partner',
           align: 'left',
-          field: row => `${row.collection_receipt.partner.name} ${row.collection_receipt.partner.last_name} `,
+          field: row => `${row.partner.name} ${row.partner.last_name} `,
           sortable: false,
           visible: true
         }
@@ -35,7 +35,7 @@ export const entry = [
         tabulated: {
           name: 'period',
           align: 'left',
-          field: row => row.collection_receipt.period,
+          field: row => row.period,
           sortable: false,
           visible: true
         }
@@ -66,7 +66,7 @@ export const entry = [
       },
       {
         tabulated: {
-          name: 'entry',
+          name: 'collectionReceipt',
           align: 'center',
           visible: true,
           button: {
@@ -75,7 +75,7 @@ export const entry = [
             type: 'button',
             size: 'sm',
             push: true,
-            event: 'entry'
+            event: 'collectionReceipt'
           }
         }
       },
