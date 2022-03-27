@@ -25,8 +25,7 @@
         align="justify"
       >
         <q-tab name="earningsLoses" label="estado de ganancia y perdidas" />
-        <q-tab name="alarms" label="Determinacion de saldo de caja" />
-        <q-tab name="movies" label="Cuentas por cobrar" />
+        <q-tab name="boxBalances" label="Determinacion de saldo de caja" />
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="earningsLoses">
@@ -69,49 +68,50 @@
             </div>
           </div>
         </q-tab-panel>
-        <q-tab-panel name="alarms">
-          <div class="text-h6">Alarms</div>
-          <q-list bordered separator>
-            <q-item clickable v-ripple>
-              <q-item-section>Single line item</q-item-section>
-            </q-item>
-
-            <q-item clickable v-ripple>
-              <q-item-section>
-                <q-item-label>Item with caption</q-item-label>
-                <q-item-label caption>Caption</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-ripple>
-              <q-item-section>
-                <q-item-label overline>OVERLINE</q-item-label>
-                <q-item-label>Item with caption</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-tab-panel>
-        <q-tab-panel name="movies">
-          <div class="text-h6">Movies</div>
-          <q-list bordered separator>
-            <q-item clickable v-ripple>
-              <q-item-section>Single line item</q-item-section>
-            </q-item>
-
-            <q-item clickable v-ripple>
-              <q-item-section>
-                <q-item-label>Item with caption</q-item-label>
-                <q-item-label caption>Caption</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-ripple>
-              <q-item-section>
-                <q-item-label overline>OVERLINE</q-item-label>
-                <q-item-label>Item with caption</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
+        <q-tab-panel name="boxBalances">
+          <div class="text-h6">
+            (+)MAS
+            <span class="float-right">
+              {{ totalCalculate(boxBalances, 'amount') }}
+            </span>
+          </div>
+          <div class="q-mt-sm" v-for="entryType in entryTypes" :key="entryType.id">
+            <q-list class="q-mt-sm q-pr-lg text-bold">
+              <q-item dense clickable v-ripple>
+                <q-item-section>{{ entryType.name }}</q-item-section>
+                <q-item-section side>{{ totalCalculate(filterBoxBalance(boxBalances, entryType.id, 'entry_type_id'), 'amount') }}</q-item-section>
+              </q-item>
+            </q-list>
+            <q-list class="q-mt-sm q-pr-xl q-pl-md">
+              <q-item v-for="boxBalance in filterBoxBalance(boxBalances, entryType.id, 'entry_type_id')" :key="boxBalance.id" dense clickable v-ripple>
+                <q-item-section>{{ boxBalance.conceptName }}</q-item-section>
+                <q-item-section side>{{ boxBalance.amount }}</q-item-section>
+              </q-item>
+            </q-list>
+          </div>
+          <q-separator/>
+          <div class="text-h6 q-mt-md">
+            (+)DESEMBOLSOS
+            <span class="float-right">
+              {{ totalCalculate(egresses, 'amount') }}
+            </span>
+          </div>
+          <div class="q-mt-sm" v-for="egressType in egressTypes" :key="egressType.name">
+            <q-list class="q-mt-sm q-pr-lg text-bold">
+              <q-item dense clickable v-ripple>
+                <q-item-section>{{ egressType.name }}</q-item-section>
+                <q-item-section side>
+                  {{ totalCalculate(filterBoxBalance(egresses, egressType.id, 'egress_type_id'), 'amount') }}
+                </q-item-section>
+              </q-item>
+            </q-list>
+            <q-list class="q-mt-sm q-ml-md q-pr-xl">
+              <q-item v-for="egress in filterBoxBalance(egresses, egressType.id, 'egress_type_id')" :key="egress.id" dense clickable v-ripple>
+                <q-item-section>{{ egress.concept }}</q-item-section>
+                <q-item-section side>{{ egress.amount }}</q-item-section>
+              </q-item>
+            </q-list>
+          </div>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -133,7 +133,7 @@
       <section slot="pdf-content" class="text-uppercase text-dark">
         <pdf-print title="estado de ganancia y perdidas" :dateNow="Date()">
           <template v-slot:content>
-            <div class="q-col-gutter-md">
+            <div class="q-col-gutter-md" v-if="tab === 'earningsLoses'">
               <div>
                 <div class="text-h6">Ingresos Diversos</div>
                 <ul style="list-style:none;">
@@ -171,6 +171,49 @@
                 </ul>
               </div>
             </div>
+            <div v-else>
+              <div class="text-h6">
+                (+)MAS
+                <span class="float-right">
+                  {{ totalCalculate(boxBalances, 'amount') }}
+                </span>
+              </div>
+              <div class="q-mt-sm" v-for="entryType in entryTypes" :key="entryType.id">
+                <span>{{ entryType.name }}</span>
+                <span class="float-right">
+                  {{ totalCalculate(filterBoxBalance(boxBalances, entryType.id, 'entry_type_id'), 'amount') }}
+                </span>
+                <ul class="q-mt-sm q-pr-xl q-pl-md">
+                  <li v-for="boxBalance in filterBoxBalance(boxBalances, entryType.id, 'entry_type_id')" :key="boxBalance.id">
+                    <span>{{ boxBalance.conceptName }}</span>
+                    <span class="float-right">
+                      {{ boxBalance.amount }}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+              <q-separator/>
+              <div class="text-h6 q-mt-md">
+                (-)DESEMBOLSOS
+                <span class="float-right">
+                  {{ totalCalculate(egresses, 'amount') }}
+                </span>
+              </div>
+              <div class="q-mt-sm" v-for="egressType in egressTypes" :key="egressType.name">
+                <span>{{ egressType.name }}</span>
+                <span class="float-right">
+                  {{ totalCalculate(filterBoxBalance(egresses, egressType.id, 'egress_type_id'), 'amount') }}
+                </span>
+                <ul class="q-mt-sm q-pr-xl q-pl-md">
+                  <li v-for="egress in filterBoxBalance(egresses, egressType.id, 'egress_type_id')" :key="egress.id">
+                    <span>{{ egress.concept }}</span>
+                    <span class="float-right">
+                      {{ egress.amount }}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </template>
         </pdf-print>
       </section>
@@ -192,7 +235,10 @@ export default {
     return {
       tab: 'earningsLoses',
       concepts: [],
+      egressTypes: [],
       egresses: [],
+      boxBalances: [],
+      entryTypes: [],
       from: date.formatDate(date.startOfDate(Date(), 'month'), 'YYYY-MM-DD'),
       to: date.formatDate(Date(), 'YYYY-MM-DD')
     }
@@ -200,9 +246,15 @@ export default {
   created () {
     this.getConcepts()
     this.getEgresses()
+    this.getBalanceBox()
+    this.getEntryTypes()
+    this.getEgressTypes()
   },
   methods: {
-    print () {
+    filterBoxBalance (data, value, field) {
+      return data.filter(element => {
+        return element[field] === value
+      })
     },
     onReset () {
       this.to = null
@@ -212,12 +264,27 @@ export default {
     downloadPDF () {
       this.$refs.html2Pdf.generatePdf()
     },
+    async getEntryTypes () {
+      const { res } = await this.$services.getData(['entry-types'])
+      this.entryTypes = res.data
+    },
+    async getEgressTypes () {
+      const { res } = await this.$services.getData(['egress-types'])
+      this.egressTypes = res.data
+    },
     async getConcepts () {
       const { res } = await this.$services.getData(['reports', 'earnings-loses'], {
         to: this.to,
         from: this.from
       })
       this.concepts = res.data
+    },
+    async getBalanceBox () {
+      const { res } = await this.$services.getData(['get-box-balances'], {
+        to: this.to,
+        from: this.from
+      })
+      this.boxBalances = res.data
     },
     async getEgresses () {
       const { res } = await this.$services.getData(['egresses'], {
@@ -233,6 +300,10 @@ export default {
       switch (this.tab) {
         case 'earningsLoses':
           this.getConcepts()
+          this.getEgresses()
+          break
+        case 'boxBalances':
+          this.getBalanceBox()
           this.getEgresses()
           break
         default:
