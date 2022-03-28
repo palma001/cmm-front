@@ -1,7 +1,7 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-form @submit="modelBill" ref="egress">
+    <q-form @submit="modelEgress" ref="egress">
       <q-card class="my-card">
         <q-card-section class="text-h4 row">
           <span class="col-11">{{ ucwords($t('egress.newEgress')) }}</span>
@@ -426,7 +426,7 @@ export default {
     /**
      * Model bill
      */
-    modelBill () {
+    modelEgress () {
       const billModel = {
         worker_id: this.egress.worker.id,
         voucher_type_id: this.egress.voucherType.id,
