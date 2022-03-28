@@ -68,7 +68,7 @@ export const collectionReceipt = [
         tabulated: {
           name: 'collectionReceipt',
           align: 'center',
-          visible: true,
+          visible: false,
           button: {
             icon: 'money',
             color: 'teal',
