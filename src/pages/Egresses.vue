@@ -300,7 +300,7 @@ export default {
     },
     filterBetween () {
       this.params.dateFilter = { from: this.from, to: this.to, field: 'created_at' }
-      this.getEntries(this.params)
+      this.getEgresses(this.params)
     },
     viewConcepts (data) {
       this.egressSelected = data
