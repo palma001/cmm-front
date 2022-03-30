@@ -34,6 +34,9 @@
             <table style="width: 100%; border-collapse: collapse; border-spacing: 0; font-size: 10px;">
               <slot name="table"></slot>
             </table>
+            <div style="font-size: 10px;">
+              <slot name="footer"></slot>
+            </div>
           </template>
         </pdf-print>
       </section>

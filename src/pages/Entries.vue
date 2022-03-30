@@ -10,18 +10,18 @@
       <div class="col-lg-1 col-md-1 col-xl-1">
         <q-btn color="primary" icon="search" @click="filterBetween"/>
       </div>
-      <div class="col-lg-3 col-md-3 col-xl-3 text-right">
+      <div class="col-lg-3 col-md-3 col-xl-3">
         <excel-report :data="dataExport" title="Registros de Ventas por Producto" format="A3" orientation="landscape">
           <template v-slot:table>
             <thead>
               <tr class="text-bold">
+                <td>Serie</td>
                 <td>Fecha</td>
                 <td>Documento</td>
                 <td>Razon Social</td>
-                <td>Periodo</td>
                 <td>M</td>
                 <td v-for="concept in concepts" :key="concept.id">
-                  {{ concept.name }}
+                  {{ acronym(concept.name) }}
                 </td>
                 <td class="text-right text-bold">
                   Total
@@ -34,9 +34,8 @@
             <tbody>
               <tr v-for="d in dataExport" :key="d.id">
                 <td>{{ formatDate(d.created_at, 'DD-MM-YYYY') }}</td>
-                <td>{{ d.document }}</td>
+                <td>{{ d.collection_receipt.partner.document_number }}</td>
                 <td>{{ d.collection_receipt.partner.name }} {{ d.collection_receipt.partner.last_name }}</td>
-                <td>{{ d.collection_receipt.period }}</td>
                 <td>S/</td>
                 <td v-for="concept in concepts" :key="concept.id">
                   <span v-for="entryDetail in d.entry_details" :key="entryDetail.id">
@@ -53,6 +52,14 @@
                 </td>
               </tr>
             </tbody>
+          </template>
+          <template v-slot:footer>
+            <ul>
+              <li class="text-bold">Leyenda</li>
+              <li v-for="concept in concepts" :key="concept.id">
+                <span class="text-bold">{{ acronym(concept.name) }}:</span> {{ concept.name }}
+              </li>
+            </ul>
           </template>
         </excel-report>
       </div>
@@ -335,6 +342,18 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    acronym (string) {
+      const data = string.split(' ')
+      let subCadena = ''
+      if (data.length >= 2) {
+        for (let x = 0; x < data.length; x++) {
+          subCadena += data[x].substring(0, 1)
+        }
+        return subCadena
+      }
+      return string
+    },
+
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {
