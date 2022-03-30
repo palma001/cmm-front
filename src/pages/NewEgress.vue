@@ -124,16 +124,6 @@
             </div>
             <div class="col-4">
               <q-input
-                type="month"
-                dense
-                outlined
-                hint="Periodo"
-                v-model="egress.period"
-                :rules="[val => val && val !== null && val !== '' || 'Este campo es requerido']"
-              />
-            </div>
-            <div class="col-4">
-              <q-input
                 type="text"
                 dense
                 outlined
