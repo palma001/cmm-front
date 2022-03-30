@@ -200,19 +200,19 @@ export default {
           name: 'description',
           align: 'center',
           label: 'Descripción',
-          field: row => `${this.translate(row.accountable_type)} Nro ${row.accountable.id}`,
+          field: row => row.accountable.serie_number,
           sortable: true
         },
         {
           name: 'debe',
           label: 'Debe (S)',
-          field: row => row.accountable_type === 'App\\Models\\Entry' ? row.amount : '-',
+          field: row => row.accountable_type === 'App\\Models\\CollectionReceipt' ? row.amount : '-',
           sortable: true
         },
         {
           name: 'haber',
           label: 'Haber (S)',
-          field: row => row.accountable_type === 'App\\Models\\EntryPayment' ? row.amount : '-'
+          field: row => row.accountable_type === 'App\\Models\\Entry' ? row.amount : '-'
         },
         {
           name: 'balance',
@@ -384,8 +384,8 @@ export default {
     },
     translate (data) {
       switch (data) {
-        case 'App\\Models\\Entry':
-          return 'Recibo'
+        case 'App\\Models\\CollectionReceipt':
+          return 'Recibo de cobro'
         default:
           return 'Ingreso'
       }

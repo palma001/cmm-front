@@ -278,6 +278,7 @@ import { mapGetters } from 'vuex'
 import { worker, propsPanelEdition, workerServices } from '../config-file/worker/workerConfig.js'
 import PdfPrint from '../components/PdfPrint.vue'
 import VueHtml2pdf from 'vue-html2pdf'
+import convertNumber from '../amountConverter'
 // import ExcelReport from '../components/ExcelReport.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
@@ -314,7 +315,8 @@ export default {
        */
       egress: {
         worker: null,
-        created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
+        created_at: date.formatDate(new Date(), 'YYYY-MM-DD'),
+        amount: 0
       },
       /**
        * Client List
@@ -341,7 +343,7 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
 
     numberLetter (value) {
-      return this.$numberLetter.NumerosALetras(this.egress.amount)
+      return convertNumber(this.egress.amount, false, 'SOLES')
     },
     valueLoading () {
       return this.timeLoading
