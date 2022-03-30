@@ -69,9 +69,6 @@
                     </q-item-section>
                   </q-item>
                 </template>
-                <template v-slot:append>
-                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogWorker = true"/>
-                </template>
               </q-select>
             </div>
             <div class="col-3">
@@ -100,9 +97,6 @@
                       No results
                     </q-item-section>
                   </q-item>
-                </template>
-                <template v-slot:append>
-                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogWorker = true"/>
                 </template>
               </q-select>
             </div>
