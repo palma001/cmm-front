@@ -112,6 +112,38 @@
         </q-card-section>
         <q-card-section class="q-pb-none">
           <div class="row q-col-gutter-sm">
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                hide-selected
+                fill-input
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="concept"
+                v-model="concept"
+                option-label="name"
+                option-value="id"
+                v-validate="'required'" data-vv-as="field"
+                label="Concepto"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="concepts"
+                @filter="getConcepts"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogConcept = true"/>
+                </template>
+              </q-select>
+            </div>
             <div class="col-4">
               <q-input
                 type="date"
@@ -151,7 +183,7 @@
                 type="textarea"
                 dense
                 outlined
-                label="Concepto"
+                label="Detalles del concepto"
                 v-model="egress.concept"
                 :rules="[val => val && val !== null && val !== '' || 'Este campo es requerido']"
               />
@@ -233,8 +265,8 @@
             <div style="border: solid 1px;" class="q-pa-md text-dark">
               <span style="border: solid 1px;" class="q-pa-sm float-right">S/ {{ modelPdf.amount }}</span><br>
               <span class="text-primary">La Suma de:</span> {{ $numberLetter.NumerosALetras(modelPdf.amount) }}<br>
-              <span class="text-primary">Por Concepto de:</span> {{ modelPdf.concept }}<br>
-              <span class="text-primary">En el Periodo:</span> {{ modelPdf.period }}
+              <span class="text-primary">Por Concepto de:</span> {{ modelPdf.concept.name }}<br>
+              <span class="text-primary">Detalles:</span> {{ modelPdf.concept }}<br>
             </div>
             <div style="border: solid 1px;" class="row text-dark q-mb-sm q-mt-sm">
               <div class="col-6">
@@ -333,7 +365,9 @@ export default {
        * Data concept egress
        * @type {Array} data egress
        */
-      visibleEgress: false
+      visibleEgress: false,
+      concepts: [],
+      concept: null
     }
   },
   computed: {
@@ -420,6 +454,7 @@ export default {
         amount: this.egress.amount,
         number: this.egress.number,
         concept: this.egress.concept,
+        concept_id: this.concept.id,
         period: this.egress.period,
         user_created_id: this.userSession.id,
         created_at: date.formatDate(this.egress.created_at, 'YYYY-MM-DDTHH:mm:ss')
@@ -621,6 +656,9 @@ export default {
     getConcepts (value, update) {
       this.$services.getData(['concepts'], {
         ...value,
+        dataFilter: {
+          concept_type: 'egreso'
+        },
         paginate: true,
         perPage: 100
       })

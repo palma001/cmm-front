@@ -146,7 +146,6 @@
           </div>
         </q-card-section>
         <q-separator/>
-        <q-separator/>
         <q-card-section class="row justify-between q-col-gutter-sm">
           <div class="q-pa-xs col-xs-12 col-md-9 col-sm-12 col-lg-9">
             <q-table

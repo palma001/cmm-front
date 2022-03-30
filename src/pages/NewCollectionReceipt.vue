@@ -732,6 +732,9 @@ export default {
     getConcepts (value, update) {
       this.$services.getData(['concepts'], {
         ...value,
+        dataFilter: {
+          concept_type: 'ingreso'
+        },
         paginate: true,
         perPage: 100
       })

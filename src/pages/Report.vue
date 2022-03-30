@@ -33,34 +33,34 @@
             <div class="col-sm-5 col-xs-12 col-md-5">
               <div class="text-h6">Ingresos Diversos</div>
               <q-list dense>
-                <q-item clickable v-ripple v-for="concept in concepts" :key="concept.id">
+                <q-item clickable v-ripple v-for="concept in concepts.filter(element => element.concept_type === 'ingreso')" :key="concept.id">
                   <q-item-section>{{ concept.name }}</q-item-section>
                   <q-item-section side>{{ concept.total_entry }}</q-item-section>
                 </q-item>
                 <q-separator spaced />
                 <q-item clickable>
                   <q-item-section>Total</q-item-section>
-                  <q-item-section side>{{ totalCalculate(concepts, 'total_entry') }}</q-item-section>
+                  <q-item-section side>{{ totalCalculate(concepts.filter(element => element.concept_type === 'ingreso'), 'total_entry') }}</q-item-section>
                 </q-item>
               </q-list>
             </div>
             <div class="col-sm-6 col-xs-12 col-md-6">
               <div class="text-h6">Egresos</div>
               <q-list dense>
-                <q-item clickable v-ripple v-for="egress in egresses" :key="egress.id">
-                  <q-item-section>{{ egress.concept }}</q-item-section>
-                  <q-item-section side>{{ egress.amount }}</q-item-section>
+                <q-item clickable v-ripple v-for="concept in concepts.filter(element => element.concept_type === 'egreso')" :key="concept.name">
+                  <q-item-section>{{ concept.name }}</q-item-section>
+                  <q-item-section side>{{ concept.total_egresses }}</q-item-section>
                 </q-item>
                 <q-separator spaced />
                 <q-item clickable>
                   <q-item-section>Total</q-item-section>
-                  <q-item-section side>{{ totalCalculate(egresses, 'amount') }}</q-item-section>
+                  <q-item-section side>{{ totalCalculate(concepts.filter(element => element.concept_type === 'egreso'), 'total_egresses') }}</q-item-section>
                 </q-item>
                 <q-separator spaced />
                 <q-item clickable class="text-bold">
                   <q-item-section>UTILIDAD DEL EJERCICIO</q-item-section>
                   <q-item-section side>
-                    {{ totalCalculate(concepts, 'total_entry') - totalCalculate(egresses, 'amount') }}
+                    {{ totalCalculate(concepts.filter(element => element.concept_type === 'ingreso'), 'total_entry') - totalCalculate(concepts.filter(element => element.concept_type === 'egreso'), 'total_egresses') }}
                   </q-item-section>
                 </q-item>
                 <q-separator/>
@@ -249,6 +249,7 @@ export default {
     this.getBalanceBox()
     this.getEntryTypes()
     this.getEgressTypes()
+    this.getBalanceBoxEgresses()
   },
   methods: {
     filterBoxBalance (data, value, field) {
@@ -285,6 +286,13 @@ export default {
         from: this.from
       })
       this.boxBalances = res.data
+    },
+    async getBalanceBoxEgresses () {
+      const { res } = await this.$services.getData(['get-box-balances-egresses'], {
+        to: this.to,
+        from: this.from
+      })
+      console.log(res.data)
     },
     async getEgresses () {
       const { res } = await this.$services.getData(['egresses'], {

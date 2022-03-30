@@ -47,11 +47,11 @@
             <q-btn
               label="Pagar Recibo"
               color="orange"
-              @click="addDialogEntryPayment = true"
+              @click="$router.push({ name: 'NewEntry', query: { partner: partnerSelected.id } })"
             />
             <q-btn
               label="Agregar Recibo"
-              @click="$router.push({ name: 'NewEntry', query: { partner: partnerSelected.id } })"
+              @click="$router.push({ name: 'NewCollectionReceipt', query: { partner: partnerSelected.id } })"
               color="primary"
             />
           </div>
@@ -287,12 +287,12 @@ export default {
       accountable_type: null,
       accountable_types: [
         {
-          label: 'Recibos',
+          label: 'Ingresos',
           value: 'App\\Models\\Entry'
         },
         {
-          label: 'Ingresos',
-          value: 'App\\Models\\EntryPayment'
+          label: 'Recibos de cobro',
+          value: 'App\\Models\\CollectionReceipt'
         }
       ]
     }
