@@ -29,7 +29,6 @@
               <q-select
                 autocomplete="off"
                 use-input
-                hide-selected
                 fill-input
                 dense
                 outlined
@@ -44,8 +43,22 @@
                 v-validate="'required'" data-vv-as="field"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
                 :options="partners"
+                multiple
                 @filter="getPartners"
               >
+                <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
+                  <q-item
+                    v-bind="itemProps"
+                    v-on="itemEvents"
+                  >
+                    <q-item-section>
+                      <q-item-label v-html="opt.full_name" ></q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-toggle :value="selected" @input="toggleOption(opt)" />
+                    </q-item-section>
+                  </q-item>
+                </template>
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -58,7 +71,10 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <div class="col">
+              <q-checkbox v-model="teal" label="Todos" color="primary" />
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
               <q-input
                 type="month"
                 dense
@@ -238,7 +254,7 @@
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
-    <q-inner-loading :showing="visiblecollectionReceipt">
+    <q-inner-loading :showing="visibleCollectionReceipt">
       <q-circular-progress
         show-value
         class="text-white q-ma-md"
@@ -364,6 +380,8 @@ export default {
       loadingApi: false,
       partnerSave: {},
       conceptConfig,
+      selected: [],
+      teal: false,
       addDialogConcept: false,
       addDialogPartner: false,
       modelPdf: null,
@@ -428,7 +446,7 @@ export default {
        * @type {Object} collectionReceipt model
        */
       collectionReceipt: {
-        partner: null,
+        partner: [],
         created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
       },
       /**
@@ -451,7 +469,7 @@ export default {
        * @type {Array} data collectionReceipt
        */
       dataConcept: [],
-      visiblecollectionReceipt: false
+      visibleCollectionReceipt: false
     }
   },
   computed: {
@@ -470,6 +488,9 @@ export default {
     this.setPartner()
   },
   watch: {
+    teal (data) {
+      this.getPartnersAll(data)
+    },
     concept (data) {
       this.price = data.price
     }
@@ -488,7 +509,7 @@ export default {
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {
-        this.visiblecollectionReceipt = false
+        this.visibleCollectionReceipt = false
         this.timeLoading = 0
       }
     },
@@ -564,7 +585,7 @@ export default {
      */
     collectionReceiptModel () {
       const collectionReceiptModel = {
-        partner_id: this.collectionReceipt.partner.id,
+        partner_id: this.collectionReceipt.partner,
         period: this.collectionReceipt.period,
         collectionReceiptDetails: this.dataConcept,
         user_created_id: this.userSession.id,
@@ -578,17 +599,17 @@ export default {
      */
     saveCollectionReceipt (data) {
       this.modalPaid = false
-      this.visiblecollectionReceipt = true
+      this.visibleCollectionReceipt = true
       this.$services.postData(['collection-receipts'], data)
         .then(({ res }) => {
           this.notify(this, 'collectionReceipt.saveSuccess', 'positive', 'mood')
           this.cancelBill()
           this.setPartner()
-          this.downloadPDF(res.data)
+          this.visibleCollectionReceipt = false
         })
         .catch(() => {
           this.notify(this, 'collectionReceipt.error', 'negative', 'warning')
-          this.visiblecollectionReceipt = false
+          this.visibleCollectionReceipt = false
         })
     },
     /**
@@ -596,7 +617,7 @@ export default {
      */
     cancelBill () {
       this.dataConcept = []
-      this.collectionReceipt.partner = null
+      this.teal = false
       this.collectionReceipt.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.collectionReceipt.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.totalSale = 0
@@ -704,6 +725,13 @@ export default {
         }
       })
     },
+    getPartnersAll (data) {
+      this.$services.getData(['partners'])
+        .then(({ res }) => {
+          this.partners = res.data.filter(element => element.document_number !== null)
+          this.collectionReceipt.partner = data ? this.partners : []
+        })
+    },
     /**
      * All CLient
      */
@@ -716,12 +744,11 @@ export default {
           name: value,
           last_name: value
         },
-        paginate: true,
-        perPage: 100
+        paginate: false
       })
         .then(({ res }) => {
           update(() => {
-            this.partners = res.data.data
+            this.partners = res.data
           })
         })
     },
