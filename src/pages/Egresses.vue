@@ -379,7 +379,7 @@ export default {
      */
     getEgresses (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['egresses'], this.params)
+      this.$services.getData(['egresses'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total

@@ -93,7 +93,7 @@
           <div class="text-h6 q-mt-md">
             (+)DESEMBOLSOS
             <span class="float-right">
-              {{ totalCalculate(egresses, 'amount') }}
+              {{ totalCalculate(boxBalancesEgress, 'amount') }}
             </span>
           </div>
           <div class="q-mt-sm" v-for="egressType in egressTypes" :key="egressType.name">
@@ -101,13 +101,13 @@
               <q-item dense clickable v-ripple>
                 <q-item-section>{{ egressType.name }}</q-item-section>
                 <q-item-section side>
-                  {{ totalCalculate(filterBoxBalance(egresses, egressType.id, 'egress_type_id'), 'amount') }}
+                  {{ totalCalculate(filterBoxBalance(boxBalancesEgress, egressType.id, 'egress_type_id'), 'amount') }}
                 </q-item-section>
               </q-item>
             </q-list>
             <q-list class="q-mt-sm q-ml-md q-pr-xl">
-              <q-item v-for="egress in filterBoxBalance(egresses, egressType.id, 'egress_type_id')" :key="egress.id" dense clickable v-ripple>
-                <q-item-section>{{ egress.concept }}</q-item-section>
+              <q-item v-for="egress in filterBoxBalance(boxBalancesEgress, egressType.id, 'egress_type_id')" :key="egress.id" dense clickable v-ripple>
+                <q-item-section>{{ egress.conceptName }}</q-item-section>
                 <q-item-section side>{{ egress.amount }}</q-item-section>
               </q-item>
             </q-list>
@@ -202,11 +202,11 @@
               <div class="q-mt-sm" v-for="egressType in egressTypes" :key="egressType.name">
                 <span>{{ egressType.name }}</span>
                 <span class="float-right">
-                  {{ totalCalculate(filterBoxBalance(egresses, egressType.id, 'egress_type_id'), 'amount') }}
+                  {{ totalCalculate(filterBoxBalance(boxBalancesEgress, egressType.id, 'egress_type_id'), 'amount') }}
                 </span>
                 <ul class="q-mt-sm q-pr-xl q-pl-md">
-                  <li v-for="egress in filterBoxBalance(egresses, egressType.id, 'egress_type_id')" :key="egress.id">
-                    <span>{{ egress.concept }}</span>
+                  <li v-for="egress in filterBoxBalance(boxBalancesEgress, egressType.id, 'egress_type_id')" :key="egress.id">
+                    <span>{{ egress.conceptName }}</span>
                     <span class="float-right">
                       {{ egress.amount }}
                     </span>
@@ -238,6 +238,7 @@ export default {
       egressTypes: [],
       egresses: [],
       boxBalances: [],
+      boxBalancesEgress: [],
       entryTypes: [],
       from: date.formatDate(date.startOfDate(Date(), 'month'), 'YYYY-MM-DD'),
       to: date.formatDate(Date(), 'YYYY-MM-DD')
@@ -249,7 +250,6 @@ export default {
     this.getBalanceBox()
     this.getEntryTypes()
     this.getEgressTypes()
-    this.getBalanceBoxEgresses()
   },
   methods: {
     filterBoxBalance (data, value, field) {
@@ -292,7 +292,7 @@ export default {
         to: this.to,
         from: this.from
       })
-      console.log(res.data)
+      this.boxBalancesEgress = res.data
     },
     async getEgresses () {
       const { res } = await this.$services.getData(['egresses'], {
@@ -312,7 +312,7 @@ export default {
           break
         case 'boxBalances':
           this.getBalanceBox()
-          this.getEgresses()
+          this.getBalanceBoxEgresses()
           break
         default:
           break
