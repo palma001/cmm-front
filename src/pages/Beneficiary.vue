@@ -5,28 +5,28 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('concept.add')"
+          :label="$q.screen.lt.sm ? '' : $t('beneficiary.add')"
           @click="addDialog = true"
         >
-          <q-tooltip
-            anchor="center right"
-            self="center left"
-            :offset="[10, 10]"
-            v-if="$q.screen.lt.sm"
-          >
-            {{
-              ucwords($t('concept.add'))
-            }}
-          </q-tooltip>
+        <q-tooltip
+          anchor="center right"
+          self="center left"
+          :offset="[10, 10]"
+          v-if="$q.screen.lt.sm"
+        >
+          {{
+            ucwords($t('beneficiary.add'))
+          }}
+        </q-tooltip>
       </q-btn>
       </div>
       <div class="col-12">
         <data-table
           title="list"
-          module="concept"
+          module="beneficiary"
           searchable
           action
-          :column="conceptConfig"
+          :column="beneficiary"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -38,16 +38,16 @@
         />
       </div>
     </div>
-    <q-dialog
+        <q-dialog
       position="right"
       persistent
       full-height
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="concept"
+        module="beneficiary"
         :propsPanelEdition="propsPanelEdition"
-        :config="conceptConfig"
+        :config="beneficiary"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -60,8 +60,8 @@
       v-model="addDialog"
     >
       <dynamic-form
-        module="concept"
-        :config="conceptConfig"
+        module="beneficiary"
+        :config="beneficiary"
         :loading="loadingForm"
         @cancel="addDialog = false"
         @save="save"
@@ -71,10 +71,10 @@
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
+import { beneficiary, buttonsActions, propsPanelEdition } from '../config-file/beneficiary/beneficiaryConfig.js'
+import { mixins } from '../mixins'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { conceptConfig, buttonsActions, propsPanelEdition } from '../config-file/concept/conceptConfig.js'
-import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 export default {
@@ -86,9 +86,9 @@ export default {
   },
   data () {
     return {
-      buttonsActions,
       propsPanelEdition,
       loadingForm: false,
+      buttonsActions,
       /**
        * Selected data
        * @type {Object}
@@ -116,7 +116,10 @@ export default {
         perPage: 1,
         dataSearch: {
           name: '',
-          price: ''
+          last_name: '',
+          document_number: '',
+          email: '',
+          phone: ''
         }
       },
       /**
@@ -128,7 +131,7 @@ export default {
        * File config module
        * @type {Object}
        */
-      conceptConfig,
+      beneficiary,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -143,13 +146,16 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      beneficiarySave: {},
+      loadingApi: false,
+      titleForm: 'Agregar Trabajador'
     }
   },
   created () {
-    this.getConcepts()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.setRelationalData(this.beneficiaryServices, [], this)
   },
   computed: {
     /**
@@ -158,14 +164,18 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    cancel () {
+      this.addDialog = false
+      this.beneficiarySave = {}
+    },
     /**
      * Set data dialog edition
      * @param  {Object} data selected
      */
     viewDetails (data) {
       this.editDialog = true
-      this.propsPanelEdition.data = data
       this.selectedData = data
+      this.propsPanelEdition.data = data
     },
     /**
      * Delete data
@@ -174,7 +184,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar la concepto?',
+        message: '¿Desea eliminar el beneficiario?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -185,9 +195,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['concepts', data.id])
-        this.notify(this, 'concept.deleteSuccessful', 'positive', 'mood')
-        this.getConcepts()
+        await this.$services.deleteData(['beneficiaries', data.id])
+        this.notify(this, 'beneficiary.deleteSuccessful', 'positive', 'mood')
+        this.getBeneficiaries()
       })
     },
     /**
@@ -200,10 +210,10 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getConcepts(this.params)
+      this.getBeneficiaries(this.params)
     },
     /**
-     * Search concept
+     * Search beneficiary
      * @param  {Object}
      */
     searchData (data) {
@@ -211,7 +221,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getConcepts()
+      this.getBeneficiaries()
     },
     /**
      * Update Branch Office
@@ -220,12 +230,12 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['concepts', this.selectedData.id], data)
+      this.$services.putData(['beneficiaries', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getConcepts(this.params)
-          this.notify(this, 'concept.editSuccessful', 'positive', 'mood')
+          this.getBeneficiaries(this.params)
+          this.notify(this, 'beneficiary.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -237,25 +247,25 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.user_id = this.userSession.id
+      data.branch_office_id = this.branchOffice.id
       this.loadingForm = true
-      this.$services.postData(['concepts'], data)
+      this.$services.postData(['beneficiaries'], data)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
-          this.getConcepts(this.params)
-          this.notify(this, 'concept.addSuccessful', 'positive', 'mood')
+          this.getBeneficiaries(this.params)
+          this.notify(this, 'beneficiary.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Get all concept
+     * Get all beneficiaries
      */
-    getConcepts (params = this.params) {
+    getBeneficiaries (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['concepts'], this.params)
+      this.$services.getData(['beneficiaries'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total

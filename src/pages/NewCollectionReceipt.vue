@@ -345,7 +345,7 @@ import { partner, propsPanelEdition, partnerServices } from '../config-file/part
 import DynamicForm from '../components/DynamicForm.vue'
 import PdfPrint from '../components/PdfPrint.vue'
 import VueHtml2pdf from 'vue-html2pdf'
-import { conceptConfig } from '../config-file/concept/conceptConfig.js'
+// import { conceptConfig } from '../config-file/concept/conceptConfig.js'
 // import ExcelReport from '../components/ExcelReport.vue'
 // import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
@@ -363,7 +363,7 @@ export default {
     return {
       loadingApi: false,
       partnerSave: {},
-      conceptConfig,
+      // conceptConfig,
       addDialogConcept: false,
       addDialogPartner: false,
       modelPdf: null,

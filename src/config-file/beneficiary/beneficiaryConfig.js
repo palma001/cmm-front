@@ -1,4 +1,4 @@
-export const worker = [
+export const beneficiary = [
   {
     classTag: 'infoUsers',
     index: 0,
@@ -120,12 +120,12 @@ export const worker = [
           align: 'left',
           field: row => row.email,
           sortable: true,
-          visible: false
+          visible: true
         },
         actionable: {
           propTag: 'email',
-          addible: false,
-          editable: false,
+          addible: true,
+          editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -154,14 +154,14 @@ export const worker = [
       },
       {
         tabulated: {
-          name: 'phone',
+          name: 'phone_number',
           align: 'left',
-          field: row => row.phone,
+          field: row => row.phone_number,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'phone',
+          propTag: 'phone_number',
           addible: true,
           editable: true,
           type: 'String',
@@ -290,7 +290,7 @@ export const relationalDataConfiguration = [
 
 export const workerServices = {
   props: propsPanelEdition,
-  config: worker,
+  config: beneficiary,
   propData: 'data',
   relationalData: relationalDataConfiguration
 }

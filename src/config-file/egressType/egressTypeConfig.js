@@ -1,4 +1,4 @@
-export const conceptConfig = [
+export const egressTypeConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
@@ -42,14 +42,14 @@ export const conceptConfig = [
       },
       {
         tabulated: {
-          name: 'price',
+          name: 'description',
           align: 'left',
-          field: row => row.price,
+          field: row => row.description,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'price',
+          propTag: 'description',
           addible: true,
           editable: true,
           type: 'String',
@@ -57,7 +57,7 @@ export const conceptConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
+              type: 'textarea',
               dense: true,
               outlined: true
             },
