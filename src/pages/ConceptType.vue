@@ -5,8 +5,8 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('brand.add')"
-          @click="addDialig = true"
+          :label="$q.screen.lt.sm ? '' : $t('conceptType.add')"
+          @click="addDialog = true"
         >
           <q-tooltip
             anchor="center right"
@@ -15,7 +15,7 @@
             v-if="$q.screen.lt.sm"
           >
             {{
-              ucwords($t('brand.add'))
+              ucwords($t('conceptType.add'))
             }}
           </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="brand"
+          module="conceptType"
           searchable
           action
-          :column="brand"
+          :column="conceptTypeConfig"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -40,14 +40,14 @@
     </div>
     <q-dialog
       position="right"
-      full-height
       persistent
+      full-height
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="brand"
+        module="conceptType"
         :propsPanelEdition="propsPanelEdition"
-        :config="brand"
+        :config="conceptTypeConfig"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -55,15 +55,15 @@
     </q-dialog>
     <q-dialog
       position="right"
-      full-height
       persistent
-      v-model="addDialig"
+      full-height
+      v-model="addDialog"
     >
       <dynamic-form
-        module="brand"
-        :config="brand"
+        module="conceptType"
+        :config="conceptTypeConfig"
         :loading="loadingForm"
-        @cancel="addDialig = false"
+        @cancel="addDialog = false"
         @save="save"
       />
     </q-dialog>
@@ -73,7 +73,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { brand, buttonsActions, propsPanelEdition } from '../config-file/brand/brandConfig.js'
+import { conceptTypeConfig, buttonsActions, propsPanelEdition } from '../config-file/conceptType/conceptTypeConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -86,8 +86,20 @@ export default {
   },
   data () {
     return {
+      /**
+       * Table Buttons
+       * @type {Array}
+       */
       buttonsActions,
+      /**
+       * Panel Edition Config
+       * @type {Object}
+       */
       propsPanelEdition,
+      /**
+       * Status loading form
+       * @type {Boolean}
+       */
       loadingForm: false,
       /**
        * Selected data
@@ -123,12 +135,12 @@ export default {
        * Open add dialog
        * @type {Boolean}
        */
-      addDialig: false,
+      addDialog: false,
       /**
        * File config module
        * @type {Object}
        */
-      brand,
+      conceptTypeConfig,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -147,7 +159,6 @@ export default {
     }
   },
   created () {
-    this.getBrands()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
   },
@@ -174,7 +185,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar la marca?',
+        message: '¿Desea eliminar la tipo de concepto?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -185,9 +196,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['brands', data.id])
-        this.notify(this, 'brand.deleteSuccessfull', 'positive', 'mood')
-        this.getBrands()
+        await this.$services.deleteData(['concept-types', data.id])
+        this.notify(this, 'conceptType.deleteSuccessful', 'positive', 'mood')
+        this.getCoins()
       })
     },
     /**
@@ -200,10 +211,10 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getBrands(this.params)
+      this.getCoins(this.params)
     },
     /**
-     * Search brand
+     * Search EgressType
      * @param  {Object}
      */
     searchData (data) {
@@ -211,51 +222,50 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getBrands()
+      this.getCoins()
     },
     /**
-     * Update Branch Office
+     * Update Coin
      * @param  {Object}
      */
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['brands', this.selectedData.id], data)
+      this.$services.putData(['concept-types', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getBrands(this.params)
-          this.notify(this, 'brand.editSuccessfull', 'positive', 'mood')
+          this.getCoins(this.params)
+          this.notify(this, 'conceptType.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Save Branch Office
+     * Save Coin
      * @param  {Object}
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.user_id = this.userSession.id
       this.loadingForm = true
-      this.$services.postData(['brands'], data)
+      this.$services.postData(['concept-types'], data)
         .then(({ res }) => {
-          this.addDialig = false
+          this.addDialog = false
           this.loadingForm = false
-          this.getBrands(this.params)
-          this.notify(this, 'brand.addSuccessfull', 'positive', 'mood')
+          this.getCoins(this.params)
+          this.notify(this, 'conceptType.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Get all brand
+     * Get all EgressType
      */
-    getBrands (params = this.params) {
+    getCoins (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['brands'], this.params)
+      this.$services.getData(['concept-types'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total

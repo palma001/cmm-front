@@ -1,4 +1,4 @@
-export const warehouseConfig = [
+export const conceptConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
@@ -21,13 +21,56 @@ export const warehouseConfig = [
             name: 'b-input',
             props: {
               type: 'text',
-              outlined: true,
-              dense: true
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
               'col-sm-12': true,
               'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'concept_type',
+          align: 'left',
+          field: row => row.concept_type.name,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'concept_type',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
             },
             directives: [
               {
@@ -58,8 +101,8 @@ export const warehouseConfig = [
             name: 'b-input',
             props: {
               type: 'textarea',
-              outlined: true,
-              dense: true
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -70,14 +113,40 @@ export const warehouseConfig = [
               {
                 name: 'validate',
                 value: {
-                  required: true
+                  required: false
                 }
               }
             ]
           }
         }
+      },
+      {
+        tabulated: {
+          name: 'action',
+          align: 'center'
+        }
       }
     ]
+  }
+]
+
+/**
+* Actions buttons
+* @type {Array} array buttons
+*/
+export const buttonsActions = [
+  {
+    color: 'primary',
+    icon: 'edit',
+    size: 'sm',
+    event: 'view-details'
+  },
+  {
+    color: 'negative',
+    icon: 'delete',
+    size: 'sm',
+    event: 'delete',
+    class: 'q-ml-sm'
   }
 ]
 
@@ -136,4 +205,22 @@ export const propsPanelEdition = {
       }
     }
   ]
+}
+export const relationalDataConfiguration = [
+  {
+    targetPropTag: 'concept_type',
+    entity: 'concept_type',
+    services: ['concept-types'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  }
+]
+
+export const conceptServices = {
+  props: propsPanelEdition,
+  config: conceptConfig,
+  propData: 'data',
+  relationalData: relationalDataConfiguration
 }

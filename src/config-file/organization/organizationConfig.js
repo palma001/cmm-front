@@ -1,29 +1,65 @@
-export const boxClosure = [
+export const organizationConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'from_date',
+          name: 'name',
           align: 'left',
-          field: row => row.from_date,
+          field: row => row.name,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'from_date',
+          propTag: 'name',
           addible: true,
           editable: true,
           type: 'String',
-          visibleLabel: false,
+          visibleLabel: true,
           component: {
             name: 'b-input',
             props: {
-              type: 'date',
+              type: 'text',
               dense: true,
-              outlined: true,
-              hint: 'to_date'
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'description',
+          align: 'left',
+          field: row => row.description,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'description',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'textarea',
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -39,53 +75,6 @@ export const boxClosure = [
               }
             ]
           }
-        }
-      },
-      {
-        tabulated: {
-          name: 'to_date',
-          align: 'left',
-          field: row => row.to_date,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'to_date',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: false,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'date',
-              dense: true,
-              outlined: true,
-              hint: 'from_date'
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: false
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'user',
-          align: 'left',
-          field: row => row.user.full_name,
-          sortable: true,
-          visible: true
         }
       },
       {
@@ -104,17 +93,10 @@ export const boxClosure = [
 */
 export const buttonsActions = [
   {
-    color: 'orange',
-    icon: 'print',
-    size: 'sm',
-    event: 'print'
-  },
-  {
     color: 'primary',
     icon: 'edit',
     size: 'sm',
-    event: 'view-details',
-    class: 'q-ml-sm'
+    event: 'view-details'
   },
   {
     color: 'negative',
@@ -180,23 +162,4 @@ export const propsPanelEdition = {
       }
     }
   ]
-}
-
-export const relationalDataConfiguration = [
-  {
-    targetPropTag: 'accounting_plan',
-    entity: 'accounting_plan',
-    services: ['accounting-plans'],
-    propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
-  }
-]
-
-export const boxClosureServices = {
-  props: propsPanelEdition,
-  config: boxClosure,
-  propData: 'data',
-  relationalData: relationalDataConfiguration
 }

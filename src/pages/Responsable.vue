@@ -5,8 +5,8 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('client.add')"
-          @click="addDialig = true"
+          :label="$q.screen.lt.sm ? '' : $t('responsable.add')"
+          @click="addDialog = true"
         >
         <q-tooltip
           anchor="center right"
@@ -15,7 +15,7 @@
           v-if="$q.screen.lt.sm"
         >
           {{
-            ucwords($t('client.add'))
+            ucwords($t('responsable.add'))
           }}
         </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="client"
+          module="responsable"
           searchable
           action
-          :column="client"
+          :column="responsable"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -38,16 +38,16 @@
         />
       </div>
     </div>
-    <q-dialog
+        <q-dialog
       position="right"
-      full-height
       persistent
+      full-height
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="client"
+        module="responsable"
         :propsPanelEdition="propsPanelEdition"
-        :config="client"
+        :config="responsable"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -55,91 +55,26 @@
     </q-dialog>
     <q-dialog
       position="right"
-      full-height
       persistent
-      v-model="addDialig"
+      full-height
+      v-model="addDialog"
     >
       <dynamic-form
-        module="client"
-        :config="client"
+        module="responsable"
+        :config="responsable"
         :loading="loadingForm"
-        @cancel="addDialig = false"
+        @cancel="addDialog = false"
         @save="save"
-      >
-        <template v-slot:top>
-          <q-select
-            label="Tipo de documento"
-            v-validate="'required'"
-            data-vv-as="document_type"
-            name="document_type"
-            dense
-            outlined
-            option-label="name"
-            option-value="id"
-            v-model="documentType"
-            :options="documentTypes"
-            :error="errors.has('document_type')"
-            :error-message="errors.first('document_type')"
-          />
-          <q-input
-            label="Número de documento"
-            v-validate="'required'"
-            data-vv-as="document_number"
-            name="document_number"
-            dense
-            outlined
-            v-model="documentNumber"
-            :error="errors.has('document_number')"
-            :error-message="errors.first('document_number')"
-            @blur="getDataApi"
-          />
-          <q-input
-            label="Nombre"
-            v-validate="'required'"
-            data-vv-as="name"
-            name="name"
-            dense
-            outlined
-            v-model="name"
-            :error="errors.has('name')"
-            :error-message="errors.first('name')"
-            v-if="documentType.number === '1'"
-          />
-          <q-input
-            label="Apellido"
-            v-validate="'required'"
-            data-vv-as="last_name"
-            name="last_name"
-            dense
-            outlined
-            v-model="lastName"
-            :error="errors.has('last_name')"
-            :error-message="errors.first('last_name')"
-            v-if="documentType.number === '1'"
-          />
-          <q-input
-            label="Nombre o razon social"
-            v-validate="'required'"
-            data-vv-as="businessName"
-            name="businessName"
-            dense
-            outlined
-            v-model="businessName"
-            :error="errors.has('businessName')"
-            :error-message="errors.first('businessName')"
-            v-if="documentType.number === '6'"
-          />
-        </template>
-      </dynamic-form>
+      />
     </q-dialog>
   </q-page>
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
+import { responsable, buttonsActions, propsPanelEdition, responsableServices } from '../config-file/responsable/responsableConfig.js'
+import { mixins } from '../mixins'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { client, buttonsActions, propsPanelEdition, clientServices } from '../config-file/client/clientConfig.js'
-import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 export default {
@@ -151,16 +86,10 @@ export default {
   },
   data () {
     return {
-      documentNumber: null,
-      lastName: null,
-      name: null,
-      businessName: null,
-      documentType: null,
-      documentTypes: [],
-      clientServices,
-      buttonsActions,
+      responsableServices,
       propsPanelEdition,
       loadingForm: false,
+      buttonsActions,
       /**
        * Selected data
        * @type {Object}
@@ -198,12 +127,12 @@ export default {
        * Open add dialog
        * @type {Boolean}
        */
-      addDialig: false,
+      addDialog: false,
       /**
        * File config module
        * @type {Object}
        */
-      client,
+      responsable,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -218,14 +147,16 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      responsableSave: {},
+      loadingApi: false,
+      titleForm: 'Agregar Trabajador'
     }
   },
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.getDocumentTypes()
-    this.setRelationalData(this.clientServices, [], this)
+    this.setRelationalData(this.responsableServices, [], this)
   },
   computed: {
     /**
@@ -234,14 +165,18 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    cancel () {
+      this.addDialog = false
+      this.responsableSave = {}
+    },
     /**
      * Set data dialog edition
      * @param  {Object} data selected
      */
     viewDetails (data) {
       this.editDialog = true
-      this.propsPanelEdition.data = data
       this.selectedData = data
+      this.propsPanelEdition.data = data
     },
     /**
      * Delete data
@@ -250,7 +185,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar el cliente?',
+        message: '¿Desea eliminar el responsable?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -261,9 +196,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['clients', data.id])
-        this.notify(this, 'client.deleteSuccessfull', 'positive', 'mood')
-        this.getClients()
+        await this.$services.deleteData(['responsables', data.id])
+        this.notify(this, 'responsable.deleteSuccessful', 'positive', 'mood')
+        this.getResponsables()
       })
     },
     /**
@@ -276,10 +211,10 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getClients(this.params)
+      this.getResponsables(this.params)
     },
     /**
-     * Search client
+     * Search responsable
      * @param  {Object}
      */
     searchData (data) {
@@ -287,7 +222,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getClients()
+      this.getResponsables()
     },
     /**
      * Update Branch Office
@@ -296,12 +231,12 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['clients', this.selectedData.id], data)
+      this.$services.putData(['responsables', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getClients(this.params)
-          this.notify(this, 'client.editSuccessfull', 'positive', 'mood')
+          this.getResponsables(this.params)
+          this.notify(this, 'responsable.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -313,29 +248,25 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.user_id = this.userSession.id
-      data.name = this.name ?? this.businessName
-      data.last_name = this.lastName
-      data.document_number = this.documentNumber
-      data.document_type_id = this.documentType.id
+      data.branch_office_id = this.branchOffice.id
       this.loadingForm = true
-      this.$services.postData(['clients'], data)
+      this.$services.postData(['responsables'], data)
         .then(({ res }) => {
-          this.addDialig = false
+          this.addDialog = false
           this.loadingForm = false
-          this.getClients(this.params)
-          this.notify(this, 'client.addSuccessfull', 'positive', 'mood')
+          this.getResponsables(this.params)
+          this.notify(this, 'responsable.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Get all client
+     * Get all responsables
      */
-    getClients (params = this.params) {
+    getResponsables (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['clients'], this.params)
+      this.$services.getData(['responsables'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
@@ -346,44 +277,6 @@ export default {
           this.data = []
           this.loadingTable = false
           this.optionPagination.rowsNumber = 0
-        })
-    },
-    getDataApi () {
-      const r = this.documentType.number === '1' ? 'dni' : this.documentType.number === '6' ? 'ruc' : null
-      if (r) {
-        this.$services.getData(['ruc', this.documentNumber], {
-          documentType: r
-        })
-          .then(({ res }) => {
-            if (!res.data.error) {
-              if (this.documentType.number === '6') {
-                this.businessName = res.data.nombre
-              } else {
-                const nameDivider = res.data.nombre.split(' ')
-                this.lastName = `${nameDivider[0]} ${nameDivider[1]}`
-                this.name = `${nameDivider[2]} ${nameDivider[3]}`
-              }
-            } else {
-              this.notify(this, res.data.error, 'negative', 'warning')
-              this.lastName = null
-              this.name = null
-              this.businessName = null
-            }
-          })
-      }
-    },
-    /**
-     * Get all client
-     */
-    getDocumentTypes () {
-      this.loadingTable = true
-      this.$services.getData(['document-types'])
-        .then(({ res }) => {
-          this.documentTypes = res.data
-          this.documentType = res.data[0]
-        })
-        .catch(err => {
-          console.log(err)
         })
     }
   }

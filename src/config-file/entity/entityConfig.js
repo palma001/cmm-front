@@ -1,18 +1,18 @@
-export const accountingPlanConfig = [
+export const entityConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'element',
+          name: 'name',
           align: 'left',
-          field: row => row.element,
+          field: row => row.name,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'element',
+          propTag: 'name',
           addible: true,
           editable: true,
           type: 'String',
@@ -21,45 +21,8 @@ export const accountingPlanConfig = [
             name: 'b-input',
             props: {
               type: 'text',
-              outlined: true,
-              dense: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'code',
-          align: 'left',
-          field: row => row.code,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'code',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              outlined: true,
-              dense: true
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -94,9 +57,9 @@ export const accountingPlanConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
-              outlined: true,
-              dense: true
+              type: 'textarea',
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -107,7 +70,7 @@ export const accountingPlanConfig = [
               {
                 name: 'validate',
                 value: {
-                  required: true
+                  required: false
                 }
               }
             ]
@@ -116,42 +79,31 @@ export const accountingPlanConfig = [
       },
       {
         tabulated: {
-          name: 'account_type',
-          align: 'left',
-          field: row => row.account_type,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'account_type',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              outlined: true,
-              dense: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
+          name: 'action',
+          align: 'center'
         }
       }
     ]
+  }
+]
+
+/**
+* Actions buttons
+* @type {Array} array buttons
+*/
+export const buttonsActions = [
+  {
+    color: 'primary',
+    icon: 'edit',
+    size: 'sm',
+    event: 'view-details'
+  },
+  {
+    color: 'negative',
+    icon: 'delete',
+    size: 'sm',
+    event: 'delete',
+    class: 'q-ml-sm'
   }
 ]
 

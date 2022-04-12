@@ -18,9 +18,9 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
-        path: 'egress-types',
-        name: 'EgressType',
-        component: () => import('src/pages/EgressType.vue'),
+        path: 'concept-types',
+        name: 'ConceptType',
+        component: () => import('src/pages/ConceptType.vue'),
         beforeEnter: validationSessionUnit
       },
       {
@@ -33,6 +33,36 @@ const routes = [
         path: 'beneficiaries',
         name: 'Beneficiary',
         component: () => import('src/pages/Beneficiary.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'responsables',
+        name: 'Responsable',
+        component: () => import('src/pages/Responsable.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'organizations',
+        name: 'Organization',
+        component: () => import('src/pages/Organization.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'fields',
+        name: 'Field',
+        component: () => import('src/pages/Field.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'entities',
+        name: 'Entity',
+        component: () => import('src/pages/Entity.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'concepts',
+        name: 'Concept',
+        component: () => import('src/pages/Concept.vue'),
         beforeEnter: validationSessionUnit
       }
       // {

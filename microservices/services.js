@@ -16,7 +16,7 @@ export const getData = function (url, params) {
     }
   }).catch((err) => {
     if (err) {
-      throw new Error(err)
+      throw err
     }
   })
 }
@@ -43,7 +43,7 @@ export const postData = function (url, params) {
     }
   }).catch((err) => {
     if (err) {
-      throw new Error(err)
+      throw err
     }
   })
 }
@@ -56,7 +56,7 @@ export const putData = function (url, params) {
     }
   }).catch((err) => {
     if (err) {
-      throw new Error(err)
+      throw err
     }
   })
 }
@@ -68,7 +68,7 @@ export const deleteData = function (url, params) {
     }
   }).catch((err) => {
     if (err) {
-      throw new Error(err)
+      throw err
     }
   })
 }

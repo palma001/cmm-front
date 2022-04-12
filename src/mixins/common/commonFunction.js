@@ -101,13 +101,23 @@ export const can = (self, module, permission) => {
   }
 }
 
-export const notify = (self, message, color, icon, position = 'top') => {
+export const notify = (self, message, color, icon, position = 'top', traduction = true) => {
   self.$q.notify({
-    message: ucwords(self.$t(message)),
+    message: traduction ? ucwords(self.$t(message)) : ucwords(message),
     color: color,
     position: position,
     icon: icon
   })
+}
+
+export const catchError = (self, errors) => {
+  for (const key in errors) {
+    if (Object.hasOwnProperty.call(errors, key)) {
+      errors[key].forEach(error => {
+        self.notify(self, error, 'negative', 'warning', 'top', false)
+      })
+    }
+  }
 }
 
 export const methods = {
@@ -117,5 +127,6 @@ export const methods = {
   ucwords,
   can,
   notify,
-  errorRequest
+  errorRequest,
+  catchError
 }

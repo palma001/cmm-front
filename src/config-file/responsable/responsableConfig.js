@@ -116,6 +116,49 @@ export const responsable = [
       },
       {
         tabulated: {
+          name: 'beneficiary_id',
+          align: 'left',
+          field: row => row.beneficiary.full_name,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'beneficiary',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'full_name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'email',
           align: 'left',
           field: row => row.email,
@@ -288,7 +331,7 @@ export const relationalDataConfiguration = [
   }
 ]
 
-export const workerServices = {
+export const responsableServices = {
   props: propsPanelEdition,
   config: responsable,
   propData: 'data',

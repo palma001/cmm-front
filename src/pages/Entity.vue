@@ -5,7 +5,7 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('egressType.add')"
+          :label="$q.screen.lt.sm ? '' : $t('entity.add')"
           @click="addDialog = true"
         >
           <q-tooltip
@@ -15,7 +15,7 @@
             v-if="$q.screen.lt.sm"
           >
             {{
-              ucwords($t('egressType.add'))
+              ucwords($t('entity.add'))
             }}
           </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="egressType"
+          module="entity"
           searchable
           action
-          :column="egressTypeConfig"
+          :column="entityConfig"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -45,9 +45,9 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="egressType"
+        module="entity"
         :propsPanelEdition="propsPanelEdition"
-        :config="egressTypeConfig"
+        :config="entityConfig"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -60,8 +60,8 @@
       v-model="addDialog"
     >
       <dynamic-form
-        module="egressType"
-        :config="egressTypeConfig"
+        module="entity"
+        :config="entityConfig"
         :loading="loadingForm"
         @cancel="addDialog = false"
         @save="save"
@@ -73,7 +73,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { egressTypeConfig, buttonsActions, propsPanelEdition } from '../config-file/egressType/egressTypeConfig.js'
+import { entityConfig, buttonsActions, propsPanelEdition } from '../config-file/entity/entityConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -140,7 +140,7 @@ export default {
        * File config module
        * @type {Object}
        */
-      egressTypeConfig,
+      entityConfig,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -185,7 +185,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar la tipo egresos?',
+        message: '¿Desea eliminar la tipo organización?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -196,9 +196,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['egress-types', data.id])
-        this.notify(this, 'egressType.deleteSuccessful', 'positive', 'mood')
-        this.getCoins()
+        await this.$services.deleteData(['entities', data.id])
+        this.notify(this, 'entity.deleteSuccessful', 'positive', 'mood')
+        this.getEntities()
       })
     },
     /**
@@ -211,7 +211,7 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getCoins(this.params)
+      this.getEntities(this.params)
     },
     /**
      * Search EgressType
@@ -222,7 +222,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getCoins()
+      this.getEntities()
     },
     /**
      * Update Coin
@@ -231,14 +231,15 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['egress-types', this.selectedData.id], data)
+      this.$services.putData(['entities', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getCoins(this.params)
-          this.notify(this, 'egressType.editSuccessful', 'positive', 'mood')
+          this.getEntities(this.params)
+          this.notify(this, 'entity.editSuccessful', 'positive', 'mood')
         })
-        .catch(() => {
+        .catch(({ response }) => {
+          this.catchError(this, response.data.errors)
           this.loadingForm = false
         })
     },
@@ -249,23 +250,24 @@ export default {
     save (data) {
       data.user_created_id = this.userSession.id
       this.loadingForm = true
-      this.$services.postData(['egress-types'], data)
+      this.$services.postData(['entities'], data)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
-          this.getCoins(this.params)
-          this.notify(this, 'egressType.addSuccessful', 'positive', 'mood')
+          this.getEntities(this.params)
+          this.notify(this, 'entity.addSuccessful', 'positive', 'mood')
         })
-        .catch(() => {
+        .catch(({ response }) => {
+          this.catchError(this, response.data.errors)
           this.loadingForm = false
         })
     },
     /**
      * Get all EgressType
      */
-    getCoins (params = this.params) {
+    getEntities (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['egress-types'], params)
+      this.$services.getData(['entities'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total

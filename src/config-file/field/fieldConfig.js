@@ -1,40 +1,33 @@
-export const entryPayment = [
+export const fieldConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'payment_method_id',
+          name: 'denomination',
           align: 'left',
-          field: row => row.payment_method ? row.payment_method.name : '-',
+          field: row => row.denomination,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'payment_method',
+          propTag: 'denomination',
           addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
-            name: 'b-search-select',
+            name: 'b-input',
             props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
+              type: 'text',
               dense: true,
-              clearable: true,
               outlined: true
             },
             class: {
               'col-xs-12': true,
               'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true,
-              'q-mt-sm': true
+              'col-md-12': true
             },
             directives: [
               {
@@ -49,23 +42,14 @@ export const entryPayment = [
       },
       {
         tabulated: {
-          name: 'entry_id',
+          name: 'acronym',
           align: 'left',
-          field: row => row.entry ? `Recibo Nro ${row.entry.id}` : '-',
-          sortable: true,
-          visible: true
-        }
-      },
-      {
-        tabulated: {
-          name: 'amount',
-          align: 'left',
-          field: row => row.amount,
+          field: row => row.acronym,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'amount',
+          propTag: 'acronym',
           addible: true,
           editable: true,
           type: 'String',
@@ -95,14 +79,100 @@ export const entryPayment = [
       },
       {
         tabulated: {
-          name: 'description',
+          name: 'organization',
           align: 'left',
-          field: row => row.description,
+          field: row => row.organization.name,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'description',
+          propTag: 'organization',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'field_supervisor',
+          align: 'left',
+          field: row => row.field_supervisor.full_name,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'field_supervisor',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'address',
+          align: 'left',
+          field: row => row.address,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'address',
           addible: true,
           editable: true,
           type: 'String',
@@ -137,6 +207,26 @@ export const entryPayment = [
         }
       }
     ]
+  }
+]
+
+/**
+* Actions buttons
+* @type {Array} array buttons
+*/
+export const buttonsActions = [
+  {
+    color: 'primary',
+    icon: 'edit',
+    size: 'sm',
+    event: 'view-details'
+  },
+  {
+    color: 'negative',
+    icon: 'delete',
+    size: 'sm',
+    event: 'delete',
+    class: 'q-ml-sm'
   }
 ]
 
@@ -198,27 +288,28 @@ export const propsPanelEdition = {
 }
 export const relationalDataConfiguration = [
   {
-    targetPropTag: 'payment_method',
-    entity: 'payment_method',
-    services: ['payment-methods'],
+    targetPropTag: 'organization',
+    entity: 'organization',
+    services: ['organizations'],
     propData: 'data',
     petitionParams: {
       paginate: false
     }
   },
   {
-    targetPropTag: 'entry',
-    entity: 'entry',
-    services: ['entries'],
+    targetPropTag: 'field_supervisor',
+    entity: 'field_supervisor',
+    services: ['fields-supervisor'],
     propData: 'data',
     petitionParams: {
       paginate: false
     }
   }
 ]
-export const entryPaymentServices = {
+
+export const fieldServices = {
   props: propsPanelEdition,
-  config: entryPayment,
+  config: fieldConfig,
   propData: 'data',
   relationalData: relationalDataConfiguration
 }

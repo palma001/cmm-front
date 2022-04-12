@@ -5,8 +5,8 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('voucherType.add')"
-          @click="addDialig = true"
+          :label="$q.screen.lt.sm ? '' : $t('field.add')"
+          @click="addDialog = true"
         >
           <q-tooltip
             anchor="center right"
@@ -15,7 +15,7 @@
             v-if="$q.screen.lt.sm"
           >
             {{
-              ucwords($t('voucherType.add'))
+              ucwords($t('field.add'))
             }}
           </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="voucherType"
+          module="field"
           searchable
           action
-          :column="voucherType"
+          :column="fieldConfig"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -40,14 +40,14 @@
     </div>
     <q-dialog
       position="right"
-      full-height
       persistent
+      full-height
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="voucherType"
+        module="field"
         :propsPanelEdition="propsPanelEdition"
-        :config="voucherType"
+        :config="fieldConfig"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -55,15 +55,15 @@
     </q-dialog>
     <q-dialog
       position="right"
-      full-height
       persistent
-      v-model="addDialig"
+      full-height
+      v-model="addDialog"
     >
       <dynamic-form
-        module="voucherType"
-        :config="voucherType"
+        module="field"
+        :config="fieldConfig"
         :loading="loadingForm"
-        @cancel="addDialig = false"
+        @cancel="addDialog = false"
         @save="save"
       />
     </q-dialog>
@@ -73,7 +73,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { voucherType, buttonsActions, propsPanelEdition, voucherTypeServices } from '../config-file/voucherType/voucherTypeConfig.js'
+import { fieldConfig, buttonsActions, propsPanelEdition, fieldServices } from '../config-file/field/fieldConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -86,8 +86,21 @@ export default {
   },
   data () {
     return {
+      fieldServices,
+      /**
+       * Table Buttons
+       * @type {Array}
+       */
       buttonsActions,
+      /**
+       * Panel Edition Config
+       * @type {Object}
+       */
       propsPanelEdition,
+      /**
+       * Status loading form
+       * @type {Boolean}
+       */
       loadingForm: false,
       /**
        * Selected data
@@ -123,12 +136,12 @@ export default {
        * Open add dialog
        * @type {Boolean}
        */
-      addDialig: false,
+      addDialog: false,
       /**
        * File config module
        * @type {Object}
        */
-      voucherType,
+      fieldConfig,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -143,15 +156,13 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: [],
-      voucherTypeServices
+      data: []
     }
   },
   created () {
-    this.getBrands()
-    this.setRelationalData(this.voucherTypeServices, [], this)
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.setRelationalData(this.fieldServices, [], this)
   },
   computed: {
     /**
@@ -176,7 +187,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar la tipo de comprobante?',
+        message: '¿Desea eliminar la tipo campo?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -187,9 +198,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['voucher-types', data.id])
-        this.notify(this, 'voucherType.deleteSuccessFull', 'positive', 'mood')
-        this.getBrands()
+        await this.$services.deleteData(['fields', data.id])
+        this.notify(this, 'field.deleteSuccessful', 'positive', 'mood')
+        this.getFields()
       })
     },
     /**
@@ -202,10 +213,10 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getBrands(this.params)
+      this.getFields(this.params)
     },
     /**
-     * Search voucherType
+     * Search EgressType
      * @param  {Object}
      */
     searchData (data) {
@@ -213,51 +224,52 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getBrands()
+      this.getFields()
     },
     /**
-     * Update Branch Office
+     * Update Coin
      * @param  {Object}
      */
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['voucher-types', this.selectedData.id], data)
+      this.$services.putData(['fields', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getBrands(this.params)
-          this.notify(this, 'voucherType.editSuccessfull', 'positive', 'mood')
+          this.getFields(this.params)
+          this.notify(this, 'field.editSuccessful', 'positive', 'mood')
         })
-        .catch(() => {
+        .catch(({ response }) => {
+          this.catchError(this, response.data.errors)
           this.loadingForm = false
         })
     },
     /**
-     * Save Branch Office
+     * Save Coin
      * @param  {Object}
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.user_id = this.userSession.id
       this.loadingForm = true
-      this.$services.postData(['voucher-types'], data)
+      this.$services.postData(['fields'], data)
         .then(({ res }) => {
-          this.addDialig = false
+          this.addDialog = false
           this.loadingForm = false
-          this.getBrands(this.params)
-          this.notify(this, 'voucherType.addSuccessfull', 'positive', 'mood')
+          this.getFields(this.params)
+          this.notify(this, 'field.addSuccessful', 'positive', 'mood')
         })
-        .catch(() => {
+        .catch(({ response }) => {
+          this.catchError(this, response.data.errors)
           this.loadingForm = false
         })
     },
     /**
-     * Get all voucherType
+     * Get all EgressType
      */
-    getBrands (params = this.params) {
+    getFields (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['voucher-types'], this.params)
+      this.$services.getData(['fields'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
