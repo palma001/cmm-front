@@ -60,6 +60,12 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
+        path: 'new-transaction',
+        name: 'NewOrder',
+        component: () => import('src/pages/NewOrder.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
         path: 'concepts',
         name: 'Concept',
         component: () => import('src/pages/Concept.vue'),

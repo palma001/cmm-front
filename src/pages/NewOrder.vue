@@ -1,19 +1,19 @@
 <template>
   <!-- @keyup.113=saveSale -->
   <q-page padding>
-    <q-form @submit="collectionReceiptModel">
+    <q-form @submit="orderModel">
       <q-card class="my-card">
         <q-card-section class="text-h5 row q-gutter-sm">
-          <span class="col-10">{{ ucwords($t('collectionReceipt.newCollectionReceipt')) }}</span>
+          <span class="col-10">{{ ucwords($t('order.newOrder')) }}</span>
           <q-btn
             icon="receipt"
             class="col-auto"
             color="orange"
-            v-if="collectionReceipt.partner"
-            @click="$router.push({ name: 'CurrentAccount', query: { partner: collectionReceipt.partner.id } })"
+            v-if="order.beneficiary"
+            @click="$router.push({ name: 'CurrentAccount', query: { beneficiary: order.beneficiary.id } })"
           >
             <q-tooltip>
-             Cuenta Corriente de {{ collectionReceipt.partner.name }} {{ collectionReceipt.partner.last_name }}
+             Cuenta Corriente de {{ order.beneficiary.name }} {{ order.beneficiary.last_name }}
             </q-tooltip>
           </q-btn>
           <q-btn icon="menu" class="col-auto" color="primary" @click="$router.push({ name: 'Entries' })">
@@ -34,15 +34,15 @@
                 outlined
                 clearable
                 input-debounce="20"
-                name="partner"
-                v-model="collectionReceipt.partner"
+                name="beneficiary"
+                v-model="order.beneficiary"
                 option-label="full_name"
                 option-value="id"
                 :label="ucwords('Socio')"
-                :disable="!$route.query.partner ? false : true"
+                :disable="!$route.query.beneficiary ? false : true"
                 v-validate="'required'" data-vv-as="field"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="partners"
+                :options="beneficiarys"
                 multiple
                 @filter="getPartners"
               >
@@ -80,7 +80,7 @@
                 dense
                 outlined
                 hint="Periodo"
-                v-model="collectionReceipt.period"
+                v-model="order.period"
               />
             </div>
             <div class="col-4">
@@ -89,7 +89,7 @@
                 dense
                 outlined
                 label="Fec. Emisión"
-                v-model="collectionReceipt.created_at"
+                v-model="order.created_at"
               />
             </div>
           </div>
@@ -207,50 +207,6 @@
         </q-card-actions>
       </q-card>
     </q-form>
-    <q-dialog
-      position="right"
-      full-height
-      persistent
-      v-model="addDialogPartner"
-    >
-      <q-card style="width: 400px">
-        <q-form @submit="save" class="column full-height">
-          <q-card-section class="bg-primary text-white row items-center q-pb-sm">
-            <div class="text-h6">Agregar Socio</div>
-            <q-space />
-            <q-btn icon="close" flat round dense v-close-popup />
-          </q-card-section>
-          <q-card-section class="col q-pt-md">
-            <q-input outlined @blur="getDataApi" :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.document_number" label="Numbero de documento" dense/>
-            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.name" label="Nombre" dense/>
-            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.last_name" label="Apellido" dense/>
-            <q-input outlined :rules="[val => val && val !== null || 'Este campo es requerido']" v-model="partnerSave.phone" label="Telefono" dense/>
-          </q-card-section>
-          <q-separator dark />
-          <q-card-actions align="right">
-            <q-btn color="negative" v-close-popup>Cancelar</q-btn>
-            <q-btn color="primary" type="submit">Agregar</q-btn>
-          </q-card-actions>
-        </q-form>
-        <q-inner-loading :showing="loadingApi">
-          <q-spinner-gears size="100px" color="primary"/>
-        </q-inner-loading>
-      </q-card>
-    </q-dialog>
-    <q-dialog
-      position="right"
-      persistent
-      full-height
-      v-model="addDialogConcept"
-    >
-      <dynamic-form
-        module="concept"
-        :config="conceptConfig"
-        :loading="loadingForm"
-        @cancel="addDialogConcept = false"
-        @save="saveConcept"
-      />
-    </q-dialog>
     <q-inner-loading :showing="visible">
       <q-spinner-gears size="100px" color="primary"/>
     </q-inner-loading>
@@ -294,10 +250,10 @@
               </tr>
               <tr class="text-dark">
                 <td class="q-pa-xs">
-                  {{ modelPdf.partner.name }}
+                  {{ modelPdf.beneficiary.name }}
                 </td>
                 <td class="q-pa-xs">
-                  {{ modelPdf.partner.last_name }}
+                  {{ modelPdf.beneficiary.last_name }}
                 </td>
                 <td class="q-pa-xs"></td>
               </tr>
@@ -311,10 +267,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="collectionReceiptDetail in modelPdf.collection_receipt_details" :key="collectionReceiptDetail.id" class="text-dark">
-                  <td class="q-pa-sm">{{ collectionReceiptDetail.concept.name }}</td>
+                <tr v-for="orderDetail in modelPdf.collection_receipt_details" :key="orderDetail.id" class="text-dark">
+                  <td class="q-pa-sm">{{ orderDetail.concept.name }}</td>
                   <td class="q-pa-sm">{{ modelPdf.period }}</td>
-                  <td class="q-pa-sm">{{ collectionReceiptDetail.amount }}</td>
+                  <td class="q-pa-sm">{{ orderDetail.amount }}</td>
                 </tr>
               </tbody>
               <tfoot>
@@ -349,6 +305,20 @@
         </pdf-print>
       </section>
     </vue-html2pdf>
+    <q-dialog
+      position="right"
+      persistent
+      full-height
+      v-model="addDialogConcept"
+    >
+      <dynamic-form
+        module="concept"
+        :config="conceptConfig"
+        :loading="loadingForm"
+        @cancel="addDialogConcept = false"
+        @save="saveConcept"
+      />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -357,16 +327,16 @@ import { date } from 'quasar'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
-import { partner, propsPanelEdition, partnerServices } from '../config-file/partner/partnerConfig.js'
-import DynamicForm from '../components/DynamicForm.vue'
+import { beneficiary, propsPanelEdition } from '../config-file/beneficiary/beneficiaryConfig.js'
+// import DynamicForm from '../components/DynamicForm.vue'
 import PdfPrint from '../components/PdfPrint.vue'
 import VueHtml2pdf from 'vue-html2pdf'
-import { conceptConfig } from '../config-file/concept/conceptConfig.js'
+import { conceptConfig, conceptServices } from '../config-file/concept/conceptConfig.js'
 // import ExcelReport from '../components/ExcelReport.vue'
-// import DynamicForm from '../components/DynamicForm'
+import DynamicForm from '../components/DynamicForm'
 // import DataTable from '../components/DataTable'
 export default {
-  name: 'collectionReceipt',
+  name: 'order',
   mixins: [mixins.containerMixin],
   components: {
     DynamicForm,
@@ -378,17 +348,17 @@ export default {
   data () {
     return {
       loadingApi: false,
-      partnerSave: {},
+      beneficiarySave: {},
       conceptConfig,
       selected: [],
       teal: false,
       addDialogConcept: false,
       addDialogPartner: false,
+      conceptServices,
       modelPdf: null,
       loadingForm: false,
-      partner,
+      beneficiary,
       propsPanelEdition,
-      partnerServices,
       loadingCLose: false,
       concept: null,
       totalSale: 0,
@@ -442,18 +412,18 @@ export default {
         }
       ],
       /**
-       * collectionReceipt Model
-       * @type {Object} collectionReceipt model
+       * order Model
+       * @type {Object} order model
        */
-      collectionReceipt: {
-        partner: [],
+      order: {
+        beneficiary: [],
         created_at: date.formatDate(new Date(), 'YYYY-MM-DD')
       },
       /**
        * Client List
        * @type {Array} Client List
        */
-      partners: [],
+      beneficiarys: [],
       /**
        * Concept List
        * @type {Array} Concept List
@@ -465,8 +435,8 @@ export default {
        */
       amount: 1,
       /**
-       * Data concept collectionReceipt
-       * @type {Array} data collectionReceipt
+       * Data concept order
+       * @type {Array} data order
        */
       dataConcept: [],
       visibleCollectionReceipt: false
@@ -485,61 +455,25 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOfficeSession = this[GETTERS.GET_BRANCH_OFFICE]
-    this.setPartner()
-  },
-  watch: {
-    teal (data) {
-      this.getPartnersAll(data)
-    },
-    concept (data) {
-      this.price = data.price
-    }
+    this.setRelationalData(this.conceptServices, [], this)
+    // this.setPartner()
   },
   methods: {
-    setPartner () {
-      if (this.$route.query.partner) {
-        this.visible = true
-        this.$services.getOneData(['partners', this.$route.query.partner])
-          .then(({ res }) => {
-            this.collectionReceipt.partner = res.data
-            this.visible = false
-          })
-      }
-    },
+    // setPartner () {
+    //   if (this.$route.query.beneficiary) {
+    //     this.visible = true
+    //     this.$services.getOneData(['beneficiarys', this.$route.query.beneficiary])
+    //       .then(({ res }) => {
+    //         this.order.beneficiary = res.data
+    //         this.visible = false
+    //       })
+    //   }
+    // },
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {
         this.visibleCollectionReceipt = false
         this.timeLoading = 0
-      }
-    },
-    getDataApi () {
-      const r = this.partnerSave.document_number && this.partnerSave.document_number.length <= 8 ? 'dni' : 'ruc'
-      if (r && this.partnerSave.document_number) {
-        this.loadingApi = true
-        this.$services.getData(['ruc', this.partnerSave.document_number], {
-          documentType: r
-        })
-          .then(({ res }) => {
-            if (!res.data.error) {
-              if (r === 'ruc') {
-                this.partnerSave.name = res.data.nombre
-              } else {
-                this.partnerSave.name = res.data.nombres
-                this.partnerSave.last_name = `${res.data.apellidoPaterno} ${res.data.apellidoMaterno}`
-                this.loadingApi = false
-              }
-              this.$forceUpdate()
-            } else {
-              this.notify(this, res.data.error, 'negative', 'warning')
-              this.partnerSave = {}
-              this.loadingApi = false
-            }
-          })
-          .catch(() => {
-            this.partnerSave = {}
-            this.loadingApi = false
-          })
       }
     },
     /**
@@ -548,15 +482,15 @@ export default {
      */
     save () {
       this.loadingForm = true
-      this.partnerSave.branch_office_id = this.branchOfficeSession.id
-      this.partnerSave.user_created_id = this.userSession.id
-      this.$services.postData(['partners'], this.partnerSave)
+      this.beneficiarySave.branch_office_id = this.branchOfficeSession.id
+      this.beneficiarySave.user_created_id = this.userSession.id
+      this.$services.postData(['beneficiarys'], this.beneficiarySave)
         .then(({ res }) => {
-          this.collectionReceipt.partner = res.data
+          this.order.beneficiary = res.data
           this.addDialogPartner = false
           this.loadingForm = false
-          this.partnerSave = {}
-          this.notify(this, 'partner.addSuccessful', 'positive', 'mood')
+          this.beneficiarySave = {}
+          this.notify(this, 'beneficiary.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -583,15 +517,15 @@ export default {
     /**
      * Model bill
      */
-    collectionReceiptModel () {
-      const collectionReceiptModel = {
-        partner_id: this.collectionReceipt.partner,
-        period: this.collectionReceipt.period,
-        collectionReceiptDetails: this.dataConcept,
+    orderModel () {
+      const orderModel = {
+        beneficiary_id: this.order.beneficiary,
+        period: this.order.period,
+        orderDetails: this.dataConcept,
         user_created_id: this.userSession.id,
-        created_at: date.formatDate(this.collectionReceipt.created_at, 'YYYY-MM-DDTHH:mm:ss')
+        created_at: date.formatDate(this.order.created_at, 'YYYY-MM-DDTHH:mm:ss')
       }
-      this.saveCollectionReceipt(collectionReceiptModel)
+      this.saveCollectionReceipt(orderModel)
     },
     /**
      * Save bill
@@ -602,13 +536,13 @@ export default {
       this.visibleCollectionReceipt = true
       this.$services.postData(['collection-receipts'], data)
         .then(({ res }) => {
-          this.notify(this, 'collectionReceipt.saveSuccess', 'positive', 'mood')
+          this.notify(this, 'order.saveSuccess', 'positive', 'mood')
           this.cancelBill()
           this.setPartner()
           this.visibleCollectionReceipt = false
         })
         .catch(() => {
-          this.notify(this, 'collectionReceipt.error', 'negative', 'warning')
+          this.notify(this, 'order.error', 'negative', 'warning')
           this.visibleCollectionReceipt = false
         })
     },
@@ -618,8 +552,8 @@ export default {
     cancelBill () {
       this.dataConcept = []
       this.teal = false
-      this.collectionReceipt.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
-      this.collectionReceipt.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.order.created_at = date.formatDate(new Date(), 'YYYY-MM-DD')
+      this.order.expiration_date = date.formatDate(new Date(), 'YYYY-MM-DD')
       this.totalSale = 0
       this.amount = 1
     },
@@ -653,21 +587,9 @@ export default {
         item: this.dataConcept.length + 1,
         concept_id: this.concept.id,
         name: this.concept.name,
-        period: this.collectionReceipt.period,
+        period: this.order.period,
         amount: Number(this.price),
         user_created_id: this.userSession.id
-      })
-    },
-    /**
-     * Print concept error
-     * @param {Number} code concept code
-     */
-    errorSearch (code) {
-      this.$q.notify({
-        message: `(${code}) - ${this.ucwords(this.$t('template.errorSearchConcept'))}`,
-        color: 'negative',
-        position: 'top',
-        icon: 'warning'
       })
     },
     /**
@@ -680,29 +602,6 @@ export default {
         return `0${number}`
       }
       return number
-    },
-    /**
-     * Validations the errors
-     * @param  {String} propTag data fromulary
-     * @return {String} errors
-     */
-    errorValidation (propTag) {
-      if (this.errors.has(propTag)) {
-        return this.errors.first(propTag)
-      }
-    },
-    /**
-     * Verify formulary error
-     * * @return {String} errors
-     */
-    validateBeforeSubmit () {
-      return this.$validator.validateAll()
-        .then((result) => {
-          return result
-        })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     /**
      * Validate array in concept table
@@ -725,18 +624,11 @@ export default {
         }
       })
     },
-    getPartnersAll (data) {
-      this.$services.getData(['partners'])
-        .then(({ res }) => {
-          this.partners = res.data.filter(element => element.document_number !== null)
-          this.collectionReceipt.partner = data ? this.partners : []
-        })
-    },
     /**
      * All CLient
      */
     getPartners (value, update) {
-      this.$services.getData(['partners'], {
+      this.$services.getData(['beneficiarys'], {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {
@@ -748,7 +640,7 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.partners = res.data
+            this.beneficiarys = res.data
           })
         })
     },
@@ -759,9 +651,6 @@ export default {
     getConcepts (value, update) {
       this.$services.getData(['concepts'], {
         ...value,
-        dataFilter: {
-          concept_type: 'ingreso'
-        },
         paginate: true,
         perPage: 100
       })
@@ -789,7 +678,7 @@ export default {
       this.totalCalculate()
     },
     /**
-     * Calculate collectionReceipt total
+     * Calculate order total
      */
     totalCalculate () {
       let total = 0
