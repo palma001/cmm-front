@@ -23,8 +23,38 @@
           </q-btn>
         </q-card-section>
         <q-separator/>
-        <q-card-section class="q-pb-sm">
+        <q-card-section class="q-pb-xs">
           <div class="row q-col-gutter-sm">
+            <div class="col-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                fill-input
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="organization"
+                v-model="order.organization"
+                option-label="name"
+                option-value="id"
+                :label="ucwords('Organización')"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="organizations"
+                @filter="getOrganizations"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogBeneficiary = true"/>
+                </template>
+              </q-select>
+            </div>
             <div class="col-4">
               <q-select
                 autocomplete="off"
@@ -38,27 +68,13 @@
                 v-model="order.beneficiary"
                 option-label="full_name"
                 option-value="id"
-                :label="ucwords('Socio')"
+                :label="ucwords('Beneficiario')"
                 :disable="!$route.query.beneficiary ? false : true"
                 v-validate="'required'" data-vv-as="field"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="beneficiarys"
-                multiple
-                @filter="getPartners"
+                :options="beneficiaries"
+                @filter="getBeneficiaries"
               >
-                <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
-                  <q-item
-                    v-bind="itemProps"
-                    v-on="itemEvents"
-                  >
-                    <q-item-section>
-                      <q-item-label v-html="opt.full_name" ></q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                      <q-toggle :value="selected" @input="toggleOption(opt)" />
-                    </q-item-section>
-                  </q-item>
-                </template>
                 <template v-slot:no-option>
                   <q-item>
                     <q-item-section class="text-grey">
@@ -67,21 +83,9 @@
                   </q-item>
                 </template>
                 <template v-slot:append>
-                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogPartner = true"/>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogBeneficiary = true"/>
                 </template>
               </q-select>
-            </div>
-            <div class="col">
-              <q-checkbox v-model="teal" label="Todos" color="primary" />
-            </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <q-input
-                type="month"
-                dense
-                outlined
-                hint="Periodo"
-                v-model="order.period"
-              />
             </div>
             <div class="col-4">
               <q-input
@@ -94,9 +98,70 @@
             </div>
           </div>
         </q-card-section>
-        <q-separator/>
         <q-card-section>
           <div class="row q-col-gutter-sm">
+            <div class="col-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                fill-input
+                hide-selected
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="responsable"
+                v-model="order.responsable"
+                option-label="full_name"
+                option-value="id"
+                :label="ucwords('responsable')"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="responsables"
+                @filter="getResponsables"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogBeneficiary = true"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                fill-input
+                hide-selected
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="field"
+                v-model="order.field"
+                option-label="full_name"
+                option-value="id"
+                :label="ucwords('Campo')"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="fields"
+                @filter="getFields"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogBeneficiary = true"/>
+                </template>
+              </q-select>
+            </div>
             <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
               <q-select
                 autocomplete="off"
@@ -111,7 +176,6 @@
                 v-model="concept"
                 option-label="name"
                 option-value="id"
-                v-validate="'required'" data-vv-as="field"
                 label="Concepto"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
                 :options="concepts"
@@ -129,19 +193,31 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-              <q-input
-                type="text"
-                dense
-                outlined
-                label="Importe"
-                v-model="price"
-              />
-            </div>
-            <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
-              <q-btn icon="add" color="primary" @click="setTable"/>
+            <!-- <div class="row q-col-gutter-sm">
+              <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                <q-input
+                  type="text"
+                  dense
+                  outlined
+                  label="Importe"
+                  v-model="price"
+                />
+              </div>
+              <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                <q-btn icon="add" color="primary" @click="setTable"/>
+              </div>
+            </div> -->
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <div class="row q-col-gutter-sm">
+            <div class="col-4">
+              <q-input label="Contrato" v-model="order.contract"/>
             </div>
           </div>
+        </q-card-section>
+        <q-separator/>
+        <!-- <q-card-section>
         </q-card-section>
         <q-separator/>
         <q-card-section class="row justify-between q-col-gutter-sm">
@@ -199,7 +275,7 @@
               </q-item>
             </q-list>
           </div>
-        </q-card-section>
+        </q-card-section> -->
         <q-separator/>
         <q-card-actions align="right">
           <q-btn color="negative" label="Cancelar recibo" @click="cancelBill"/>
@@ -224,7 +300,7 @@
         <q-icon name="receipt" />
       </q-circular-progress>
     </q-inner-loading>
-    <vue-html2pdf
+    <!-- <vue-html2pdf
       :show-layout="false"
       :float-layout="true"
       :enable-download="false"
@@ -304,7 +380,7 @@
           </template>
         </pdf-print>
       </section>
-    </vue-html2pdf>
+    </vue-html2pdf> -->
     <q-dialog
       position="right"
       persistent
@@ -329,8 +405,8 @@ import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { beneficiary, propsPanelEdition } from '../config-file/beneficiary/beneficiaryConfig.js'
 // import DynamicForm from '../components/DynamicForm.vue'
-import PdfPrint from '../components/PdfPrint.vue'
-import VueHtml2pdf from 'vue-html2pdf'
+// import PdfPrint from '../components/PdfPrint.vue'
+// import VueHtml2pdf from 'vue-html2pdf'
 import { conceptConfig, conceptServices } from '../config-file/concept/conceptConfig.js'
 // import ExcelReport from '../components/ExcelReport.vue'
 import DynamicForm from '../components/DynamicForm'
@@ -339,9 +415,9 @@ export default {
   name: 'order',
   mixins: [mixins.containerMixin],
   components: {
-    DynamicForm,
-    VueHtml2pdf,
-    PdfPrint
+    DynamicForm
+    // VueHtml2pdf,
+    // PdfPrint
     // ExcelReport
     // DataTable
   },
@@ -351,9 +427,12 @@ export default {
       beneficiarySave: {},
       conceptConfig,
       selected: [],
+      organizations: [],
+      responsables: [],
+      fields: [],
       teal: false,
       addDialogConcept: false,
-      addDialogPartner: false,
+      addDialogBeneficiary: false,
       conceptServices,
       modelPdf: null,
       loadingForm: false,
@@ -423,7 +502,7 @@ export default {
        * Client List
        * @type {Array} Client List
        */
-      beneficiarys: [],
+      beneficiaries: [],
       /**
        * Concept List
        * @type {Array} Concept List
@@ -462,7 +541,7 @@ export default {
     // setPartner () {
     //   if (this.$route.query.beneficiary) {
     //     this.visible = true
-    //     this.$services.getOneData(['beneficiarys', this.$route.query.beneficiary])
+    //     this.$services.getOneData(['beneficiaries', this.$route.query.beneficiary])
     //       .then(({ res }) => {
     //         this.order.beneficiary = res.data
     //         this.visible = false
@@ -484,10 +563,10 @@ export default {
       this.loadingForm = true
       this.beneficiarySave.branch_office_id = this.branchOfficeSession.id
       this.beneficiarySave.user_created_id = this.userSession.id
-      this.$services.postData(['beneficiarys'], this.beneficiarySave)
+      this.$services.postData(['beneficiaries'], this.beneficiarySave)
         .then(({ res }) => {
           this.order.beneficiary = res.data
-          this.addDialogPartner = false
+          this.addDialogBeneficiary = false
           this.loadingForm = false
           this.beneficiarySave = {}
           this.notify(this, 'beneficiary.addSuccessful', 'positive', 'mood')
@@ -627,8 +706,8 @@ export default {
     /**
      * All CLient
      */
-    getPartners (value, update) {
-      this.$services.getData(['beneficiarys'], {
+    getBeneficiaries (value, update) {
+      this.$services.getData(['beneficiaries'], {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {
@@ -640,7 +719,63 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.beneficiarys = res.data
+            this.beneficiaries = res.data
+          })
+        })
+    },
+    /**
+     * All CLient
+     */
+    getOrganizations (value, update) {
+      this.$services.getData(['organizations'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: value
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.organizations = res.data
+          })
+        })
+    },
+    /**
+     * All CLient
+     */
+    getResponsables (value, update) {
+      this.$services.getData(['responsables'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          document_number: value,
+          name: value,
+          last_name: value
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.responsables = res.data
+          })
+        })
+    },
+    /**
+     * All CLient
+     */
+    getFields (value, update) {
+      this.$services.getData(['fields'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: value
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.fields = res.data
           })
         })
     },

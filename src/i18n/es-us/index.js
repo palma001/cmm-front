@@ -42,7 +42,7 @@ export default {
     email: 'correo',
     reset: 'Limpiar',
     cancel: 'Cancelar',
-    saveSuccess: 'beneficiario agregado exitosamente',
+    addSuccessful: 'beneficiario agregado exitosamente',
     list: 'lista de beneficiarios',
     update: 'Editar beneficiario',
     deleteSuccessful: 'eliminado exitasamente',
