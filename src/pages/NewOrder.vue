@@ -98,7 +98,7 @@
             </div>
           </div>
         </q-card-section>
-        <q-card-section>
+        <q-card-section class="q-pb-xs">
           <div class="row q-col-gutter-sm">
             <div class="col-4">
               <q-select
@@ -193,35 +193,137 @@
                 </template>
               </q-select>
             </div>
-            <!-- <div class="row q-col-gutter-sm">
-              <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-                <q-input
-                  type="text"
-                  dense
-                  outlined
-                  label="Importe"
-                  v-model="price"
-                />
-              </div>
-              <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
-                <q-btn icon="add" color="primary" @click="setTable"/>
-              </div>
-            </div> -->
           </div>
         </q-card-section>
         <q-card-section>
           <div class="row q-col-gutter-sm">
             <div class="col-4">
-              <q-input label="Contrato" v-model="order.contract"/>
+              <q-input label="Contrato" v-model="order.contract" dense outlined/>
+            </div>
+            <div class="col-8">
+              <q-input label="Observación" v-model="order.observation" dense outlined/>
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-section class="q-py-sm">
+          <div class="text-h6">
+            Datos del pago
+          </div>
+        </q-card-section>
+        <q-separator/>
+        <q-card-section class="q-pb-xs">
+          <div class="row q-col-gutter-sm">
+            <div class="col-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                fill-input
+                hide-selected
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="operation_type"
+                v-model="order.operation_type"
+                option-label="name"
+                option-value="id"
+                :label="ucwords('tipo de operaciones')"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="operationTypes"
+                @filter="getOperationTypes"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogBeneficiary = true"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                fill-input
+                hide-selected
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="entity"
+                v-model="order.entity"
+                option-label="name"
+                option-value="id"
+                :label="ucwords('entidades')"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="entities"
+                @filter="getEntities"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogBeneficiary = true"/>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-4">
+              <q-select
+                autocomplete="off"
+                use-input
+                fill-input
+                hide-selected
+                dense
+                outlined
+                clearable
+                input-debounce="20"
+                name="coin"
+                v-model="order.coin"
+                option-label="name"
+                option-value="id"
+                :label="ucwords('moneda')"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="coins"
+                @filter="getCoins"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <template v-slot:append>
+                  <q-btn color="primary" dense rounded icon="add" size="sm" @click="addDialogBeneficiary = true"/>
+                </template>
+              </q-select>
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <div class="row q-col-gutter-sm">
+            <div class="col-4">
+              <q-input label="Monto" v-model="order.amount" dense outlined/>
+            </div>
+            <div class="col-4">
+              <q-input label="Referencia" v-model="order.reference" dense outlined/>
+            </div>
+            <div class="col-4">
+              <q-btn label="Agregar" color="primary" />
             </div>
           </div>
         </q-card-section>
         <q-separator/>
-        <!-- <q-card-section>
-        </q-card-section>
-        <q-separator/>
         <q-card-section class="row justify-between q-col-gutter-sm">
-          <div class="q-pa-xs col-xs-12 col-md-9 col-sm-12 col-lg-9">
+          <div class="q-pa-xs col-xs-12 col-md-12 col-sm-12 col-lg-12">
             <q-table
               row-key="name"
               wrap-cells
@@ -267,15 +369,15 @@
               </template>
             </q-table>
           </div>
-          <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+          <!-- <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
             <q-list separator dense>
               <q-item clickable v-ripple active>
                 <q-item-section>TOTAL </q-item-section>
                 <q-item-section side>S/ {{ totalSale }}</q-item-section>
               </q-item>
             </q-list>
-          </div>
-        </q-card-section> -->
+          </div> -->
+        </q-card-section>
         <q-separator/>
         <q-card-actions align="right">
           <q-btn color="negative" label="Cancelar recibo" @click="cancelBill"/>
@@ -423,12 +525,15 @@ export default {
   },
   data () {
     return {
+      operationTypes: [],
       loadingApi: false,
       beneficiarySave: {},
       conceptConfig,
       selected: [],
       organizations: [],
       responsables: [],
+      entities: [],
+      coins: [],
       fields: [],
       teal: false,
       addDialogConcept: false,
@@ -744,6 +849,24 @@ export default {
     /**
      * All CLient
      */
+    getCoins (value, update) {
+      this.$services.getData(['coins'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: value
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.coins = res.data
+          })
+        })
+    },
+    /**
+     * All CLient
+     */
     getResponsables (value, update) {
       this.$services.getData(['responsables'], {
         sortBy: 'id',
@@ -776,6 +899,42 @@ export default {
         .then(({ res }) => {
           update(() => {
             this.fields = res.data
+          })
+        })
+    },
+    /**
+     * All CLient
+     */
+    getEntities (value, update) {
+      this.$services.getData(['entities'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: value
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.entities = res.data
+          })
+        })
+    },
+    /**
+     * All CLient
+     */
+    getOperationTypes (value, update) {
+      this.$services.getData(['operation-types'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: value
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.operationTypes = res.data
           })
         })
     },
