@@ -10,13 +10,12 @@
             class="col-auto"
             color="orange"
             v-if="order.beneficiary"
-            @click="$router.push({ name: 'CurrentAccount', query: { beneficiary: order.beneficiary.id } })"
           >
             <q-tooltip>
              Cuenta Corriente de {{ order.beneficiary.name }} {{ order.beneficiary.last_name }}
             </q-tooltip>
           </q-btn>
-          <q-btn icon="menu" class="col-auto" color="primary" @click="$router.push({ name: 'Entries' })">
+          <q-btn icon="menu" class="col-auto" color="primary">
             <q-tooltip>
              Lista de recibos de cobro
             </q-tooltip>

@@ -116,6 +116,9 @@ export default {
     'egress-types': 'tipos de egreso',
     'new-order': 'Nueva transacción'
   },
+  order: {
+    newOrder: 'Nueva Transacción'
+  },
   // roles
   roles: {
     acronym: 'acrónimo',
