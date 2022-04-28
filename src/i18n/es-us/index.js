@@ -102,7 +102,7 @@ export default {
   },
   // modules
   modules: {
-    coin: 'Moneda',
+    coin: 'Monedas',
     orders: 'transacciones',
     entities: 'entidades',
     fields: 'campos',
@@ -111,9 +111,9 @@ export default {
     responsables: 'responsables',
     concepts: 'Conceptos',
     'field-supervisor': 'supervisores de campo',
-    'concept-types': 'tipo de oncepto',
-    'operation-types': 'tipos de operaciones',
-    'egress-types': 'tipos de egreso',
+    'concept-types': 'tipo de conceptos',
+    'operation-types': 'tipo de operaciones',
+    'egress-types': 'tipo de egresos',
     'new-order': 'Nueva transacción'
   },
   order: {

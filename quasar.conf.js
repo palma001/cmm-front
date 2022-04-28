@@ -82,7 +82,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      host: '127.0.0.1',
+      host: '192.168.0.107',
       https: false,
       port: 8080,
       open: true // opens browser window automatically
@@ -132,8 +132,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Mercado',
-        short_name: 'Mercado',
+        name: 'CMM',
+        short_name: 'CMM',
         description: 'software accounting software',
         display: 'standalone',
         orientation: 'portrait',
