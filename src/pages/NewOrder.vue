@@ -143,7 +143,7 @@
                 input-debounce="20"
                 name="field"
                 v-model="order.field"
-                option-label="full_name"
+                option-label="denomination"
                 option-value="id"
                 :label="ucwords('Campo')"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"

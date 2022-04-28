@@ -48,6 +48,21 @@ export default {
     deleteSuccessful: 'eliminado exitasamente',
     editSuccessful: 'modificado exitosamente'
   },
+  fieldSupervisor: {
+    add: 'agregar supervisor',
+    name: 'nombre o razón social',
+    last_name: 'apellido',
+    document_number: 'número de identificación',
+    phone_number: 'número de teléfono',
+    email: 'correo',
+    reset: 'Limpiar',
+    cancel: 'Cancelar',
+    addSuccessful: 'supervisor agregado exitosamente',
+    list: 'lista de supervisores',
+    update: 'Editar supervisor',
+    deleteSuccessful: 'eliminado exitasamente',
+    editSuccessful: 'modificado exitosamente'
+  },
   responsable: {
     add: 'agregar responsable',
     name: 'nombre o razón social',
@@ -95,6 +110,7 @@ export default {
     beneficiaries: 'beneficiarios',
     responsables: 'responsables',
     concepts: 'Conceptos',
+    'field-supervisor': 'supervisores de campo',
     'concept-types': 'tipo de oncepto',
     'operation-types': 'tipos de operaciones',
     'egress-types': 'tipos de egreso',

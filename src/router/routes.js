@@ -70,6 +70,12 @@ const routes = [
         name: 'Concept',
         component: () => import('src/pages/Concept.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'field-supervisors',
+        name: 'FieldSupervisor',
+        component: () => import('src/pages/FieldSupervisor.vue'),
+        beforeEnter: validationSessionUnit
       }
       // {
       //   path: 'new-egress',
