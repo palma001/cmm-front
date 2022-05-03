@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh Lpr lff" class="shadow-2 rounded-borders">
     <q-header elevated>
-      <q-toolbar class="bg-primary glossy">
+      <q-toolbar class="bg-primary">
         <q-btn flat
           dense
           round
@@ -193,7 +193,7 @@ export default {
       thumbStyle: {
         right: '2px',
         borderRadius: '5px',
-        backgroundColor: '#1976D2',
+        backgroundColor: '#4A235A',
         width: '7px',
         opacity: 1
       },
@@ -284,5 +284,5 @@ export default {
 <style lang="sass">
 .my-menu-link
   color: white
-  background: #1976D2
+  background: #4A235A
 </style>

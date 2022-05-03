@@ -76,6 +76,12 @@ const routes = [
         name: 'FieldSupervisor',
         component: () => import('src/pages/FieldSupervisor.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'orders',
+        name: 'Order',
+        component: () => import('src/pages/Order.vue'),
+        beforeEnter: validationSessionUnit
       }
       // {
       //   path: 'new-egress',
