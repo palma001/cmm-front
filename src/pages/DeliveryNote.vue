@@ -86,7 +86,7 @@
                 <q-input rounded outlined v-model="text" label="Marca del Vehículo" disable />
               </div>
               <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="Modelo" disable/>
+                <q-input rounded outlined v-model="text" label="Modelo" />
               </div>
               <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
                 <q-input rounded outlined v-model="text" label="Placa del Chuto" disable/>
