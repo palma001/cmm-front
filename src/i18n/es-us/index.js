@@ -104,7 +104,9 @@ export default {
   modules: {
     coin: 'Monedas',
     orders: 'transacciones',
+    roles: 'roles',
     entities: 'entidades',
+    'delivery-notes': 'notas de entrega',
     fields: 'campos',
     organizations: 'organizaciones',
     beneficiaries: 'beneficiarios',

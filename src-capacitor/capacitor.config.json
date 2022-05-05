@@ -1,0 +1,7 @@
+{
+  "appId": "app.cmm.com",
+  "appName": "CMM",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}
