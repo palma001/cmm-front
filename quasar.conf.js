@@ -83,7 +83,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      host: '192.168.0.110',
+      host: '127.0.0.1',
       https: false,
       port: 8080,
       open: true // opens browser window automatically

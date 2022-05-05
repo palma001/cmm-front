@@ -82,6 +82,18 @@ const routes = [
         name: 'Order',
         component: () => import('src/pages/Order.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'roles',
+        name: 'Role',
+        component: () => import('src/pages/Role.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'delivery-notes',
+        name: 'DeliveryNote',
+        component: () => import('src/pages/DeliveryNote.vue'),
+        beforeEnter: validationSessionUnit
       }
       // {
       //   path: 'new-egress',
