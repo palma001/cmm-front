@@ -49,7 +49,9 @@ export default {
     editSuccessful: 'modificado exitosamente'
   },
   materialSupplier: {
-    img: 'Imagen',
+    seal: 'sello',
+    signature: 'firma',
+    logo: 'logo',
     add: 'agregar proveedor de material',
     name: 'nombre o razón social',
     address: 'dirección',

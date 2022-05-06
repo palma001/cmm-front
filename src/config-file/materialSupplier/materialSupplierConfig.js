@@ -154,7 +154,67 @@ export const materialSupplier = [
       },
       {
         actionable: {
-          propTag: 'img',
+          propTag: 'signature',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        actionable: {
+          propTag: 'seal',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        actionable: {
+          propTag: 'logo',
           addible: true,
           editable: true,
           type: 'String',
