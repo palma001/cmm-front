@@ -211,7 +211,7 @@ export default {
       return [
         {
           branch_office_id: 1,
-          role_id: 1
+          role_id: data.roles_id ?? data.role.id
         }
       ]
     },
@@ -222,7 +222,6 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       data.roles = this.modelRole(data)
-      console.log(data)
       this.loadingForm = true
       this.$services.putData(['users', this.selectedData.id], data)
         .then(({ res }) => {

@@ -43,12 +43,12 @@ export const userConfig = [
         tabulated: {
           name: 'roles',
           align: 'left',
-          field: row => row.roles.map(rol => rol.name).join('/'),
+          field: row => row.roles.length > 0 ? row.roles.map(rol => rol.name).join('/') : '-',
           sortable: false,
           visible: true
         },
         actionable: {
-          propTag: 'roles',
+          propTag: 'role',
           addible: true,
           editable: true,
           type: 'String',
@@ -85,12 +85,12 @@ export const userConfig = [
           align: 'left',
           field: row => row.branch_offices.map(branchOffice => branchOffice.name).join('/'),
           sortable: false,
-          visible: true
+          visible: false
         },
         actionable: {
           propTag: 'branch_offices',
-          addible: true,
-          editable: true,
+          addible: false,
+          editable: false,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -123,7 +123,7 @@ export const userConfig = [
         tabulated: {
           name: 'phone',
           align: 'left',
-          field: row => row.phone,
+          field: row => row.phone_number,
           sortable: true,
           visible: true
         },
@@ -307,33 +307,33 @@ export const propsPanelEdition = {
 
 export const relationalDataConfiguration = [
   {
-    targetPropTag: 'roles',
-    entity: 'roles',
+    targetPropTag: 'role',
+    entity: 'role',
     services: ['roles'],
     propData: 'data',
     petitionParams: {
       paginate: false,
       roleSystem: true
     }
-  },
-  {
-    targetPropTag: 'document_type',
-    entity: 'document_type',
-    services: ['document-types'],
-    propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
-  },
-  {
-    targetPropTag: 'branch_offices',
-    entity: 'branch_offices',
-    services: ['branch-offices'],
-    propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
   }
+  // {
+  //   targetPropTag: 'document_type',
+  //   entity: 'document_type',
+  //   services: ['document-types'],
+  //   propData: 'data',
+  //   petitionParams: {
+  //     paginate: false
+  //   }
+  // },
+  // {
+  //   targetPropTag: 'branch_offices',
+  //   entity: 'branch_offices',
+  //   services: ['branch-offices'],
+  //   propData: 'data',
+  //   petitionParams: {
+  //     paginate: false
+  //   }
+  // }
 ]
 
 export const userServices = {

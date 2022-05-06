@@ -112,6 +112,12 @@ const routes = [
         name: 'State',
         component: () => import('src/pages/State.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'users',
+        name: 'User',
+        component: () => import('src/pages/User.vue'),
+        beforeEnter: validationSessionUnit
       }
       // {
       //   path: 'new-egress',

@@ -14,6 +14,7 @@ export default {
 
   // users
   user: {
+    role: 'roles',
     add: 'agregar usuario',
     sender_type: 'tipo de remitente',
     name: 'nombre o razón social',
