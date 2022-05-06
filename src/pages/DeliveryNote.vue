@@ -550,6 +550,7 @@ export default {
     },
     clear () {
       this.guide = {}
+      this.guide.date = date.formatDate(Date(), 'YYYY/MM/DD')
       this.resetValidations(this.$refs.deliveryNote)
     },
     saveDeliveryNote () {
