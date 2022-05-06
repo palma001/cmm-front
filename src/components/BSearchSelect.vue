@@ -10,6 +10,8 @@
     :outlined="outlined"
     :clearable="clearable"
     :multiple="multiple"
+    :option-label="dataLabel"
+    :option-value="dataValue"
     :options-selected-class="optionsSelectedClass"
     :input-debounce="inputDebounce"
     :error-message="errorMessageProp"
@@ -31,7 +33,7 @@
           <q-icon :name="scope.opt.icon" />
         </q-item-section>
         <q-item-section>
-          <q-item-label v-html="scope.opt.label" />
+          <q-item-label v-html="scope.opt[dataLabel]" />
           <q-item-label caption v-if="scope.opt.description">
             {{ scope.opt.description }}
           </q-item-label>
@@ -135,7 +137,7 @@ export default {
     },
     maxValue: {
       type: [String, Number],
-      default: 1
+      default: 5
 
     }
   },
@@ -147,7 +149,7 @@ export default {
     }
   },
   created () {
-    this.valueSelect = this.setModelSelect(this.value)
+    this.valueSelect = this.value
   },
   watch: {
     value () {
@@ -159,30 +161,28 @@ export default {
   },
   computed: {
     dataOptions () {
-      return this.dataFilter.map(element => {
-        return this.setModelSelect(element)
-      })
+      return this.dataFilter
     }
   },
   methods: {
-    setModelSelect (data) {
-      if (data) {
-        if (!Array.isArray(data)) {
-          return {
-            label: data[this.dataLabel],
-            value: data[this.dataValue],
-            description: data[this.dataDescription],
-            icon: data[this.dataIcon]
-          }
-        } else if (Array.isArray(data) && !this.multiple) {
-          return this.setModelSelect(data[0])
-        } else {
-          return data.map(d => {
-            return this.setModelSelect(d)
-          })
-        }
-      }
-    },
+    // setModelSelect (data) {
+    //   if (data) {
+    //     if (!Array.isArray(data)) {
+    //       return {
+    //         label: data[this.dataLabel],
+    //         value: data[this.dataValue],
+    //         description: data[this.dataDescription],
+    //         icon: data[this.dataIcon]
+    //       }
+    //     } else if (Array.isArray(data) && !this.multiple) {
+    //       return this.setModelSelect(data[0])
+    //     } else {
+    //       return data.map(d => {
+    //         return this.setModelSelect(d)
+    //       })
+    //     }
+    //   }
+    // },
     /**
      * Event input
      * @type {Object} data input selected

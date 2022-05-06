@@ -153,6 +153,48 @@ export const client = [
         }
       },
       {
+        tabulated: {
+          name: 'states',
+          align: 'left',
+          field: row => row.states.map(rol => rol.name).join('/'),
+          sortable: false,
+          visible: true
+        },
+        actionable: {
+          propTag: 'states',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              outlined: true,
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              multiple: true,
+              useChips: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
         actionable: {
           propTag: 'img',
           addible: true,
@@ -307,18 +349,18 @@ export const propsPanelEdition = {
 }
 
 export const relationalDataConfiguration = [
-  // {
-  //   targetPropTag: 'document_type',
-  //   entity: 'document_type',
-  //   services: ['document-types'],
-  //   propData: 'data',
-  //   petitionParams: {
-  //     paginate: false
-  //   }
-  // }
+  {
+    targetPropTag: 'states',
+    entity: 'states',
+    services: ['states'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  }
 ]
 
-export const workerServices = {
+export const clientServices = {
   props: propsPanelEdition,
   config: client,
   propData: 'data',

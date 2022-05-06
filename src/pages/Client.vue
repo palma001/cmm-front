@@ -71,7 +71,7 @@
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import { client, buttonsActions, propsPanelEdition } from '../config-file/client/clientConfig.js'
+import { client, buttonsActions, propsPanelEdition, clientServices } from '../config-file/client/clientConfig.js'
 import { mixins } from '../mixins'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
@@ -86,6 +86,7 @@ export default {
   },
   data () {
     return {
+      clientServices,
       propsPanelEdition,
       loadingForm: false,
       buttonsActions,
@@ -229,6 +230,7 @@ export default {
      */
     update (data) {
       data.user_updated_id = this.userSession.id
+      data.states = this.statesModel(data.states)
       this.loadingForm = true
       this.$services.putData(['clients', this.selectedData.id], data)
         .then(({ res }) => {
@@ -241,12 +243,19 @@ export default {
           this.loadingForm = false
         })
     },
+    statesModel (data) {
+      return data.map(element => {
+        element.state_id = element.id
+        return element
+      })
+    },
     /**
      * Save Branch Office
      * @param  {Object}
      */
     save (data) {
       data.user_created_id = this.userSession.id
+      data.states = this.statesModel(data.states)
       this.loadingForm = true
       this.$services.postData(['clients'], data)
         .then(({ res }) => {

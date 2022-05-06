@@ -110,7 +110,6 @@
               v-validate="'required'" data-vv-as="field"
               :rules="[val => val && val !== null || 'Este campo es requerido']"
               :options="states"
-              @input="selectedState"
               @filter="getStates"
             >
               <template v-slot:no-option>
@@ -129,8 +128,8 @@
                 fill-input
                 hide-selected
                 dense
-
                 outlined
+                :disable="guide.state ? false : true"
                 clearable
                 input-debounce="20"
                 name="state"
@@ -187,7 +186,6 @@
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
             <q-input
-
               outlined
               v-model="guide.vehicle_model"
               label="Modelo del Vehículo"
@@ -203,7 +201,6 @@
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
             <q-input
-
               outlined
               v-model="guide.trailer_model"
               label="Modelo de la Batea"
@@ -504,8 +501,8 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {
-          name: value
-          // 'clientState.state_id': this.state.id
+          name: value,
+          'states.state_id': this.guide.state.id
         },
         perPage: 100,
         paginate: true
@@ -525,11 +522,6 @@ export default {
     selectedClient (data) {
       this.guide.client_id = data.id
       this.guide.client_document_number = data.document_number
-    },
-    selectedState (data) {
-      // this.guide.provider_id = data.id
-      // this.guide.document_number = data.document_number
-      // this.guide.material_supplier_name = data.name
     },
     onDone (data) {
       const dataEnter = data.split('\n')

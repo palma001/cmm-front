@@ -68,6 +68,7 @@ export default {
   },
   client: {
     img: 'Imagen',
+    states: 'estados',
     add: 'agregar cliente',
     name: 'nombre o razón social',
     address: 'dirección',
