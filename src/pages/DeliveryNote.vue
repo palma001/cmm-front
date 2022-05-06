@@ -1,7 +1,8 @@
 <template>
   <q-page padding>
     <div class="row">
-      <div class="col-12 text-right">
+      <div class="col-6 text-h5">Nota de entrega</div>
+      <div class="col-6 text-right">
         <q-btn color="primary" icon="qr_code_scanner" dense @click="openQr = true"/>
       </div>
     </div>
@@ -20,89 +21,88 @@
       </q-card>
     </q-dialog>
     <div class="q-gutter-sm">
-       <q-card class="my-card">
-        <q-card-section class="row justify-center q-col-gutter-sm">
-          <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-            <q-select rounded outlined v-model="model" :options="proveedor" label="Proveedor" />
+      <q-card class="my-card">
+      <q-card-section class="row justify-center q-col-gutter-sm">
+        <div class="col-sm-12 col-md-4 col-lg-4 col-xs-12">
+          <q-select rounded outlined v-model="model" :options="proveedor" label="Proveedor" />
+        </div>
+        <div class="col-sm-12 col-md-4 col-lg-4 col-xs-12">
+          <q-input rounded outlined v-model="guide.GUIA" label="Guía" disable/>
+        </div>
+        <div class="col-sm-12 col-md-4 col-lg-4 col-xs-12">
+          <q-input rounded outlined v-model="text" label="Fecha" disable />
+        </div>
+      </q-card-section>
+      </q-card>
+      <q-card class="my-card">
+        <q-card-section class="row q-col-gutter-sm">
+          <div class="col-sm-12 col-md-4 col-lg-6 col-xl-6 col-xs-12">
+            <q-input rounded outlined v-model="text" label="Empresa" disable/>
           </div>
-          <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-            <q-input rounded outlined v-model="text" label="Guía" disable/>
+          <div class="col-sm-12 col-md-4 col-lg-6 col-xl-6 col-xs-12">
+            <q-input rounded outlined v-model="text" label="RIF" disable />
           </div>
-          <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-            <q-input rounded outlined v-model="text" label="Fecha" disable />
+          <div class="col-sm-12 col-md-4 col-lg-12 col-xl-12 col-xs-12">
+            <q-input rounded outlined v-model="guide.ORIGEN" label="Dirección de Origen" type="textarea"/>
           </div>
         </q-card-section>
-        </q-card>
-        <q-separator />
-        <q-card class="mycard">
-            <q-card-section>
-                <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                  <q-input rounded outlined v-model="text" label="Empresa" disable/>
-                </div>
-                <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                  <q-input rounded outlined v-model="text" label="RIF" disable />
-                </div>
-                <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                  <q-input rounded outlined v-model="text" label="Dirección de Origen" />
-                </div>
-            </q-card-section>
-        </q-card>
-        <q-card class="mycard">
-            <q-card-section>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                  <q-select rounded outlined v-model="model" :options="estado" label="Estado" />
-                </div>
-                <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                  <q-select rounded outlined v-model="model" :options="cliente" label="Cliente" />
-                </div>
-                <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                  <q-input rounded outlined v-model="text" label="RIF" disable />
-                </div>
-                <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                  <q-input rounded outlined v-model="text" label="Dirección de Destino" />
-                </div>
-            </q-card-section>
-        </q-card>
-        <q-card class="mycard">
-            <q-card-section>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                {{material}}
-              </div>
-            </q-card-section>
-        </q-card>
-        <q-card class="mycard">
-            <q-card-section>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="Empresa de Transporte" disable />
-              </div>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="RIF" disable/>
-              </div>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="Conductor" disable/>
-              </div>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="CI" disable/>
-              </div>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="Marca del Vehículo" disable />
-              </div>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="Modelo" />
-              </div>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="Placa del Chuto" disable/>
-              </div>
-              <div class="col-sm-12 col-md-4 col-md-2 col-xs-12">
-                <q-input rounded outlined v-model="text" label="Placa Batea" disable/>
-              </div>
-            </q-card-section>
-        </q-card>
-          <div class="q-gutter-sm" >
-             <q-btn unelevated rounded color="primary" label="Generar Nota de Entrega"/>
-             <q-btn unelevated rounded color="secondary" label="Limpiar" />
-           </div>
-        </div>
+      </q-card>
+      <q-card class="my-card">
+        <q-card-section class="row q-col-gutter-sm">
+          <div class="col-sm-12 col-md-4 col-xs-12">
+              <q-select rounded outlined v-model="model" :options="estado" label="Estado" />
+            </div>
+            <div class="col-sm-12 col-md-4 col-xs-12">
+              <q-select rounded outlined v-model="model" :options="cliente" label="Cliente" />
+            </div>
+            <div class="col-sm-12 col-md-4 col-xs-12">
+              <q-input rounded outlined v-model="text" label="RIF" disable />
+            </div>
+            <div class="col-sm-12 col-md-4 col-md-12 col-xs-12">
+              <q-input rounded outlined v-model="guide.DESTINO" label="Dirección de Destino" type="textarea"/>
+            </div>
+        </q-card-section>
+      </q-card>
+      <q-card class="my-card">
+          <q-card-section class="row q-col-gutter-sm">
+            <div class="col-sm-12 col-md-12 col-xs-12">
+              <q-input rounded outlined v-model="guide.MATERIAL" label="Material" type="textarea"/>
+            </div>
+          </q-card-section>
+      </q-card>
+      <q-card class="my-card">
+        <q-card-section class="row q-col-gutter-sm">
+          <div class="col-sm-12 col-md-4 col-xs-12">
+            <q-input rounded outlined v-model="text" label="Empresa de Transporte" disable />
+          </div>
+          <div class="col-sm-12 col-md-4 col-xs-12">
+            <q-input rounded outlined v-model="text" label="RIF" disable/>
+          </div>
+          <div class="col-sm-12 col-md-4 col-xs-12">
+            <q-input rounded outlined v-model="guide.CONDUCTOR" label="Conductor" disable/>
+          </div>
+          <div class="col-sm-12 col-md-4 col-xs-12">
+            <q-input rounded outlined v-model="guide.C_I" label="CI" disable/>
+          </div>
+          <div class="col-sm-12 col-md-4 col-xs-12">
+            <q-input rounded outlined v-model="guide.VEHICULO" label="Marca del Vehículo" disable />
+          </div>
+          <div class="col-sm-12 col-md-4 col-xs-12">
+            <q-input rounded outlined v-model="text" label="Modelo" />
+          </div>
+          <div class="col-sm-12 col-md-4 col-xs-12">
+            <q-input rounded outlined v-model="guide.CHUTO" label="Placa del Chuto" disable/>
+          </div>
+          <div class="col-sm-12 col-md-4 col-xs-12">
+            <q-input rounded outlined v-model="guide.BATEA" label="Placa Batea" disable/>
+          </div>
+        </q-card-section>
+      </q-card>
+      <div class="q-gutter-sm" >
+        <q-btn unelevated rounded color="primary" label="Generar Nota de Entrega"/>
+        <q-btn unelevated rounded color="secondary" label="Limpiar" />
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -111,6 +111,7 @@
 export default {
   data () {
     return {
+      guide: {},
       /**
        * Open dialog qr
        * @type {Boolean}
@@ -135,14 +136,14 @@ export default {
       dataEnter.map(data => {
         const data2 = data.split(':')
         if (data2.length === 2) {
-          const stringFormated = data2[0].replace(/"/g, '-').replaceAll('.', '_').replaceAll(' ', '')
+          const stringFormated = data2[0].replace(/"/g, '-').replaceAll('.', '_').replaceAll(' ', '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
           objectData[stringFormated] = data2[1]
         }
       })
       const placas = objectData.PLACAS.split('/')
       objectData.CHUTO = placas[0]
       objectData.BATEA = placas[1]
-      console.log(objectData)
+      this.guide = objectData
     },
     error (error) {
       alert(error)
@@ -154,4 +155,5 @@ export default {
 <style lang="sass" scoped>
 .my-card
   width: 100%
+  margin-top: 20px
 </style>

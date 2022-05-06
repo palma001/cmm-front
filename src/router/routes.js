@@ -94,6 +94,24 @@ const routes = [
         name: 'DeliveryNote',
         component: () => import('src/pages/DeliveryNote.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'material-suppliers',
+        name: 'MaterialSupplier',
+        component: () => import('src/pages/MaterialSupplier.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'clients',
+        name: 'Client',
+        component: () => import('src/pages/Client.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'states',
+        name: 'State',
+        component: () => import('src/pages/State.vue'),
+        beforeEnter: validationSessionUnit
       }
       // {
       //   path: 'new-egress',
