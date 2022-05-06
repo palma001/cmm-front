@@ -138,6 +138,7 @@ export default {
   },
   // modules
   modules: {
+    users: 'Usuarios',
     coin: 'Monedas',
     orders: 'transacciones',
     roles: 'roles',

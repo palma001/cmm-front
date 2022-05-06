@@ -2,7 +2,8 @@
   <q-page padding>
     <div class="row">
       <div class="col-6 text-h5">Nota de entrega</div>
-      <div class="col-6 text-right">
+      <div class="col-6 text-right q-gutter-sm">
+        <q-btn color="secondary" icon="edit" dense @click="edit = !edit"/>
         <q-btn color="primary" icon="qr_code_scanner" dense @click="openQr = true"/>
       </div>
     </div>
@@ -44,7 +45,6 @@
               fill-input
               hide-selected
               dense
-
               outlined
               clearable
               input-debounce="20"
@@ -69,23 +69,23 @@
             </q-select>
           </div>
           <div class="col-sm-4 col-md-4 col-lg-4 col-xs-12">
-            <q-input outlined v-model="guide.GUIA" label="Guía" disable dense/>
+            <q-input outlined v-model="guide.GUIA" label="Guía" :disable="edit" dense/>
           </div>
           <div class="col-sm-4 col-md-4 col-lg-4 col-xs-12">
-            <q-input outlined v-model="guide.date" label="Fecha" disable dense/>
+            <q-input outlined v-model="guide.date" label="Fecha" :disable="edit" dense/>
           </div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
         <q-card-section class="row q-col-gutter-sm">
           <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xs-12">
-            <q-input outlined v-model="guide.material_supplier_name" label="Empresa" disable dense/>
+            <q-input outlined v-model="guide.material_supplier_name" label="Empresa" :disable="edit" dense/>
           </div>
           <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xs-12">
-            <q-input outlined v-model="guide.document_number" label="RIF" disable dense />
+            <q-input outlined v-model="guide.document_number" label="RIF" :disable="edit" dense />
           </div>
           <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12">
-            <q-input outlined v-model="guide.ORIGEN" label="Dirección de Origen" type="textarea" disable dense/>
+            <q-input outlined v-model="guide.ORIGEN" label="Dirección de Origen" type="textarea" :disable="edit" dense/>
           </div>
         </q-card-section>
       </q-card>
@@ -98,7 +98,6 @@
               fill-input
               hide-selected
               dense
-
               outlined
               clearable
               input-debounce="20"
@@ -153,36 +152,36 @@
               </q-select>
             </div>
             <div class="col-sm-4 col-md-4 col-xs-12">
-              <q-input outlined :value="guide.client_document_number" label="RIF" disable dense />
+              <q-input outlined :value="guide.client_document_number" label="RIF" :disable="edit" dense />
             </div>
             <div class="col-sm-12 col-md-12 col-xs-12">
-              <q-input outlined v-model="guide.DESTINO" label="Dirección de Destino" type="textarea" dense disable/>
+              <q-input outlined v-model="guide.DESTINO" label="Dirección de Destino" type="textarea" dense :disable="edit"/>
             </div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
         <q-card-section class="row q-col-gutter-sm">
           <div class="col-12">
-            <q-input outlined v-model="guide.MATERIAL" label="Material" type="textarea" disable dense/>
+            <q-input outlined v-model="guide.MATERIAL" label="Material" type="textarea" :disable="edit" dense/>
           </div>
         </q-card-section>
       </q-card>
       <q-card class="my-card">
         <q-card-section class="row q-col-gutter-sm">
           <div class="col-sm-4 col-md-4 col-xs-12">
-            <q-input outlined v-model="guide.material_supplier_name" label="Empresa de Transporte" disable dense />
+            <q-input outlined v-model="guide.material_supplier_name" label="Empresa de Transporte" :disable="edit" dense />
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
-            <q-input outlined v-model="guide.document_number" label="RIF" disable dense/>
+            <q-input outlined v-model="guide.document_number" label="RIF" :disable="edit" dense/>
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
-            <q-input outlined v-model="guide.CONDUCTOR" label="Conductor" disable dense/>
+            <q-input outlined v-model="guide.CONDUCTOR" label="Conductor" :disable="edit" dense/>
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
-            <q-input outlined v-model="guide.C_I" label="CI" disable dense/>
+            <q-input outlined v-model="guide.C_I" label="CI" :disable="edit" dense/>
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
-            <q-input outlined v-model="guide.VEHICULO" label="Marca del Vehículo" disable dense />
+            <q-input outlined v-model="guide.VEHICULO" label="Marca del Vehículo" :disable="edit" dense />
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
             <q-input
@@ -194,10 +193,10 @@
             />
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
-            <q-input outlined v-model="guide.CHUTO" label="Placa del Chuto" disable dense/>
+            <q-input outlined v-model="guide.CHUTO" label="Placa del Chuto" :disable="edit" dense/>
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
-            <q-input outlined v-model="guide.BATEA" label="Placa de la Batea" disable dense/>
+            <q-input outlined v-model="guide.BATEA" label="Placa de la Batea" :disable="edit" dense/>
           </div>
           <div class="col-sm-4 col-md-4 col-xs-12">
             <q-input
@@ -221,7 +220,7 @@
       :enable-download="false"
       :preview-modal="true"
       :paginate-elements-by-height="1000"
-      filename="hee hee"
+      :filename="nameFile"
       :pdf-quality="2"
       :manual-pagination="false"
       pdf-format="a4"
@@ -406,6 +405,7 @@ export default {
   data () {
     return {
       tab: 'qr',
+      edit: true,
       visibleLoading: false,
       materialSuppliers: [],
       guide: {},
@@ -419,6 +419,7 @@ export default {
        */
       openQr: false,
       modelPdf: null,
+      nameFile: null,
       userSession: null,
       branchOffice: null
     }
@@ -445,6 +446,7 @@ export default {
     async downloadPDF (data) {
       const { res } = await this.$services.getOneData(['delivery-notes', data.id])
       this.modelPdf = res.data
+      this.nameFile = `${res.data.material_supplier.name}-${res.data.guide_number}`
       this.$refs.html2Pdf.generatePdf()
     },
     onProgress (data) {
