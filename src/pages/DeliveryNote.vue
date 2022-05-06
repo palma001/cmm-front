@@ -34,7 +34,7 @@
         </q-tab-panels>
       </q-card>
     </q-dialog>
-    <q-form @submit="saveDeliveryNote" class="q-gutter-sm">
+    <q-form @submit="saveDeliveryNote" class="q-gutter-sm" ref="deliveryNote" @reset="clear">
       <q-card class="my-card">
         <q-card-section class="row justify-center q-col-gutter-sm">
           <div class="col-sm-4 col-md-4 col-lg-4 col-xs-12">
@@ -214,7 +214,7 @@
         </q-card-section>
       </q-card>
       <div class="q-gutter-sm text-right">
-        <q-btn unelevated color="secondary" label="Limpiar" @click="clear"/>
+        <q-btn unelevated color="secondary" label="Limpiar" type="reset"/>
         <q-btn unelevated color="primary" label="Generar Nota de Entrega" type="submit"/>
       </div>
     </q-form>
@@ -398,7 +398,11 @@
 <script>
 import { date } from 'quasar'
 import VueHtml2pdf from 'vue-html2pdf'
+import { mixins } from '../mixins'
+import { GETTERS } from '../store/module-login/name.js'
+import { mapGetters } from 'vuex'
 export default {
+  mixins: [mixins.containerMixin],
   components: {
     VueHtml2pdf
   },
@@ -417,21 +421,23 @@ export default {
        * @type {Boolean}
        */
       openQr: false,
-      text: '',
-      proveedor: ['Coporación Macro Metal C.M.M. C.A.', 'Protocol Capital W.L.L, C.A.'],
-      cliente: ['Metalplast de Venezuela 2021 C.A.', 'Reciplast de Venezuela C.A.', 'Protocol Capital W.L.L, C.A.'],
-      estado: ['Anzoátegui', 'Carabobo', 'Zulia'],
-      model: '',
-      material: '',
-      modelPdf: null
+      modelPdf: null,
+      userSession: null,
+      branchOffice: null
     }
   },
   computed: {
+    /**
+     * Getters Vuex
+     */
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
     valueLoading () {
       return this.timeLoading
     }
   },
   created () {
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.guide.date = date.formatDate(Date(), 'YYYY/MM/DD')
     // this.downloadPDF({ id: 2 })
   },
@@ -541,8 +547,18 @@ export default {
       Object.assign(this.guide, objectData)
       this.openQr = false
     },
+    /**
+     * Reset validation
+     * @param {Object} ref ref DOM
+     */
+    resetValidations (ref) {
+      setTimeout(() => {
+        ref.resetValidation()
+      }, 100)
+    },
     clear () {
       this.guide = {}
+      this.resetValidations(this.$refs.deliveryNote)
     },
     saveDeliveryNote () {
       this.guide.destination_address = this.guide.DESTINO
@@ -555,14 +571,15 @@ export default {
       this.guide.guide_number = this.guide.GUIA
       this.guide.origin_address = this.guide.ORIGEN
       this.guide.origin_address = this.guide.ORIGEN
+      this.guide.user_created_id = this.userSession.id
       this.visibleLoading = true
       this.$services.postData(['delivery-notes'], this.guide)
         .then(({ res }) => {
           this.downloadPDF(res.data)
-          this.guide = {}
+          this.clear()
         })
-        .catch((e) => {
-          console.log(e)
+        .catch(({ response }) => {
+          this.catchError(this, response.data.errors)
           this.visibleLoading = false
         })
     },
