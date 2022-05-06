@@ -7,84 +7,98 @@
       </div>
     </div>
     <q-dialog v-model="openQr">
-      <q-card class="my-card">
-        <q-card-section class="q-pa-none">
-          <qrcode-stream @decode="onDone"></qrcode-stream>
-          <!-- <qrcode-drop-zone @decode="onDone"></qrcode-drop-zone> -->
-          <qrcode-capture @decode="onDone"></qrcode-capture>
-          <!-- <q-img src="https://cdn.quasar.dev/img/parallax2.jpg">
-            <div class="absolute-bottom text-subtitle2 text-center">
-              Escanear Guía
-            </div>
-          </q-img> -->
-        </q-card-section>
+      <q-card style="width: 300px">
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+          narrow-indicator
+        >
+          <q-tab name="qr" label="Qr" />
+          <q-tab name="image" label="Subir Imagen" />
+        </q-tabs>
+
+        <q-separator />
+
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="qr" class="q-pa-none">
+            <qrcode-stream @decode="onDone"/>
+          </q-tab-panel>
+
+          <q-tab-panel name="image">
+            <qrcode-capture @decode="onDone"/>
+          </q-tab-panel>
+        </q-tab-panels>
       </q-card>
     </q-dialog>
     <q-form @submit="saveDeliveryNote" class="q-gutter-sm">
       <q-card class="my-card">
-      <q-card-section class="row justify-center q-col-gutter-sm">
-        <div class="col-sm-12 col-md-4 col-lg-4 col-xs-12">
-          <q-select
-            autocomplete="off"
-            use-input
-            fill-input
-            hide-selected
-            dense
-            rounded
-            outlined
-            clearable
-            input-debounce="20"
-            name="providerSupplier"
-            v-model="guide.providerSupplier"
-            option-label="name"
-            option-value="id"
-            label="Proveedor"
-            v-validate="'required'" data-vv-as="field"
-            :rules="[val => val && val !== null || 'Este campo es requerido']"
-            :options="materialSuppliers"
-            @input="selectedProvider"
-            @filter="getMaterialSuppliers"
-          >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-          </q-select>
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-4 col-xs-12">
-          <q-input rounded outlined v-model="guide.GUIA" label="Guía" disable dense/>
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-4 col-xs-12">
-          <q-input rounded outlined v-model="guide.date" label="Fecha" disable dense/>
-        </div>
-      </q-card-section>
-      </q-card>
-      <q-card class="my-card">
-        <q-card-section class="row q-col-gutter-sm">
-          <div class="col-sm-12 col-md-4 col-lg-6 col-xl-6 col-xs-12">
-            <q-input rounded outlined v-model="guide.material_supplier_name" label="Empresa" disable dense/>
-          </div>
-          <div class="col-sm-12 col-md-4 col-lg-6 col-xl-6 col-xs-12">
-            <q-input rounded outlined v-model="guide.document_number" label="RIF" disable dense />
-          </div>
-          <div class="col-sm-12 col-md-4 col-lg-12 col-xl-12 col-xs-12">
-            <q-input rounded outlined v-model="guide.ORIGEN" label="Dirección de Origen" type="textarea" disable dense/>
-          </div>
-        </q-card-section>
-      </q-card>
-      <q-card class="my-card">
-        <q-card-section class="row q-col-gutter-sm">
-          <div class="col-sm-12 col-md-4 col-xs-12">
+        <q-card-section class="row justify-center q-col-gutter-sm">
+          <div class="col-sm-4 col-md-4 col-lg-4 col-xs-12">
             <q-select
               autocomplete="off"
               use-input
               fill-input
               hide-selected
               dense
-              rounded
+
+              outlined
+              clearable
+              input-debounce="20"
+              name="providerSupplier"
+              v-model="guide.providerSupplier"
+              option-label="name"
+              option-value="id"
+              label="Proveedor"
+              v-validate="'required'" data-vv-as="field"
+              :rules="[val => val && val !== null || 'Este campo es requerido']"
+              :options="materialSuppliers"
+              @input="selectedProvider"
+              @filter="getMaterialSuppliers"
+            >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+            </q-select>
+          </div>
+          <div class="col-sm-4 col-md-4 col-lg-4 col-xs-12">
+            <q-input outlined v-model="guide.GUIA" label="Guía" disable dense/>
+          </div>
+          <div class="col-sm-4 col-md-4 col-lg-4 col-xs-12">
+            <q-input outlined v-model="guide.date" label="Fecha" disable dense/>
+          </div>
+        </q-card-section>
+      </q-card>
+      <q-card class="my-card">
+        <q-card-section class="row q-col-gutter-sm">
+          <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xs-12">
+            <q-input outlined v-model="guide.material_supplier_name" label="Empresa" disable dense/>
+          </div>
+          <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xs-12">
+            <q-input outlined v-model="guide.document_number" label="RIF" disable dense />
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xs-12">
+            <q-input outlined v-model="guide.ORIGEN" label="Dirección de Origen" type="textarea" disable dense/>
+          </div>
+        </q-card-section>
+      </q-card>
+      <q-card class="my-card">
+        <q-card-section class="row q-col-gutter-sm">
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-select
+              autocomplete="off"
+              use-input
+              fill-input
+              hide-selected
+              dense
+
               outlined
               clearable
               input-debounce="20"
@@ -108,14 +122,14 @@
               </template>
             </q-select>
             </div>
-            <div class="col-sm-12 col-md-4 col-xs-12">
+            <div class="col-sm-4 col-md-4 col-xs-12">
               <q-select
                 autocomplete="off"
                 use-input
                 fill-input
                 hide-selected
                 dense
-                rounded
+
                 outlined
                 clearable
                 input-debounce="20"
@@ -139,55 +153,69 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-sm-12 col-md-4 col-xs-12">
-              <q-input rounded outlined :value="guide.client_document_number" label="RIF" disable dense />
+            <div class="col-sm-4 col-md-4 col-xs-12">
+              <q-input outlined :value="guide.client_document_number" label="RIF" disable dense />
             </div>
-            <div class="col-sm-12 col-md-4 col-md-12 col-xs-12">
-              <q-input rounded outlined v-model="guide.DESTINO" label="Dirección de Destino" type="textarea" dense disable/>
+            <div class="col-sm-12 col-md-12 col-xs-12">
+              <q-input outlined v-model="guide.DESTINO" label="Dirección de Destino" type="textarea" dense disable/>
             </div>
         </q-card-section>
-      </q-card>
-      <q-card class="my-card">
-          <q-card-section class="row q-col-gutter-sm">
-            <div class="col-sm-12 col-md-12 col-xs-12">
-              <q-input rounded outlined v-model="guide.MATERIAL" label="Material" type="textarea" disable dense/>
-            </div>
-          </q-card-section>
       </q-card>
       <q-card class="my-card">
         <q-card-section class="row q-col-gutter-sm">
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.material_supplier_name" label="Empresa de Transporte" disable dense />
-          </div>
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.document_number" label="RIF" disable dense/>
-          </div>
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.CONDUCTOR" label="Conductor" disable dense/>
-          </div>
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.C_I" label="CI" disable dense/>
-          </div>
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.VEHICULO" label="Marca del Vehículo" disable dense />
-          </div>
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.vehicle_model" label="Modelo del Vehículo" dense/>
-          </div>
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.CHUTO" label="Placa del Chuto" disable dense/>
-          </div>
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.BATEA" label="Placa de la Batea" disable dense/>
-          </div>
-          <div class="col-sm-12 col-md-4 col-xs-12">
-            <q-input rounded outlined v-model="guide.trailer_model" label="Modelo de la Batea" dense/>
+          <div class="col-12">
+            <q-input outlined v-model="guide.MATERIAL" label="Material" type="textarea" disable dense/>
           </div>
         </q-card-section>
       </q-card>
-      <div class="q-gutter-sm" >
-        <q-btn unelevated rounded color="primary" label="Generar Nota de Entrega" type="submit"/>
-        <q-btn unelevated rounded color="secondary" label="Limpiar" />
+      <q-card class="my-card">
+        <q-card-section class="row q-col-gutter-sm">
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input outlined v-model="guide.material_supplier_name" label="Empresa de Transporte" disable dense />
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input outlined v-model="guide.document_number" label="RIF" disable dense/>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input outlined v-model="guide.CONDUCTOR" label="Conductor" disable dense/>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input outlined v-model="guide.C_I" label="CI" disable dense/>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input outlined v-model="guide.VEHICULO" label="Marca del Vehículo" disable dense />
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input
+
+              outlined
+              v-model="guide.vehicle_model"
+              label="Modelo del Vehículo"
+              dense
+              :rules="[val => val && val !== null || 'Este campo es requerido']"
+            />
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input outlined v-model="guide.CHUTO" label="Placa del Chuto" disable dense/>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input outlined v-model="guide.BATEA" label="Placa de la Batea" disable dense/>
+          </div>
+          <div class="col-sm-4 col-md-4 col-xs-12">
+            <q-input
+
+              outlined
+              v-model="guide.trailer_model"
+              label="Modelo de la Batea"
+              dense
+              :rules="[val => val && val !== null || 'Este campo es requerido']"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+      <div class="q-gutter-sm text-right">
+        <q-btn unelevated color="secondary" label="Limpiar" @click="clear"/>
+        <q-btn unelevated color="primary" label="Generar Nota de Entrega" type="submit"/>
       </div>
     </q-form>
     <vue-html2pdf
@@ -376,6 +404,7 @@ export default {
   },
   data () {
     return {
+      tab: 'qr',
       visibleLoading: false,
       materialSuppliers: [],
       guide: {},
@@ -404,7 +433,7 @@ export default {
   },
   created () {
     this.guide.date = date.formatDate(Date(), 'YYYY/MM/DD')
-    this.downloadPDF({ id: 2 })
+    // this.downloadPDF({ id: 2 })
   },
   methods: {
     formatDate (data, format) {
@@ -485,6 +514,7 @@ export default {
       this.guide.material_supplier_id = data.id
       this.guide.document_number = data.document_number
       this.guide.material_supplier_name = data.name
+      this.guide.serie_number = data.serie_number
     },
     selectedClient (data) {
       this.guide.client_id = data.id
@@ -511,6 +541,9 @@ export default {
       Object.assign(this.guide, objectData)
       this.openQr = false
     },
+    clear () {
+      this.guide = {}
+    },
     saveDeliveryNote () {
       this.guide.destination_address = this.guide.DESTINO
       this.guide.material = this.guide.MATERIAL
@@ -526,6 +559,11 @@ export default {
       this.$services.postData(['delivery-notes'], this.guide)
         .then(({ res }) => {
           this.downloadPDF(res.data)
+          this.guide = {}
+        })
+        .catch((e) => {
+          console.log(e)
+          this.visibleLoading = false
         })
     },
     error (error) {
