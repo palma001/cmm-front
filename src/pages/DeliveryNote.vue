@@ -3,8 +3,14 @@
     <div class="row">
       <div class="col-6 text-h5">Nota de entrega</div>
       <div class="col-6 text-right q-gutter-sm">
-        <q-btn color="secondary" icon="edit" dense @click="edit = !edit"/>
-        <q-btn color="primary" icon="qr_code_scanner" dense @click="openQr = true"/>
+        <q-btn color="primary" icon="list" dense @click="dialogDeliveryNote = true"/>
+        <q-btn
+          :color="edit ? 'secondary' : 'negative'"
+          :icon="edit ? 'edit' : 'close'"
+          dense
+          @click="edit = !edit"
+        />
+        <q-btn color="teal" icon="qr_code_scanner" dense @click="openQr = true"/>
       </div>
     </div>
     <q-dialog v-model="openQr">
@@ -72,7 +78,7 @@
             <q-input outlined v-model="guide.GUIA" label="Guía" :disable="edit" dense/>
           </div>
           <div class="col-sm-4 col-md-4 col-lg-4 col-xs-12">
-            <q-input outlined v-model="guide.date" label="Fecha" :disable="edit" dense/>
+            <q-input outlined v-model="guide.start_date" label="Fecha de inicio" :disable="edit" dense/>
           </div>
         </q-card-section>
       </q-card>
@@ -215,18 +221,19 @@
       </div>
     </q-form>
     <vue-html2pdf
+      ref="html2Pdf"
+      pdf-format="a4"
+      pdf-orientation="portrait"
+      pdf-content-width="800px"
       :show-layout="false"
       :float-layout="true"
-      :enable-download="false"
+      :enable-download="true"
       :preview-modal="true"
       :paginate-elements-by-height="1000"
       :filename="nameFile"
       :pdf-quality="2"
-      :manual-pagination="false"
-      pdf-format="a4"
-      pdf-orientation="portrait"
-      pdf-content-width="800px"
-      ref="html2Pdf"
+      :manual-pagination="true"
+      v-if="modelPdf"
       @progress="onProgress($event)"
     >
       <section slot="pdf-content" class="text-uppercase text-dark q-pa-md">
@@ -262,7 +269,7 @@
               <td class="column16 style74 s style76" colspan="3">FECHA</td>
             </tr>
             <tr class="row11">
-              <td class="column16 style77 n style79" colspan="3">{{ formatDate(modelPdf.created_at, 'DD/MM/YYYY') }}</td>
+              <td class="column16 style77 n style79" colspan="3">{{ formatDate(modelPdf.start_date, 'DD/MM/YYYY') }}</td>
             </tr>
             <tr class="row13">
               <td class="column0 style43 s style43" colspan="24" >ORIGEN DEL MATERIAL</td>
@@ -388,10 +395,54 @@
         <q-icon name="receipt" />
       </q-circular-progress>
     </q-inner-loading>
+    <q-dialog
+      v-model="dialogDeliveryNote"
+      persistent
+      full-width
+      :maximized="maximizedToggle"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <q-card>
+        <q-bar class="bg-primary text-white">
+          <q-space />
+
+          <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
+            <q-tooltip v-if="maximizedToggle" class="bg-white text-primary">Minimize</q-tooltip>
+          </q-btn>
+          <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
+            <q-tooltip v-if="!maximizedToggle" class="bg-white text-primary">Maximize</q-tooltip>
+          </q-btn>
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+          </q-btn>
+        </q-bar>
+        <q-card-section>
+          <data-table
+            title="list"
+            module="deliveryNote"
+            searchable
+            action
+            activeVisibleColumn
+            :column="deliveryNoteConfig"
+            :data="data"
+            :loading="loadingTable"
+            :buttonsActions="buttonsActions"
+            :optionPagination="optionPagination"
+            @view-details="viewDetails"
+            @search-data="searchData"
+            @on-load-data="loadData"
+            @delete="deleteData"
+          />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
+import DataTable from '../components/DataTable.vue'
+import { deliveryNoteConfig, buttonsActions, propsPanelEdition } from '../config-file/deliveryNote/deliveryNoteConfig.js'
 import { date } from 'quasar'
 import VueHtml2pdf from 'vue-html2pdf'
 import { mixins } from '../mixins'
@@ -400,10 +451,29 @@ import { mapGetters } from 'vuex'
 export default {
   mixins: [mixins.containerMixin],
   components: {
-    VueHtml2pdf
+    VueHtml2pdf,
+    DataTable
   },
   data () {
     return {
+      data: [],
+      /**
+       * Options pagination
+       * @type {Object}
+       */
+      optionPagination: {
+        rowsPerPage: 20,
+        rowsNumber: 20,
+        paginate: true,
+        sortBy: 'id',
+        sortOrder: 'desc'
+      },
+      loadingTable: false,
+      deliveryNoteConfig,
+      buttonsActions,
+      propsPanelEdition,
+      dialogDeliveryNote: false,
+      maximizedToggle: true,
       tab: 'qr',
       edit: true,
       visibleLoading: false,
@@ -421,7 +491,36 @@ export default {
       modelPdf: null,
       nameFile: null,
       userSession: null,
-      branchOffice: null
+      branchOffice: null,
+      /**
+       * Params search
+       * @type {Object}
+       */
+      params: {
+        paginated: true,
+        sortBy: 'id',
+        sortOrder: 'desc',
+        perPage: 1,
+        dataSearch: {
+          guide_number: '',
+          destination_address: '',
+          material: '',
+          driver_name: '',
+          driver_document_number: '',
+          vehicle_brand: '',
+          vehicle_model: '',
+          vehicle_plate: '',
+          trailer_plate: '',
+          trailer_model: '',
+          origin_address: '',
+          'client.document_number': '',
+          'client.name': '',
+          'materialSupplier.name': '',
+          'materialSupplier.document_number': '',
+          created_at: '',
+          serie_number: ''
+        }
+      }
     }
   },
   computed: {
@@ -436,18 +535,94 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.guide.date = date.formatDate(Date(), 'YYYY/MM/DD')
-    // this.downloadPDF({ id: 2 })
   },
   methods: {
+    /**
+     * Get all EgressType
+     */
+    getDeliveryNotes (params = this.params) {
+      this.loadingTable = true
+      params.dataEqualFilter = {
+        user_created_id: this.userSession.id
+      }
+      this.$services.getData(['delivery-notes'], params)
+        .then(({ res }) => {
+          this.data = res.data.data
+          this.optionPagination.rowsNumber = res.data.total
+          this.loadingTable = false
+        })
+        .catch(err => {
+          console.log(err)
+          this.data = []
+          this.loadingTable = false
+          this.optionPagination.rowsNumber = 0
+        })
+    },
+    /**
+     * Delete data
+     * @param {Object} data data selected
+     */
+    deleteData (data) {
+      this.$q.dialog({
+        title: 'Confirmación',
+        message: '¿Desea eliminar la tipo estado?',
+        cancel: {
+          label: 'Cancelar',
+          color: 'negative'
+        },
+        persistent: true,
+        ok: {
+          label: 'Aceptar',
+          color: 'primary'
+        }
+      }).onOk(async () => {
+        await this.$services.deleteData(['states', data.id])
+        this.notify(this, 'state.deleteSuccessful', 'positive', 'mood')
+        this.getDeliveryNotes()
+      })
+    },
+    /**
+     * Load data sorting
+     * @param  {Object}
+     */
+    loadData (data) {
+      this.params.page = data.page
+      this.params.sortBy = data.sortBy ?? this.params.sortBy
+      this.params.sortOrder = data.sortOrder
+      this.params.perPage = data.rowsPerPage
+      this.optionPagination = data
+      this.getDeliveryNotes(this.params)
+    },
+    /**
+     * Search EgressType
+     * @param  {Object}
+     */
+    searchData (data) {
+      for (const dataSearch in this.params.dataSearch) {
+        this.params.dataSearch[dataSearch] = data
+      }
+      this.params.page = 1
+      this.getDeliveryNotes()
+    },
     formatDate (data, format) {
       return date.formatDate(data, format)
+    },
+    /**
+     * Set data dialog edition
+     * @param  {Object} data selected
+     */
+    viewDetails (data) {
+      this.downloadPDF(data)
     },
     async downloadPDF (data) {
       const { res } = await this.$services.getOneData(['delivery-notes', data.id])
       this.modelPdf = res.data
       this.nameFile = `${res.data.material_supplier.name}-${res.data.guide_number}`
-      this.$refs.html2Pdf.generatePdf()
+      if (this.modelPdf) {
+        this.$nextTick(() => {
+          this.$refs.html2Pdf.generatePdf()
+        })
+      }
     },
     onProgress (data) {
       this.timeLoading = data
@@ -538,6 +713,9 @@ export default {
       const placas = objectData.PLACAS.split('/')
       objectData.CHUTO = placas[0]
       objectData.BATEA = placas[1]
+      const dateValid = objectData.VALIDEZ.split('A')
+      objectData.start_date = dateValid[0]
+      objectData.deadline = dateValid[1]
       Object.assign(this.guide, objectData)
       this.openQr = false
     },

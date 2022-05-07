@@ -71,9 +71,9 @@
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
+import { stateConfig, buttonsActions, propsPanelEdition } from '../config-file/state/stateConfig.js'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { stateConfig, buttonsActions, propsPanelEdition } from '../config-file/state/stateConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'

@@ -3,6 +3,7 @@
     <q-table
       class="q-table"
       :data="data"
+      :visible-columns="visibleColumns"
       :columns="columnData"
       :title="ucwords($t(`${module}.${title}`))"
       :pagination.sync="paginationConfig"
@@ -31,10 +32,10 @@
             :class="col.class"
           >
             <span v-if="col.traductorOff">
-              {{ ucwords(col.label ? col.label : col.name) }}
+              {{ col.header }}
             </span>
             <span v-else>
-              {{ ucwords((col.label) ? $t(`${module}.${col.label}`) : $t(`${module}.${col.name}`)) }}
+              {{ col.header }}
             </span>
           </q-th>
           <q-th align="center" v-if="action">
@@ -43,9 +44,37 @@
         </q-tr>
       </template>
       <template v-slot:top-right v-if="searchable">
+        <q-select
+          option-value="name"
+          option-label="header"
+          style="min-width: 200px"
+          v-model="visibleColumns"
+          multiple
+          outlined
+          dense
+          options-dense
+          emit-value
+          map-options
+          options-cover
+          :display-value="$q.lang.table.columns"
+          :options="columnData"
+          v-if="activeVisibleColumn"
+        >
+          <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+          <q-item v-bind="itemProps">
+            <q-item-section>
+              <q-item-label v-html="opt.header" />
+            </q-item-section>
+            <q-item-section side>
+              <q-toggle :value="selected" @input="toggleOption(opt)" />
+            </q-item-section>
+          </q-item>
+        </template>
+        </q-select>
         <q-input dense
           debounce="300"
           outlined
+          class="q-ml-sm"
           @input="search"
           v-model="filter"
           :placeholder="ucwords($t('template.search'))">
@@ -143,6 +172,10 @@ export default {
   name: 'DataTable',
   mixins: [mixins.containerMixin],
   props: {
+    activeVisibleColumn: {
+      type: Boolean,
+      default: false
+    },
     /**
      * Actions buttons
      * @type {Array} array buttons
@@ -263,6 +296,8 @@ export default {
   },
   data () {
     return {
+      selected: [],
+      visibleColumns: [],
       bgColor: 0,
       paginationConfig: null,
       confirm: false,
@@ -271,8 +306,7 @@ export default {
        * Content the column
        * @type {Array}
        */
-      columnData: [],
-      selected: []
+      columnData: []
     }
   },
   watch: {
@@ -325,8 +359,15 @@ export default {
     setHeaders () {
       this.column.map(element => {
         element.children.map(tag => {
+          if (tag.tabulated && tag.tabulated.visibleColumn) {
+            this.visibleColumns.push(tag.tabulated.name)
+          }
           if (tag.tabulated && tag.tabulated.visible) {
+            tag.tabulated.header = this.ucwords((tag.tabulated.label) ? this.$t(`${this.module}.${tag.tabulated.label}`) : this.$t(`${this.module}.${tag.tabulated.name}`))
             this.columnData.push(tag.tabulated)
+            if (!this.activeVisibleColumn) {
+              this.visibleColumns.push(tag.tabulated.name)
+            }
           }
         })
       })

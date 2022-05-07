@@ -136,6 +136,25 @@ export default {
     update: 'Modificar',
     user: 'responsable'
   },
+  deliveryNote: {
+    serie_number: 'Correlativo',
+    guide_number: 'Numero de guia',
+    material_supplier: 'Proveedor de material',
+    start_date: 'Fecha de inicio',
+    deadline: 'Fecha de cierre',
+    client: 'cliente',
+    driver_name: 'chofer',
+    material: 'material',
+    created_at: 'fecha de registro',
+    origin_address: 'dirección de origen',
+    destination_address: 'dirección del destino',
+    vehicle_plate: 'placa del vehiculo',
+    vehicle_brand: 'marca del vehiculo',
+    vehicle_model: 'modelo del vehiculo',
+    trailer_model: 'modelo del trailer',
+    trailer_plate: 'placa del trailer',
+    list: 'Notas de entrega'
+  },
   // modules
   modules: {
     users: 'Usuarios',
