@@ -50,6 +50,7 @@ export default {
     editSuccessful: 'modificado exitosamente'
   },
   materialSupplier: {
+    serie_number: 'correlativo',
     seal: 'sello',
     signature: 'firma',
     logo: 'logo',

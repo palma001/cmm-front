@@ -79,6 +79,43 @@ export const materialSupplier = [
       },
       {
         tabulated: {
+          name: 'serie_number',
+          align: 'left',
+          field: row => row.serie_number,
+          sortable: true,
+          visible: false
+        },
+        actionable: {
+          propTag: 'serie_number',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'number',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'email',
           align: 'left',
           field: row => row.email,

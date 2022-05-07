@@ -197,10 +197,10 @@ export const client = [
       {
         actionable: {
           propTag: 'img',
-          addible: true,
-          editable: true,
+          addible: false,
+          editable: false,
           type: 'String',
-          visibleLabel: true,
+          visibleLabel: false,
           component: {
             name: 'b-input',
             props: {
