@@ -7,6 +7,9 @@ export default async ({ Vue, app }) => {
     {
       debug: false,
       connection: config.ipSocket,
+      path: '',
+      withCredentials: true,
+      transports: ['websocket', 'xhr-polling', 'jsonp-polling'],
       vuex: {
         store,
         actionPrefix: 'SOCKET_',

@@ -253,8 +253,11 @@
               <td class="column9 style63 s style64" colspan="23">email: {{ modelPdf.material_supplier.email }} Telf: {{ modelPdf.material_supplier.phone_number }}</td>
             </tr>
             <tr class="row4">
-              <td class="column0 style65 s style73" colspan="21" rowspan="6">ENTREGA DE MATERIAL FERROSO Y/O NO FERROSO</td>
-              <td class="column16 style74 s style76" colspan="3">NOTA DE ENTREGA</td>
+              <td class="style65 style73" colspan="17" rowspan="6">ENTREGA DE MATERIAL FERROSO Y/O NO FERROSO</td>
+              <td class="column16 style74 style76" colspan="4">NOTA DE ENTREGA</td>
+              <td class="column16 style77 style79" colspan="2" rowspan="6">
+                <vue-qr :text="value" :size="120" :logoSrc="`img/${modelPdf.material_supplier.logo}`"/>
+              </td>
             </tr>
             <tr class="row8">
               <td class="column16 style77 n style79" colspan="3">{{ modelPdf.serie_number }}</td>
@@ -272,39 +275,39 @@
               <td class="column16 style77 n style79" colspan="3">{{ formatDate(modelPdf.start_date, 'DD/MM/YYYY') }}</td>
             </tr>
             <tr class="row13">
-              <td class="column0 style43 s style43" colspan="24" >ORIGEN DEL MATERIAL</td>
+              <td class="style43 s style43" colspan="24" >ORIGEN DEL MATERIAL</td>
             </tr>
             <tr class="row15">
-              <td class="column0 style21 s" colspan="3">NOMBRE:</td>
+              <td class="style21 s" colspan="3">NOMBRE:</td>
               <td class="column3 style44 s style44" colspan="18">{{ modelPdf.material_supplier.name }}</td>
               <td class="column16 style28 s style28" colspan="3" rowspan="2">ORDEN DE ENTREGA PROCEDENCIA DE MATERIAL</td>
             </tr>
             <tr class="row16">
-              <td class="column0 style45 s style45" colspan="3">DIRECCION:</td>
+              <td class="style45 s style45" colspan="3">DIRECCION:</td>
               <td class="column3 style46 s style46" colspan="18">{{ modelPdf.material_supplier.address }}</td>
-              <td class="column0 style45 s style45" colspan="3"></td>
+              <td class="style45 s style45" colspan="3"></td>
             </tr>
             <tr class="row18">
-              <td class="column0 style45 s style45" colspan="3">RIF:</td>
+              <td class="style45 s style45" colspan="3">RIF:</td>
               <td class="column3 style54 s style56" colspan="18">{{ modelPdf.material_supplier.document_number }}</td>
               <td class="column16 style53 s style53" colspan="3">{{ modelPdf.material_supplier.name }}</td>
             </tr>
             <tr class="row13">
-              <td class="column0 style43 s style43" colspan="24" >DESTINO DEL MATERIAL</td>
+              <td class="style43 s style43" colspan="24" >DESTINO DEL MATERIAL</td>
             </tr>
             <tr class="row21">
-              <td class="column0 style21 s" colspan="3">NOMBRE:</td>
+              <td class="style21 s" colspan="3">NOMBRE:</td>
               <td class="column3 style44 s style44" colspan="21">{{ modelPdf.client.name }}</td>
             </tr>
             <tr class="row22">
-              <td class="column0 style21 s" colspan="3">DIRECCION</td>
+              <td class="style21 s" colspan="3">DIRECCION</td>
               <td class="column3 style44 s style44" colspan="21">{{ modelPdf.destination_address }}</td>
             <tr class="row26">
-              <td class="column0 style45 s style45" colspan="3">RIF:</td>
+              <td class="style45 s style45" colspan="3">RIF:</td>
               <td class="column3 style44 s style44" colspan="21">{{ modelPdf.client.document_number }}</td>
             </tr>
             <tr class="row28">
-              <td class="column0 style47 s style47" colspan="24">MATERIAL</td>
+              <td class="style47 s style47" colspan="24">MATERIAL</td>
             </tr>
             <tr class="row28">
               <td class="column3 style44 s style44" colspan="24">{{ modelPdf.material }}</td>
@@ -320,59 +323,59 @@
               <td class="column3 style44 s style44" colspan="8"></td>
             </tr>
             <tr class="row13">
-              <td class="column0 style43 s style43" colspan="24" >TRANSPORTE</td>
+              <td class="style43 s style43" colspan="24" >TRANSPORTE</td>
             </tr>
             <tr class="row32">
-              <td class="column0 style34 s style36" colspan="8">NOMBRE DE LA EMPRESA DE TRANSPORTE:</td>
+              <td class="style34 s style36" colspan="8">NOMBRE DE LA EMPRESA DE TRANSPORTE:</td>
               <td class="column10 style37 s style37" colspan="16">{{ modelPdf.material_supplier.name }}</td>
             </tr>
             <tr class="row33">
-              <td class="column0 style38 s style38" colspan="2">RIF:</td>
+              <td class="style38 s style38" colspan="2">RIF:</td>
               <td class="column4 style40 s style40" colspan="22">{{ modelPdf.material_supplier.document_number }}</td>
             </tr>
             <tr class="row34">
-              <td class="column0 style38 s style38" colspan="2">CONDUCTOR:</td>
+              <td class="style38 s style38" colspan="2">CONDUCTOR:</td>
               <td class="column4 style39 s style39" colspan="12">{{ modelPdf.driver_name }}</td>
               <td class="column14 style38 s style38" colspan="4">C.I.:</td>
               <td class="column18 style39 n style39" colspan="6">{{ modelPdf.driver_document_number }}</td>
             </tr>
             <tr class="row35">
-              <td class="column0 style41 s style41" colspan="2">MARCA DE VEHÍCULO:</td>
+              <td class="style41 s style41" colspan="2">MARCA DE VEHÍCULO:</td>
               <td class="column4 style39 s style39" colspan="12">{{ modelPdf.vehicle_brand }}</td>
               <td class="column14 style41 s style41" colspan="4">MODELO:</td>
               <td class="column18 style42 n style42" colspan="6">{{ modelPdf.vehicle_model }}</td>
             </tr>
             <tr class="row36">
-              <td class="column0 style22 s" colspan="2">PLACA DEL CHUTO:</td>
+              <td class="style22 s" colspan="2">PLACA DEL CHUTO:</td>
               <td class="column4 style39 s style39" colspan="12">{{ modelPdf.vehicle_plate }}</td>
               <td class="column14 style38 s style38" colspan="4">PLACA DE BATEA:</td>
               <td class="column18 style39 s style39" colspan="6">{{ modelPdf.trailer_plate }}</td>
             </tr>
             <tr class="row38">
-              <td class="column0 style23 s style23" colspan="8">PROVEEDOR </td>
+              <td class="style23 s style23" colspan="8">PROVEEDOR </td>
               <td class="column8 style23 s style23" colspan="8">TRANSPORTISTA</td>
               <td class="column16 style23 s style23" colspan="8">RECIBIDO EN </td>
             </tr>
             <tr class="row39">
-              <td class="column0 style27 s style27" colspan="8">DESPACHADO POR:</td>
+              <td class="style27 s style27" colspan="8">DESPACHADO POR:</td>
               <td class="column8 style27 s style27" colspan="8">ENTREGADO POR:</td>
               <td class="column16 style28 s style28" colspan="8">RECIPLAST DE VENEZUELA, C.A. POR:</td>
             </tr>
             <tr class="row45">
-              <td class="column0 style24 s style25 q-gutter-md" colspan="8">
-                <img class="seal" :src="`img/${modelPdf.material_supplier.seal}`" />
+              <td class="style24 s style25 q-gutter-md" colspan="8">
                 <img class="signature" :src="`img/${modelPdf.material_supplier.signature}`" />
+                <img class="seal" :src="`img/${modelPdf.material_supplier.seal}`" />
               </td>
               <td class="column8 style25 s style25" colspan="8"></td>
               <td class="column16 style25 s style26" colspan="8"></td>
             </tr>
             <tr class="row45">
-              <td class="column0 style24 s style25" colspan="8">FIRMA, SELLO Y HUELLA</td>
+              <td class="style24 s style25" colspan="8">FIRMA, SELLO Y HUELLA</td>
               <td class="column8 style25 s style25" colspan="8">FIRMA, SELLO Y HUELLA</td>
               <td class="column16 style25 s style26" colspan="8">FIRMA, SELLO Y HUELLA</td>
             </tr>
             <tr class="row13">
-              <td class="column0 style43 s style43" colspan="24" >OBSERVACIONES Y/O COMENTARIOS:</td>
+              <td class="style43 s style43" colspan="24" >OBSERVACIONES Y/O COMENTARIOS:</td>
             </tr>
             <tr class="row28">
               <td class="column3 style44 s style44" colspan="24"></td>
@@ -465,19 +468,26 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import { mapGetters } from 'vuex'
+import { io } from 'socket.io-client'
+import config from '../config'
+import VueQr from 'vue-qr/src/packages/vue-qr.vue'
+const socket = io(config.ipSocket)
 export default {
   mixins: [mixins.containerMixin],
   components: {
     VueHtml2pdf,
     DataTable,
-    DynamicFormEdition
+    DynamicFormEdition,
+    VueQr
   },
   data () {
     return {
+      guideSocket: null,
       deliveryServices,
       editDialog: false,
       loadingForm: false,
       data: [],
+      value: null,
       /**
        * Options pagination
        * @type {Object}
@@ -541,7 +551,8 @@ export default {
           created_at: '',
           serie_number: ''
         }
-      }
+      },
+      modelQr: ['material_supplier']
     }
   },
   computed: {
@@ -553,16 +564,30 @@ export default {
       return this.timeLoading
     }
   },
+  watch: {
+    guideSocket (data) {
+      this.guide = data
+    }
+  },
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.setRelationalData(this.deliveryServices, [], this)
+    this.eventSocket()
   },
   methods: {
+    /**
+     * Init events socket
+     */
+    eventSocket () {
+      socket.on(`set-scanner-delivery-note-${this.userSession.id}`, (arg) => {
+        this.guideSocket = { ...this.guide, ...arg }
+        this.openQr = false
+      })
+    },
     editDeliveryNote (data) {
       this.editDialog = true
       this.propsPanelEdition.data = data
-      console.log(data)
     },
     /**
      * Get all EgressType
@@ -659,10 +684,24 @@ export default {
     viewDetails (data) {
       this.downloadPDF(data)
     },
+    modelQrPdf (data) {
+      const model = data
+      for (const key in data) {
+        if (Object.hasOwnProperty.call(data, key)) {
+          this.modelQr.forEach((modelQrKey) => {
+            if (data[modelQrKey]) {
+              delete model[modelQrKey]
+            }
+          })
+        }
+      }
+      return model
+    },
     async downloadPDF (data) {
       const { res } = await this.$services.getOneData(['delivery-notes', data.id])
       this.modelPdf = res.data
       this.nameFile = `${res.data.material_supplier.name}-${res.data.guide_number}`
+      this.value = JSON.stringify(this.modelQrPdf(this.modelPdf))
       if (this.modelPdf) {
         this.$nextTick(() => {
           this.$refs.html2Pdf.generatePdf()
@@ -761,8 +800,8 @@ export default {
       const dateValid = objectData.VALIDEZ.split('A')
       objectData.start_date = dateValid[0]
       objectData.deadline = dateValid[1]
-      Object.assign(this.guide, objectData)
-      this.openQr = false
+      objectData.userSession = this.userSession.id
+      socket.emit('scanner-delivery-note', objectData)
     },
     /**
      * Reset validation
