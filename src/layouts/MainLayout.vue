@@ -1,6 +1,6 @@
 <template>
   <LayoutComponent
-    titleApp="CMM"
+    titleApp="DBA"
     titleMenu="Opciones"
     :data="modules"
     @logout="logout"
