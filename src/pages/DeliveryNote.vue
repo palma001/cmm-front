@@ -430,6 +430,7 @@
             :buttonsActions="buttonsActions"
             :optionPagination="optionPagination"
             @view-details="viewDetails"
+            @edit="editDeliveryNote"
             @search-data="searchData"
             @on-load-data="loadData"
             @delete="deleteData"
@@ -437,25 +438,45 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog
+      position="right"
+      persistent
+      full-height
+      v-model="editDialog"
+    >
+      <dynamic-form-edition
+        module="deliveryNote"
+        :propsPanelEdition="propsPanelEdition"
+        :config="deliveryNoteConfig"
+        :loading="loadingForm"
+        @cancel="editDialog = false"
+        @update="update"
+      />
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
 import DataTable from '../components/DataTable.vue'
-import { deliveryNoteConfig, buttonsActions, propsPanelEdition } from '../config-file/deliveryNote/deliveryNoteConfig.js'
+import { deliveryNoteConfig, buttonsActions, propsPanelEdition, deliveryServices } from '../config-file/deliveryNote/deliveryNoteConfig.js'
 import { date } from 'quasar'
 import VueHtml2pdf from 'vue-html2pdf'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
+import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import { mapGetters } from 'vuex'
 export default {
   mixins: [mixins.containerMixin],
   components: {
     VueHtml2pdf,
-    DataTable
+    DataTable,
+    DynamicFormEdition
   },
   data () {
     return {
+      deliveryServices,
+      editDialog: false,
+      loadingForm: false,
       data: [],
       /**
        * Options pagination
@@ -535,8 +556,14 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.setRelationalData(this.deliveryServices, [], this)
   },
   methods: {
+    editDeliveryNote (data) {
+      this.editDialog = true
+      this.propsPanelEdition.data = data
+      console.log(data)
+    },
     /**
      * Get all EgressType
      */
@@ -556,6 +583,24 @@ export default {
           this.data = []
           this.loadingTable = false
           this.optionPagination.rowsNumber = 0
+        })
+    },
+    /**
+     * Update Coin
+     * @param  {Object}
+     */
+    update (data) {
+      data.user_updated_id = this.userSession.id
+      this.loadingForm = true
+      this.$services.putData(['delivery-notes', data.id], data)
+        .then(({ res }) => {
+          this.editDialog = false
+          this.loadingForm = false
+          this.getConcepts(this.params)
+          this.notify(this, 'deliveryNotes.editSuccessful', 'positive', 'mood')
+        })
+        .catch(() => {
+          this.loadingForm = false
         })
     },
     /**

@@ -16,7 +16,7 @@ export const deliveryNoteConfig = [
         actionable: {
           propTag: 'serie_number',
           addible: false,
-          editable: false,
+          editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -24,7 +24,8 @@ export const deliveryNoteConfig = [
             props: {
               type: 'text',
               dense: true,
-              outlined: true
+              outlined: true,
+              disable: true
             },
             class: {
               'col-xs-12': true,
@@ -90,17 +91,20 @@ export const deliveryNoteConfig = [
           visibleColumn: true
         },
         actionable: {
-          propTag: 'guide_number',
+          propTag: 'material_supplier',
           addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
-            name: 'b-input',
+            name: 'b-search-select',
             props: {
-              type: 'text',
-              dense: true,
-              outlined: true
+              data: [],
+              outlined: true,
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true
             },
             class: {
               'col-xs-12': true,
@@ -128,17 +132,20 @@ export const deliveryNoteConfig = [
           visibleColumn: true
         },
         actionable: {
-          propTag: 'guide_number',
+          propTag: 'client',
           addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
-            name: 'b-input',
+            name: 'b-search-select',
             props: {
-              type: 'text',
-              dense: true,
-              outlined: true
+              data: [],
+              outlined: true,
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true
             },
             class: {
               'col-xs-12': true,
@@ -250,7 +257,7 @@ export const deliveryNoteConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
+              type: 'date',
               dense: true,
               outlined: true
             },
@@ -288,7 +295,7 @@ export const deliveryNoteConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
+              type: 'date',
               dense: true,
               outlined: true
             },
@@ -621,10 +628,17 @@ export const deliveryNoteConfig = [
 */
 export const buttonsActions = [
   {
+    color: 'primary',
+    icon: 'edit',
+    size: 'sm',
+    event: 'edit'
+  },
+  {
     color: 'secondary',
     icon: 'print',
     size: 'sm',
-    event: 'view-details'
+    event: 'view-details',
+    class: 'q-ml-xs'
   }
 ]
 
@@ -683,4 +697,31 @@ export const propsPanelEdition = {
       }
     }
   ]
+}
+export const relationalDataConfiguration = [
+  {
+    targetPropTag: 'client',
+    entity: 'client',
+    services: ['clients'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'material_supplier',
+    entity: 'material_supplier',
+    services: ['material-suppliers'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  }
+]
+
+export const deliveryServices = {
+  props: propsPanelEdition,
+  config: deliveryNoteConfig,
+  propData: 'data',
+  relationalData: relationalDataConfiguration
 }

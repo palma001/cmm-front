@@ -154,7 +154,10 @@ export default {
     vehicle_model: 'modelo del vehiculo',
     trailer_model: 'modelo del trailer',
     trailer_plate: 'placa del trailer',
-    list: 'Notas de entrega de material'
+    list: 'Notas de entrega de material',
+    update: 'Modificar',
+    reset: 'limpiar',
+    cancel: 'cancelar'
   },
   // modules
   modules: {
