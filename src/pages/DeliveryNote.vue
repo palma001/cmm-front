@@ -78,7 +78,7 @@
             <q-input outlined v-model="guide.GUIA" label="Guía" :disable="edit" dense/>
           </div>
           <div class="col-sm-4 col-md-4 col-lg-4 col-xs-12">
-            <q-input outlined v-model="guide.start_date" label="Fecha de inicio" :disable="edit" dense/>
+            <q-input outlined type="date" v-model="guide.start_date" hint="Fecha de inicio" :disable="edit" dense :rules="[val => val && val !== null || 'Este campo es requerido']"/>
           </div>
         </q-card-section>
       </q-card>
