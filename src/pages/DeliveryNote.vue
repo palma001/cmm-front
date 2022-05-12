@@ -255,8 +255,8 @@
             <tr class="row4">
               <td class="style65 style73" colspan="17" rowspan="6">ENTREGA DE MATERIAL FERROSO Y/O NO FERROSO</td>
               <td class="column16 style74 style76" colspan="4">NOTA DE ENTREGA</td>
-              <td class="column16 style77 style79" colspan="2" rowspan="6">
-                <vue-qr :text="value" :size="120" :logoSrc="`img/${modelPdf.material_supplier.logo}`"/>
+              <td class="column16 style77 style79 q-pt-sm" colspan="2" rowspan="6">
+                <img id="canvas" width="130" height="130"/>
               </td>
             </tr>
             <tr class="row8">
@@ -362,7 +362,7 @@
               <td class="column16 style28 s style28" colspan="8">RECIPLAST DE VENEZUELA, C.A. POR:</td>
             </tr>
             <tr class="row45">
-              <td class="style24 s style25 q-gutter-md" colspan="8">
+              <td class="style24 s style25 q-gutter-md" colspan="12">
                 <img class="signature" :src="`img/${modelPdf.material_supplier.signature}`" />
                 <img class="seal" :src="`img/${modelPdf.material_supplier.seal}`" />
               </td>
@@ -378,7 +378,9 @@
               <td class="style43 s style43" colspan="24" >OBSERVACIONES Y/O COMENTARIOS:</td>
             </tr>
             <tr class="row28">
-              <td class="column3 style44 s style44" colspan="24"></td>
+              <td class="column3 style44 s style44" colspan="24">
+                <div style="height: 100px"></div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -469,16 +471,16 @@ import { GETTERS } from '../store/module-login/name.js'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import { mapGetters } from 'vuex'
 import { io } from 'socket.io-client'
+import CryptoJS from 'crypto-js'
 import config from '../config'
-import VueQr from 'vue-qr/src/packages/vue-qr.vue'
+import QRCode from 'qrcode'
 const socket = io(config.ipSocket)
 export default {
   mixins: [mixins.containerMixin],
   components: {
     VueHtml2pdf,
     DataTable,
-    DynamicFormEdition,
-    VueQr
+    DynamicFormEdition
   },
   data () {
     return {
@@ -684,29 +686,38 @@ export default {
     viewDetails (data) {
       this.downloadPDF(data)
     },
-    modelQrPdf (data) {
-      const model = data
-      for (const key in data) {
-        if (Object.hasOwnProperty.call(data, key)) {
-          this.modelQr.forEach((modelQrKey) => {
-            if (data[modelQrKey]) {
-              delete model[modelQrKey]
-            }
-          })
-        }
-      }
-      return model
-    },
+    /**
+     * Dowlaod Pdf
+     * @param {data} data delivery note
+     */
     async downloadPDF (data) {
       const { res } = await this.$services.getOneData(['delivery-notes', data.id])
       this.modelPdf = res.data
       this.nameFile = `${res.data.material_supplier.name}-${res.data.guide_number}`
-      this.value = JSON.stringify(this.modelQrPdf(this.modelPdf))
+      const ciphertext = CryptoJS.SHA512(JSON.stringify(this.modelPdf), process.env.SECRET_KEY).toString()
+      this.value = ciphertext
       if (this.modelPdf) {
         this.$nextTick(() => {
+          this.generateQr(ciphertext)
           this.$refs.html2Pdf.generatePdf()
         })
       }
+    },
+    /**
+     * Generate qr code
+     * @param {code} data json delivery note
+     */
+    generateQr (code) {
+      const opts = {
+        errorCorrectionLevel: 'H',
+        type: 'image/jpeg',
+        margin: 2
+      }
+      QRCode.toDataURL(code, opts, function (error, url) {
+        if (error) throw error
+        var img = document.getElementById('canvas')
+        img.src = url
+      })
     },
     onProgress (data) {
       this.timeLoading = data
