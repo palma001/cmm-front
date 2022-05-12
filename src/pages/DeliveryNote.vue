@@ -665,6 +665,25 @@ export default {
       this.optionPagination = data
       this.getDeliveryNotes(this.params)
     },
+    modelJson (data) {
+      return {
+        TITULO: 'CORPOEZ GUÍA DE MOVILIZACÍON',
+        GUIA: data.guide_number,
+        EMPRESA: data.material_supplier.name,
+        DOCUEMNTO: data.material_supplier.document_number,
+        CONDUCTOR: data.driver_name,
+        CI: data.driver_document_number,
+        VEHICULO: data.vehicle_brand,
+        PLACA_VEHICULO: `${data.vehicle_plate}`,
+        MODELO_VEHICULO: `${data.vehicle_model}`,
+        PLACA_TRILER: `${data.trailer_plate}`,
+        MODEL_TRILER: `${data.trailer_model}`,
+        ORIGEN: data.origin_address,
+        DESTINO: data.destination_address,
+        FECHA_INICIO: data.start_date,
+        FECHA_FIN: data.deadline
+      }
+    },
     /**
      * Search EgressType
      * @param  {Object}
@@ -694,8 +713,8 @@ export default {
       const { res } = await this.$services.getOneData(['delivery-notes', data.id])
       this.modelPdf = res.data
       this.nameFile = `${res.data.material_supplier.name}-${res.data.guide_number}`
-      const ciphertext = CryptoJS.SHA512(JSON.stringify(this.modelPdf), process.env.SECRET_KEY).toString()
-      this.value = ciphertext
+      const ciphertext = this.cryptojs(JSON.stringify(this.modelJson(this.modelPdf)))
+      console.log(ciphertext)
       if (this.modelPdf) {
         this.$nextTick(() => {
           this.generateQr(ciphertext)
@@ -703,13 +722,32 @@ export default {
         })
       }
     },
+    cryptojs (data) {
+      data = data.replaceAll('"', '')
+      data = data.replaceAll('{', '')
+      data = data.replaceAll('}', '')
+      var iv = CryptoJS.enc.Base64.parse('')
+      data = data.slice()
+      return CryptoJS.AES.encrypt(data, 'qbits', {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+      }).toString()
+    },
+    decryptData (data) {
+      var iv = CryptoJS.enc.Base64.parse('')
+      return CryptoJS.AES.decrypt(data, 'qbits', {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+      }).toString(CryptoJS.enc.Utf8)
+    },
     /**
      * Generate qr code
      * @param {code} data json delivery note
      */
     generateQr (code) {
       const opts = {
-        errorCorrectionLevel: 'H',
         type: 'image/jpeg',
         margin: 2
       }
@@ -791,6 +829,10 @@ export default {
       this.guide.material_supplier_name = data.name
       this.guide.serie_number = data.serie_number
     },
+    /**
+     * Client Selected
+     * @param {Object} data Client selected
+     */
     selectedClient (data) {
       this.guide.client_id = data.id
       this.guide.client_document_number = data.document_number
