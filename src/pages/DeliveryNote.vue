@@ -713,8 +713,7 @@ export default {
       const { res } = await this.$services.getOneData(['delivery-notes', data.id])
       this.modelPdf = res.data
       this.nameFile = `${res.data.material_supplier.name}-${res.data.guide_number}`
-      const ciphertext = this.cryptojs(JSON.stringify(this.modelJson(this.modelPdf)))
-      console.log(ciphertext)
+      const ciphertext = this.encrypt(JSON.stringify(this.modelJson(this.modelPdf)))
       if (this.modelPdf) {
         this.$nextTick(() => {
           this.generateQr(ciphertext)
@@ -722,7 +721,11 @@ export default {
         })
       }
     },
-    cryptojs (data) {
+    /**
+     * Dncrypt data
+     * @param {String} data json data
+     */
+    encrypt (data) {
       data = data.replaceAll('"', '')
       data = data.replaceAll('{', '')
       data = data.replaceAll('}', '')
@@ -734,6 +737,10 @@ export default {
         padding: CryptoJS.pad.Pkcs7
       }).toString()
     },
+    /**
+     * Decrypt data
+     * @param {String} data encrypt data
+     */
     decryptData (data) {
       var iv = CryptoJS.enc.Base64.parse('')
       return CryptoJS.AES.decrypt(data, 'qbits', {
