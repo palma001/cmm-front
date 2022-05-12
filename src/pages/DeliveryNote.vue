@@ -732,7 +732,7 @@ export default {
       data = data.replaceAll(',', '\n')
       var iv = CryptoJS.enc.Base64.parse('')
       data = data.slice()
-      return CryptoJS.AES.encrypt(data, 'qbits', {
+      return CryptoJS.AES.encrypt(data, process.env.SECRET_KEY, {
         iv: iv,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
@@ -744,7 +744,7 @@ export default {
      */
     decryptData (data) {
       var iv = CryptoJS.enc.Base64.parse('')
-      return CryptoJS.AES.decrypt(data, 'qbits', {
+      return CryptoJS.AES.decrypt(data, process.env.SECRET_KEY, {
         iv: iv,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
