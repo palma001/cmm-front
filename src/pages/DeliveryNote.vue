@@ -729,6 +729,7 @@ export default {
       data = data.replaceAll('"', '')
       data = data.replaceAll('{', '')
       data = data.replaceAll('}', '')
+      data = data.replaceAll(',', '\n')
       var iv = CryptoJS.enc.Base64.parse('')
       data = data.slice()
       return CryptoJS.AES.encrypt(data, 'qbits', {
@@ -845,23 +846,28 @@ export default {
       this.guide.client_document_number = data.document_number
     },
     onDone (data) {
-      const dataEnter = data.split('\n')
-      const objectData = {}
-      dataEnter.map(data => {
-        const data2 = data.split(':')
-        if (data2.length === 2) {
-          const stringFormated = data2[0].replace(/"/g, '-').replaceAll('.', '_').replaceAll(' ', '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-          objectData[stringFormated] = data2[1]
-        }
-      })
-      const placas = objectData.PLACAS.split('/')
-      objectData.CHUTO = placas[0]
-      objectData.BATEA = placas[1]
-      const dateValid = objectData.VALIDEZ.split('A')
-      objectData.start_date = dateValid[0]
-      objectData.deadline = dateValid[1]
-      objectData.userSession = this.userSession.id
-      socket.emit('scanner-delivery-note', objectData)
+      try {
+        const dataEnter = data.split('\n')
+        const objectData = {}
+        dataEnter.map(data => {
+          const data2 = data.split(':')
+          if (data2.length === 2) {
+            const stringFormated = data2[0].replace(/"/g, '-').replaceAll('.', '_').replaceAll(' ', '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            objectData[stringFormated] = data2[1]
+          }
+        })
+        const placas = objectData.PLACAS.split('/')
+        objectData.CHUTO = placas[0]
+        objectData.BATEA = placas[1]
+        const dateValid = objectData.VALIDEZ.split('A')
+        objectData.start_date = dateValid[0]
+        objectData.deadline = dateValid[1]
+        objectData.userSession = this.userSession.id
+        socket.emit('scanner-delivery-note', objectData)
+      } catch (error) {
+        console.log(error)
+        alert(this.decryptData(data))
+      }
     },
     /**
      * Reset validation
