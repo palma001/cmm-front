@@ -3,7 +3,7 @@
     <div id="app">
       <PlaidLink
         clientName="APPLICATION NAME"
-        env="development"
+        env="sandbox"
         :link_token="linkPlaid.link_token"
         :public_key="linkPlaid.request_id"
         :products="['auth','transactions']"

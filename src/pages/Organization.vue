@@ -1,76 +1,110 @@
 <template>
-  <q-page padding>
-    <div class="row q-gutter-y-sm">
-      <div class="col-12 text-right">
-        <q-btn
-          color="primary"
-          icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('organization.add')"
-          @click="addDialog = true"
-        >
-          <q-tooltip
-            anchor="center right"
-            self="center left"
-            :offset="[10, 10]"
-            v-if="$q.screen.lt.sm"
+  <div>
+    <q-page padding>
+      <div class="row q-gutter-y-sm">
+        <div class="col-12 q-gutter-x-sm text-center">
+          <q-btn
+            :color="drawerLeft ? 'negative' : 'secondary'"
+            :icon="drawerLeft ? 'close' : 'filter_alt'"
+            @click="drawerLeft = !drawerLeft"
           >
-            {{
-              ucwords($t('organization.add'))
-            }}
-          </q-tooltip>
-      </q-btn>
+            <q-tooltip
+              anchor="center right"
+              self="center left"
+              :offset="[10, 10]"
+              v-if="$q.screen.lt.sm"
+            >
+              {{ ucwords($t('organization.filter')) }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn
+            color="primary"
+            icon="add_circle"
+            @click="addDialog = true"
+          >
+            <q-tooltip
+              anchor="center right"
+              self="center left"
+              :offset="[10, 10]"
+              v-if="$q.screen.lt.sm"
+            >
+              {{ ucwords($t('organization.add')) }}
+            </q-tooltip>
+          </q-btn>
+        </div>
+        <div class="col-12">
+          <data-table
+            title="list"
+            module="organization"
+            searchable
+            action
+            :column="organizationConfig"
+            :data="data"
+            :loading="loadingTable"
+            :buttonsActions="buttonsActions"
+            :optionPagination="optionPagination"
+            @view-details="viewDetails"
+            @search-data="searchData"
+            @on-load-data="loadData"
+            @delete="deleteData"
+          />
+        </div>
       </div>
-      <div class="col-12">
-        <data-table
-          title="list"
+      <q-dialog
+        position="right"
+        persistent
+        full-height
+        v-model="editDialog"
+      >
+        <dynamic-form-edition
           module="organization"
-          searchable
-          action
-          :column="organizationConfig"
-          :data="data"
-          :loading="loadingTable"
-          :buttonsActions="buttonsActions"
-          :optionPagination="optionPagination"
-          @view-details="viewDetails"
-          @search-data="searchData"
-          @on-load-data="loadData"
-          @delete="deleteData"
+          :propsPanelEdition="propsPanelEdition"
+          :config="organizationConfig"
+          :loading="loadingForm"
+          @cancel="editDialog = false"
+          @update="update"
         />
-      </div>
-    </div>
-    <q-dialog
-      position="right"
-      persistent
-      full-height
-      v-model="editDialog"
+      </q-dialog>
+      <q-dialog
+        position="right"
+        persistent
+        full-height
+        v-model="addDialog"
+      >
+        <dynamic-form
+          module="organization"
+          :config="organizationConfig"
+          :loading="loadingForm"
+          @cancel="addDialog = false"
+          @save="save"
+        />
+      </q-dialog>
+    </q-page>
+    <q-drawer
+      v-model="drawerLeft"
+      :width="350"
+      :breakpoint="700"
+      side="right"
+      class="bg-primary text-white"
     >
-      <dynamic-form-edition
-        module="organization"
-        :propsPanelEdition="propsPanelEdition"
-        :config="organizationConfig"
-        :loading="loadingForm"
-        @cancel="editDialog = false"
-        @update="update"
-      />
-    </q-dialog>
-    <q-dialog
-      position="right"
-      persistent
-      full-height
-      v-model="addDialog"
-    >
-      <dynamic-form
-        module="organization"
-        :config="organizationConfig"
-        :loading="loadingForm"
-        @cancel="addDialog = false"
-        @save="save"
-      />
-    </q-dialog>
-  </q-page>
+      <q-scroll-area class="fit">
+        <div class="q-pa-sm">
+          <dynamic-filter
+            module="organization"
+            :config="organizationConfig"
+            :loading="loadingForm"
+            @cancel="drawerLeft = false"
+            @save="save"
+            @filter="filter"
+          />
+        </div>
+      </q-scroll-area>
+    </q-drawer>
+  </div>
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
+import DynamicFilter from '../components/DynamicFilter.vue'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import { organizationConfig, buttonsActions, propsPanelEdition } from '../config-file/organization/organizationConfig.js'
@@ -82,10 +116,12 @@ export default {
   components: {
     DataTable,
     DynamicForm,
-    DynamicFormEdition
+    DynamicFormEdition,
+    DynamicFilter
   },
   data () {
     return {
+      drawerLeft: false,
       /**
        * Table Buttons
        * @type {Array}
@@ -169,6 +205,11 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    filter (data) {
+      console.log(data)
+      this.params.dataFilter = data
+      this.getOrganizations(this.params)
+    },
     /**
      * Set data dialog edition
      * @param  {Object} data selected

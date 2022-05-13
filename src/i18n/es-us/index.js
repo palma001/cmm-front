@@ -263,6 +263,8 @@ export default {
     concept_type: 'Tipo de concepto'
   },
   organization: {
+    close: 'cerrar',
+    filter: 'Filtros',
     newOrganization: 'nuevo organización',
     add: 'agregar organización',
     update: 'Modificar',

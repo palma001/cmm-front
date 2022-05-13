@@ -440,7 +440,6 @@
             @edit="editDeliveryNote"
             @search-data="searchData"
             @on-load-data="loadData"
-            @delete="deleteData"
           />
         </q-card-section>
       </q-card>

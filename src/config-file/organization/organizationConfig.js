@@ -15,6 +15,7 @@ export const organizationConfig = [
           propTag: 'name',
           addible: true,
           editable: true,
+          filterable: true,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -52,6 +53,7 @@ export const organizationConfig = [
           propTag: 'description',
           addible: true,
           editable: true,
+          filterable: true,
           type: 'String',
           visibleLabel: true,
           component: {
