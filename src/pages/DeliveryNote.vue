@@ -1,7 +1,9 @@
 <template>
   <q-page padding>
     <div class="row">
-      <div class="col-6 text-h5">Nota de entrega</div>
+      <div class="col-6 text-h5">
+        Nota de entrega
+      </div>
       <div class="col-6 text-right q-gutter-sm">
         <q-btn color="primary" icon="list" dense @click="dialogDeliveryNote = true"/>
         <q-btn
