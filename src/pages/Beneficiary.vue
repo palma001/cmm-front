@@ -38,7 +38,7 @@
         />
       </div>
     </div>
-        <q-dialog
+    <q-dialog
       position="right"
       persistent
       full-height
@@ -86,8 +86,20 @@ export default {
   },
   data () {
     return {
+      /**
+       * Config file panel edition
+       * @type {Obejct}
+       */
       propsPanelEdition,
+      /**
+       * Loading form
+       * @type {Boolean}
+       */
       loadingForm: false,
+      /**
+       * Config file buttons table
+       * @type {Array}
+       */
       buttonsActions,
       /**
        * Selected data
@@ -146,10 +158,7 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: [],
-      beneficiarySave: {},
-      loadingApi: false,
-      titleForm: 'Agregar Trabajador'
+      data: []
     }
   },
   created () {
@@ -164,10 +173,6 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
-    cancel () {
-      this.addDialog = false
-      this.beneficiarySave = {}
-    },
     /**
      * Set data dialog edition
      * @param  {Object} data selected

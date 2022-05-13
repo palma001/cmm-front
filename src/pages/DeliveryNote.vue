@@ -484,12 +484,31 @@ export default {
   },
   data () {
     return {
+      /**
+       * Guide scanner data
+       * @type {Object}
+       */
       guideSocket: null,
+      /**
+       * Select panel edition
+       * @type {Array}
+       */
       deliveryServices,
+      /**
+       * Dialog status
+       * @type {Boolean}
+       */
       editDialog: false,
+      /**
+       * Loading dialog status
+       * @type {Boolean}
+       */
       loadingForm: false,
+      /**
+       * Table delivery note data
+       * @type {Array}
+       */
       data: [],
-      value: null,
       /**
        * Options pagination
        * @type {Object}
@@ -501,29 +520,104 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc'
       },
+      /**
+       * Loading table status
+       * @type {Boolean}
+       */
       loadingTable: false,
+      /**
+       * Config file table delivery note
+       * @type {Array}
+       */
       deliveryNoteConfig,
+      /**
+       * Config file buttons delivery note
+       * @type {Array}
+       */
       buttonsActions,
+      /**
+       * Config file panel edition delivery note
+       * @type {Array}
+       */
       propsPanelEdition,
+      /**
+       * Model list delivery note
+       * @type {Boolean}
+       */
       dialogDeliveryNote: false,
+      /**
+       * Maximized model delivery note
+       * @type {Boolean}
+       */
       maximizedToggle: true,
+      /**
+       * Tab model qr
+       * @type {String}
+       */
       tab: 'qr',
+      /**
+       * Status dialig the panel edition
+       */
       edit: true,
+      /**
+       * Visibility loading
+       * @type {Boolean}
+       */
       visibleLoading: false,
+      /**
+       * Dropdown list of material suppliers
+       * @type {Array}
+       */
       materialSuppliers: [],
+      /**
+       * Guide data
+       * @type {Object}
+       */
       guide: {},
+      /**
+       * Dropdown list of states
+       * @type {Array}
+       */
       states: [],
+      /**
+       * Selected state
+       * @type {Object}
+       */
       state: null,
+      /**
+       * Selected client
+       * @type {Object}
+       */
       client: {},
+      /**
+       * Dropdown list of clients
+       * @type {Array}
+       */
       clients: [],
       /**
        * Open dialog qr
        * @type {Boolean}
        */
       openQr: false,
+      /**
+       * Selected guide to show in pdf
+       * @type {Object}
+       */
       modelPdf: null,
-      nameFile: null,
+      /**
+       * Name pdf
+       * @type {String}
+       */
+      nameFile: '',
+      /**
+       * User session
+       * @type {Object}
+       */
       userSession: null,
+      /**
+       * Branch office session
+       * @type {Object}
+       */
       branchOffice: null,
       /**
        * Params search
@@ -553,8 +647,7 @@ export default {
           created_at: '',
           serie_number: ''
         }
-      },
-      modelQr: ['material_supplier']
+      }
     }
   },
   computed: {
@@ -587,12 +680,17 @@ export default {
         this.openQr = false
       })
     },
+    /**
+     * Open edition dialog
+     * @param {Object} data Delivery note selected
+     */
     editDeliveryNote (data) {
       this.editDialog = true
       this.propsPanelEdition.data = data
     },
     /**
-     * Get all EgressType
+     * Get all Delivery Notes
+     * @param {params} params params to request
      */
     getDeliveryNotes (params = this.params) {
       this.loadingTable = true
@@ -613,7 +711,7 @@ export default {
         })
     },
     /**
-     * Update Coin
+     * Update Delivery note
      * @param  {Object}
      */
     update (data) {
@@ -631,29 +729,6 @@ export default {
         })
     },
     /**
-     * Delete data
-     * @param {Object} data data selected
-     */
-    deleteData (data) {
-      this.$q.dialog({
-        title: 'Confirmación',
-        message: '¿Desea eliminar la tipo estado?',
-        cancel: {
-          label: 'Cancelar',
-          color: 'negative'
-        },
-        persistent: true,
-        ok: {
-          label: 'Aceptar',
-          color: 'primary'
-        }
-      }).onOk(async () => {
-        await this.$services.deleteData(['states', data.id])
-        this.notify(this, 'state.deleteSuccessful', 'positive', 'mood')
-        this.getDeliveryNotes()
-      })
-    },
-    /**
      * Load data sorting
      * @param  {Object}
      */
@@ -665,6 +740,11 @@ export default {
       this.optionPagination = data
       this.getDeliveryNotes(this.params)
     },
+    /**
+     * Model json qr
+     * @param {Obeject} data delivery note qr
+     * @returns {Object} model formated
+     */
     modelJson (data) {
       return {
         TITULO: 'CORPOEZ GUÍA DE MOVILIZACÍON',
@@ -685,7 +765,7 @@ export default {
       }
     },
     /**
-     * Search EgressType
+     * Search Delivery Notes
      * @param  {Object}
      */
     searchData (data) {
@@ -695,6 +775,12 @@ export default {
       this.params.page = 1
       this.getDeliveryNotes()
     },
+    /**
+     * Format date
+     * @param {String} data date to convert
+     * @param {String} format format date
+     * @returns {String} date formated
+     */
     formatDate (data, format) {
       return date.formatDate(data, format)
     },
@@ -706,7 +792,7 @@ export default {
       this.downloadPDF(data)
     },
     /**
-     * Dowlaod Pdf
+     * Downlaod Pdf
      * @param {data} data delivery note
      */
     async downloadPDF (data) {
@@ -722,8 +808,9 @@ export default {
       }
     },
     /**
-     * Dncrypt data
+     * Encrypt data
      * @param {String} data json data
+     * @returns {String} json encrypted
      */
     encrypt (data) {
       data = data.replaceAll('"', '')
@@ -741,6 +828,7 @@ export default {
     /**
      * Decrypt data
      * @param {String} data encrypt data
+     * @returns {String} string decrypt
      */
     decryptData (data) {
       var iv = CryptoJS.enc.Base64.parse('')
@@ -765,6 +853,10 @@ export default {
         img.src = url
       })
     },
+    /**
+     * Pdf progress
+     * @param {Int} data value dialog
+     */
     onProgress (data) {
       this.timeLoading = data
       if (data === 100) {
@@ -774,6 +866,8 @@ export default {
     },
     /**
      * All Material Suppliers
+     * @param {String} value value filter
+     * @param {Callback} update
      */
     getMaterialSuppliers (value, update) {
       this.$services.getData(['material-suppliers'], {
@@ -793,7 +887,9 @@ export default {
         })
     },
     /**
-     * All CLient
+     * All states
+     * @param {String} value value filter
+     * @param {Callback} update
      */
     getStates (value, update) {
       this.$services.getData(['states'], {
@@ -812,7 +908,9 @@ export default {
         })
     },
     /**
-     * All CLient
+     * All Client
+     * @param {String} value value filter
+     * @param {Callback} update
      */
     getClients (value, update) {
       this.$services.getData(['clients'], {
@@ -831,6 +929,10 @@ export default {
           })
         })
     },
+    /**
+     * Set material suppiler selected to guide
+     * @param {Object} data Material suppiler selected
+     */
     selectedProvider (data) {
       this.guide.material_supplier_id = data.id
       this.guide.document_number = data.document_number
@@ -838,13 +940,17 @@ export default {
       this.guide.serie_number = data.serie_number
     },
     /**
-     * Client Selected
-     * @param {Object} data Client selected
+     * Set client selected to guide
+     * @param {Object} data client selected
      */
     selectedClient (data) {
       this.guide.client_id = data.id
       this.guide.client_document_number = data.document_number
     },
+    /**
+     * Converter String to Qr
+     * @param {String} data data qr guide
+     */
     onDone (data) {
       try {
         const dataEnter = data.split('\n')
@@ -878,11 +984,17 @@ export default {
         ref.resetValidation()
       }, 100)
     },
+    /**
+     * Clear form delivery note
+     */
     clear () {
       this.guide = {}
       this.guide.date = date.formatDate(Date(), 'YYYY/MM/DD')
       this.resetValidations(this.$refs.deliveryNote)
     },
+    /**
+     * Save delivery note
+     */
     saveDeliveryNote () {
       this.guide.destination_address = this.guide.DESTINO
       this.guide.material = this.guide.MATERIAL
