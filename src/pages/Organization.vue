@@ -8,12 +8,7 @@
             :icon="drawerLeft ? 'close' : 'filter_alt'"
             @click="drawerLeft = !drawerLeft"
           >
-            <q-tooltip
-              anchor="center right"
-              self="center left"
-              :offset="[10, 10]"
-              v-if="$q.screen.lt.sm"
-            >
+            <q-tooltip>
               {{ ucwords($t('organization.filter')) }}
             </q-tooltip>
           </q-btn>
@@ -22,12 +17,7 @@
             icon="add_circle"
             @click="addDialog = true"
           >
-            <q-tooltip
-              anchor="center right"
-              self="center left"
-              :offset="[10, 10]"
-              v-if="$q.screen.lt.sm"
-            >
+            <q-tooltip>
               {{ ucwords($t('organization.add')) }}
             </q-tooltip>
           </q-btn>

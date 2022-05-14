@@ -258,7 +258,7 @@
               <td class="style65 style73" colspan="17" rowspan="6">ENTREGA DE MATERIAL FERROSO Y/O NO FERROSO</td>
               <td class="column16 style74 style76" colspan="4">NOTA DE ENTREGA</td>
               <td class="column16 style77 style79 q-pt-sm" colspan="2" rowspan="6">
-                <img id="canvas" width="130" height="130"/>
+                <img id="canvas" width="140" height="140"/>
               </td>
             </tr>
             <tr class="row8">
@@ -748,21 +748,21 @@ export default {
      */
     modelJson (data) {
       return {
-        TITULO: 'CORPOEZ GUÍA DE MOVILIZACÍON',
-        GUIA: data.guide_number,
-        EMPRESA: data.material_supplier.name,
-        DOCUEMNTO: data.material_supplier.document_number,
-        CONDUCTOR: data.driver_name,
+        TI: 'CORPOEZ GUÍA DE MOVILIZACÍON',
+        GUi: data.guide_number,
+        EM: data.material_supplier.name,
+        NDP: data.material_supplier.document_number,
+        CTO: data.driver_name,
         CI: data.driver_document_number,
-        VEHICULO: data.vehicle_brand,
-        PLACA_VEHICULO: `${data.vehicle_plate}`,
-        MODELO_VEHICULO: `${data.vehicle_model}`,
-        PLACA_TRILER: `${data.trailer_plate}`,
-        MODEL_TRILER: `${data.trailer_model}`,
-        ORIGEN: data.origin_address,
-        DESTINO: data.destination_address,
-        FECHA_INICIO: data.start_date,
-        FECHA_FIN: data.deadline
+        VEI: data.vehicle_brand,
+        PV: `${data.vehicle_plate}`,
+        MV: `${data.vehicle_model}`,
+        PT: `${data.trailer_plate}`,
+        MT: `${data.trailer_model}`,
+        OR: data.origin_address,
+        DE: data.destination_address,
+        FI: data.start_date,
+        FF: data.deadline
       }
     },
     /**
