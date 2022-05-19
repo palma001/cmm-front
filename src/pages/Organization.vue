@@ -5,7 +5,7 @@
         <div class="col-12 q-gutter-x-sm text-center">
           <q-btn
             :color="drawerLeft ? 'negative' : 'secondary'"
-            :icon="drawerLeft ? 'close' : 'filter_alt'"
+            :icon="drawerLeft ? 'filter_alt_off' : 'filter_alt'"
             @click="drawerLeft = !drawerLeft"
           >
             <q-tooltip>
