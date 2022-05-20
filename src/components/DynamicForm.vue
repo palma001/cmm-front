@@ -358,6 +358,11 @@ export default {
                     on: {
                       input: function (value) {
                         self.objectToBind[propTag] = value
+                        if (prop.actionable.component.events) {
+                          prop.actionable.component.events.forEach(event => {
+                            self.$emit(event.nameEvents, value, event.affected)
+                          })
+                        }
                       },
                       select: function (value) {
                         self.objectToBind[propTag] = value

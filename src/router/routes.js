@@ -118,13 +118,43 @@ const routes = [
         name: 'User',
         component: () => import('src/pages/User.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'guides',
+        name: 'Guide',
+        component: () => import('src/pages/Guide.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'drivers',
+        name: 'Driver',
+        component: () => import('src/pages/Driver.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'vehicles',
+        name: 'Vehicle',
+        component: () => import('src/pages/Vehicle.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'guides',
+        name: 'Guide',
+        component: () => import('src/pages/Guide.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'trailers',
+        name: 'Trailer',
+        component: () => import('src/pages/Trailer.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'vehicles-types',
+        name: 'VehicleType',
+        component: () => import('src/pages/VehicleType.vue'),
+        beforeEnter: validationSessionUnit
       }
-      // {
-      //   path: 'new-egress',
-      //   name: 'NewEgress',
-      //   component: () => import('src/pages/NewEgress.vue'),
-      //   beforeEnter: validationSessionUnit
-      // },
       // {
       //   path: 'collection-receipts',
       //   name: 'CollectionReceipt',
