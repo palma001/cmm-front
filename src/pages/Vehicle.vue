@@ -26,7 +26,7 @@
           module="vehicle"
           searchable
           action
-          :column="vehicle"
+          :column="vehicleConfig"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -49,6 +49,7 @@
         :propsPanelEdition="propsPanelEdition"
         :config="vehicleConfig"
         :loading="loadingForm"
+        @depends="depends"
         @cancel="editDialog = false"
         @update="update"
       />
@@ -63,6 +64,7 @@
         module="vehicle"
         :config="vehicleConfig"
         :loading="loadingForm"
+        @depends="depends"
         @cancel="addDialog = false"
         @save="save"
       />
@@ -71,7 +73,7 @@
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import { vehicleConfig, buttonsActions, propsPanelEdition } from '../config-file/vehicle/vehicleConfig.js'
+import { vehicleConfig, buttonsActions, propsPanelEdition, vehicleServices } from '../config-file/vehicle/vehicleConfig.js'
 import { mixins } from '../mixins'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
@@ -86,6 +88,7 @@ export default {
   },
   data () {
     return {
+      vehicleServices,
       /**
        * Config file panel edition
        * @type {Obejct}
@@ -174,6 +177,22 @@ export default {
   },
   methods: {
     /**
+     * Selected dependency
+     * @param {Object} data data selected
+     * @param {String} propTag tag selected
+    */
+    depends (data, propTags) {
+      this.vehicleServices.relationalData.map(service => {
+        propTags.forEach(propTag => {
+          if (service.targetPropTag === propTag) {
+            service.services = [data.api]
+          }
+        })
+        return service
+      })
+      this.setRelationalData(this.vehicleServices, [], this)
+    },
+    /**
      * Set data dialog edition
      * @param  {Object} data selected
      */
@@ -189,7 +208,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar el beneficiario?',
+        message: '¿Desea eliminar el vehiculo?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -200,9 +219,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['beneficiaries', data.id])
+        await this.$services.deleteData(['vehicles', data.id])
         this.notify(this, 'vehicle.deleteSuccessful', 'positive', 'mood')
-        this.getBeneficiaries()
+        this.getVehicle()
       })
     },
     /**
@@ -215,7 +234,7 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getBeneficiaries(this.params)
+      this.getVehicle(this.params)
     },
     /**
      * Search vehicle
@@ -226,7 +245,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getBeneficiaries()
+      this.getVehicle()
     },
     /**
      * Update Branch Office
@@ -234,12 +253,14 @@ export default {
      */
     update (data) {
       data.user_updated_id = this.userSession.id
+      data.ownerable_type = data.ownerable_type.id
+      data.ownerable_id = data.ownerable.id
       this.loadingForm = true
-      this.$services.putData(['beneficiaries', this.selectedData.id], data)
+      this.$services.putData(['vehicles', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getBeneficiaries(this.params)
+          this.getVehicle(this.params)
           this.notify(this, 'vehicle.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
@@ -252,13 +273,14 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.branch_office_id = this.branchOffice.id
+      data.ownerable_type = data.ownerable_type.id
+      data.ownerable_id = data.ownerable.id
       this.loadingForm = true
-      this.$services.postData(['beneficiaries'], data)
+      this.$services.postData(['vehicles'], data)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
-          this.getBeneficiaries(this.params)
+          this.getVehicle(this.params)
           this.notify(this, 'vehicle.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
@@ -266,13 +288,17 @@ export default {
         })
     },
     /**
-     * Get all beneficiaries
+     * Get all vehicles
      */
-    getBeneficiaries (params = this.params) {
+    getVehicle (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['beneficiaries'], this.params)
+      this.$services.getData(['vehicles'], this.params)
         .then(({ res }) => {
-          this.data = res.data.data
+          this.data = res.data.data.map(data => {
+            data.status = this.$t(`vehicle.${data.status}`)
+            data.ownerable_type = this.$t(`vehicle.${data.ownerable_type}`)
+            return data
+          })
           this.optionPagination.rowsNumber = res.data.total
           this.loadingTable = false
         })

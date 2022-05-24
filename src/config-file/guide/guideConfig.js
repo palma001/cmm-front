@@ -22,7 +22,7 @@ export const guideConfig = [
             name: 'b-search-select',
             events: [{
               nameEvents: 'depends',
-              affected: ['vehicle']
+              affected: ['vehicle', 'driver', 'trailer']
             }],
             props: {
               data: [],
@@ -71,7 +71,7 @@ export const guideConfig = [
             props: {
               data: [],
               dataValue: 'id',
-              dataLabel: 'name',
+              dataLabel: 'full_name',
               behavior: 'menu',
               dense: true,
               clearable: true,
@@ -115,7 +115,7 @@ export const guideConfig = [
             props: {
               data: [],
               dataValue: 'id',
-              dataLabel: 'name',
+              dataLabel: 'full_name',
               behavior: 'menu',
               dense: true,
               clearable: true,
@@ -159,7 +159,7 @@ export const guideConfig = [
             props: {
               data: [],
               dataValue: 'id',
-              dataLabel: 'name',
+              dataLabel: 'full_name',
               behavior: 'menu',
               dense: true,
               clearable: true,

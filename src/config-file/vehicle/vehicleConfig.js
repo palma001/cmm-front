@@ -5,6 +5,109 @@ export const vehicleConfig = [
     children: [
       {
         tabulated: {
+          name: 'ownerable_type',
+          align: 'left',
+          field: row => row.ownerable_type,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'ownerable_type',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            events: [{
+              nameEvents: 'depends',
+              affected: ['ownerable']
+            }],
+            props: {
+              data: [
+                {
+                  id: 'App\\Models\\MaterialSupplier',
+                  name: 'Empresa comercializadora',
+                  api: 'material-suppliers'
+                },
+                {
+                  id: 'App\\Models\\Organization',
+                  name: 'Organización',
+                  api: 'organizations'
+                }
+              ],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'ownerable_id',
+          align: 'left',
+          field: row => row.ownerable.full_name,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'ownerable',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'name',
           align: 'left',
           field: row => row.name,
@@ -42,14 +145,14 @@ export const vehicleConfig = [
       },
       {
         tabulated: {
-          name: 'description',
+          name: 'brand',
           align: 'left',
-          field: row => row.description,
+          field: row => row.brand,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'description',
+          propTag: 'brand',
           addible: true,
           editable: true,
           type: 'String',
@@ -57,7 +160,7 @@ export const vehicleConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'textarea',
+              type: 'text',
               dense: true,
               outlined: true
             },
@@ -70,7 +173,118 @@ export const vehicleConfig = [
               {
                 name: 'validate',
                 value: {
-                  required: false
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'model',
+          align: 'left',
+          field: row => row.model,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'model',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'plate',
+          align: 'left',
+          field: row => row.plate,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'plate',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'status',
+          align: 'left',
+          field: row => row.status,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'status',
+          addible: false,
+          editable: false,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
                 }
               }
             ]
@@ -162,4 +376,23 @@ export const propsPanelEdition = {
       }
     }
   ]
+}
+
+export const relationalDataConfiguration = [
+  {
+    targetPropTag: 'ownerable',
+    entity: 'ownerable',
+    services: ['material-suppliers'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  }
+]
+
+export const vehicleServices = {
+  props: propsPanelEdition,
+  config: vehicleConfig,
+  propData: 'data',
+  relationalData: relationalDataConfiguration
 }

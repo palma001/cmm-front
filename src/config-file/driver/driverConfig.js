@@ -5,6 +5,109 @@ export const driverConfig = [
     children: [
       {
         tabulated: {
+          name: 'ownerable_type',
+          align: 'left',
+          field: row => row.ownerable_type,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'ownerable_type',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            events: [{
+              nameEvents: 'depends',
+              affected: ['ownerable']
+            }],
+            props: {
+              data: [
+                {
+                  id: 'App\\Models\\MaterialSupplier',
+                  name: 'Empresa comercializadora',
+                  api: 'material-suppliers'
+                },
+                {
+                  id: 'App\\Models\\Organization',
+                  name: 'Organización',
+                  api: 'organizations'
+                }
+              ],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'ownerable_id',
+          align: 'left',
+          field: row => row.ownerable.full_name,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'ownerable',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'document_number',
           align: 'left',
           field: row => row.document_number,
@@ -277,15 +380,15 @@ export const propsPanelEdition = {
 }
 
 export const relationalDataConfiguration = [
-  // {
-  //   targetPropTag: 'document_type',
-  //   entity: 'document_type',
-  //   services: ['document-types'],
-  //   propData: 'data',
-  //   petitionParams: {
-  //     paginate: false
-  //   }
-  // }
+  {
+    targetPropTag: 'ownerable',
+    entity: 'ownerable',
+    services: ['material-suppliers'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  }
 ]
 
 export const driverServices = {

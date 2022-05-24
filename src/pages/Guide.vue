@@ -173,21 +173,23 @@ export default {
   },
   methods: {
     depends (data, propTags) {
-      this.guideServices.relationalData.map(service => {
-        propTags.forEach(propTag => {
-          if (service.targetPropTag === propTag) {
-            service.petitionParams = {
-              dataEqualFilter: {
-                ownerable_type: 'App\\Models\\MaterialSupplier',
-                ownerable_id: data.id
-              },
-              paginate: false
+      this.$nextTick(() => {
+        this.guideServices.relationalData.map(service => {
+          propTags.forEach(propTag => {
+            if (service.targetPropTag === propTag) {
+              service.petitionParams = {
+                dataEqualFilter: {
+                  ownerable_type: 'App\\Models\\MaterialSupplier',
+                  ownerable_id: data.id
+                },
+                paginate: false
+              }
             }
-          }
+          })
+          return service
         })
-        return service
+        this.setRelationalData(this.guideServices, [], this)
       })
-      this.setRelationalData(this.guideServices, [], this)
     },
     /**
      * Set data dialog edition
