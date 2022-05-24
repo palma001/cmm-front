@@ -138,7 +138,16 @@ export default {
     maxValue: {
       type: [String, Number],
       default: 5
-
+    },
+    services: {
+      type: Array
+    },
+    queryParams: {
+      type: Object
+    },
+    sync: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -198,21 +207,42 @@ export default {
       this.valueSelect = data
       this.$emit('select', data)
     },
+    modelFilter (data, value) {
+      const model = {}
+      for (const param in data) {
+        if (data[param]) {
+          model[param] = value
+        }
+        model[param] = value
+      }
+      return model
+    },
     /**
      * Filter input
      * @param  {Object}
      * @param  {Function}
      */
     filter (val, update) {
-      update(() => {
-        const needle = val.toLowerCase()
-        console.log(this.dataLabel)
-        this.dataFilter = this.data.filter(v => {
-          if (v[this.dataLabel]) {
-            return v[this.dataLabel].toLowerCase().indexOf(needle) > -1
-          }
+      if (this.sync) {
+        this.$services.getData(this.services, {
+          ...this.queryParams,
+          dataSearch: this.modelFilter(this.queryParams.search, val)
         })
-      })
+          .then(({ res }) => {
+            update(() => {
+              this.dataFilter = res.data
+            })
+          })
+      } else {
+        update(() => {
+          const needle = val.toLowerCase()
+          this.dataFilter = this.data.filter(v => {
+            if (v[this.dataLabel]) {
+              return v[this.dataLabel].toLowerCase().indexOf(needle) > -1
+            }
+          })
+        })
+      }
     }
   }
 }

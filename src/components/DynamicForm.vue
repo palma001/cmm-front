@@ -185,7 +185,6 @@ export default {
   },
   watch: {
     loading () {
-      this.objectToBind = {}
       this.loadingAdd = this.loading
       this.$validator.reset()
     }
@@ -360,6 +359,9 @@ export default {
                         self.objectToBind[propTag] = value
                         if (prop.actionable.component.events) {
                           prop.actionable.component.events.forEach(event => {
+                            event.affected.forEach(effected => {
+                              self.objectToBind[effected] = null
+                            })
                             self.$emit(event.nameEvents, value, event.affected)
                           })
                         }

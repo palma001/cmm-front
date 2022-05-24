@@ -80,6 +80,7 @@ export const vehicleConfig = [
           component: {
             name: 'b-search-select',
             props: {
+              sync: true,
               data: [],
               dataValue: 'id',
               dataLabel: 'name',
@@ -385,6 +386,11 @@ export const relationalDataConfiguration = [
     services: ['material-suppliers'],
     propData: 'data',
     petitionParams: {
+      search: {
+        name: null
+      },
+      sortBy: 'id',
+      sortOrder: 'desc',
       paginate: false
     }
   }

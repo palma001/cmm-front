@@ -48,10 +48,12 @@ export const ucwords = function (value) {
  * @param {String} propData
  * @param {Array} list
  */
-function assignRelationalData (currentDataConfig, propTag, propData, list) {
+function assignRelationalData (currentDataConfig, propTag, propData, list, dataConfig) {
   currentDataConfig.forEach(config => {
     config.children.forEach(child => {
       if (child.actionable && child.actionable.propTag === propTag) {
+        child.actionable.component.props.services = dataConfig.services
+        child.actionable.component.props.queryParams = dataConfig.petitionParams
         child.actionable.component.props[propData] = list
       }
     })
@@ -80,7 +82,8 @@ export const setRelationalData = (
             entityConfig.config,
             dataConfig.targetPropTag,
             dataConfig.propData,
-            toRelationalData
+            toRelationalData,
+            dataConfig
           )
           callback(res.data, toRelationalData)
         })
