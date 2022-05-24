@@ -27,11 +27,20 @@ export const guideConfig = [
             props: {
               data: [],
               dataValue: 'id',
-              dataLabel: 'name',
+              dataLabel: 'full_name',
               behavior: 'menu',
               dense: true,
+              sync: true,
               clearable: true,
-              outlined: true
+              outlined: true,
+              services: ['material-suppliers'],
+              queryParams: {
+                search: {
+                  name: null,
+                  document_number: null
+                },
+                paginate: false
+              }
             },
             class: {
               'col-xs-12': true,
@@ -69,13 +78,22 @@ export const guideConfig = [
           component: {
             name: 'b-search-select',
             props: {
+              services: ['vehicles'],
               data: [],
+              sync: true,
               dataValue: 'id',
               dataLabel: 'full_name',
               behavior: 'menu',
               dense: true,
               clearable: true,
-              outlined: true
+              outlined: true,
+              queryParams: {
+                search: {
+                  plate: null,
+                  brand: null
+                },
+                paginate: false
+              }
             },
             class: {
               'col-xs-12': true,
@@ -552,18 +570,14 @@ export const relationalDataConfiguration = [
     entity: 'material_supplier',
     services: ['material-suppliers'],
     propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
+    sync: true
   },
   {
     targetPropTag: 'vehicle',
     entity: 'vehicle',
     services: ['vehicles'],
     propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
+    sync: true
   },
   {
     targetPropTag: 'client',

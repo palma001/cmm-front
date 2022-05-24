@@ -52,9 +52,14 @@ function assignRelationalData (currentDataConfig, propTag, propData, list, dataC
   currentDataConfig.forEach(config => {
     config.children.forEach(child => {
       if (child.actionable && child.actionable.propTag === propTag) {
-        child.actionable.component.props.services = dataConfig.services
-        child.actionable.component.props.queryParams = dataConfig.petitionParams
-        child.actionable.component.props[propData] = list
+        if (!dataConfig.sync) {
+          child.actionable.component.props[propData] = list
+        } else {
+          if (child.actionable.component.props.queryParams && dataConfig.petitionParams) {
+            const params = Object.assign(child.actionable.component.props.queryParams, dataConfig.petitionParams)
+            child.actionable.component.props.queryParams = params
+          }
+        }
       }
     })
   })
@@ -74,6 +79,7 @@ export const setRelationalData = (
 ) => {
   if (entityConfig) {
     entityConfig.relationalData.forEach(dataConfig => {
+      console.log(dataConfig.sync)
       vueInstance.$services.getData(dataConfig.services, dataConfig.petitionParams)
         .then(({ res }) => {
           toRelationalData = []
