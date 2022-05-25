@@ -32,6 +32,7 @@
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
           :optionPagination="optionPagination"
+          @swornDeclaration="swornDeclaration"
           @view-details="viewDetails"
           @search-data="searchData"
           @on-load-data="loadData"
@@ -172,6 +173,9 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    swornDeclaration (data) {
+      console.log(data)
+    },
     depends (data, propTags) {
       this.$nextTick(() => {
         this.guideServices.relationalData.map(service => {

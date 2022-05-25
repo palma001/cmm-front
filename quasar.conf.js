@@ -23,6 +23,7 @@ module.exports = function (/* ctx */) {
       'i18n',
       'services',
       // 'socket',
+      'barcodeScanner',
       'vee-validate',
       'qr-reader',
       'apollo',

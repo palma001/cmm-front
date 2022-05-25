@@ -7,7 +7,7 @@ export const guideConfig = [
         tabulated: {
           name: 'material_supplier',
           align: 'left',
-          field: row => row.material_supplier.name,
+          field: row => row.material_supplier.full_name,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -64,7 +64,7 @@ export const guideConfig = [
         tabulated: {
           name: 'vehicle',
           align: 'left',
-          field: row => row.vehicle.name,
+          field: row => row.vehicle.full_name,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -117,7 +117,7 @@ export const guideConfig = [
         tabulated: {
           name: 'trailer',
           align: 'left',
-          field: row => row.trailer.name,
+          field: row => row.trailer.full_name,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -161,7 +161,7 @@ export const guideConfig = [
         tabulated: {
           name: 'driver',
           align: 'left',
-          field: row => row.driver.name,
+          field: row => row.driver.full_name,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -205,7 +205,7 @@ export const guideConfig = [
         tabulated: {
           name: 'client',
           align: 'left',
-          field: row => row.client.name,
+          field: row => row.client.full_name,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -370,7 +370,7 @@ export const guideConfig = [
           field: row => row.origin_address,
           sortable: true,
           visible: true,
-          visibleColumn: true
+          visibleColumn: false
         },
         actionable: {
           propTag: 'origin_address',
@@ -408,7 +408,7 @@ export const guideConfig = [
           field: row => row.destination_address,
           sortable: true,
           visible: true,
-          visibleColumn: true
+          visibleColumn: false
         },
         actionable: {
           propTag: 'destination_address',
@@ -445,8 +445,7 @@ export const guideConfig = [
           align: 'left',
           field: row => row.material,
           sortable: true,
-          visible: true,
-          visibleColumn: true
+          visible: true
         },
         actionable: {
           propTag: 'material',
@@ -471,6 +470,35 @@ export const guideConfig = [
                 name: 'validate',
                 value: {
                   required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'documents',
+          align: 'center',
+          visible: true,
+          visibleColumn: true,
+          button: {
+            label: 'documents',
+            color: 'secondary',
+            type: 'dropdown',
+            icon: 'receipt',
+            push: true,
+            splits: true,
+            size: 'sm',
+            options: [
+              {
+                label: 'swornDeclaration',
+                event: 'swornDeclaration',
+                avatar: {
+                  icon: 'receipt',
+                  color: 'secondary',
+                  textColor: 'white',
+                  size: 'md'
                 }
               }
             ]

@@ -197,6 +197,7 @@ export default {
      * @type {Object} data input selected
      */
     input (data) {
+      data.value = data[this.dataValue]
       this.$emit('input', data)
     },
     /**
@@ -205,6 +206,7 @@ export default {
      */
     select (data) {
       this.valueSelect = data
+      data.value = data[this.dataValue]
       this.$emit('select', data)
     },
     modelFilter (data, value) {

@@ -334,6 +334,8 @@ export default {
   },
   guide: {
     newGuide: 'nuevo guías',
+    swornDeclaration: 'Declaración Jurada',
+    documents: 'documentos',
     add: 'agregar guías',
     material_supplier: 'Empresa comercializadora',
     vehicle: 'Vehiculo',
