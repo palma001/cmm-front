@@ -70,6 +70,25 @@
         @save="save"
       />
     </q-dialog>
+    <q-dialog
+      position="right"
+      persistent
+      v-model="uploadImage"
+    >
+      <q-uploader
+        :factory="uploadFiles"
+        label="Cargar Archivos (max 2MB)"
+        ref="uploader"
+        multiple
+        bordered
+        batch
+        style="width: 100%; height: 1000px"
+        max-files="5"
+        accept=".png, .jpeg, .jpg, image/*"
+        :max-file-size="2048000"
+        @rejected="onRejected"
+      />
+    </q-dialog>
   </q-page>
 </template>
 <script>
@@ -89,6 +108,7 @@ export default {
   },
   data () {
     return {
+      uploadImage: false,
       guideServices,
       /**
        * Table Buttons
@@ -158,7 +178,8 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      guideSelected: null
     }
   },
   created () {
@@ -174,7 +195,8 @@ export default {
   },
   methods: {
     swornDeclaration (data) {
-      console.log(data)
+      this.guideSelected = data
+      this.uploadImage = true
     },
     depends (data, propTags) {
       this.$nextTick(() => {
@@ -193,6 +215,27 @@ export default {
           return service
         })
         this.setRelationalData(this.guideServices, [], this)
+      })
+    },
+    /**
+     * Upload image
+     * @type {Array} files images
+     * @return {Promise} promise
+     */
+    uploadFiles (files, updateProgress) {
+      const data = new FormData()
+      for (let i = 0; i < files.length; i++) {
+        data.append(`files[${i}]`, files[i])
+      }
+      data.append('guide_id', this.guideSelected.id)
+      data.append('user_created_id', this.userSession.id)
+      return new Promise((resolve, reject) => {
+        this.$services.postUpload(['sworn-declarations'], data)
+          .then(({ res }) => {
+            this.notify(this, 'guide.uploadSuccess', 'positive', 'mood')
+            resolve(null)
+          })
+          .catch(err => reject(err))
       })
     },
     /**
