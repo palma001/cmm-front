@@ -169,6 +169,14 @@
         <img width="130" height="56" src="img\cmm-sello.jpg" name="CuadroTexto 4">
       </td>
     </tr>
+    <tr>
+      <td colspan="30" height="14" class="x42" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">REGISTRO FOTOGRÁFICO:</td>
+    </tr>
+    <tr>
+      <td colspan="10" class="x44" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">1) Foto delantera del vehículo, donde se aprecie la placa.</td>
+      <td colspan="01" height="14" class="x44" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">3) Foto del material y vehículo. (General).</td>
+      <td colspan="10" height="14" class="x44" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">2) Foto del material a trasladar (Primer plano).</td>
+    </tr>
   </table>
 </template>
 
