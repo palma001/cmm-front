@@ -47,6 +47,18 @@ export const postData = function (url, params) {
     }
   })
 }
+export const postUpload = function (url, params) {
+  return axiosInstance.post(url.join('/'), params).then((res) => {
+    return {
+      status: true,
+      res: res
+    }
+  }).catch((err) => {
+    if (err) {
+      throw err
+    }
+  })
+}
 export const putData = function (url, params) {
   lowerCase(params)
   return axiosInstance.put(url.join('/'), lowerCase(params)).then((res) => {
@@ -89,6 +101,7 @@ const services = {
     Vue.prototype.$services = {
       getData,
       postData,
+      postUpload,
       putData,
       deleteData,
       getOneData,

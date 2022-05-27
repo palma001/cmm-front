@@ -71,40 +71,66 @@
       />
     </q-dialog>
     <q-dialog
-      position="right"
       persistent
       v-model="uploadImage"
     >
-      <q-uploader
-        :factory="uploadFiles"
-        label="Cargar Archivos (max 2MB)"
-        ref="uploader"
-        multiple
-        bordered
-        batch
-        style="width: 100%; height: 1000px"
-        max-files="5"
-        accept=".png, .jpeg, .jpg, image/*"
-        :max-file-size="2048000"
-        @rejected="onRejected"
-      />
+      <q-card style="width: 500px; max-width: 80vw;">
+        <q-card-section class="q-pb-xs">
+          <div class="text-h6">Declaración Jurada</div>
+        </q-card-section>
+        <q-card-section>
+          <q-uploader
+            :factory="uploadFiles"
+            label="Cargar Archivos Maximo 5 Archivos"
+            ref="uploader"
+            multiple
+            bordered
+            batch
+            style="width: 100%"
+            max-files="5"
+            @rejected="onRejected"
+          />
+        </q-card-section>
+      </q-card>
     </q-dialog>
+      <vue-html2pdf
+        ref="html2Pdf"
+        pdf-format="a4"
+        pdf-orientation="portrait"
+        pdf-content-width="800px"
+        :show-layout="false"
+        :float-layout="true"
+        :enable-download="false"
+        :preview-modal="true"
+        :paginate-elements-by-height="1000"
+        filename="nameFile"
+        :pdf-quality="2"
+        :manual-pagination="true"
+      >
+        <section slot="pdf-content" class="text-uppercase text-dark q-pa-md">
+          <SwornDeclaration/>
+        </section>
+      </vue-html2pdf>
   </q-page>
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
+import VueHtml2pdf from 'vue-html2pdf'
 import { guideConfig, buttonsActions, propsPanelEdition, guideServices } from '../config-file/guide/guideConfig.js'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
+import SwornDeclaration from '../components/SwornDeclaration'
 export default {
   mixins: [mixins.containerMixin],
   components: {
     DataTable,
+    VueHtml2pdf,
     DynamicForm,
-    DynamicFormEdition
+    DynamicFormEdition,
+    SwornDeclaration
   },
   data () {
     return {
@@ -196,7 +222,11 @@ export default {
   methods: {
     swornDeclaration (data) {
       this.guideSelected = data
-      this.uploadImage = true
+      if (this.guideSelected && this.guideSelected.sworn_declarations.length <= 0) {
+        this.uploadImage = true
+      } else {
+        this.$refs.html2Pdf.generatePdf()
+      }
     },
     depends (data, propTags) {
       this.$nextTick(() => {
@@ -217,12 +247,19 @@ export default {
         this.setRelationalData(this.guideServices, [], this)
       })
     },
+    onRejected (rejectedEntries) {
+      this.$q.notify({
+        type: 'negative',
+        message: `${rejectedEntries.length} file(s) did not pass validation constraints`
+      })
+    },
     /**
      * Upload image
      * @type {Array} files images
      * @return {Promise} promise
      */
     uploadFiles (files, updateProgress) {
+      console.log('files')
       const data = new FormData()
       for (let i = 0; i < files.length; i++) {
         data.append(`files[${i}]`, files[i])

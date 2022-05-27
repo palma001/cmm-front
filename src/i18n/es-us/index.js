@@ -334,6 +334,7 @@ export default {
   },
   guide: {
     newGuide: 'nuevo guías',
+    uploadSuccess: 'Archivos guardados exitosamente',
     swornDeclaration: 'Declaración Jurada',
     documents: 'documentos',
     add: 'agregar guías',
