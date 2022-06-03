@@ -71,7 +71,6 @@
       />
     </q-dialog>
     <q-dialog
-      persistent
       v-model="uploadImage"
     >
       <q-card style="width: 500px; max-width: 80vw;">
@@ -93,6 +92,7 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <sworn-declaration v-if="g" :data="guideSelected" id="print"/>
       <vue-html2pdf
         ref="html2Pdf"
         pdf-format="a4"
@@ -108,7 +108,6 @@
         :manual-pagination="true"
       >
         <section slot="pdf-content" class="text-uppercase text-dark q-pa-md">
-          <SwornDeclaration/>
         </section>
       </vue-html2pdf>
   </q-page>
@@ -123,6 +122,7 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import SwornDeclaration from '../components/SwornDeclaration'
+import { jsPDF } from 'jspdf'
 export default {
   mixins: [mixins.containerMixin],
   components: {
@@ -136,6 +136,7 @@ export default {
     return {
       uploadImage: false,
       guideServices,
+      g: false,
       /**
        * Table Buttons
        * @type {Array}
@@ -220,14 +221,28 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Open sworn declaration
+     * @param {Object} data guide selected
+     */
     swornDeclaration (data) {
       this.guideSelected = data
       if (this.guideSelected && this.guideSelected.sworn_declarations.length <= 0) {
         this.uploadImage = true
       } else {
-        this.$refs.html2Pdf.generatePdf()
+        const source = document.getElementById('print')
+        const doc = new jsPDF()
+        doc.html(source)
+        console.log(doc.path)
+        doc.save()
+        // this.$refs.html2Pdf.generatePdf()
       }
     },
+    /**
+     * Depends Select
+     * @param {data} data selected
+     * @param {String} propTag name select
+     */
     depends (data, propTags) {
       this.$nextTick(() => {
         this.guideServices.relationalData.map(service => {
@@ -247,6 +262,10 @@ export default {
         this.setRelationalData(this.guideServices, [], this)
       })
     },
+    /**
+     * Validation input type file
+     * @param {Array} rejectedEntries files errors
+     */
     onRejected (rejectedEntries) {
       this.$q.notify({
         type: 'negative',

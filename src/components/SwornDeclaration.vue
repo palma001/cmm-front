@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <div v-if="data">
     <table border="0" style="width:100%">
       <tr style="position: relative;">
         <td rowspan="5" colspan="6" style="border:1px solid #808080;">
           <span style="position:absolute; left:2px; top:10px; width:80px; height:53px">
-            <img width="80" height="53" src="img\cmm-logo.jpeg" name="CuadroTexto 4">
+            <img width="80" height="53" :src="`img/${data.material_supplier.logo}`" name="CuadroTexto 4">
           </span>
           <span class="text-center text-bold" style="font-size: 9px; position:absolute; left:2px; top:68px; width:80px; height:53px">
             Rif: <br>
-            21545454545454
+            {{ data.material_supplier.document_number }}
           </span>
         </td>
         <td colspan="14" class="x19" style="border-right:1px solid #808080; white-space:normal; word-wrap:break-word;">
@@ -24,7 +24,7 @@
           Transito REDIOR (SUCRE, ANZOATEGUI, MONAGAS) 0600-1800.
         </td>
         <td colspan="2" class="x60" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">FECHA</td>
-        <td colspan="6" class="x61" x:num="44691" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">10/05/2022</td>
+        <td colspan="6" class="x61" x:num="44691" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">12/12/2022</td>
       </tr>
       <tr class="x16">
         <td colspan="14" class="x22" style="border-right:1px solid #808080;border-bottom:1px solid #808080;overflow:hidden;white-space:normal;word-wrap:break-word;">
@@ -33,7 +33,7 @@
           la procedencia del mismo (título de propiedad, acta de desincorporación INTT) Facturas Documentos De Compra Venta, Providencia.
         </td>
         <td colspan="2" class="x60" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">RUNPA</td>
-        <td colspan="7" class="x62" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">CZ-RUNPAEXT-004-2022</td>
+        <td colspan="7" class="x62" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.code_runpa }}</td>
       </tr>
       <tr height="17" style="mso-height-source:userset;height:12.75pt">
         <td colspan="21" height="15" class="x26" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:11.25pt;">NOMBRE DE LA EMPRESA</td>
@@ -41,8 +41,8 @@
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
       <tr height="20" style="mso-height-source:userset;height:15pt">
-        <td colspan="21" height="18" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:13.5pt;">PROTOCOL CAPITAL W.L.L.</td>
-        <td colspan="9" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">INTERNACIONAL : 82271</td>
+        <td colspan="21" height="18" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:13.5pt;">{{ data.material_supplier.name }}</td>
+        <td colspan="9" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.material_supplier.document_number }}</td>
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
       <tr height="17" style="mso-height-source:userset;height:12.75pt">
@@ -51,8 +51,8 @@
         <td colspan="9" class="x64" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">CEDULA</td>
       </tr>
       <tr>
-        <td colspan="17" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">&nbsp;JOSE GREGORIO GEDLER VERA</td>
-        <td colspan="9" class="x65" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">11845710</td>
+        <td colspan="17" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">&nbsp;{{ data.driver.name }}</td>
+        <td colspan="9" class="x65" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.driver.document_number }}</td>
       </tr>
       <tr>
         <td class="x26"></td>
@@ -63,56 +63,55 @@
       </tr>
       <tr>
         <td class="x26" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Vehículo</td>
-        <td colspan="6" class="x50" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">A79AF2S</td>
-        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">1980</td>
-        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">AZUL</td>
-        <td colspan="12" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">MACK</td>
+        <td colspan="6" class="x50" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.vehicle.model }}</td>
+        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.vehicle.plate }}</td>
+        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.vehicle.color }}</td>
+        <td colspan="12" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.vehicle.brand }}</td>
       </tr>
       <tr>
         <td class="x26" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Batea</td>
-        <td colspan="6" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">CARROCERIAS NINO</td>
-        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">A64AE3O</td>
-        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">AMARILLO</td>
+        <td colspan="6" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.model }}</td>
+        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.plate }}</td>
+        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.color }}</td>
         <td colspan="6" class="x26 text-bold" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">TONELADAS</td>
         <td colspan="6" class="x67 text-center" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">30.000 KGS.</td>
       </tr>
       <tr>
         <td colspan="3" rowspan="1" class="x49" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">MATERIAL&nbsp;</td>
         <td colspan="27" rowspan="1" class="x66" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
-          desecho y desperdicios de chatarra ferrosa, provienen de nuestras maquinarias ya desincorporadas,
-          1.-MOTOTRAILLA MARCA CAT 621-B TIPO 45P SERIAL 685 1.- VIBRO-COMPACTADOR MARCA RAYGO 404-B 1.- TRACTOR DE ORUGA D9-G SERIAL 09-66"6437193
+          {{ data.material }}
         </td>
       </tr>
       <tr height="17" style="mso-height-source:userset;height:12.75pt">
-        <td colspan="4" rowspan="2" height="61" class="x31" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:45.75pt;">
+        <td colspan="4" rowspan="2" class="x31" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:45.75pt;">
           DIRECCION DE ORIGEN
         </td>
-        <td colspan="15" rowspan="2" height="61" class="x32" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:45.75pt;">
-          Final Av Jesús Subero a 100 metros del semáforo dirección a las 4 vías, detrás de la estación de servicio El Caris. El Tigre - Edo Anzoátegui
+        <td colspan="15" rowspan="2" class="x32" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:45.75pt;">
+          {{ data.origin_address }}
         </td>
-        <td colspan="8" rowspan="2" height="61" class="x28" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:45.75pt;">
+        <td colspan="8" rowspan="2" class="x28" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:45.75pt;">
           FECHA DE INICIO
         </td>
-        <td colspan="3" rowspan="2" height="61" class="x69" x:num="44691" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:45.75pt;">
-          10/05/2022
+        <td colspan="3" rowspan="2" class="x69" x:num="44691" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:45.75pt;">
+          {{ data.start_date }}
         </td>
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
       <tr height="46" style="mso-height-source:userset;height:34.5pt">
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
-      <tr height="17" style="mso-height-source:userset;height:12.75pt">
+      <tr>
         <td colspan="4" rowspan="2" class="x31" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
           DIRECCION DE DESTINO
         </td>
         <td colspan="15" rowspan="2" class="x32" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
-          PATIO 21, 22 Y 23 DEL PUERTO INTERNACIONAL DE GUANTA ESTADO ANZOATEGUI&nbsp;
+          {{ data.destination_address }}
         </td>
         <td colspan="8" rowspan="2" class="x28" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
           FECHA DE CIERRE
         </td>
         <td colspan="3" rowspan="2" class="x69" x:num="44694" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
-          13/05/2022
+          {{ data.deadline }}
         </td>
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
@@ -160,10 +159,10 @@
           Pasaporte Panama: PA0715590
         </td>
         <td colspan="10" rowspan="3" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
-          <img width="150" height="56" src="img\cmm-firma.png" name="Imagen 3">
+          <img width="150" height="56" :src="`img/${data.material_supplier.signature}`" name="Imagen 3">
         </td>
         <td colspan="10" rowspan="3" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
-          <img width="130" height="56" src="img\cmm-sello.jpg" name="CuadroTexto 4">
+          <img width="130" height="56" :src="`img/${data.material_supplier.seal}`" name="CuadroTexto 4">
         </td>
       </tr>
       <tr style="mso-height-source:userset;height:12.75pt">
@@ -189,14 +188,29 @@
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
     </table>
+    <section class="pdf-item">
+      <img width="200" :src="`http://127.0.0.1:8000/storage/img_sworn_declarations/12.png`"/>
+      <!-- <div class="row">
+        <div class="col-3" v-for="img in data.sworn_declarations" :key="img.id">
+        </div>
+      </div> -->
+    </section>
   </div>
 </template>
 
 <script>
 export default {
   // name: "ComponentName",
+  props: {
+    data: {
+      type: Object,
+      require: true
+    }
+  },
   data () {
-    return {}
+    return {
+      urlImg: process.env.APIIMG
+    }
   }
 }
 </script>
