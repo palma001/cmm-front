@@ -73,7 +73,7 @@
         <td colspan="6" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.model }}</td>
         <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.plate }}</td>
         <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.color }}</td>
-        <td colspan="6" class="x26 text-bold" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">TONELADAS</td>
+        <td colspan="6" class="x26 text-bold" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Peso</td>
         <td colspan="6" class="x67 text-center" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">30.000 KGS.</td>
       </tr>
       <tr>
@@ -188,12 +188,12 @@
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
     </table>
-    <section class="pdf-item">
-      <img width="200" :src="`http://127.0.0.1:8000/storage/img_sworn_declarations/12.png`"/>
-      <!-- <div class="row">
+    <section class="pdf-item q-pt-xs">
+      <div class="row">
         <div class="col-3" v-for="img in data.sworn_declarations" :key="img.id">
+          <img width="170" :src="img.imagen"/>
         </div>
-      </div> -->
+      </div>
     </section>
   </div>
 </template>

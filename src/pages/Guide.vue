@@ -80,36 +80,52 @@
         <q-card-section>
           <q-uploader
             :factory="uploadFiles"
-            label="Cargar Archivos Maximo 5 Archivos"
+            @finish="uploaded"
+            label="Cargar Archivos Maximo 8 Archivos"
             ref="uploader"
             multiple
             bordered
             batch
             style="width: 100%"
-            max-files="5"
+            max-files="8"
             @rejected="onRejected"
           />
         </q-card-section>
       </q-card>
     </q-dialog>
-    <sworn-declaration v-if="g" :data="guideSelected" id="print"/>
-      <vue-html2pdf
-        ref="html2Pdf"
-        pdf-format="a4"
-        pdf-orientation="portrait"
-        pdf-content-width="800px"
-        :show-layout="false"
-        :float-layout="true"
-        :enable-download="false"
-        :preview-modal="true"
-        :paginate-elements-by-height="1000"
-        filename="nameFile"
-        :pdf-quality="2"
-        :manual-pagination="true"
+    <vue-html2pdf
+      ref="html2Pdf"
+      pdf-format="a4"
+      pdf-orientation="portrait"
+      pdf-content-width="800px"
+      :show-layout="false"
+      :float-layout="true"
+      :enable-download="false"
+      :preview-modal="true"
+      :paginate-elements-by-height="1000"
+      filename="nameFile"
+      :pdf-quality="2"
+      :manual-pagination="true"
+      @progress="onProgress($event)"
+    >
+      <section slot="pdf-content" class="text-uppercase text-dark q-pa-md">
+        <sworn-declaration :data="guideSelected"/>
+      </section>
+    </vue-html2pdf>
+    <q-inner-loading :showing="visibleSworn">
+      <q-circular-progress
+        show-value
+        class="text-white q-ma-md"
+        :value="valueLoading"
+        size="150px"
+        :thickness="0.2"
+        color="orange"
+        center-color="primary"
+        track-color="transparent"
       >
-        <section slot="pdf-content" class="text-uppercase text-dark q-pa-md">
-        </section>
-      </vue-html2pdf>
+        <q-icon name="receipt" />
+      </q-circular-progress>
+    </q-inner-loading>
   </q-page>
 </template>
 <script>
@@ -122,7 +138,6 @@ import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import SwornDeclaration from '../components/SwornDeclaration'
-import { jsPDF } from 'jspdf'
 export default {
   mixins: [mixins.containerMixin],
   components: {
@@ -134,9 +149,9 @@ export default {
   },
   data () {
     return {
+      visibleSworn: false,
       uploadImage: false,
       guideServices,
-      g: false,
       /**
        * Table Buttons
        * @type {Array}
@@ -206,7 +221,8 @@ export default {
        * @type {Array}
        */
       data: [],
-      guideSelected: null
+      guideSelected: null,
+      timeLoading: 0
     }
   },
   created () {
@@ -218,9 +234,19 @@ export default {
     /**
      * Getters Vuex
      */
-    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
+    valueLoading () {
+      return this.timeLoading
+    }
   },
   methods: {
+    onProgress (data) {
+      this.timeLoading = data
+      if (data === 100) {
+        this.visibleSworn = false
+        this.timeLoading = 0
+      }
+    },
     /**
      * Open sworn declaration
      * @param {Object} data guide selected
@@ -230,13 +256,20 @@ export default {
       if (this.guideSelected && this.guideSelected.sworn_declarations.length <= 0) {
         this.uploadImage = true
       } else {
-        const source = document.getElementById('print')
-        const doc = new jsPDF()
-        doc.html(source)
-        console.log(doc.path)
-        doc.save()
-        // this.$refs.html2Pdf.generatePdf()
+        this.visibleSworn = true
+        this.$refs.html2Pdf.generatePdf()
       }
+    },
+    /**
+     * FIle Uploaded
+     */
+    uploaded () {
+      this.uploadImage = false
+      this.getGuides(this.params)
+      this.$services.getOneData(['guides', this.guideSelected.id])
+        .then(({ res }) => {
+          this.swornDeclaration(res.data)
+        })
     },
     /**
      * Depends Select
@@ -278,7 +311,6 @@ export default {
      * @return {Promise} promise
      */
     uploadFiles (files, updateProgress) {
-      console.log('files')
       const data = new FormData()
       for (let i = 0; i < files.length; i++) {
         data.append(`files[${i}]`, files[i])
@@ -323,7 +355,7 @@ export default {
       }).onOk(async () => {
         await this.$services.deleteData(['guides', data.id])
         this.notify(this, 'guide.deleteSuccessful', 'positive', 'mood')
-        this.getOrganizations()
+        this.getGuides()
       })
     },
     /**
@@ -336,7 +368,7 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getOrganizations(this.params)
+      this.getGuides(this.params)
     },
     /**
      * Search EgressType
@@ -347,7 +379,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getOrganizations()
+      this.getGuides()
     },
     /**
      * Update Coin
@@ -360,7 +392,7 @@ export default {
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getOrganizations(this.params)
+          this.getGuides(this.params)
           this.notify(this, 'guide.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
@@ -378,7 +410,7 @@ export default {
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
-          this.getOrganizations(this.params)
+          this.getGuides(this.params)
           this.notify(this, 'guide.addSuccessful', 'positive', 'mood')
         })
         .catch((error) => {
@@ -389,7 +421,7 @@ export default {
     /**
      * Get all EgressType
      */
-    getOrganizations (params = this.params) {
+    getGuides (params = this.params) {
       this.loadingTable = true
       this.$services.getData(['guides'], params)
         .then(({ res }) => {
