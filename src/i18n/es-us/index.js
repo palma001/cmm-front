@@ -333,6 +333,8 @@ export default {
     concept_type: 'Tipo de concepto'
   },
   guide: {
+    weight: 'peso',
+    unit_of_measurement: 'unidad de medida',
     newGuide: 'nuevo guías',
     uploadSuccess: 'Archivos guardados exitosamente',
     swornDeclaration: 'Declaración Jurada',

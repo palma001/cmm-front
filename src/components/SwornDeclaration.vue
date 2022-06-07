@@ -74,7 +74,7 @@
         <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.plate }}</td>
         <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.color }}</td>
         <td colspan="6" class="x26 text-bold" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Peso</td>
-        <td colspan="6" class="x67 text-center" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">30.000 KGS.</td>
+        <td colspan="6" class="x67" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.weight }} {{ data.unit_of_measurement.acronym }}.</td>
       </tr>
       <tr>
         <td colspan="3" rowspan="1" class="x49" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">MATERIAL&nbsp;</td>
@@ -191,7 +191,7 @@
     <section class="pdf-item q-pt-xs">
       <div class="row">
         <div class="col-3" v-for="img in data.sworn_declarations" :key="img.id">
-          <img width="170" :src="img.imagen"/>
+          <img width="160" :src="img.imagen"/>
         </div>
       </div>
     </section>
@@ -930,7 +930,7 @@ export default {
   .x67 {
     mso-style-parent:style0;
     mso-number-format:"\#\,\#\#0";
-    text-align:left;
+    text-align:right;
     vertical-align:bottom;
     white-space:nowrap;
     background:auto;
