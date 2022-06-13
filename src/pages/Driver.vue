@@ -295,7 +295,10 @@ export default {
       this.$services.getData(['drivers'], this.params)
         .then(({ res }) => {
           this.data = res.data.data.map(data => {
-            data.ownerable_type = this.$t(`driver.${data.ownerable_type}`)
+            data.ownerable_type = {
+              id: data.ownerable_type,
+              name: this.$t(`driver.${data.ownerable_type}`)
+            }
             return data
           })
           this.optionPagination.rowsNumber = res.data.total

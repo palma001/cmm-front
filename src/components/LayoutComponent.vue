@@ -126,6 +126,9 @@
           </div>
         </q-expansion-item>
       </q-scroll-area>
+      <div class="text-center text-uppercase">
+        developed by <span class="text-primary text-bold">q</span><span class="text-bold text-secondary">bits</span>
+      </div>
     </q-drawer>
     <q-page-container>
       <router-view />

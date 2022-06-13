@@ -7,7 +7,7 @@ export const trailerConfig = [
         tabulated: {
           name: 'ownerable_type',
           align: 'left',
-          field: row => row.ownerable_type,
+          field: row => row.ownerable_type.name,
           sortable: true,
           visible: true,
           visibleColumn: true

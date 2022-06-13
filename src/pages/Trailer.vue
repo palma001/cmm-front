@@ -296,7 +296,10 @@ export default {
         .then(({ res }) => {
           this.data = res.data.data.map(data => {
             data.status = this.$t(`trailer.${data.status}`)
-            data.ownerable_type = this.$t(`trailer.${data.ownerable_type}`)
+            data.ownerable_type = {
+              id: data.ownerable_type,
+              name: this.$t(`trailer.${data.ownerable_type}`)
+            }
             return data
           })
           this.optionPagination.rowsNumber = res.data.total
