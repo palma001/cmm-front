@@ -10,6 +10,7 @@ export const actions = {
     self.btnDisable = true
     self.$services.postData(['authentication', 'login'], param)
       .then(({ res }) => {
+        commit(MUTATIONS.SET_TOKEN_TYPE, res.data.token_type)
         commit(MUTATIONS.SET_TOKEN, res.data.access_token)
         commit(MUTATIONS.SET_REFRESH_TOKEN, res.data.refresh_token)
         commit(MUTATIONS.SET_USER, res.data.user)
@@ -47,15 +48,19 @@ export const actions = {
   [ACTIONS.VALID_SESSION]: ({ commit, dispatch }) => {
     const user = JSON.parse(localStorage.getItem('user_session'))
     const role = JSON.parse(localStorage.getItem('roleSelected'))
+    const token = localStorage.getItem('TOKEN')
+    const tokenType = localStorage.getItem('TOKEN_TYPE')
     const branchOffice = typeof localStorage.getItem('branchOffice') === 'string' ? JSON.parse(localStorage.getItem('branchOffice')) : localStorage.getItem('branchOffice')
     // const userActive = localStorage.getItem('session_active')
-    const invalidUser = !user || user === null || role === null
+    const invalidUser = !user || user === null || role === null || token === null || tokenType === null
     if (invalidUser) {
       commit(MUTATIONS.CLEAR_ACCOUNT_STATE)
       return false
     }
     commit(MUTATIONS.SET_USER, user)
     commit(MUTATIONS.SET_ROLE, role)
+    commit(MUTATIONS.SET_TOKEN, token)
+    commit(MUTATIONS.SET_TOKEN_TYPE, tokenType)
     commit(MUTATIONS.SET_BRANCH_OFFICE, branchOffice)
     return true
   },

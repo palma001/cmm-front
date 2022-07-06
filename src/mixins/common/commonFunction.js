@@ -22,7 +22,6 @@ export const translateLabel = function (value) {
  * @return {String}       text translated
  */
 export const errorRequest = function (error) {
-  console.log(error.slice(error.indexOf(';') + 2))
   switch (error.slice(error.indexOf(';') + 2)) {
     case 'Expected non-nullable type Int! not to be null at value.caja_id.' :
       return 'boxIsrequired'
@@ -79,7 +78,6 @@ export const setRelationalData = (
 ) => {
   if (entityConfig) {
     entityConfig.relationalData.forEach(dataConfig => {
-      console.log(dataConfig.sync)
       vueInstance.$services.getData(dataConfig.services, dataConfig.petitionParams)
         .then(({ res }) => {
           toRelationalData = []

@@ -32,6 +32,7 @@
           round
           icon="person"
           aria-label="person"
+          v-if="GET_USER"
           class="q-mr-sm q-ml-sm">
           <q-menu>
             <q-list>
@@ -77,7 +78,6 @@
         </q-btn>
       </q-toolbar>
     </q-header>
-
     <q-drawer
       bordered
       show-if-above

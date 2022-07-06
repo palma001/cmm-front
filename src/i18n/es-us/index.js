@@ -232,7 +232,7 @@ export default {
     drivers: 'conductores',
     'vehicle-types': 'Tipos de vehículo',
     users: 'Usuarios',
-    coin: 'Monedas',
+    coins: 'Monedas',
     orders: 'transacciones',
     roles: 'roles',
     entities: 'entidades',

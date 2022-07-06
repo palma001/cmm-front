@@ -20,6 +20,7 @@ const SET_ID = 'SET_ID'
 const SET_SUCURSALES = 'SET_SUCURSALES'
 const SET_ROLE = 'SET_ROLE'
 const SET_BRANCH_OFFICE = 'SET_BRANCH_OFFICE'
+const SET_TOKEN_TYPE = 'SET_TOKEN_TYPE'
 
 /**
  * Getters
@@ -30,6 +31,7 @@ const GET_ID = 'GET_ID'
 const GET_USER = 'GET_USER'
 const GET_ROLE = 'GET_ROLE'
 const GET_BRANCH_OFFICE = 'GET_BRANCH_OFFICE'
+const GET_TOKEN_TYPE = 'GET_TOKEN_TYPE'
 /**
  * Actions Login
  * @type {Object}
@@ -55,7 +57,8 @@ export const MUTATIONS = {
   SET_EXPIRE_IN,
   SET_ID,
   SET_ROLE,
-  SET_BRANCH_OFFICE
+  SET_BRANCH_OFFICE,
+  SET_TOKEN_TYPE
 }
 
 export const GETTERS = {
@@ -64,5 +67,6 @@ export const GETTERS = {
   GET_USER,
   SET_SUCURSALES,
   GET_ROLE,
-  GET_BRANCH_OFFICE
+  GET_BRANCH_OFFICE,
+  GET_TOKEN_TYPE
 }

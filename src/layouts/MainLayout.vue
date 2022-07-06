@@ -35,7 +35,7 @@ export default {
     /**
      * Getters Vuex
      */
-    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_ROLE])
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_ROLE, GETTERS.GET_TOKEN_TYPE, GETTERS.GET_TOKEN])
   },
   methods: {
     loadCron () {
@@ -55,6 +55,8 @@ export default {
      * Get all products
      */
     getAllModules () {
+      const header = `${this[GETTERS.GET_TOKEN_TYPE]} ${this[GETTERS.GET_TOKEN]}`
+      this.$services.setAxiosHeader('Authorization', header)
       this.$services.getData(['sections'])
         .then(({ res }) => {
           this.modules = res.data

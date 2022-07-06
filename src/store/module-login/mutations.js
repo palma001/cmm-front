@@ -15,6 +15,11 @@ export const mutations = {
     localStorage.setItem('TOKEN', token)
   },
 
+  [MUTATIONS.SET_TOKEN_TYPE]: (state, tokenType) => {
+    state.TOKEN_TYPE = tokenType
+    localStorage.setItem('TOKEN_TYPE', tokenType)
+  },
+
   [MUTATIONS.SET_REFRESH_TOKEN]: (state, refreshToken) => {
     state.TOKEN = refreshToken
     localStorage.setItem('REFRESH_TOKEN', refreshToken)
