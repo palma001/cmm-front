@@ -120,12 +120,6 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
-        path: 'guides',
-        name: 'Guide',
-        component: () => import('src/pages/Guide.vue'),
-        beforeEnter: validationSessionUnit
-      },
-      {
         path: 'drivers',
         name: 'Driver',
         component: () => import('src/pages/Driver.vue'),

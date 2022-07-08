@@ -21,8 +21,13 @@ export const mutations = {
   },
 
   [MUTATIONS.SET_REFRESH_TOKEN]: (state, refreshToken) => {
-    state.TOKEN = refreshToken
+    state.REFRESH_TOKEN = refreshToken
     localStorage.setItem('REFRESH_TOKEN', refreshToken)
+  },
+
+  [MUTATIONS.SET_TIME_OUT]: (state, timeOut) => {
+    state.TIME_OUT = timeOut
+    localStorage.setItem('TIME_OUT', timeOut)
   },
 
   [MUTATIONS.SET_USER]: (state, user) => {
@@ -46,15 +51,15 @@ export const mutations = {
   },
 
   [MUTATIONS.SET_EXPIRE_IN]: (state, expiresIn) => {
-    switch (typeof expiresIn) {
-      case 'number':
-        state.expires_in = new Date(
-          new Date().getTime() + expiresIn
-        )
-        break
-      default:
-        state.expires_in = expiresIn
-    }
-    localStorage.setItem('expires_in', state.expires_in)
+    // switch (typeof expiresIn) {
+    //   case 'number':
+    //     state.expires_in = new Date(
+    //       new Date().getTime() + expiresIn
+    //     )
+    //     break
+    //   default:
+    // }
+    state.expires_in = expiresIn
+    localStorage.setItem('expires_in', expiresIn)
   }
 }

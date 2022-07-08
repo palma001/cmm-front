@@ -14,6 +14,14 @@ export const getters = {
    * @param  {[type]} state [description]
    * @return {[type]}       [description]
    */
+  [GETTERS.GET_REFRESH_TOKEN]: (state) => {
+    return state.REFRESH_TOKEN
+  },
+  /**
+   * Status of de expire date
+   * @param  {[type]} state [description]
+   * @return {[type]}       [description]
+   */
   [GETTERS.GET_TOKEN_TYPE]: (state) => {
     return state.TOKEN_TYPE
   },
