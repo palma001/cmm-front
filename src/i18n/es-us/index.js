@@ -152,7 +152,7 @@ export default {
   },
   fieldSupervisor: {
     add: 'agregar supervisor',
-    name: 'nombre o razón social',
+    name: 'nombre',
     last_name: 'apellido',
     document_number: 'número de identificación',
     phone_number: 'número de teléfono',

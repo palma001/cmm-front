@@ -284,8 +284,8 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<!-- <style lang="sass">
 .my-menu-link
   color: white
   background: #4A235A
-</style>
+</style> -->

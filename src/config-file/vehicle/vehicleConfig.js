@@ -80,7 +80,7 @@ export const vehicleConfig = [
           component: {
             name: 'b-search-select',
             props: {
-              sync: true,
+              sync: false,
               data: [],
               dataValue: 'id',
               dataLabel: 'name',
@@ -385,7 +385,7 @@ export const relationalDataConfiguration = [
     entity: 'ownerable',
     services: ['providers'],
     propData: 'data',
-    petitionParams: {
+    queryParams: {
       search: {
         name: null
       },

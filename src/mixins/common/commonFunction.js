@@ -80,8 +80,8 @@ export const setRelationalData = (
     entityConfig.relationalData.forEach(dataConfig => {
       vueInstance.$services.getData(dataConfig.services, dataConfig.petitionParams)
         .then(({ res }) => {
-          toRelationalData = []
-          toRelationalData = toRelationalData.concat(res.data)
+          const data = res.data.data ?? res.data
+          toRelationalData = toRelationalData.concat(data)
           assignRelationalData(
             entityConfig.config,
             dataConfig.targetPropTag,

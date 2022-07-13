@@ -27,7 +27,7 @@ export const getOneData = function (url, params = {}) {
   }).then((res) => {
     return {
       status: true,
-      res: res
+      res: res.data
     }
   }).catch((err) => {
     if (err) {
