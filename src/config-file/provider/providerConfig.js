@@ -5,49 +5,6 @@ export const provider = [
     children: [
       {
         tabulated: {
-          name: 'document_type_id',
-          align: 'left',
-          field: row => row.document_type ? row.document_type.name : '-',
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'document_type',
-          addible: false,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true,
-              disable: true,
-              readonly: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
           name: 'document_number',
           align: 'left',
           field: row => row.document_number,
@@ -56,7 +13,7 @@ export const provider = [
         },
         actionable: {
           propTag: 'document_number',
-          addible: false,
+          addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
@@ -65,8 +22,7 @@ export const provider = [
             props: {
               type: 'text',
               dense: true,
-              outlined: true,
-              disable: true
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -94,7 +50,7 @@ export const provider = [
         },
         actionable: {
           propTag: 'name',
-          addible: false,
+          addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
@@ -103,8 +59,7 @@ export const provider = [
             props: {
               type: 'text',
               dense: true,
-              outlined: true,
-              disable: true
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -116,44 +71,6 @@ export const provider = [
                 name: 'validate',
                 value: {
                   required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'last_name',
-          align: 'left',
-          field: row => row.last_name,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'last_name',
-          addible: false,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              dense: true,
-              outlined: true,
-              disable: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: false
                 }
               }
             ]
@@ -200,14 +117,14 @@ export const provider = [
       },
       {
         tabulated: {
-          name: 'phone',
+          name: 'phone_number',
           align: 'left',
-          field: row => row.phone,
+          field: row => row.phone_number,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'phone',
+          propTag: 'phone_number',
           addible: true,
           editable: true,
           type: 'String',
@@ -218,82 +135,6 @@ export const provider = [
               type: 'text',
               dense: true,
               outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'residence_condition',
-          align: 'left',
-          field: row => row.residence_condition,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'residence_condition',
-          addible: false,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              dense: true,
-              outlined: true,
-              disable: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'status',
-          align: 'left',
-          field: row => row.status,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'status',
-          addible: false,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              dense: true,
-              outlined: true,
-              disable: true
             },
             class: {
               'col-xs-12': true,

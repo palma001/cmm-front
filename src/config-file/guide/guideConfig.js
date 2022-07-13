@@ -33,7 +33,7 @@ export const guideConfig = [
               sync: true,
               clearable: true,
               outlined: true,
-              services: ['material-suppliers'],
+              services: ['providers'],
               queryParams: {
                 search: {
                   name: null,
@@ -679,7 +679,7 @@ export const relationalDataConfiguration = [
   {
     targetPropTag: 'material_supplier',
     entity: 'material_supplier',
-    services: ['material-suppliers'],
+    services: ['providers'],
     propData: 'data',
     sync: true
   },

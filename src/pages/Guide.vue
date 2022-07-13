@@ -283,7 +283,7 @@ export default {
             if (service.targetPropTag === propTag) {
               service.petitionParams = {
                 dataEqualFilter: {
-                  ownerable_type: 'App\\Models\\MaterialSupplier',
+                  ownerable_type: 'App\\Models\\Provider',
                   ownerable_id: data.id
                 },
                 paginate: false

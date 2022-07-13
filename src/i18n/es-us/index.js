@@ -50,7 +50,7 @@ export default {
     editSuccessful: 'modificado exitosamente'
   },
   driver: {
-    'App\\Models\\MaterialSupplier': 'Empresa comercializadora',
+    'App\\Models\\Provider': 'Proveedor',
     'App\\Models\\Organization': 'Organización',
     add: 'agregar conductor',
     name: 'nombre o razón social',
@@ -70,7 +70,7 @@ export default {
     editSuccessful: 'modificado exitosamente'
   },
   vehicle: {
-    'App\\Models\\MaterialSupplier': 'Empresa comercializadora',
+    'App\\Models\\Provider': 'Proveedor',
     'App\\Models\\Organization': 'Organización',
     add: 'agregar vehiculo',
     active: 'Activo',
@@ -93,7 +93,7 @@ export default {
     editSuccessful: 'modificado exitosamente'
   },
   trailer: {
-    'App\\Models\\MaterialSupplier': 'Empresa comercializadora',
+    'App\\Models\\Provider': 'Proveedor',
     'App\\Models\\Organization': 'Organización',
     add: 'agregar tráiler',
     active: 'Activo',
@@ -114,12 +114,12 @@ export default {
     deleteSuccessful: 'eliminado exitasamente',
     editSuccessful: 'modificado exitosamente'
   },
-  materialSupplier: {
+  provider: {
     serie_number: 'correlativo',
     seal: 'sello',
     signature: 'firma',
     logo: 'logo',
-    add: 'agregar empresa comercializadora',
+    add: 'agregar proveedor',
     name: 'nombre o razón social',
     address: 'dirección',
     document_number: 'número de identificación',
@@ -127,9 +127,9 @@ export default {
     email: 'correo',
     reset: 'Limpiar',
     cancel: 'Cancelar',
-    addSuccessful: 'empresa comercializadora agregado exitosamente',
-    list: 'empresa comercializadoras',
-    update: 'Editar empresa comercializadora',
+    addSuccessful: 'proveedor agregado exitosamente',
+    list: 'proveedores',
+    update: 'Editar proveedor',
     deleteSuccessful: 'eliminado exitasamente',
     editSuccessful: 'modificado exitosamente'
   },
@@ -243,7 +243,6 @@ export default {
     responsables: 'responsables',
     clients: 'clientes',
     states: 'estados',
-    'material-suppliers': 'empresa comercializadora',
     concepts: 'Conceptos',
     providers: 'proveedores',
     'field-supervisors': 'supervisores de campo',
@@ -341,7 +340,7 @@ export default {
     swornDeclaration: 'Declaración Jurada',
     documents: 'documentos',
     add: 'agregar guías',
-    material_supplier: 'Empresa comercializadora',
+    material_supplier: 'Proveedor',
     vehicle: 'Vehiculo',
     client: 'cliente',
     trailer: 'tráiler',

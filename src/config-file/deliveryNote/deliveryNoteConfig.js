@@ -711,7 +711,7 @@ export const relationalDataConfiguration = [
   {
     targetPropTag: 'material_supplier',
     entity: 'material_supplier',
-    services: ['material-suppliers'],
+    services: ['providers'],
     propData: 'data',
     petitionParams: {
       paginate: false

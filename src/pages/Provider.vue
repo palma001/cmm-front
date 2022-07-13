@@ -5,7 +5,7 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('materialSupplier.add')"
+          :label="$q.screen.lt.sm ? '' : $t('provider.add')"
           @click="addDialog = true"
         >
         <q-tooltip
@@ -15,7 +15,7 @@
           v-if="$q.screen.lt.sm"
         >
           {{
-            ucwords($t('materialSupplier.add'))
+            ucwords($t('provider.add'))
           }}
         </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="materialSupplier"
+          module="provider"
           searchable
           action
-          :column="materialSupplier"
+          :column="provider"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -45,9 +45,9 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="materialSupplier"
+        module="provider"
         :propsPanelEdition="propsPanelEdition"
-        :config="materialSupplier"
+        :config="provider"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -60,8 +60,8 @@
       v-model="addDialog"
     >
       <dynamic-form
-        module="materialSupplier"
-        :config="materialSupplier"
+        module="provider"
+        :config="provider"
         :loading="loadingForm"
         @cancel="addDialog = false"
         @save="save"
@@ -71,7 +71,7 @@
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import { materialSupplier, buttonsActions, propsPanelEdition } from '../config-file/materialSupplier/materialSupplierConfig.js'
+import { provider, buttonsActions, propsPanelEdition } from '../config-file/provider/providerConfig.js'
 import { mixins } from '../mixins'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
@@ -131,7 +131,7 @@ export default {
        * File config module
        * @type {Object}
        */
-      materialSupplier,
+      provider,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -147,7 +147,7 @@ export default {
        * @type {Array}
        */
       data: [],
-      materialSupplierSave: {},
+      providerSave: {},
       loadingApi: false,
       titleForm: 'Agregar Trabajador'
     }
@@ -155,7 +155,7 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.setRelationalData(this.materialSupplierServices, [], this)
+    this.setRelationalData(this.providerServices, [], this)
   },
   computed: {
     /**
@@ -166,7 +166,7 @@ export default {
   methods: {
     cancel () {
       this.addDialog = false
-      this.materialSupplierSave = {}
+      this.providerSave = {}
     },
     /**
      * Set data dialog edition
@@ -184,7 +184,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar el beneficiario?',
+        message: '¿Desea eliminar el proveedor?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -195,9 +195,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['material-suppliers', data.id])
-        this.notify(this, 'materialSupplier.deleteSuccessful', 'positive', 'mood')
-        this.getBeneficiaries()
+        await this.$services.deleteData(['providers', data.id])
+        this.notify(this, 'provider.deleteSuccessful', 'positive', 'mood')
+        this.getProviders()
       })
     },
     /**
@@ -210,10 +210,10 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getBeneficiaries(this.params)
+      this.getProviders(this.params)
     },
     /**
-     * Search materialSupplier
+     * Search provider
      * @param  {Object}
      */
     searchData (data) {
@@ -221,7 +221,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getBeneficiaries()
+      this.getProviders()
     },
     /**
      * Update Branch Office
@@ -230,12 +230,12 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['material-suppliers', this.selectedData.id], data)
+      this.$services.putData(['providers', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getBeneficiaries(this.params)
-          this.notify(this, 'materialSupplier.editSuccessful', 'positive', 'mood')
+          this.getProviders(this.params)
+          this.notify(this, 'provider.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -248,23 +248,23 @@ export default {
     save (data) {
       data.user_created_id = this.userSession.id
       this.loadingForm = true
-      this.$services.postData(['material-suppliers'], data)
+      this.$services.postData(['providers'], data)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
-          this.getBeneficiaries(this.params)
-          this.notify(this, 'materialSupplier.addSuccessful', 'positive', 'mood')
+          this.getProviders(this.params)
+          this.notify(this, 'provider.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Get all material-suppliers
+     * Get all providers
      */
-    getBeneficiaries (params = this.params) {
+    getProviders (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['material-suppliers'], this.params)
+      this.$services.getData(['providers'], this.params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total

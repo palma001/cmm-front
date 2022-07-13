@@ -27,9 +27,9 @@ export const driverConfig = [
             props: {
               data: [
                 {
-                  id: 'App\\Models\\MaterialSupplier',
-                  name: 'Empresa comercializadora',
-                  api: 'material-suppliers'
+                  id: 'App\\Models\\Provider',
+                  name: 'Proveedor',
+                  api: 'providers'
                 },
                 {
                   id: 'App\\Models\\Organization',
@@ -383,7 +383,7 @@ export const relationalDataConfiguration = [
   {
     targetPropTag: 'ownerable',
     entity: 'ownerable',
-    services: ['material-suppliers'],
+    services: ['providers'],
     propData: 'data',
     petitionParams: {
       paginate: false

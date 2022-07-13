@@ -96,9 +96,9 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
-        path: 'material-suppliers',
-        name: 'MaterialSupplier',
-        component: () => import('src/pages/MaterialSupplier.vue'),
+        path: 'providers',
+        name: 'Provider',
+        component: () => import('src/pages/Provider.vue'),
         beforeEnter: validationSessionUnit
       },
       {
