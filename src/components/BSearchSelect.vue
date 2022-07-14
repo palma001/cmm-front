@@ -225,7 +225,6 @@ export default {
      * @param  {Function}
      */
     filter (val, update) {
-      console.log(this.services)
       if (this.sync) {
         this.$services.getData(this.services, {
           ...this.queryParams,

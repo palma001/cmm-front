@@ -58,7 +58,6 @@ export default {
   },
   watch: {
     dialogSession () {
-      console.log(this[GETTERS.GET_TOKEN])
       setTimeout(() => {
         if (this[GETTERS.GET_TOKEN] === null || this[GETTERS.GET_TOKEN] === 'null') {
           this.logout()
