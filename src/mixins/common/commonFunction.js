@@ -81,12 +81,11 @@ export const setRelationalData = (
       vueInstance.$services.getData(dataConfig.services, dataConfig.petitionParams)
         .then(({ res }) => {
           const data = res.data.data ?? res.data
-          toRelationalData = toRelationalData.concat(data)
           assignRelationalData(
             entityConfig.config,
             dataConfig.targetPropTag,
             dataConfig.propData,
-            toRelationalData,
+            data,
             dataConfig
           )
           callback(res.data, toRelationalData)

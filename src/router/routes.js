@@ -148,6 +148,18 @@ const routes = [
         name: 'VehicleType',
         component: () => import('src/pages/VehicleType.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'provider-rates',
+        name: 'Rate',
+        component: () => import('src/pages/ProviderRate.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'tickets',
+        name: 'Ticket',
+        component: () => import('src/pages/Ticket.vue'),
+        beforeEnter: validationSessionUnit
       }
       // {
       //   path: 'collection-receipts',

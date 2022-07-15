@@ -224,9 +224,27 @@ export default {
     reset: 'limpiar',
     cancel: 'cancelar'
   },
+  providerRate: {
+    description: 'descripción',
+    rate: 'Tarifa',
+    coin: 'Moneda',
+    provider: 'proveedor',
+    deleteSuccessful: 'Eliminado exitosamente',
+    addSuccessful: 'Agregado exitosamente',
+    editSuccessful: 'Modificado exitosamente',
+    unit_of_measurement: 'unidad de medida',
+    list: 'Lista de tarifas',
+    update: 'Modificar',
+    reset: 'limpiar',
+    add: 'agregar tarifa',
+    cancel: 'cancelar'
+  },
   // modules
   modules: {
     guides: 'Guías',
+    tickets: 'Tickets',
+    rates: 'Tarifa de proveedores',
+    'provider-types': 'tipos de proveedores',
     vehicles: 'vehículo',
     trailers: 'Tráiler',
     drivers: 'conductores',
