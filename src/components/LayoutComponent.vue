@@ -32,6 +32,7 @@
           round
           icon="person"
           aria-label="person"
+          v-if="GET_USER"
           class="q-mr-sm q-ml-sm">
           <q-menu>
             <q-list>
@@ -77,7 +78,6 @@
         </q-btn>
       </q-toolbar>
     </q-header>
-
     <q-drawer
       bordered
       show-if-above
@@ -126,6 +126,9 @@
           </div>
         </q-expansion-item>
       </q-scroll-area>
+      <div class="text-center text-uppercase">
+        developed by <span class="text-primary text-bold">q</span><span class="text-bold text-secondary">bits</span>
+      </div>
     </q-drawer>
     <q-page-container>
       <router-view />
@@ -281,8 +284,8 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<!-- <style lang="sass">
 .my-menu-link
   color: white
   background: #4A235A
-</style>
+</style> -->

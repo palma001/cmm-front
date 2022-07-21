@@ -871,7 +871,7 @@ export default {
      * @param {Callback} update
      */
     getMaterialSuppliers (value, update) {
-      this.$services.getData(['material-suppliers'], {
+      this.$services.getData(['providers'], {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {

@@ -7,7 +7,7 @@ export const vehicleConfig = [
         tabulated: {
           name: 'ownerable_type',
           align: 'left',
-          field: row => row.ownerable_type,
+          field: row => row.ownerable_type.name,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -27,9 +27,9 @@ export const vehicleConfig = [
             props: {
               data: [
                 {
-                  id: 'App\\Models\\MaterialSupplier',
-                  name: 'Empresa comercializadora',
-                  api: 'material-suppliers'
+                  id: 'App\\Models\\Provider',
+                  name: 'Proveedor',
+                  api: 'providers'
                 },
                 {
                   id: 'App\\Models\\Organization',
@@ -80,7 +80,7 @@ export const vehicleConfig = [
           component: {
             name: 'b-search-select',
             props: {
-              sync: true,
+              sync: false,
               data: [],
               dataValue: 'id',
               dataLabel: 'name',
@@ -383,9 +383,9 @@ export const relationalDataConfiguration = [
   {
     targetPropTag: 'ownerable',
     entity: 'ownerable',
-    services: ['material-suppliers'],
+    services: ['providers'],
     propData: 'data',
-    petitionParams: {
+    queryParams: {
       search: {
         name: null
       },

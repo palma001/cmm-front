@@ -17,11 +17,14 @@ export const validationNotSession = async (to, from, next) => {
   next()
 }
 
-export const validationSessionUnit = (to, from, next) => {
-  const role = JSON.parse(LocalStorage.getItem('roleSelected'))
-  const moduleFind = role.modules.find(module => module.route === to.name)
-  if (from.name === 'login') {
-    return next()
+export const validationSessionUnit = async (to, from, next) => {
+  const validation = await Store.dispatch(ACTIONS.VALID_SESSION)
+  if (validation) {
+    const role = JSON.parse(LocalStorage.getItem('roleSelected'))
+    const moduleFind = role.modules.find(module => module.route === to.name)
+    if (from.name === 'login') {
+      return next()
+    }
+    return moduleFind ? next() : next('*')
   }
-  return moduleFind ? next() : next('*')
 }

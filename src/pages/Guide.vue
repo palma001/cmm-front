@@ -70,25 +70,87 @@
         @save="save"
       />
     </q-dialog>
+    <q-dialog
+      v-model="uploadImage"
+    >
+      <q-card style="width: 500px; max-width: 80vw;">
+        <q-card-section class="q-pb-xs">
+          <div class="text-h6">Declaración Jurada</div>
+        </q-card-section>
+        <q-card-section>
+          <q-uploader
+            :factory="uploadFiles"
+            @finish="uploaded"
+            label="Cargar Archivos Maximo 8 Archivos"
+            ref="uploader"
+            multiple
+            bordered
+            batch
+            style="width: 100%"
+            max-files="8"
+            @rejected="onRejected"
+          />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <vue-html2pdf
+      ref="html2Pdf"
+      pdf-format="a4"
+      pdf-orientation="portrait"
+      pdf-content-width="800px"
+      :show-layout="false"
+      :float-layout="true"
+      :enable-download="false"
+      :preview-modal="true"
+      :paginate-elements-by-height="1000"
+      filename="nameFile"
+      :pdf-quality="2"
+      :manual-pagination="true"
+      @progress="onProgress($event)"
+    >
+      <section slot="pdf-content" class="text-uppercase text-dark q-pa-md">
+        <sworn-declaration :data="guideSelected"/>
+      </section>
+    </vue-html2pdf>
+    <q-inner-loading :showing="visibleSworn">
+      <q-circular-progress
+        show-value
+        class="text-white q-ma-md"
+        :value="valueLoading"
+        size="150px"
+        :thickness="0.2"
+        color="orange"
+        center-color="primary"
+        track-color="transparent"
+      >
+        <q-icon name="receipt" />
+      </q-circular-progress>
+    </q-inner-loading>
   </q-page>
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
+import VueHtml2pdf from 'vue-html2pdf'
 import { guideConfig, buttonsActions, propsPanelEdition, guideServices } from '../config-file/guide/guideConfig.js'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
+import SwornDeclaration from '../components/SwornDeclaration'
 export default {
   mixins: [mixins.containerMixin],
   components: {
     DataTable,
+    VueHtml2pdf,
     DynamicForm,
-    DynamicFormEdition
+    DynamicFormEdition,
+    SwornDeclaration
   },
   data () {
     return {
+      visibleSworn: false,
+      uploadImage: false,
       guideServices,
       /**
        * Table Buttons
@@ -158,7 +220,9 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      guideSelected: null,
+      timeLoading: 0
     }
   },
   created () {
@@ -170,12 +234,48 @@ export default {
     /**
      * Getters Vuex
      */
-    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
+    valueLoading () {
+      return this.timeLoading
+    }
   },
   methods: {
-    swornDeclaration (data) {
-      console.log(data)
+    onProgress (data) {
+      this.timeLoading = data
+      if (data === 100) {
+        this.visibleSworn = false
+        this.timeLoading = 0
+      }
     },
+    /**
+     * Open sworn declaration
+     * @param {Object} data guide selected
+     */
+    swornDeclaration (data) {
+      this.guideSelected = data
+      if (this.guideSelected && this.guideSelected.sworn_declarations.length <= 0) {
+        this.uploadImage = true
+      } else {
+        this.visibleSworn = true
+        this.$refs.html2Pdf.generatePdf()
+      }
+    },
+    /**
+     * FIle Uploaded
+     */
+    uploaded () {
+      this.uploadImage = false
+      this.getGuides(this.params)
+      this.$services.getOneData(['guides', this.guideSelected.id])
+        .then(({ res }) => {
+          this.swornDeclaration(res.data)
+        })
+    },
+    /**
+     * Depends Select
+     * @param {data} data selected
+     * @param {String} propTag name select
+     */
     depends (data, propTags) {
       this.$nextTick(() => {
         this.guideServices.relationalData.map(service => {
@@ -183,7 +283,7 @@ export default {
             if (service.targetPropTag === propTag) {
               service.petitionParams = {
                 dataEqualFilter: {
-                  ownerable_type: 'App\\Models\\MaterialSupplier',
+                  ownerable_type: 'App\\Models\\Provider',
                   ownerable_id: data.id
                 },
                 paginate: false
@@ -193,6 +293,37 @@ export default {
           return service
         })
         this.setRelationalData(this.guideServices, [], this)
+      })
+    },
+    /**
+     * Validation input type file
+     * @param {Array} rejectedEntries files errors
+     */
+    onRejected (rejectedEntries) {
+      this.$q.notify({
+        type: 'negative',
+        message: `${rejectedEntries.length} file(s) did not pass validation constraints`
+      })
+    },
+    /**
+     * Upload image
+     * @type {Array} files images
+     * @return {Promise} promise
+     */
+    uploadFiles (files, updateProgress) {
+      const data = new FormData()
+      for (let i = 0; i < files.length; i++) {
+        data.append(`files[${i}]`, files[i])
+      }
+      data.append('guide_id', this.guideSelected.id)
+      data.append('user_created_id', this.userSession.id)
+      return new Promise((resolve, reject) => {
+        this.$services.postUpload(['sworn-declarations'], data)
+          .then(({ res }) => {
+            this.notify(this, 'guide.uploadSuccess', 'positive', 'mood')
+            resolve(null)
+          })
+          .catch(err => reject(err))
       })
     },
     /**
@@ -224,7 +355,7 @@ export default {
       }).onOk(async () => {
         await this.$services.deleteData(['guides', data.id])
         this.notify(this, 'guide.deleteSuccessful', 'positive', 'mood')
-        this.getOrganizations()
+        this.getGuides()
       })
     },
     /**
@@ -237,7 +368,7 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getOrganizations(this.params)
+      this.getGuides(this.params)
     },
     /**
      * Search EgressType
@@ -248,7 +379,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getOrganizations()
+      this.getGuides()
     },
     /**
      * Update Coin
@@ -261,7 +392,7 @@ export default {
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getOrganizations(this.params)
+          this.getGuides(this.params)
           this.notify(this, 'guide.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
@@ -279,7 +410,7 @@ export default {
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
-          this.getOrganizations(this.params)
+          this.getGuides(this.params)
           this.notify(this, 'guide.addSuccessful', 'positive', 'mood')
         })
         .catch((error) => {
@@ -290,7 +421,7 @@ export default {
     /**
      * Get all EgressType
      */
-    getOrganizations (params = this.params) {
+    getGuides (params = this.params) {
       this.loadingTable = true
       this.$services.getData(['guides'], params)
         .then(({ res }) => {

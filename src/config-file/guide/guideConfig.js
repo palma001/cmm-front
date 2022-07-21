@@ -33,7 +33,7 @@ export const guideConfig = [
               sync: true,
               clearable: true,
               outlined: true,
-              services: ['material-suppliers'],
+              services: ['providers'],
               queryParams: {
                 search: {
                   name: null,
@@ -326,6 +326,89 @@ export const guideConfig = [
       },
       {
         tabulated: {
+          name: 'weight',
+          align: 'left',
+          field: row => `${row.weight} ${row.unit_of_measurement.acronym}`,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'weight',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'number',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'q-mt-sm': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'unit_of_measurement',
+          align: 'left',
+          field: row => `${row.unit_of_measurement.name}(${row.unit_of_measurement.acronym})`,
+          sortable: true,
+          visible: false,
+          visibleColumn: false
+        },
+        actionable: {
+          propTag: 'unit_of_measurement',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'full_name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'code_runpa',
           align: 'left',
           field: row => row.code_runpa,
@@ -596,7 +679,7 @@ export const relationalDataConfiguration = [
   {
     targetPropTag: 'material_supplier',
     entity: 'material_supplier',
-    services: ['material-suppliers'],
+    services: ['providers'],
     propData: 'data',
     sync: true
   },
@@ -611,6 +694,15 @@ export const relationalDataConfiguration = [
     targetPropTag: 'client',
     entity: 'client',
     services: ['clients'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'unit_of_measurement',
+    entity: 'unit_of_measurement',
+    services: ['unit-of-measurements'],
     propData: 'data',
     petitionParams: {
       paginate: false

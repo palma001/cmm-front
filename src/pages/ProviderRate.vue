@@ -5,28 +5,28 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('trailer.add')"
+          :label="$q.screen.lt.sm ? '' : $t('providerRate.add')"
           @click="addDialog = true"
         >
-        <q-tooltip
-          anchor="center right"
-          self="center left"
-          :offset="[10, 10]"
-          v-if="$q.screen.lt.sm"
-        >
-          {{
-            ucwords($t('trailer.add'))
-          }}
-        </q-tooltip>
+          <q-tooltip
+            anchor="center right"
+            self="center left"
+            :offset="[10, 10]"
+            v-if="$q.screen.lt.sm"
+          >
+            {{
+              ucwords($t('providerRate.add'))
+            }}
+          </q-tooltip>
       </q-btn>
       </div>
       <div class="col-12">
         <data-table
           title="list"
-          module="trailer"
+          module="providerRate"
           searchable
           action
-          :column="trailerConfig"
+          :column="providerRateConfig"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -45,11 +45,10 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="trailer"
+        module="providerRate"
         :propsPanelEdition="propsPanelEdition"
-        :config="trailerConfig"
+        :config="providerRateConfig"
         :loading="loadingForm"
-        @depends="depends"
         @cancel="editDialog = false"
         @update="update"
       />
@@ -61,10 +60,9 @@
       v-model="addDialog"
     >
       <dynamic-form
-        module="trailer"
-        :config="trailerConfig"
+        module="providerRate"
+        :config="providerRateConfig"
         :loading="loadingForm"
-        @depends="depends"
         @cancel="addDialog = false"
         @save="save"
       />
@@ -73,10 +71,10 @@
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import { trailerConfig, buttonsActions, propsPanelEdition, trailerServices } from '../config-file/trailer/trailerConfig.js'
-import { mixins } from '../mixins'
+import { providerRateConfig, buttonsActions, propsPanelEdition, providerRateServices } from '../config-file/providerRate/providerRateConfig.js'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
+import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 export default {
@@ -88,22 +86,22 @@ export default {
   },
   data () {
     return {
-      trailerServices,
+      providerRateServices,
       /**
-       * Config file panel edition
-       * @type {Obejct}
-       */
-      propsPanelEdition,
-      /**
-       * Loading form
-       * @type {Boolean}
-       */
-      loadingForm: false,
-      /**
-       * Config file buttons table
+       * Table Buttons
        * @type {Array}
        */
       buttonsActions,
+      /**
+       * Panel Edition Config
+       * @type {Object}
+       */
+      propsPanelEdition,
+      /**
+       * Status loading form
+       * @type {Boolean}
+       */
+      loadingForm: false,
       /**
        * Selected data
        * @type {Object}
@@ -130,11 +128,7 @@ export default {
         sortOrder: 'desc',
         perPage: 1,
         dataSearch: {
-          name: '',
-          last_name: '',
-          document_number: '',
-          email: '',
-          phone: ''
+          name: ''
         }
       },
       /**
@@ -146,7 +140,7 @@ export default {
        * File config module
        * @type {Object}
        */
-      trailerConfig,
+      providerRateConfig,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -167,7 +161,7 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.setRelationalData(this.trailerServices, [], this)
+    this.setRelationalData(this.providerRateServices, [], this)
   },
   computed: {
     /**
@@ -177,29 +171,13 @@ export default {
   },
   methods: {
     /**
-     * Selected dependency
-     * @param {Object} data data selected
-     * @param {String} propTag tag selected
-    */
-    depends (data, propTags) {
-      this.trailerServices.relationalData.map(service => {
-        propTags.forEach(propTag => {
-          if (service.targetPropTag === propTag) {
-            service.services = [data.api]
-          }
-        })
-        return service
-      })
-      this.setRelationalData(this.trailerServices, [], this)
-    },
-    /**
      * Set data dialog edition
      * @param  {Object} data selected
      */
     viewDetails (data) {
       this.editDialog = true
-      this.selectedData = data
       this.propsPanelEdition.data = data
+      this.selectedData = data
     },
     /**
      * Delete data
@@ -208,7 +186,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar el vehiculo?',
+        message: '¿Desea eliminar la tarifa?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -219,9 +197,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['trailers', data.id])
-        this.notify(this, 'trailer.deleteSuccessful', 'positive', 'mood')
-        this.gettrailer()
+        await this.$services.deleteData(['rates', data.id])
+        this.notify(this, 'providerRate.deleteSuccessful', 'positive', 'mood')
+        this.getOrganizations()
       })
     },
     /**
@@ -234,10 +212,10 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.gettrailer(this.params)
+      this.getOrganizations(this.params)
     },
     /**
-     * Search trailer
+     * Search EgressType
      * @param  {Object}
      */
     searchData (data) {
@@ -245,63 +223,53 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.gettrailer()
+      this.getOrganizations()
     },
     /**
-     * Update Branch Office
+     * Update Coin
      * @param  {Object}
      */
     update (data) {
       data.user_updated_id = this.userSession.id
-      data.ownerable_type = data.ownerable_type.id
-      data.ownerable_id = data.ownerable.id
       this.loadingForm = true
-      this.$services.putData(['trailers', this.selectedData.id], data)
+      this.$services.putData(['rates', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.gettrailer(this.params)
-          this.notify(this, 'trailer.editSuccessful', 'positive', 'mood')
+          this.getOrganizations(this.params)
+          this.notify(this, 'providerRate.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Save Branch Office
+     * Save Coin
      * @param  {Object}
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.ownerable_type = data.ownerable_type.id
-      data.ownerable_id = data.ownerable.id
       this.loadingForm = true
-      this.$services.postData(['trailers'], data)
+      this.$services.postData(['rates'], data)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
-          this.gettrailer(this.params)
-          this.notify(this, 'trailer.addSuccessful', 'positive', 'mood')
+          this.getOrganizations(this.params)
+          this.notify(this, 'providerRate.addSuccessful', 'positive', 'mood')
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error)
           this.loadingForm = false
         })
     },
     /**
-     * Get all trailers
+     * Get all EgressType
      */
-    gettrailer (params = this.params) {
+    getOrganizations (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['trailers'], this.params)
+      this.$services.getData(['rates'], params)
         .then(({ res }) => {
-          this.data = res.data.data.map(data => {
-            data.status = this.$t(`trailer.${data.status}`)
-            data.ownerable_type = {
-              id: data.ownerable_type,
-              name: this.$t(`trailer.${data.ownerable_type}`)
-            }
-            return data
-          })
+          this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total
           this.loadingTable = false
         })

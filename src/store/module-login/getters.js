@@ -7,10 +7,23 @@ export const getters = {
    * @return {[type]}       [description]
    */
   [GETTERS.GET_TOKEN]: (state) => {
-    if (!state.TOKEN) {
-      return true
-    }
-    return false
+    return state.TOKEN
+  },
+  /**
+   * Status of de expire date
+   * @param  {[type]} state [description]
+   * @return {[type]}       [description]
+   */
+  [GETTERS.GET_REFRESH_TOKEN]: (state) => {
+    return state.REFRESH_TOKEN
+  },
+  /**
+   * Status of de expire date
+   * @param  {[type]} state [description]
+   * @return {[type]}       [description]
+   */
+  [GETTERS.GET_TOKEN_TYPE]: (state) => {
+    return state.TOKEN_TYPE
   },
   /**
    * Status of de Roles

@@ -232,7 +232,7 @@ export default {
         })
           .then(({ res }) => {
             update(() => {
-              this.dataFilter = res.data
+              this.dataFilter = res.data.data ?? res.data
             })
           })
       } else {

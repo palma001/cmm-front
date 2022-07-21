@@ -1,78 +1,18 @@
-export const driverConfig = [
+export const providerRateConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'ownerable_type',
+          name: 'provider',
           align: 'left',
-          field: row => row.ownerable_type.name,
+          field: row => row.provider.name,
           sortable: true,
-          visible: true,
-          visibleColumn: true
+          visible: true
         },
         actionable: {
-          propTag: 'ownerable_type',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            events: [{
-              nameEvents: 'depends',
-              affected: ['ownerable']
-            }],
-            props: {
-              data: [
-                {
-                  id: 'App\\Models\\Provider',
-                  name: 'Proveedor',
-                  api: 'providers'
-                },
-                {
-                  id: 'App\\Models\\Organization',
-                  name: 'Organización',
-                  api: 'organizations'
-                }
-              ],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'ownerable_id',
-          align: 'left',
-          field: row => row.ownerable.full_name,
-          sortable: true,
-          visible: true,
-          visibleColumn: true
-        },
-        actionable: {
-          propTag: 'ownerable',
+          propTag: 'provider',
           addible: true,
           editable: true,
           type: 'String',
@@ -91,9 +31,7 @@ export const driverConfig = [
             class: {
               'col-xs-12': true,
               'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true
+              'col-md-12': true
             },
             directives: [
               {
@@ -108,14 +46,14 @@ export const driverConfig = [
       },
       {
         tabulated: {
-          name: 'document_number',
+          name: 'description',
           align: 'left',
-          field: row => row.document_number,
+          field: row => row.description,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'document_number',
+          propTag: 'description',
           addible: true,
           editable: true,
           type: 'String',
@@ -145,14 +83,14 @@ export const driverConfig = [
       },
       {
         tabulated: {
-          name: 'name',
-          align: 'left',
-          field: row => row.name,
+          name: 'rate',
+          align: 'right',
+          field: row => row.rate,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'name',
+          propTag: 'rate',
           addible: true,
           editable: true,
           type: 'String',
@@ -182,23 +120,27 @@ export const driverConfig = [
       },
       {
         tabulated: {
-          name: 'last_name',
-          align: 'left',
-          field: row => row.last_name,
+          name: 'coin',
+          align: 'right',
+          field: row => `${row.coin.name} (${row.coin.symbol})`,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'last_name',
+          propTag: 'coin',
           addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
-            name: 'b-input',
+            name: 'b-search-select',
             props: {
-              type: 'text',
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
               dense: true,
+              clearable: true,
               outlined: true
             },
             class: {
@@ -219,61 +161,27 @@ export const driverConfig = [
       },
       {
         tabulated: {
-          name: 'email',
-          align: 'left',
-          field: row => row.email,
+          name: 'unit_of_measurement',
+          align: 'right',
+          field: row => `${row.unit_of_measurement.name} (${row.unit_of_measurement.acronym})`,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'email',
+          propTag: 'unit_of_measurement',
           addible: true,
           editable: true,
           type: 'String',
           visibleLabel: true,
           component: {
-            name: 'b-input',
+            name: 'b-search-select',
             props: {
-              type: 'text',
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
               dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true,
-                  email: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'phone_number',
-          align: 'left',
-          field: row => row.phone_number,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'phone_number',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              dense: true,
+              clearable: true,
               outlined: true
             },
             class: {
@@ -378,11 +286,28 @@ export const propsPanelEdition = {
     }
   ]
 }
-
 export const relationalDataConfiguration = [
   {
-    targetPropTag: 'ownerable',
-    entity: 'ownerable',
+    targetPropTag: 'coin',
+    entity: 'coin',
+    services: ['coins'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'unit_of_measurement',
+    entity: 'unit_of_measurement',
+    services: ['unit-of-measurements'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'provider',
+    entity: 'provider',
     services: ['providers'],
     propData: 'data',
     petitionParams: {
@@ -391,9 +316,9 @@ export const relationalDataConfiguration = [
   }
 ]
 
-export const driverServices = {
+export const providerRateServices = {
   props: propsPanelEdition,
-  config: driverConfig,
+  config: providerRateConfig,
   propData: 'data',
   relationalData: relationalDataConfiguration
 }

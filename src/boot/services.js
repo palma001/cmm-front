@@ -4,7 +4,7 @@ import nodeServices from '../../microservicesNode/services'
 import mockData from '../../mockData/services'
 
 Vue.use(services, {
-  baseUrl: 'http://127.0.0.1:8000/api/'
+  baseUrl: process.env.API
   // baseUrl: 'http://mercado.tranjr.com/api/'
 })
 

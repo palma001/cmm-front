@@ -27,7 +27,7 @@ export const getOneData = function (url, params = {}) {
   }).then((res) => {
     return {
       status: true,
-      res: res
+      res: res.data
     }
   }).catch((err) => {
     if (err) {
@@ -37,6 +37,18 @@ export const getOneData = function (url, params = {}) {
 }
 export const postData = function (url, params) {
   return axiosInstance.post(url.join('/'), lowerCase(params)).then((res) => {
+    return {
+      status: true,
+      res: res
+    }
+  }).catch((err) => {
+    if (err) {
+      throw err
+    }
+  })
+}
+export const postUpload = function (url, params) {
+  return axiosInstance.post(url.join('/'), params).then((res) => {
     return {
       status: true,
       res: res
@@ -89,6 +101,7 @@ const services = {
     Vue.prototype.$services = {
       getData,
       postData,
+      postUpload,
       putData,
       deleteData,
       getOneData,

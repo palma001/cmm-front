@@ -1,4 +1,7 @@
 export const state = {
+  TIME_OUT: null,
+
+  TOKEN_TYPE: null,
   /**
    * token session
    * @type{String}

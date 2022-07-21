@@ -96,9 +96,9 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
-        path: 'material-suppliers',
-        name: 'MaterialSupplier',
-        component: () => import('src/pages/MaterialSupplier.vue'),
+        path: 'providers',
+        name: 'Provider',
+        component: () => import('src/pages/Provider.vue'),
         beforeEnter: validationSessionUnit
       },
       {
@@ -117,12 +117,6 @@ const routes = [
         path: 'users',
         name: 'User',
         component: () => import('src/pages/User.vue'),
-        beforeEnter: validationSessionUnit
-      },
-      {
-        path: 'guides',
-        name: 'Guide',
-        component: () => import('src/pages/Guide.vue'),
         beforeEnter: validationSessionUnit
       },
       {
@@ -153,6 +147,18 @@ const routes = [
         path: 'vehicles-types',
         name: 'VehicleType',
         component: () => import('src/pages/VehicleType.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'provider-rates',
+        name: 'Rate',
+        component: () => import('src/pages/ProviderRate.vue'),
+        beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'tickets',
+        name: 'Ticket',
+        component: () => import('src/pages/Ticket.vue'),
         beforeEnter: validationSessionUnit
       }
       // {

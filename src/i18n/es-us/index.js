@@ -50,7 +50,7 @@ export default {
     editSuccessful: 'modificado exitosamente'
   },
   driver: {
-    'App\\Models\\MaterialSupplier': 'Empresa comercializadora',
+    'App\\Models\\Provider': 'Proveedor',
     'App\\Models\\Organization': 'Organización',
     add: 'agregar conductor',
     name: 'nombre o razón social',
@@ -70,7 +70,7 @@ export default {
     editSuccessful: 'modificado exitosamente'
   },
   vehicle: {
-    'App\\Models\\MaterialSupplier': 'Empresa comercializadora',
+    'App\\Models\\Provider': 'Proveedor',
     'App\\Models\\Organization': 'Organización',
     add: 'agregar vehiculo',
     active: 'Activo',
@@ -93,7 +93,7 @@ export default {
     editSuccessful: 'modificado exitosamente'
   },
   trailer: {
-    'App\\Models\\MaterialSupplier': 'Empresa comercializadora',
+    'App\\Models\\Provider': 'Proveedor',
     'App\\Models\\Organization': 'Organización',
     add: 'agregar tráiler',
     active: 'Activo',
@@ -114,12 +114,12 @@ export default {
     deleteSuccessful: 'eliminado exitasamente',
     editSuccessful: 'modificado exitosamente'
   },
-  materialSupplier: {
+  provider: {
     serie_number: 'correlativo',
     seal: 'sello',
     signature: 'firma',
     logo: 'logo',
-    add: 'agregar empresa comercializadora',
+    add: 'agregar proveedor',
     name: 'nombre o razón social',
     address: 'dirección',
     document_number: 'número de identificación',
@@ -127,9 +127,9 @@ export default {
     email: 'correo',
     reset: 'Limpiar',
     cancel: 'Cancelar',
-    addSuccessful: 'empresa comercializadora agregado exitosamente',
-    list: 'empresa comercializadoras',
-    update: 'Editar empresa comercializadora',
+    addSuccessful: 'proveedor agregado exitosamente',
+    list: 'proveedores',
+    update: 'Editar proveedor',
     deleteSuccessful: 'eliminado exitasamente',
     editSuccessful: 'modificado exitosamente'
   },
@@ -152,7 +152,7 @@ export default {
   },
   fieldSupervisor: {
     add: 'agregar supervisor',
-    name: 'nombre o razón social',
+    name: 'nombre',
     last_name: 'apellido',
     document_number: 'número de identificación',
     phone_number: 'número de teléfono',
@@ -224,15 +224,33 @@ export default {
     reset: 'limpiar',
     cancel: 'cancelar'
   },
+  providerRate: {
+    description: 'descripción',
+    rate: 'Tarifa',
+    coin: 'Moneda',
+    provider: 'proveedor',
+    deleteSuccessful: 'Eliminado exitosamente',
+    addSuccessful: 'Agregado exitosamente',
+    editSuccessful: 'Modificado exitosamente',
+    unit_of_measurement: 'unidad de medida',
+    list: 'Lista de tarifas',
+    update: 'Modificar',
+    reset: 'limpiar',
+    add: 'agregar tarifa',
+    cancel: 'cancelar'
+  },
   // modules
   modules: {
     guides: 'Guías',
+    tickets: 'Tickets',
+    rates: 'Tarifa de proveedores',
+    'provider-types': 'tipos de proveedores',
     vehicles: 'vehículo',
     trailers: 'Tráiler',
     drivers: 'conductores',
     'vehicle-types': 'Tipos de vehículo',
     users: 'Usuarios',
-    coin: 'Monedas',
+    coins: 'Monedas',
     orders: 'transacciones',
     roles: 'roles',
     entities: 'entidades',
@@ -243,9 +261,9 @@ export default {
     responsables: 'responsables',
     clients: 'clientes',
     states: 'estados',
-    'material-suppliers': 'empresa comercializadora',
     concepts: 'Conceptos',
-    'field-supervisor': 'supervisores de campo',
+    providers: 'proveedores',
+    'field-supervisors': 'supervisores de campo',
     'concept-types': 'tipo de conceptos',
     'operation-types': 'tipo de operaciones',
     'egress-types': 'tipo de egresos',
@@ -333,11 +351,14 @@ export default {
     concept_type: 'Tipo de concepto'
   },
   guide: {
+    weight: 'peso',
+    unit_of_measurement: 'unidad de medida',
     newGuide: 'nuevo guías',
+    uploadSuccess: 'Archivos guardados exitosamente',
     swornDeclaration: 'Declaración Jurada',
     documents: 'documentos',
     add: 'agregar guías',
-    material_supplier: 'Empresa comercializadora',
+    material_supplier: 'Proveedor',
     vehicle: 'Vehiculo',
     client: 'cliente',
     trailer: 'tráiler',
