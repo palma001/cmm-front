@@ -358,7 +358,7 @@ export default {
     swornDeclaration: 'Declaración Jurada',
     documents: 'documentos',
     add: 'agregar guías',
-    material_supplier: 'Proveedor',
+    provider: 'Proveedor',
     vehicle: 'Vehiculo',
     client: 'cliente',
     trailer: 'tráiler',
