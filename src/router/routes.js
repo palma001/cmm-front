@@ -78,9 +78,9 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
-        path: 'orders',
-        name: 'Order',
-        component: () => import('src/pages/Order.vue'),
+        path: 'banks',
+        name: 'Bank',
+        component: () => import('src/pages/Bank.vue'),
         beforeEnter: validationSessionUnit
       },
       {
