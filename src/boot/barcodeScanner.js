@@ -1,3 +1,4 @@
-import Vue from 'vue'
 import VueBarcodeScanner from 'vue-barcode-scanner'
-Vue.use(VueBarcodeScanner)
+export default async ({ Vue, app }) => {
+  Vue.use(VueBarcodeScanner)
+}

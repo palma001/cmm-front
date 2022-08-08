@@ -242,6 +242,7 @@ export default {
   // modules
   modules: {
     guides: 'Guías',
+    banks: 'bancos',
     tickets: 'Tickets',
     rates: 'Tarifa de proveedores',
     'provider-types': 'tipos de proveedores',

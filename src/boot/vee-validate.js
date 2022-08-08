@@ -1,4 +1,5 @@
-import Vue from 'vue'
 import VeeValidate from 'vee-validate'
 
-Vue.use(VeeValidate)
+export default async ({ Vue, app }) => {
+  Vue.use(VeeValidate)
+}

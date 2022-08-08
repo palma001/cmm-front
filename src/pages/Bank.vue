@@ -1,15 +1,9 @@
 <template>
   <q-page padding>
     <div class="row q-col-gutter-sm">
-      <div class="col-xs-5 col-sm-4 col-md-4 col-lg-4 col-xl-4 text-right">
-        <q-input type="date" dense v-model="from" hint="Desde" outlined @input="filterDate"/>
-      </div>
-      <div class="col-xs-5 col-sm-4 col-md-4 col-lg-4 col-xl-4 text-right">
-        <q-input type="date" dense v-model="to" hint="Hasta" outlined @input="filterDate"/>
-      </div>
-      <div class="col-xs-2 col-sm-4 col-md-4 col-lg-4 col-xl-4 text-right" style="margin-top: 2px;">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 q-gutter-x-sm text-center" style="margin-top: 2px;">
         <PlaidLink
-          clientName="APPLICATION NAME"
+          clientName="Qbits DBA"
           env="sandbox"
           :link_token="linkPlaid.link_token"
           :public_key="linkPlaid.request_id"
@@ -34,25 +28,40 @@
               </q-tooltip>
           </q-btn>
         </PlaidLink>
+        <q-btn
+            :color="drawerLeft ? 'negative' : 'secondary'"
+            :icon="drawerLeft ? 'filter_alt_off' : 'filter_alt'"
+            :label="$q.screen.lt.sm ? '' : 'Filtros'"
+            @click="drawerLeft = !drawerLeft"
+          >
+            <q-tooltip>
+              {{ ucwords($t('organization.filter')) }}
+            </q-tooltip>
+        </q-btn>
       </div>
-      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6" v-for="(account, index) in accounts" :key="account.name">
-        <q-card :class="index === 1 ? 'bg-secondary text-white' : 'bg-teal text-white'">
+      <div class="col-12">
+        <GCarousel
+          item-gap="16"
+          :items="[0,1,2,3,4]"
+          :items-to-show="2"
+        >
+          <template #item="{ data }">
+            <div class="slide">
+              {{ data }}
+            </div>
+          </template>
+        </GCarousel>
+      </div>
+      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" v-for="account in accounts" :key="account.name">
+        <q-card class="bg-primary full-width full-height">
           <q-card-section class="q-py-xs">
             <div class="text-subtitle2">
               {{ account.name }}
               {{ account.balances.iso_currency_code }}
             </div>
             <div class="text-caption">
-              {{ account.official_name }}
-            </div>
-          </q-card-section>
-          <q-separator/>
-          <q-card-section class="q-py-xs">
-            <div class="text-subtitle2">
-              Balance
-            </div>
-            <div class="text-caption">
-              Disponible: <span class="text-bold">{{ account.balances.available }}</span>,
+              Disponible: <span class="text-bold">{{ account.balances.available }}</span>
+              <br>
               Actual: <span class="text-bold">{{ account.balances.current }}</span>
             </div>
           </q-card-section>
@@ -63,16 +72,18 @@
           row-key="id"
           :data="transactions"
           :columns="columns"
+          :grid="$q.screen.lt.sm"
           :visible-columns="visibleColumns"
           :pagination="pagination"
           @row-click="viewDetails"
         >
           <template v-slot:top>
-            <div class="text-h6">
-              Transacciones
+            <div class="text-subtitle1">
+              Movimientos
             </div>
             <q-space />
             <q-select
+              v-if="!$q.screen.lt.sm"
               v-model="visibleColumns"
               multiple
               outlined
@@ -86,6 +97,28 @@
               options-cover
               style="min-width: 180px"
             />
+          </template>
+          <template v-slot:item="props">
+            <q-list class="full-width">
+              <q-item clickable v-ripple @click="viewDetails(props.row)">
+                <q-item-section thumbnail no-wrap>
+                  <q-icon :name="props.row.amount > 0 ? 'chevron_right' : 'chevron_left'" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-caption">
+                    {{ props.row.name }}
+                  </q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-item-label :class="props.row.amount > 0 ? 'text-teal' : 'text-negative'" :lines="1">
+                    {{ props.row.amount }}
+                  </q-item-label>
+                  <q-item-label class="text-caption" :lines="2">
+                    {{ props.row.date }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
           </template>
         </q-table>
       </div>
@@ -255,19 +288,90 @@
     <q-inner-loading :showing="loading">
       <q-spinner-gears size="100px" color="primary" />
     </q-inner-loading>
+    <q-drawer
+      v-model="drawerLeft"
+      :width="350"
+      :breakpoint="700"
+      side="right"
+      class="bg-primary text-white"
+    >
+      <q-card class="column full-height">
+        <q-card-section class="row items-center bg-primary">
+          <div class="text-h6">
+            Filtrar
+          </div>
+          <q-space />
+          <q-btn icon="close" flat round dense @click="drawerLeft = false"/>
+        </q-card-section>
+        <q-card-section class="col scroll">
+          <div class="row q-gutter-y-sm">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right">
+              <q-input type="date" dense v-model="from" hint="Desde" outlined @input="filterDate"/>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right">
+              <q-input type="date" dense v-model="to" hint="Hasta" outlined @input="filterDate"/>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right">
+              <!-- <q-select outlined v-model="model" :options="options" label="Outlined" /> -->
+            </div>
+          </div>
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn icon="highlight_off" color="negative"></q-btn>
+          <q-btn icon="restore" color="primary"></q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-drawer>
+    <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="scY > 300">
+      <q-btn fab flat icon="expand_less" color="primary" @click="toTop"/>
+    </q-page-sticky>
+    <q-dialog v-model="bankDialog" persistent>
+      <q-card style="min-width: 300px">
+        <q-card-section>
+          <div class="text-h6">Seleccionar Banco</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-select
+            :options="banks"
+            dense
+            outlined
+            v-model="bank"
+            autofocus
+            option-label="name"
+            option-value="id"
+          />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup />
+          <q-btn flat label="Aceptar" @click="selectedBank" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 <script>
-import vue from 'vue'
 import PlaidLink from '../components/PlaidLink.vue'
-import { date, Notify } from 'quasar'
-
-vue.component('PlaidLink', PlaidLink)
+import { date, Notify, SessionStorage } from 'quasar'
+import { GETTERS } from '../store/module-login/name.js'
+import { mapGetters } from 'vuex'
+import { mixins } from '../mixins'
+// import 'gitart-vue-dialog/dist/style.css'
+import { GCarousel } from 'gitart-scroll-carousel'
 
 export default {
   name: 'App',
+  components: {
+    GCarousel,
+    PlaidLink
+  },
+  mixins: [mixins.containerMixin],
   data () {
     return {
+      bankDialog: false,
+      slide: 1,
+      drawerLeft: false,
       openedInfoWindow: true,
       accounts: [],
       loading: false,
@@ -276,12 +380,16 @@ export default {
       linkPlaid: {},
       location: {},
       paymentMeta: {},
+      banks: [],
+      bank: null,
       pagination: { rowsPerPage: 100 },
       category: [],
-      visibleColumns: ['name', 'transaction_type', 'iso_currency_code', 'date', 'amount'],
+      visibleColumns: ['name', 'date', 'amount'],
       transactions: [],
       from: date.formatDate(date.startOfDate(Date(), 'month'), 'YYYY-MM-DD'),
       to: date.formatDate(Date(), 'YYYY-MM-DD'),
+      scTimer: 0,
+      scY: 0,
       columns: [
         {
           name: 'name',
@@ -405,33 +513,122 @@ export default {
       ]
     }
   },
+  computed: {
+    /**
+     * Getters Vuex
+     */
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+  },
   created () {
     this.getLink()
-    this.getAccessToken()
+    this.getBanks()
+    this.userSession = this[GETTERS.GET_USER]
+    this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+  },
+  mounted () {
+    window.addEventListener('scroll', this.handleScroll)
   },
   methods: {
-    viewDetails (event, row, index) {
+    /**
+     * Handle scroll
+     */
+    handleScroll () {
+      if (this.scTimer) return
+      this.scTimer = setTimeout(() => {
+        this.scY = window.scrollY
+        clearTimeout(this.scTimer)
+        this.scTimer = 0
+      }, 100)
+    },
+    /**
+     * Up cursor
+     */
+    toTop () {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    },
+    /**
+     * Details transaction
+     * @param {Object} row data transaction
+     */
+    viewDetails (row) {
       this.details = true
       this.location = row.location
       this.paymentMeta = row.payment_meta
       this.category = row.category
     },
+    /**
+     * Select banck
+     */
+    selectedBank () {
+      try {
+        this.getAccessToken(this.bank.public_token)
+        SessionStorage.set('bankSession', JSON.stringify(this.bank))
+        this.bankDialog = false
+      } catch (error) {
+        Notify.create({
+          message: error.message,
+          icon: 'warning',
+          color: 'negative'
+        })
+      }
+    },
+    /**
+     * Valid session bank
+     */
+    validSessionBank () {
+      const bankSession = JSON.parse(SessionStorage.getItem('bankSession'))
+      console.log(bankSession.public_token)
+      if (bankSession) {
+        this.getAccessToken(bankSession.public_token)
+      } else {
+        this.bankDialog = true
+      }
+    },
+    /**
+     * Get data link
+     */
     async getLink () {
       this.loading = true
       const { res } = await this.$services.postData(['plaid', 'create-token'])
       this.linkPlaid = res.data
       this.loading = false
+      this.validSessionBank()
     },
+    /**
+     * Get bank all
+     */
+    async getBanks () {
+      const { res } = await this.$services.getData(['banks'])
+      this.banks = res.data
+    },
+    /**
+     * Filter between date
+     */
     filterDate () {
-      const exchangeToken = JSON.parse(localStorage.getItem('exchangeToken'))
+      const exchangeToken = JSON.parse(SessionStorage.getItem('exchangeToken'))
       this.getTransactions(exchangeToken)
     },
+    /**
+     * Object event
+     * @param {Object} data
+     */
     onLoad (data) {
       console.log(data, 'onLoad')
     },
+    /**
+     * Name event
+     * @param {String} data
+     */
     onEvent (data) {
       console.log(data, 'onEvent')
     },
+    /**
+     * Get Transaction bank
+     * @param {Object} data access token
+     */
     async getTransactions (data) {
       try {
         if (data) {
@@ -454,15 +651,16 @@ export default {
         this.loading = false
       }
     },
-    async getAccessToken (publicToken = localStorage.getItem('publickToken')) {
+    /**
+     * Get Access token
+     * @param {String} publickToken Public Token
+     */
+    async getAccessToken (publicToken) {
       try {
-        if (publicToken) {
-          const { res } = await this.$services.postData(['plaid', 'exchange-token'], {
-            public_token: publicToken
-          })
-          localStorage.setItem('exchangeToken', JSON.stringify(res.data))
-          this.getTransactions(res.data)
-        }
+        const { res } = await this.$services.postData(['plaid', 'exchange-token'], {
+          public_token: publicToken
+        })
+        this.getTransactions(res.data)
       } catch (err) {
         Notify.create({
           message: err.message,
@@ -470,17 +668,41 @@ export default {
           color: 'negative'
         })
         this.loading = false
-        this.filterDate()
+        // this.filterDate()
       }
     },
     /**
      * Success auth
      */
     async onSuccess (publicToken, metadata) {
-      localStorage.setItem('publickToken', publicToken)
-      console.log(publicToken, metadata)
       this.getAccessToken(publicToken)
+      this.saveBank(metadata)
     },
+    /**
+     * Save bankc
+     * @param {Object} data data bank
+     */
+    async saveBank (data) {
+      try {
+        const { res } = await this.$services.postData(['banks'], {
+          institution_id: data.institution.institution_id,
+          name: data.institution.name,
+          link_session_id: data.link_session_id,
+          public_token: data.public_token,
+          status: data.status,
+          transfer_status: data.transfer_status,
+          user_created_id: this.userSession.id
+        })
+        console.log(res.data)
+      } catch (error) {
+        console.log(error.message)
+      }
+    },
+    /**
+     * Exit dialog plaid
+     * @param {Object} err error information
+     * @param {Object} metadata data information
+     */
     onExit (err, metadata) {
       console.log(err, metadata)
     }
