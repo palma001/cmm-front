@@ -40,29 +40,33 @@
         </q-btn>
       </div>
       <div class="col-12">
-        <swiper ref="mySwiper" :options="swiperOptions">
-          <swiper-slide>Slide 1</swiper-slide>
-          <swiper-slide>Slide 2</swiper-slide>
-          <swiper-slide>Slide 3</swiper-slide>
-          <swiper-slide>Slide 4</swiper-slide>
-          <swiper-slide>Slide 5</swiper-slide>
+        <swiper
+          ref="mySwiper"
+          class="swiper"
+          :options="swiperOptions"
+          @ready="handleSwiperComponentReady"
+          @click.native="handleSwiperDOMClick"
+          @handleSwiperSlideClick="handleSwiperSlideClick"
+          @bindSwiperEvents="handleSwiperSlideChangeTransitionStart"
+        >
+          <swiper-slide v-for="account in accounts" :key="account.name">
+            <q-card class="bg-primary full-height" style="max-width: 320px;">
+              <q-card-section class="q-py-xs">
+                <div class="text-subtitle2">
+                  {{ account.name }}
+                  {{ account.balances.iso_currency_code }}
+                  {{ swiper }}
+                </div>
+                <div class="text-caption">
+                  Disponible: <span class="text-bold">{{ account.balances.available }}</span>
+                  <br>
+                  Actual: <span class="text-bold">{{ account.balances.current }}</span>
+                </div>
+              </q-card-section>
+            </q-card>
+          </swiper-slide>
           <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
-      </div>
-      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" v-for="account in accounts" :key="account.name">
-        <q-card class="bg-primary full-width full-height">
-          <q-card-section class="q-py-xs">
-            <div class="text-subtitle2">
-              {{ account.name }}
-              {{ account.balances.iso_currency_code }}
-            </div>
-            <div class="text-caption">
-              Disponible: <span class="text-bold">{{ account.balances.available }}</span>
-              <br>
-              Actual: <span class="text-bold">{{ account.balances.current }}</span>
-            </div>
-          </q-card-section>
-        </q-card>
       </div>
       <div class="col-12 q-mt-sm">
         <q-table
@@ -354,23 +358,26 @@ import { date, Notify, SessionStorage } from 'quasar'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/css'
-import 'swiper/css/pagination'
+// import { Swiper, SwiperSlide } from 'swiper/vue'
+// import 'swiper/css'
+// import 'swiper/css/pagination'
 
 export default {
   name: 'App',
   components: {
-    Swiper,
-    SwiperSlide,
+    // Swiper,
+    // SwiperSlide,
     PlaidLink
   },
   mixins: [mixins.containerMixin],
   data () {
     return {
       swiperOptions: {
+        slidesPerView: 'auto',
+        spaceBetween: 10,
         pagination: {
-          el: '.swiper-pagination'
+          el: '.swiper-pagination',
+          clickable: true
         }
       },
       bankDialog: false,
@@ -521,7 +528,11 @@ export default {
     /**
      * Getters Vuex
      */
-    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
+    swiper () {
+      console.log(this.swiperOption)
+      return this.swiperOption
+    }
   },
   created () {
     this.getLink()
@@ -533,6 +544,21 @@ export default {
     window.addEventListener('scroll', this.handleScroll)
   },
   methods: {
+    handleSwiperComponentReady (data) {
+      console.log('handleSwiperComponentReady', data)
+    },
+    handleSwiperDOMClick (data) {
+      console.log('handleSwiperDOMClick', data)
+    },
+    handleSwiperSlideClick (index, reallyIndex) {
+      console.log('handleSwiperSlideClick', index, reallyIndex)
+    },
+    handleSwiperSlideChangeTransitionStart (data) {
+      console.log('handleSwiperSlideChangeTransitionStart', data)
+    },
+    handleSwiperReadied (swiper) {
+      console.log(swiper)
+    },
     /**
      * Handle scroll
      */
@@ -583,10 +609,10 @@ export default {
      * Valid session bank
      */
     validSessionBank () {
-      const bankSession = JSON.parse(SessionStorage.getItem('bankSession'))
-      console.log(bankSession.public_token)
-      if (bankSession) {
-        this.getAccessToken(bankSession.public_token)
+      const exchangeToken = JSON.parse(SessionStorage.getItem('exchangeToken'))
+      console.log(exchangeToken.access_token)
+      if (exchangeToken) {
+        this.getTransactions(exchangeToken.access_token)
       } else {
         this.bankDialog = true
       }
@@ -664,6 +690,7 @@ export default {
         const { res } = await this.$services.postData(['plaid', 'exchange-token'], {
           public_token: publicToken
         })
+        SessionStorage.set('exchangeToken', JSON.stringify(res.data))
         this.getTransactions(res.data)
       } catch (err) {
         Notify.create({
@@ -713,3 +740,14 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+  .swiper-slide {
+    width: 80%;
+  }
+  .swiper-slide:nth-child(2n) {
+    width: 60%;
+  }
+  .swiper-slide:nth-child(3n) {
+    width: 40%;
+  }
+</style>
