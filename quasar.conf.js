@@ -28,6 +28,7 @@ module.exports = function (/* ctx */) {
       'vee-validate',
       'qr-reader',
       'apollo',
+      'swiper',
       'graphql',
       'axios',
       'numberLetter'

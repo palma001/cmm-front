@@ -40,17 +40,14 @@
         </q-btn>
       </div>
       <div class="col-12">
-        <GCarousel
-          item-gap="16"
-          :items="[0,1,2,3,4]"
-          :items-to-show="2"
-        >
-          <template #item="{ data }">
-            <div class="slide">
-              {{ data }}
-            </div>
-          </template>
-        </GCarousel>
+        <swiper ref="mySwiper" :options="swiperOptions">
+          <swiper-slide>Slide 1</swiper-slide>
+          <swiper-slide>Slide 2</swiper-slide>
+          <swiper-slide>Slide 3</swiper-slide>
+          <swiper-slide>Slide 4</swiper-slide>
+          <swiper-slide>Slide 5</swiper-slide>
+          <div class="swiper-pagination" slot="pagination"></div>
+        </swiper>
       </div>
       <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" v-for="account in accounts" :key="account.name">
         <q-card class="bg-primary full-width full-height">
@@ -357,18 +354,25 @@ import { date, Notify, SessionStorage } from 'quasar'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
-// import 'gitart-vue-dialog/dist/style.css'
-import { GCarousel } from 'gitart-scroll-carousel'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+import 'swiper/css/pagination'
 
 export default {
   name: 'App',
   components: {
-    GCarousel,
+    Swiper,
+    SwiperSlide,
     PlaidLink
   },
   mixins: [mixins.containerMixin],
   data () {
     return {
+      swiperOptions: {
+        pagination: {
+          el: '.swiper-pagination'
+        }
+      },
       bankDialog: false,
       slide: 1,
       drawerLeft: false,
