@@ -5,6 +5,7 @@
         <PlaidLink
           clientName="Qbits DBA"
           env="sandbox"
+          ref="authBank"
           :link_token="linkPlaid.link_token"
           :public_key="linkPlaid.request_id"
           :products="['auth','transactions']"
@@ -12,116 +13,139 @@
           :onEvent='onEvent'
           :onSuccess='onSuccess'
           :onExit='onExit'
+        >
+          <q-btn
+            color="primary"
+            icon="add_circle"
+            :label="$q.screen.lt.sm ? '' : 'Agregar Banco'"
           >
-            <q-btn
-              color="primary"
-              icon="add_circle"
-              :label="$q.screen.lt.sm ? '' : 'Agregar Banco'"
+            <q-tooltip
+              anchor="center right"
+              self="center left"
+              :offset="[10, 10]"
+              v-if="$q.screen.lt.sm"
             >
-              <q-tooltip
-                anchor="center right"
-                self="center left"
-                :offset="[10, 10]"
-                v-if="$q.screen.lt.sm"
-              >
-                Agregar Banco
-              </q-tooltip>
+              Agregar Banco
+            </q-tooltip>
           </q-btn>
         </PlaidLink>
         <q-btn
-            :color="drawerLeft ? 'negative' : 'secondary'"
-            :icon="drawerLeft ? 'filter_alt_off' : 'filter_alt'"
-            :label="$q.screen.lt.sm ? '' : 'Filtros'"
-            @click="drawerLeft = !drawerLeft"
+          :color="drawerLeft ? 'negative' : 'secondary'"
+          :icon="drawerLeft ? 'filter_alt_off' : 'filter_alt'"
+          :label="$q.screen.lt.sm ? '' : 'Filtros'"
+          @click="drawerLeft = !drawerLeft"
+        >
+          <q-tooltip>
+            {{ ucwords($t('organization.filter')) }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn
+          color="teal"
+          icon="change_circle"
+          :label="$q.screen.lt.sm ? '' : 'Cambiar de banco'"
+          @click="bankDialog = true"
+        >
+          <q-tooltip
+            anchor="center right"
+            self="center left"
+            :offset="[10, 10]"
+            v-if="$q.screen.lt.sm"
           >
-            <q-tooltip>
-              {{ ucwords($t('organization.filter')) }}
-            </q-tooltip>
+            Cambiar de banco
+          </q-tooltip>
         </q-btn>
       </div>
       <div class="col-12">
-        <swiper
-          ref="mySwiper"
-          class="swiper"
-          :options="swiperOptions"
-          @ready="handleSwiperComponentReady"
-          @click.native="handleSwiperDOMClick"
-          @handleSwiperSlideClick="handleSwiperSlideClick"
-          @bindSwiperEvents="handleSwiperSlideChangeTransitionStart"
-        >
-          <swiper-slide v-for="account in accounts" :key="account.name">
-            <q-card class="bg-primary full-height" style="max-width: 320px;">
-              <q-card-section class="q-py-xs">
-                <div class="text-subtitle2">
+        <hooper style="height: 100%" :itemsToShow="1.25" @slide="updateCarousel">
+          <slide v-for="account in accounts" :key="account.name">
+            <q-card class="bg-primary" style="max-width: 270px">
+              <q-card-section class="q-py-xs text-white">
+                <div class="text-bold">
                   {{ account.name }}
-                  {{ account.balances.iso_currency_code }}
-                  {{ swiper }}
                 </div>
                 <div class="text-caption">
-                  Disponible: <span class="text-bold">{{ account.balances.available }}</span>
+                  Disponible:
+                  <span class="text-bold">
+                    {{ account.balances.available }}
+                    {{ account.balances.iso_currency_code }}
+                  </span>
                   <br>
-                  Actual: <span class="text-bold">{{ account.balances.current }}</span>
+                  Actual:
+                  <span class="text-bold">
+                    {{ account.balances.current }}
+                    {{ account.balances.iso_currency_code }}
+                  </span>
                 </div>
               </q-card-section>
             </q-card>
-          </swiper-slide>
-          <div class="swiper-pagination" slot="pagination"></div>
-        </swiper>
+          </slide>
+          <hooper-pagination slot="hooper-addons"></hooper-pagination>
+        </hooper>
       </div>
       <div class="col-12 q-mt-sm">
-        <q-table
-          row-key="id"
-          :data="transactions"
-          :columns="columns"
-          :grid="$q.screen.lt.sm"
-          :visible-columns="visibleColumns"
-          :pagination="pagination"
-          @row-click="viewDetails"
+        <q-scroll-area
+          style="height: 70vh; width: 100%;"
+          :thumb-style="thumbStyle"
+          :bar-style="barStyle"
+          :visible="false"
         >
-          <template v-slot:top>
-            <div class="text-subtitle1">
-              Movimientos
-            </div>
-            <q-space />
-            <q-select
-              v-if="!$q.screen.lt.sm"
-              v-model="visibleColumns"
-              multiple
-              outlined
-              dense
-              options-dense
-              :display-value="$q.lang.table.columns"
-              emit-value
-              map-options
-              :options="columns"
-              option-value="name"
-              options-cover
-              style="min-width: 180px"
-            />
-          </template>
-          <template v-slot:item="props">
-            <q-list class="full-width">
-              <q-item clickable v-ripple @click="viewDetails(props.row)">
-                <q-item-section thumbnail no-wrap>
-                  <q-icon :name="props.row.amount > 0 ? 'chevron_right' : 'chevron_left'" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label class="text-caption">
-                    {{ props.row.name }}
-                  </q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-item-label :class="props.row.amount > 0 ? 'text-teal' : 'text-negative'" :lines="1">
-                    {{ props.row.amount }}
-                  </q-item-label>
-                  <q-item-label class="text-caption" :lines="2">
-                    {{ props.row.date }}
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </template>
-        </q-table>
+          <q-table
+            row-key="id"
+            :data="transactions"
+            :columns="columns"
+            :grid="$q.screen.lt.sm"
+            :visible-columns="visibleColumns"
+            :pagination="pagination"
+            @row-click="viewDetails"
+          >
+            <template v-slot:top>
+              <div class="text-subtitle1">
+                Movimientos
+              </div>
+              <q-space />
+              <div class="text-subtitle1 text-secondary" v-if="bank">
+                {{ bank.name }}
+              </div>
+              <q-select
+                v-if="!$q.screen.lt.sm"
+                v-model="visibleColumns"
+                multiple
+                outlined
+                dense
+                options-dense
+                :display-value="$q.lang.table.columns"
+                emit-value
+                map-options
+                :options="columns"
+                option-value="name"
+                options-cover
+                style="min-width: 180px"
+              />
+            </template>
+            <template v-slot:item="props">
+              <q-list class="full-width">
+                <q-item clickable v-ripple @click="viewDetails(props.row)">
+                  <q-item-section thumbnail no-wrap>
+                    <q-icon :name="props.row.amount > 0 ? 'chevron_right' : 'chevron_left'" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-caption">
+                      {{ props.row.name }}
+                    </q-item-label>
+                  </q-item-section>
+                  <q-item-section side>
+                    <q-item-label :class="props.row.amount > 0 ? 'text-teal' : 'text-negative'" :lines="1">
+                      {{ props.row.amount }}
+                    </q-item-label>
+                    <q-item-label class="text-caption" :lines="2">
+                      {{ props.row.date }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </template>
+          </q-table>
+        </q-scroll-area>
       </div>
     </div>
     <q-dialog v-model="details" maximized>
@@ -267,6 +291,64 @@
                     </q-item>
                   </q-list>
                 </q-tab-panel>
+                <q-tab-panel name="info">
+                  <q-list>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Número de referencia
+                        <span class="text-bold">{{ paymentMeta.reference_number }}</span>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Destino
+                        <span class="text-bold">
+                          {{ paymentMeta.payee }}
+                        </span>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Por orden de
+                        <span class="text-bold">
+                          {{ paymentMeta.by_order_of }}
+                        </span>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Origen
+                        <span class="text-bold">
+                          {{ paymentMeta.payer }}
+                        </span>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Tipo de transferencia
+                        <span class="text-bold">
+                          {{ paymentMeta.payment_method }}
+                        </span>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Nombre del procesador de pago
+                        <span class="text-bold">
+                          {{ paymentMeta.payment_processor }}
+                        </span>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Descripción proporcionada por el pagador de la transferencia.
+                        <span class="text-bold">
+                          {{ paymentMeta.reason }}
+                        </span>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-tab-panel>
               </q-tab-panels>
             </q-page>
           </q-page-container>
@@ -278,6 +360,7 @@
                 align="center"
                 style="width: 100%"
               >
+                <q-tab name="info" label="Transacción" />
                 <q-tab name="location" label="Ubicación" />
                 <q-tab name="payment_meta" label="Trans. Interbancarias" />
               </q-tabs>
@@ -323,9 +406,9 @@
         </q-card-actions>
       </q-card>
     </q-drawer>
-    <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="scY > 300">
+    <!-- <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="scY > 300">
       <q-btn fab flat icon="expand_less" color="primary" @click="toTop"/>
-    </q-page-sticky>
+    </q-page-sticky> -->
     <q-dialog v-model="bankDialog" persistent>
       <q-card style="min-width: 300px">
         <q-card-section>
@@ -358,35 +441,40 @@ import { date, Notify, SessionStorage } from 'quasar'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
-// import { Swiper, SwiperSlide } from 'swiper/vue'
-// import 'swiper/css'
-// import 'swiper/css/pagination'
+import { Hooper, Slide, Pagination as HooperPagination } from 'hooper'
+import 'hooper/dist/hooper.css'
 
 export default {
   name: 'App',
   components: {
-    // Swiper,
-    // SwiperSlide,
+    Hooper,
+    Slide,
+    HooperPagination,
     PlaidLink
   },
   mixins: [mixins.containerMixin],
   data () {
     return {
-      swiperOptions: {
-        slidesPerView: 'auto',
-        spaceBetween: 10,
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true
-        }
+      thumbStyle: {
+        right: '4px',
+        borderRadius: '5px',
+        backgroundColor: '#ff9e00',
+        width: '5px',
+        opacity: 0.75
+      },
+      barStyle: {
+        right: '2px',
+        borderRadius: '9px',
+        backgroundColor: '#ff9e00',
+        width: '9px',
+        opacity: 0.2
       },
       bankDialog: false,
-      slide: 1,
       drawerLeft: false,
       openedInfoWindow: true,
       accounts: [],
       loading: false,
-      tab: 'location',
+      tab: 'info',
       details: false,
       linkPlaid: {},
       location: {},
@@ -401,6 +489,7 @@ export default {
       to: date.formatDate(Date(), 'YYYY-MM-DD'),
       scTimer: 0,
       scY: 0,
+      dataSlide: null,
       columns: [
         {
           name: 'name',
@@ -528,11 +617,7 @@ export default {
     /**
      * Getters Vuex
      */
-    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
-    swiper () {
-      console.log(this.swiperOption)
-      return this.swiperOption
-    }
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   created () {
     this.getLink()
@@ -540,45 +625,34 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
   },
-  mounted () {
-    window.addEventListener('scroll', this.handleScroll)
-  },
+  // mounted () {
+  //   window.addEventListener('scroll', this.handleScroll)
+  // },
   methods: {
-    handleSwiperComponentReady (data) {
-      console.log('handleSwiperComponentReady', data)
-    },
-    handleSwiperDOMClick (data) {
-      console.log('handleSwiperDOMClick', data)
-    },
-    handleSwiperSlideClick (index, reallyIndex) {
-      console.log('handleSwiperSlideClick', index, reallyIndex)
-    },
-    handleSwiperSlideChangeTransitionStart (data) {
-      console.log('handleSwiperSlideChangeTransitionStart', data)
-    },
-    handleSwiperReadied (swiper) {
-      console.log(swiper)
+    updateCarousel (data) {
+      this.dataSlide = data
+      this.filterDate()
     },
     /**
      * Handle scroll
      */
-    handleScroll () {
-      if (this.scTimer) return
-      this.scTimer = setTimeout(() => {
-        this.scY = window.scrollY
-        clearTimeout(this.scTimer)
-        this.scTimer = 0
-      }, 100)
-    },
+    // handleScroll () {
+    //   if (this.scTimer) return
+    //   this.scTimer = setTimeout(() => {
+    //     this.scY = window.scrollY
+    //     clearTimeout(this.scTimer)
+    //     this.scTimer = 0
+    //   }, 100)
+    // },
     /**
      * Up cursor
      */
-    toTop () {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      })
-    },
+    // toTop () {
+    //   window.scrollTo({
+    //     top: 0,
+    //     behavior: 'smooth'
+    //   })
+    // },
     /**
      * Details transaction
      * @param {Object} row data transaction
@@ -594,9 +668,8 @@ export default {
      */
     selectedBank () {
       try {
-        this.getAccessToken(this.bank.public_token)
         SessionStorage.set('bankSession', JSON.stringify(this.bank))
-        this.bankDialog = false
+        this.getTransactions(this.bank)
       } catch (error) {
         Notify.create({
           message: error.message,
@@ -609,11 +682,8 @@ export default {
      * Valid session bank
      */
     validSessionBank () {
-      const exchangeToken = JSON.parse(SessionStorage.getItem('exchangeToken'))
-      console.log(exchangeToken.access_token)
-      if (exchangeToken) {
-        this.getTransactions(exchangeToken.access_token)
-      } else {
+      this.bank = JSON.parse(SessionStorage.getItem('bankSession'))
+      if (!this.bank) {
         this.bankDialog = true
       }
     },
@@ -638,8 +708,8 @@ export default {
      * Filter between date
      */
     filterDate () {
-      const exchangeToken = JSON.parse(SessionStorage.getItem('exchangeToken'))
-      this.getTransactions(exchangeToken)
+      const bankSession = JSON.parse(SessionStorage.getItem('bankSession'))
+      this.getTransactions(bankSession)
     },
     /**
      * Object event
@@ -656,6 +726,25 @@ export default {
       console.log(data, 'onEvent')
     },
     /**
+     * Update and filter transactions
+     * @param {Array} transactions transactions all
+     * @param {Array} accounts acconts all
+     */
+    updatedModel (transactions, accounts) {
+      let mapTransactions = []
+      accounts.forEach((account, index) => {
+        mapTransactions = transactions.map(transaction => {
+          if (transaction.account_id === account.account_id) {
+            transaction.index = index
+          }
+          return transaction
+        })
+      })
+      return mapTransactions.filter(transaction => {
+        return transaction.index === this.dataSlide.currentSlide
+      })
+    },
+    /**
      * Get Transaction bank
      * @param {Object} data access token
      */
@@ -668,9 +757,10 @@ export default {
             start_date: this.from,
             end_date: this.to
           })
-          this.transactions = res.data.transactions
+          this.transactions = this.updatedModel(res.data.transactions, res.data.accounts)
           this.accounts = res.data.accounts
           this.loading = false
+          this.bankDialog = false
         }
       } catch (err) {
         Notify.create({
@@ -690,24 +780,33 @@ export default {
         const { res } = await this.$services.postData(['plaid', 'exchange-token'], {
           public_token: publicToken
         })
-        SessionStorage.set('exchangeToken', JSON.stringify(res.data))
         this.getTransactions(res.data)
+        const data = { ...this.bank, ...res.data }
+        this.saveBank(data)
       } catch (err) {
-        Notify.create({
-          message: err.message,
-          icon: 'warning',
-          color: 'negative'
-        })
+        Notify.create({ message: err.message, icon: 'warning', color: 'negative' })
+        this.$refs.authBank.autoClick()
         this.loading = false
-        // this.filterDate()
+      }
+    },
+    modelBank (data) {
+      return {
+        institution_id: data.institution ? data.institution.institution_id : data.institution_id,
+        name: data.institution ? data.institution.name : data.name,
+        link_session_id: data.link_session_id,
+        public_token: data.public_token,
+        status: data.status,
+        access_token: data.access_token,
+        transfer_status: data.transfer_status,
+        user_created_id: this.userSession.id
       }
     },
     /**
      * Success auth
      */
     async onSuccess (publicToken, metadata) {
+      this.bank = metadata
       this.getAccessToken(publicToken)
-      this.saveBank(metadata)
     },
     /**
      * Save bankc
@@ -715,18 +814,21 @@ export default {
      */
     async saveBank (data) {
       try {
-        const { res } = await this.$services.postData(['banks'], {
-          institution_id: data.institution.institution_id,
-          name: data.institution.name,
-          link_session_id: data.link_session_id,
-          public_token: data.public_token,
-          status: data.status,
-          transfer_status: data.transfer_status,
-          user_created_id: this.userSession.id
+        const { res } = await this.$services.postData(['banks'], this.modelBank(data))
+        Notify.create({
+          message: '¡Banco guardado exitosamente!',
+          icon: 'warning',
+          color: 'teal'
         })
-        console.log(res.data)
+        this.bank = res.data
+        SessionStorage.set('bankSession', JSON.stringify(res.data))
+        this.getBanks()
       } catch (error) {
-        console.log(error.message)
+        Notify.create({
+          message: error.message,
+          icon: 'warning',
+          color: 'thumb_up_alt'
+        })
       }
     },
     /**
@@ -740,14 +842,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-  .swiper-slide {
-    width: 80%;
-  }
-  .swiper-slide:nth-child(2n) {
-    width: 60%;
-  }
-  .swiper-slide:nth-child(3n) {
-    width: 40%;
-  }
-</style>
