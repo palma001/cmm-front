@@ -1,10 +1,10 @@
 <template>
   <q-page padding>
-    <div class="row q-col-gutter-sm">
+    <div class="row q-gutter-y-xs">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 q-gutter-x-sm text-center" style="margin-top: 2px;">
         <PlaidLink
           clientName="Qbits DBA"
-          env="sandbox"
+          env="development"
           ref="authBank"
           :link_token="linkPlaid.link_token"
           :public_key="linkPlaid.request_id"
@@ -59,7 +59,7 @@
         <hooper style="height: 100%" :itemsToShow="1.25" @slide="updateCarousel">
           <slide v-for="account in accounts" :key="account.name">
             <q-card class="bg-primary" style="max-width: 270px">
-              <q-card-section class="q-py-xs text-white">
+              <q-card-section class="text-white">
                 <div class="text-bold">
                   {{ account.name }}
                 </div>
@@ -82,12 +82,19 @@
           <hooper-pagination slot="hooper-addons"></hooper-pagination>
         </hooper>
       </div>
-      <div class="col-12 q-mt-sm">
+      <div class="col-12 text-h6 text-center">
+        Movimientos
+        <span class="text-secondary text-bold q-ml-sm" v-if="bank">
+          {{ bank.name }}
+        </span>
+      </div>
+      <div class="col-12">
         <q-scroll-area
-          style="height: 70vh; width: 100%;"
+          style="height: 64vh; width: 100%;"
           :thumb-style="thumbStyle"
           :bar-style="barStyle"
           :visible="false"
+          @scroll="getScroll"
         >
           <q-table
             row-key="id"
@@ -99,13 +106,7 @@
             @row-click="viewDetails"
           >
             <template v-slot:top>
-              <div class="text-subtitle1">
-                Movimientos
-              </div>
               <q-space />
-              <div class="text-subtitle1 text-secondary" v-if="bank">
-                {{ bank.name }}
-              </div>
               <q-select
                 v-if="!$q.screen.lt.sm"
                 v-model="visibleColumns"
@@ -124,7 +125,7 @@
             </template>
             <template v-slot:item="props">
               <q-list class="full-width">
-                <q-item clickable v-ripple @click="viewDetails(props.row)">
+                <q-item clickable v-ripple @click="viewDetails(null, props.row)">
                   <q-item-section thumbnail no-wrap>
                     <q-icon :name="props.row.amount > 0 ? 'chevron_right' : 'chevron_left'" />
                   </q-item-section>
@@ -160,6 +161,65 @@
           <q-page-container>
             <q-page padding>
               <q-tab-panels v-model="tab" animated>
+                <q-tab-panel name="info">
+                  <q-list dense>
+                    <q-item clickable v-ripple class="text-center bg-secondary text-white rounded-borders">
+                      <q-item-section>
+                        <span class="text-bold">
+                          {{ dataView.amount }} {{ dataView.iso_currency_code }}
+                        </span>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Fecha:
+                      </q-item-section>
+                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                        {{ dataView.date }}
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Descripción:
+                      </q-item-section>
+                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                        {{ dataView.name }}
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Tipo de Transacción:
+                      </q-item-section>
+                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                        {{ dataView.transaction_type }}
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Cód. de Transacción:
+                      </q-item-section>
+                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                        {{ dataView.transaction_code }}
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Proveedor:
+                      </q-item-section>
+                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                        {{ dataView.merchant_name }}
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
+                        Categorias:
+                      </q-item-section>
+                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                        {{ category.join(', ') }}
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-tab-panel>
                 <q-tab-panel name="location">
                   <GmapMap
                     :center="{
@@ -232,66 +292,7 @@
                     </GmapMarker>
                   </GmapMap>
                 </q-tab-panel>
-
                 <q-tab-panel name="payment_meta">
-                  <q-list>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Número de referencia
-                        <span class="text-bold">{{ paymentMeta.reference_number }}</span>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Destino
-                        <span class="text-bold">
-                          {{ paymentMeta.payee }}
-                        </span>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Por orden de
-                        <span class="text-bold">
-                          {{ paymentMeta.by_order_of }}
-                        </span>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Origen
-                        <span class="text-bold">
-                          {{ paymentMeta.payer }}
-                        </span>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Tipo de transferencia
-                        <span class="text-bold">
-                          {{ paymentMeta.payment_method }}
-                        </span>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Nombre del procesador de pago
-                        <span class="text-bold">
-                          {{ paymentMeta.payment_processor }}
-                        </span>
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Descripción proporcionada por el pagador de la transferencia.
-                        <span class="text-bold">
-                          {{ paymentMeta.reason }}
-                        </span>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-tab-panel>
-                <q-tab-panel name="info">
                   <q-list>
                     <q-item clickable v-ripple>
                       <q-item-section>
@@ -372,15 +373,13 @@
     <q-inner-loading :showing="loading">
       <q-spinner-gears size="100px" color="primary" />
     </q-inner-loading>
-    <q-drawer
+    <q-dialog
       v-model="drawerLeft"
-      :width="350"
-      :breakpoint="700"
-      side="right"
-      class="bg-primary text-white"
+      seamless
+      position="right"
     >
       <q-card class="column full-height">
-        <q-card-section class="row items-center bg-primary">
+        <q-card-section class="row items-center bg-primary text-white">
           <div class="text-h6">
             Filtrar
           </div>
@@ -401,11 +400,14 @@
           </div>
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn icon="highlight_off" color="negative"></q-btn>
-          <q-btn icon="restore" color="primary"></q-btn>
+          <q-btn icon="highlight_off" color="negative" @click="drawerLeft = false"></q-btn>
+          <q-btn icon="restore" color="primary" @click="restore"></q-btn>
         </q-card-actions>
+        <q-inner-loading :showing="loadingFilter">
+          <q-spinner-gears size="100px" color="primary" />
+        </q-inner-loading>
       </q-card>
-    </q-drawer>
+    </q-dialog>
     <!-- <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="scY > 300">
       <q-btn fab flat icon="expand_less" color="primary" @click="toTop"/>
     </q-page-sticky> -->
@@ -469,6 +471,7 @@ export default {
         width: '9px',
         opacity: 0.2
       },
+      loadingFilter: false,
       bankDialog: false,
       drawerLeft: false,
       openedInfoWindow: true,
@@ -478,6 +481,7 @@ export default {
       details: false,
       linkPlaid: {},
       location: {},
+      dataView: {},
       paymentMeta: {},
       banks: [],
       bank: null,
@@ -490,6 +494,7 @@ export default {
       scTimer: 0,
       scY: 0,
       dataSlide: null,
+      scrollPosition: 0,
       columns: [
         {
           name: 'name',
@@ -625,10 +630,29 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
   },
-  // mounted () {
-  //   window.addEventListener('scroll', this.handleScroll)
-  // },
+  mounted () {
+    // window.addEventListener('scroll', this.handleScroll)
+  },
   methods: {
+    getScroll (data) {
+      this.scrollPosition = data.verticalPosition
+    },
+    /**
+     * Restore filter
+     */
+    restore () {
+      this.loadingFilter = true
+      setTimeout(() => {
+        this.from = date.formatDate(date.startOfDate(Date(), 'month'), 'YYYY-MM-DD')
+        this.to = date.formatDate(Date(), 'YYYY-MM-DD')
+        this.filterDate()
+        this.loadingFilter = false
+      }, 2000)
+    },
+    /**
+     * Filter carousel
+     * @param {Object} data data event
+     */
     updateCarousel (data) {
       this.dataSlide = data
       this.filterDate()
@@ -657,8 +681,9 @@ export default {
      * Details transaction
      * @param {Object} row data transaction
      */
-    viewDetails (row) {
+    viewDetails (event, row) {
       this.details = true
+      this.dataView = row
       this.location = row.location
       this.paymentMeta = row.payment_meta
       this.category = row.category
@@ -769,6 +794,7 @@ export default {
           color: 'negative'
         })
         this.loading = false
+        this.getAccessToken(this.bank.public_token)
       }
     },
     /**
@@ -789,6 +815,10 @@ export default {
         this.loading = false
       }
     },
+    /**
+     * Set model bank
+     * @param {Object} data model bank
+     */
     modelBank (data) {
       return {
         institution_id: data.institution ? data.institution.institution_id : data.institution_id,
@@ -827,7 +857,7 @@ export default {
         Notify.create({
           message: error.message,
           icon: 'warning',
-          color: 'thumb_up_alt'
+          color: 'negative'
         })
       }
     },
@@ -837,6 +867,11 @@ export default {
      * @param {Object} metadata data information
      */
     onExit (err, metadata) {
+      Notify.create({
+        message: 'Operacion Cancelada',
+        icon: 'thumb_up_alt',
+        color: 'positive'
+      })
       console.log(err, metadata)
     }
   }
