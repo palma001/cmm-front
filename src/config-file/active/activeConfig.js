@@ -66,7 +66,7 @@ export const activeConfig = [
         tabulated: {
           name: 'ownerable_id',
           align: 'left',
-          field: row => row.ownerable.full_name,
+          field: row => row.ownerable.name,
           sortable: true,
           visible: true,
           visibleColumn: true

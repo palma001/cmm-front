@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row q-gutter-y-xs">
+    <div class="row q-col-gutter-y-sm">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 q-gutter-x-sm text-center" style="margin-top: 2px;">
         <PlaidLink
           clientName="Qbits DBA"
@@ -56,9 +56,12 @@
         </q-btn>
       </div>
       <div class="col-12">
-        <hooper style="height: 100%" :itemsToShow="1.25" @slide="updateCarousel">
-          <slide v-for="account in accounts" :key="account.name">
-            <q-card class="bg-primary" style="max-width: 270px">
+        <hooper
+          style="height: 100%"
+          :itemsToShow="response"
+          @slide="updateCarousel">
+          <slide v-for="(account, index) in accounts" :key="account.name">
+            <q-card :class="index === dataSlide.currentSlide ? 'bg-teal' : 'bg-secondary'" style="max-width: 270px">
               <q-card-section class="text-white">
                 <div class="text-bold">
                   {{ account.name }}
@@ -93,7 +96,6 @@
           style="height: 64vh; width: 100%;"
           :thumb-style="thumbStyle"
           :bar-style="barStyle"
-          :visible="false"
           @scroll="getScroll"
         >
           <q-table
@@ -106,7 +108,6 @@
             @row-click="viewDetails"
           >
             <template v-slot:top>
-              <q-space />
               <q-select
                 v-if="!$q.screen.lt.sm"
                 v-model="visibleColumns"
@@ -119,6 +120,7 @@
                 map-options
                 :options="columns"
                 option-value="name"
+                class="text-center"
                 options-cover
                 style="min-width: 180px"
               />
@@ -149,12 +151,12 @@
         </q-scroll-area>
       </div>
     </div>
-    <q-dialog v-model="details" maximized>
+    <q-dialog v-model="details" :maximized="$q.screen.lt.sm">
       <q-layout view="Lhh lpR fff" container>
         <q-card>
           <q-header class="bg-primary">
             <q-toolbar>
-              <q-toolbar-title>Detalles de la transacción</q-toolbar-title>
+              <q-toolbar-title>Detalles de la Transacción</q-toolbar-title>
               <q-btn flat v-close-popup round dense icon="close" />
             </q-toolbar>
           </q-header>
@@ -163,7 +165,20 @@
               <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="info">
                   <q-list dense>
-                    <q-item clickable v-ripple class="text-center bg-secondary text-white rounded-borders">
+                    <q-item clickable v-ripple>
+                      <q-item-section class="text-center text-h6">
+                        {{ categorySelected.join(', ') }}
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section class="text-center q-mb-xs">
+                        <span>
+                          <q-icon name="pending_actions" color="secondary" size="30px" v-if="dataView.pending"/>
+                          <q-icon name="check_circle" color="teal" size="30px" v-else/>
+                        </span>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple :class="dataView.pending ? 'text-center bg-secondary text-white rounded-borders' : 'text-center bg-teal text-white rounded-borders'">
                       <q-item-section>
                         <span class="text-bold">
                           {{ dataView.amount }} {{ dataView.iso_currency_code }}
@@ -188,10 +203,23 @@
                     </q-item>
                     <q-item clickable v-ripple>
                       <q-item-section>
+                        Estatus
+                      </q-item-section>
+                      <q-item-section side class="text-bold" style="max-width: 210px;">
+                        <q-badge v-if="dataView.pending" color="secondary">
+                          Pendiente
+                        </q-badge>
+                        <q-badge color="teal" v-else>
+                          Procesada
+                        </q-badge>
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple>
+                      <q-item-section>
                         Cód. de Transacción:
                       </q-item-section>
                       <q-item-section side class="text-bold" style="max-width: 210px;">
-                        {{ dataView.transaction_code }}
+                        {{ dataView.transaction_code ?? '-' }}
                       </q-item-section>
                     </q-item>
                     <q-item clickable v-ripple>
@@ -199,15 +227,7 @@
                         Proveedor:
                       </q-item-section>
                       <q-item-section side class="text-bold" style="max-width: 210px;">
-                        {{ dataView.merchant_name }}
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Categorias:
-                      </q-item-section>
-                      <q-item-section side class="text-bold" style="max-width: 210px;">
-                        {{ category.join(', ') }}
+                        {{ dataView.merchant_name ?? '-' }}
                       </q-item-section>
                     </q-item>
                     <q-item clickable v-ripple class="q-mt-xs">
@@ -391,13 +411,23 @@
         <q-card-section class="col scroll">
           <div class="row q-gutter-y-sm">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right">
+              <q-select
+                outlined
+                dense
+                use-input
+                v-model="category"
+                input-debounce="0"
+                clearable
+                @filter="filterCategory"
+                @input="filterDate"
+                :options="categoryFilter" label="Categorias"
+              />
+            </div>
+            <div class="q-mt-md col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right">
               <q-input type="date" dense v-model="from" hint="Desde" outlined @input="filterDate"/>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right">
               <q-input type="date" dense v-model="to" hint="Hasta" outlined @input="filterDate"/>
-            </div>
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-right">
-              <!-- <q-select outlined v-model="model" :options="options" label="Outlined" /> -->
             </div>
           </div>
         </q-card-section>
@@ -488,8 +518,8 @@ export default {
       banks: [],
       bank: null,
       pagination: { rowsPerPage: 100 },
-      category: [],
-      visibleColumns: ['name', 'date', 'amount'],
+      categorySelected: [],
+      visibleColumns: ['name', 'date', 'amount', 'category'],
       transactions: [],
       from: date.formatDate(date.startOfDate(Date(), 'month'), 'YYYY-MM-DD'),
       to: date.formatDate(Date(), 'YYYY-MM-DD'),
@@ -497,7 +527,17 @@ export default {
       scY: 0,
       dataSlide: null,
       scrollPosition: 0,
+      categories: [],
+      category: null,
+      categoryFilter: [],
       columns: [
+        {
+          name: 'date',
+          label: 'Fecha de transacción',
+          align: 'left',
+          field: 'date',
+          sortable: true
+        },
         {
           name: 'name',
           label: 'Nombre',
@@ -517,13 +557,6 @@ export default {
           label: 'Moneda',
           align: 'left',
           field: 'iso_currency_code',
-          sortable: true
-        },
-        {
-          name: 'date',
-          label: 'Fecha de transacción',
-          align: 'left',
-          field: 'date',
           sortable: true
         },
         {
@@ -551,7 +584,7 @@ export default {
           name: 'category',
           label: 'Categoria',
           align: 'left',
-          field: row => row.category.join(', '),
+          field: row => row.category.join(' > '),
           sortable: true
         },
         {
@@ -579,7 +612,7 @@ export default {
           name: 'pending',
           label: 'Pendiente',
           align: 'left',
-          field: 'pending',
+          field: row => row.pending ? 'Pendiente' : 'Procesado',
           sortable: true
         },
         {
@@ -590,10 +623,10 @@ export default {
           sortable: true
         },
         {
-          name: 'personal_finance_category',
+          name: 'personal_finance_categorySelected',
           label: 'Categoría finanzas personales',
           align: 'left',
-          field: 'personal_finance_category',
+          field: 'personal_finance_categorySelected',
           sortable: true
         },
         {
@@ -624,11 +657,19 @@ export default {
     /**
      * Getters Vuex
      */
-    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
+    ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE]),
+    /**
+     * Response
+     */
+    response () {
+      console.log(this.$q.screen.lt.sm)
+      return this.$q.screen.lt.sm ? 1.25 : this.$q.screen.lt.md ? 2 : 3
+    }
   },
   created () {
     this.getLink()
     this.getBanks()
+    this.getCategories()
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
   },
@@ -636,6 +677,26 @@ export default {
     // window.addEventListener('scroll', this.handleScroll)
   },
   methods: {
+    filterCategory (val, update) {
+      if (val === '') {
+        update(() => {
+          this.categoryFilter = this.categories
+        })
+        return
+      }
+      update(() => {
+        const needle = val.toLowerCase()
+        this.categoryFilter = this.categories.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+      })
+    },
+    async getCategories () {
+      const { res } = await this.$services.getData(['plaid', 'categories'])
+      this.categories = res.data.categories.map(category => {
+        category.label = category.hierarchy.join('-')
+        category.id = category.category_id
+        return category
+      })
+    },
     getScroll (data) {
       this.scrollPosition = data.verticalPosition
     },
@@ -647,6 +708,7 @@ export default {
       setTimeout(() => {
         this.from = date.formatDate(date.startOfDate(Date(), 'month'), 'YYYY-MM-DD')
         this.to = date.formatDate(Date(), 'YYYY-MM-DD')
+        this.category = null
         this.filterDate()
         this.loadingFilter = false
       }, 2000)
@@ -688,7 +750,7 @@ export default {
       this.dataView = row
       this.location = row.location
       this.paymentMeta = row.payment_meta
-      this.category = row.category
+      this.categorySelected = row.category
     },
     /**
      * Select banck
@@ -770,6 +832,12 @@ export default {
       return mapTransactions.filter(transaction => {
         return transaction.index === this.dataSlide.currentSlide
       })
+        .filter(transaction => {
+          if (this.category) {
+            return transaction.category_id === this.category.category_id
+          }
+          return true
+        })
     },
     /**
      * Get Transaction bank

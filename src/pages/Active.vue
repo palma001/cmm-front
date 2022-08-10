@@ -73,8 +73,11 @@
             <div class="col-6">
               <q-input label="Valor" outlined dense />
             </div>
-            <div class="col-6">
+            <div class="col-5">
               <q-input label="Valor" outlined dense />
+            </div>
+            <div class="col-1 text-right">
+              <q-btn icon="add" round dense class="q-mt-xs" color="primary"/>
             </div>
           </div>
         </template>
