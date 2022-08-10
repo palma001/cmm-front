@@ -126,9 +126,9 @@ const routes = [
         beforeEnter: validationSessionUnit
       },
       {
-        path: 'vehicles',
-        name: 'Vehicle',
-        component: () => import('src/pages/Vehicle.vue'),
+        path: 'actives',
+        name: 'Active',
+        component: () => import('src/pages/Active.vue'),
         beforeEnter: validationSessionUnit
       },
       {

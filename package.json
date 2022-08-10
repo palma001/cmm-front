@@ -1,8 +1,8 @@
 {
-  "name": "cmm",
+  "name": "dba",
   "version": "0.6.2",
   "description": "software accounting software",
-  "productName": "CMM",
+  "productName": "DBA",
   "author": "Luis Palma <palmaluis1997@gmail.com>",
   "private": true,
   "scripts": {

@@ -136,8 +136,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'CMM',
-        short_name: 'CMM',
+        name: 'DBA',
+        short_name: 'DBA',
         description: 'software accounting software',
         display: 'standalone',
         orientation: 'portrait',
@@ -214,7 +214,7 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'GrupoSudamerica'
+        appId: 'dba'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

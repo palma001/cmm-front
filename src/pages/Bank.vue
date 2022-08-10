@@ -126,7 +126,7 @@
             <template v-slot:item="props">
               <q-list class="full-width">
                 <q-item clickable v-ripple @click="viewDetails(null, props.row)">
-                  <q-item-section thumbnail no-wrap>
+                  <q-item-section thumbnail>
                     <q-icon :name="props.row.amount > 0 ? 'chevron_right' : 'chevron_left'" />
                   </q-item-section>
                   <q-item-section>
@@ -174,23 +174,15 @@
                       <q-item-section>
                         Fecha:
                       </q-item-section>
-                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                      <q-item-section side class="text-bold" style="max-width: 210px;">
                         {{ dataView.date }}
-                      </q-item-section>
-                    </q-item>
-                    <q-item clickable v-ripple>
-                      <q-item-section>
-                        Descripción:
-                      </q-item-section>
-                      <q-item-section side class="text-bold" style="max-width: 200px;">
-                        {{ dataView.name }}
                       </q-item-section>
                     </q-item>
                     <q-item clickable v-ripple>
                       <q-item-section>
                         Tipo de Transacción:
                       </q-item-section>
-                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                      <q-item-section side class="text-bold" style="max-width: 210px;">
                         {{ dataView.transaction_type }}
                       </q-item-section>
                     </q-item>
@@ -198,7 +190,7 @@
                       <q-item-section>
                         Cód. de Transacción:
                       </q-item-section>
-                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                      <q-item-section side class="text-bold" style="max-width: 210px;">
                         {{ dataView.transaction_code }}
                       </q-item-section>
                     </q-item>
@@ -206,7 +198,7 @@
                       <q-item-section>
                         Proveedor:
                       </q-item-section>
-                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                      <q-item-section side class="text-bold" style="max-width: 210px;">
                         {{ dataView.merchant_name }}
                       </q-item-section>
                     </q-item>
@@ -214,8 +206,18 @@
                       <q-item-section>
                         Categorias:
                       </q-item-section>
-                      <q-item-section side class="text-bold" style="max-width: 200px;">
+                      <q-item-section side class="text-bold" style="max-width: 210px;">
                         {{ category.join(', ') }}
+                      </q-item-section>
+                    </q-item>
+                    <q-item clickable v-ripple class="q-mt-xs">
+                      <q-item-section class="relative-position">
+                        <span class="absolute-top-left">
+                          Descripción:
+                        </span>
+                      </q-item-section>
+                      <q-item-section side class="text-bold text-right" style="max-width: 210px;">
+                        {{ dataView.name }}
                       </q-item-section>
                     </q-item>
                   </q-list>

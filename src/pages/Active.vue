@@ -5,7 +5,7 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('vehicle.add')"
+          :label="$q.screen.lt.sm ? '' : $t('active.add')"
           @click="addDialog = true"
         >
         <q-tooltip
@@ -15,7 +15,7 @@
           v-if="$q.screen.lt.sm"
         >
           {{
-            ucwords($t('vehicle.add'))
+            ucwords($t('active.add'))
           }}
         </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="vehicle"
+          module="active"
           searchable
           action
-          :column="vehicleConfig"
+          :column="activeConfig"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -45,9 +45,9 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="vehicle"
+        module="active"
         :propsPanelEdition="propsPanelEdition"
-        :config="vehicleConfig"
+        :config="activeConfig"
         :loading="loadingForm"
         @depends="depends"
         @cancel="editDialog = false"
@@ -61,19 +61,30 @@
       v-model="addDialog"
     >
       <dynamic-form
-        module="vehicle"
-        :config="vehicleConfig"
+        module="active"
+        :config="activeConfig"
         :loading="loadingForm"
         @depends="depends"
         @cancel="addDialog = false"
         @save="save"
-      />
+      >
+        <template>
+          <div class="row q-col-gutter-xs">
+            <div class="col-6">
+              <q-input label="Valor" outlined dense />
+            </div>
+            <div class="col-6">
+              <q-input label="Valor" outlined dense />
+            </div>
+          </div>
+        </template>
+      </dynamic-form>
     </q-dialog>
   </q-page>
 </template>
 <script>
 import DataTable from '../components/DataTable.vue'
-import { vehicleConfig, buttonsActions, propsPanelEdition, vehicleServices } from '../config-file/vehicle/vehicleConfig.js'
+import { activeConfig, buttonsActions, propsPanelEdition, activeServices } from '../config-file/active/activeConfig.js'
 import { mixins } from '../mixins'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
@@ -88,7 +99,7 @@ export default {
   },
   data () {
     return {
-      vehicleServices,
+      activeServices,
       /**
        * Config file panel edition
        * @type {Obejct}
@@ -146,7 +157,7 @@ export default {
        * File config module
        * @type {Object}
        */
-      vehicleConfig,
+      activeConfig,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -167,7 +178,7 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.setRelationalData(this.vehicleServices, [], this)
+    this.setRelationalData(this.activeServices, [], this)
   },
   computed: {
     /**
@@ -182,7 +193,7 @@ export default {
      * @param {String} propTag tag selected
     */
     depends (data, propTags) {
-      this.vehicleServices.relationalData.map(service => {
+      this.activeServices.relationalData.map(service => {
         propTags.forEach(propTag => {
           if (service.targetPropTag === propTag) {
             service.services = [data.api]
@@ -190,7 +201,7 @@ export default {
         })
         return service
       })
-      this.setRelationalData(this.vehicleServices, [], this)
+      this.setRelationalData(this.activeServices, [], this)
     },
     /**
      * Set data dialog edition
@@ -219,8 +230,8 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['vehicles', data.id])
-        this.notify(this, 'vehicle.deleteSuccessful', 'positive', 'mood')
+        await this.$services.deleteData(['actives', data.id])
+        this.notify(this, 'active.deleteSuccessful', 'positive', 'mood')
         this.getVehicle()
       })
     },
@@ -237,7 +248,7 @@ export default {
       this.getVehicle(this.params)
     },
     /**
-     * Search vehicle
+     * Search active
      * @param  {Object}
      */
     searchData (data) {
@@ -256,12 +267,12 @@ export default {
       data.ownerable_type = data.ownerable_type.id
       data.ownerable_id = data.ownerable.id
       this.loadingForm = true
-      this.$services.putData(['vehicles', this.selectedData.id], data)
+      this.$services.putData(['actives', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
           this.getVehicle(this.params)
-          this.notify(this, 'vehicle.editSuccessful', 'positive', 'mood')
+          this.notify(this, 'active.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -276,29 +287,29 @@ export default {
       data.ownerable_type = data.ownerable_type.id
       data.ownerable_id = data.ownerable.id
       this.loadingForm = true
-      this.$services.postData(['vehicles'], data)
+      this.$services.postData(['actives'], data)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
           this.getVehicle(this.params)
-          this.notify(this, 'vehicle.addSuccessful', 'positive', 'mood')
+          this.notify(this, 'active.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
         })
     },
     /**
-     * Get all vehicles
+     * Get all actives
      */
     getVehicle (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['vehicles'], this.params)
+      this.$services.getData(['actives'], this.params)
         .then(({ res }) => {
           this.data = res.data.data.map(data => {
-            data.status = this.$t(`vehicle.${data.status}`)
+            data.status = this.$t(`active.${data.status}`)
             data.ownerable_type = {
               id: data.ownerable_type,
-              name: this.$t(`vehicle.${data.ownerable_type}`)
+              name: this.$t(`active.${data.ownerable_type}`)
             }
             return data
           })
