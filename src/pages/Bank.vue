@@ -433,7 +433,7 @@
         </q-card-section>
         <q-card-actions align="center">
           <q-btn icon="highlight_off" color="negative" @click="drawerLeft = false"></q-btn>
-          <q-btn icon="restore" color="primary" @click="restore"></q-btn>
+          <q-btn icon="filter_alt_off" color="primary" @click="restore"></q-btn>
         </q-card-actions>
         <q-inner-loading :showing="loadingFilter">
           <q-spinner-gears size="100px" color="primary" />
