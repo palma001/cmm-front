@@ -69,13 +69,14 @@ export default {
     deleteSuccessful: 'eliminado exitasamente',
     editSuccessful: 'modificado exitosamente'
   },
-  vehicle: {
+  active: {
     'App\\Models\\Provider': 'Proveedor',
     'App\\Models\\Organization': 'Organización',
-    add: 'agregar vehiculo',
+    add: 'agregar activo',
     active: 'Activo',
     inactive: 'Inactivo',
     name: 'nombre',
+    description: 'descripción',
     brand: 'marca',
     plate: 'placa',
     status: 'estado',
@@ -86,9 +87,9 @@ export default {
     ownerable_type: 'tipo de propietario',
     reset: 'Limpiar',
     cancel: 'Cancelar',
-    addSuccessful: 'vehiculo agregado exitosamente',
-    list: 'lista de vehiculos',
-    update: 'Editar vehiculo',
+    addSuccessful: 'activo agregado exitosamente',
+    list: 'activos',
+    update: 'Editar activo',
     deleteSuccessful: 'eliminado exitasamente',
     editSuccessful: 'modificado exitosamente'
   },
@@ -242,10 +243,11 @@ export default {
   // modules
   modules: {
     guides: 'Guías',
+    banks: 'bancos',
     tickets: 'Tickets',
     rates: 'Tarifa de proveedores',
     'provider-types': 'tipos de proveedores',
-    vehicles: 'vehículo',
+    actives: 'activos',
     trailers: 'Tráiler',
     drivers: 'conductores',
     'vehicle-types': 'Tipos de vehículo',
@@ -358,7 +360,7 @@ export default {
     swornDeclaration: 'Declaración Jurada',
     documents: 'documentos',
     add: 'agregar guías',
-    material_supplier: 'Proveedor',
+    provider: 'Proveedor',
     vehicle: 'Vehiculo',
     client: 'cliente',
     trailer: 'tráiler',

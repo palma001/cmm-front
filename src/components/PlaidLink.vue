@@ -1,5 +1,5 @@
 <template>
-  <div @click="linkOpen" :style="{display: 'inline'}">
+  <div @click="linkOpen" :style="{display: 'inline'}" ref="authOpen">
     <slot></slot>
   </div>
 </template>
@@ -59,6 +59,9 @@ export default {
     }
   },
   methods: {
+    autoClick () {
+      this.$refs.authOpen.click()
+    },
     linkOpen (e) {
       e.preventDefault()
 

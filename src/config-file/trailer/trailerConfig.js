@@ -27,7 +27,7 @@ export const trailerConfig = [
             props: {
               data: [
                 {
-                  id: 'App\\Models\\Proveedor',
+                  id: 'App\\Models\\Provider',
                   name: 'Proveedor',
                   api: 'providers'
                 },

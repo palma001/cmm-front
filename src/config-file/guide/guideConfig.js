@@ -5,15 +5,15 @@ export const guideConfig = [
     children: [
       {
         tabulated: {
-          name: 'material_supplier',
+          name: 'provider',
           align: 'left',
-          field: row => row.material_supplier.full_name,
+          field: row => row.provider.name,
           sortable: true,
           visible: true,
           visibleColumn: true
         },
         actionable: {
-          propTag: 'material_supplier',
+          propTag: 'provider',
           addible: true,
           editable: true,
           type: 'String',
@@ -27,7 +27,7 @@ export const guideConfig = [
             props: {
               data: [],
               dataValue: 'id',
-              dataLabel: 'full_name',
+              dataLabel: 'name',
               behavior: 'menu',
               dense: true,
               sync: true,

@@ -1,2 +1,3 @@
-import Vue from 'vue'
-Vue.prototype.$numberLetter = require('numero-a-letras')
+export default async ({ Vue, app }) => {
+  Vue.prototype.$numberLetter = require('numero-a-letras')
+}

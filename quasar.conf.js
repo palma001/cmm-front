@@ -22,11 +22,13 @@ module.exports = function (/* ctx */) {
 
       'i18n',
       'services',
+      'vue2GoogleMaps',
       // 'socket',
       'barcodeScanner',
       'vee-validate',
       'qr-reader',
       'apollo',
+      'swiper',
       'graphql',
       'axios',
       'numberLetter'
@@ -84,7 +86,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      host: '192.168.0.109',
+      host: '127.0.0.1',
       https: false,
       port: 8080,
       open: true // opens browser window automatically
@@ -134,8 +136,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'CMM',
-        short_name: 'CMM',
+        name: 'DBA',
+        short_name: 'DBA',
         description: 'software accounting software',
         display: 'standalone',
         orientation: 'portrait',
@@ -212,7 +214,7 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'GrupoSudamerica'
+        appId: 'dba'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

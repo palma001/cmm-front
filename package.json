@@ -1,8 +1,8 @@
 {
-  "name": "cmm",
-  "version": "0.6.2",
+  "name": "dba",
+  "version": "0.6.4",
   "description": "software accounting software",
-  "productName": "CMM",
+  "productName": "DBA",
   "author": "Luis Palma <palmaluis1997@gmail.com>",
   "private": true,
   "scripts": {
@@ -27,6 +27,7 @@
     "express": "^4.17.1",
     "graphql": "^15.5.1",
     "graphql-tag": "^2.12.5",
+    "hooper": "^0.3.4",
     "html2pdf.js": "^0.9.0",
     "jspdf": "^2.5.1",
     "morgan": "^1.10.0",
@@ -46,6 +47,7 @@
     "vue-qr": "^4.0.6",
     "vue-qrcode-reader": "^3.1.0",
     "vue-socket.io": "^3.0.10",
+    "vue2-google-maps": "^0.10.7",
     "xlsx": "^0.17.4"
   },
   "devDependencies": {

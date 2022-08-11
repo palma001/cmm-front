@@ -1,4 +1,4 @@
-export const vehicleConfig = [
+export const activeConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
@@ -66,7 +66,7 @@ export const vehicleConfig = [
         tabulated: {
           name: 'ownerable_id',
           align: 'left',
-          field: row => row.ownerable.full_name,
+          field: row => row.ownerable.name,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -146,14 +146,14 @@ export const vehicleConfig = [
       },
       {
         tabulated: {
-          name: 'brand',
+          name: 'description',
           align: 'left',
-          field: row => row.brand,
+          field: row => row.description,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'brand',
+          propTag: 'description',
           addible: true,
           editable: true,
           type: 'String',
@@ -161,81 +161,7 @@ export const vehicleConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
-              dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'model',
-          align: 'left',
-          field: row => row.model,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'model',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
-              dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'plate',
-          align: 'left',
-          field: row => row.plate,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'plate',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'text',
+              type: 'textarea',
               dense: true,
               outlined: true
             },
@@ -396,9 +322,9 @@ export const relationalDataConfiguration = [
   }
 ]
 
-export const vehicleServices = {
+export const activeServices = {
   props: propsPanelEdition,
-  config: vehicleConfig,
+  config: activeConfig,
   propData: 'data',
   relationalData: relationalDataConfiguration
 }
