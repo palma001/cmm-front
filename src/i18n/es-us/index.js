@@ -301,6 +301,10 @@ export default {
     serie_number: 'Número de recibo',
     document_number: 'Documento'
   },
+  fieldCashFlow: {
+    addSuccessful: '¡Flujo cargado exitosamente!',
+    errorAmountImage: 'Las imagenes son requeridas, minimo de imagen: 3'
+  },
   coin: {
     newCoin: 'nuevo moneda',
     add: 'agregar moneda',

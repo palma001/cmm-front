@@ -126,7 +126,7 @@
               </div>
               <div class="col-12 q-gutter-x-sm text-right">
                 <q-btn icon="clear" color="negative" label="Limpiar" type="reset"/>
-                <q-btn icon="save" color="primary" label="Guardar" type="submit"/>
+                <q-btn icon="save" color="primary" label="Guardar" type="submit" :loading="loadingForm"/>
               </div>
             </div>
           </q-form>
@@ -294,33 +294,40 @@ export default {
       }
       return new Blob([u8arr], { type: mime })
     },
+    modelCashFlow () {
+      const model = new FormData()
+      this.images.forEach((imge, index) => {
+        model.append(`files[${index}]`, this.srcToFile(imge.img), `file-${index}.jpg`)
+      })
+      model.append('concept_id', this.concept.id)
+      model.append('beneficiary_id', this.beneficiarySelected.id)
+      model.append('amount', this.amount)
+      model.append('description', this.description)
+      model.append('user_created_id', this.userSession.id)
+      model.append('field_id', 1)
+      return model
+    },
     /**
      * Save Beneficiary
      * @param  {Object}
      */
     saveCashFlow () {
-      const data = new FormData()
-      this.images.forEach((imge, index) => {
-        data.append(`files[${index}]`, this.srcToFile(imge.img), `file-${index}.jpg`)
-      })
-      data.append('concept_id', this.concept.id)
-      data.append('beneficiary_id', this.beneficiarySelected.id)
-      data.append('amount', this.amount)
-      data.append('description', this.description)
-      data.append('user_created_id', this.userSession.id)
-      data.append('field_id', 1)
-      this.loadingForm = true
-      this.$services.postUpload(['field-cash-flows'], data)
-        .then(({ res }) => {
-          this.addDialogBeneficiary = false
-          this.loadingForm = false
-          this.beneficiarySelected = res.data
-          this.notify(this, 'fieldCashFlow.addSuccessful', 'positive', 'mood')
-          this.clean()
-        })
-        .catch(() => {
-          this.loadingForm = false
-        })
+      if (this.images.length >= 3) {
+        this.loadingForm = true
+        this.$services.postUpload(['field-cash-flows'], this.modelCashFlow())
+          .then(({ res }) => {
+            this.addDialogBeneficiary = false
+            this.loadingForm = false
+            this.beneficiarySelected = res.data
+            this.notify(this, 'fieldCashFlow.addSuccessful', 'positive', 'mood')
+            this.clean()
+          })
+          .catch(() => {
+            this.loadingForm = false
+          })
+      } else {
+        this.notify(this, 'fieldCashFlow.errorAmountImage', 'negative', 'warning')
+      }
     },
     /**
      * Delete image
