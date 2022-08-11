@@ -160,6 +160,12 @@ const routes = [
         name: 'Ticket',
         component: () => import('src/pages/Ticket.vue'),
         beforeEnter: validationSessionUnit
+      },
+      {
+        path: 'cash-flows',
+        name: 'CashFlow',
+        component: () => import('src/pages/CashFlow.vue'),
+        beforeEnter: validationSessionUnit
       }
       // {
       //   path: 'collection-receipts',
