@@ -305,7 +305,11 @@ export default {
   },
   fieldCashFlow: {
     addSuccessful: '¡Flujo cargado exitosamente!',
-    errorAmountImage: 'Las imagenes son requeridas, minimo de imagen: 3'
+    approvedSuccess: '¡Aprobado exitosamente!',
+    errorAmountImage: 'Las imagenes son requeridas, minimo de imagen: 3',
+    pending_approval: 'Por aprobar',
+    approved: 'Aprobado',
+    canceled: 'Cancelado'
   },
   paymentOrder: {
     addSuccessful: '¡Orden de pago agregada exitosamente!'

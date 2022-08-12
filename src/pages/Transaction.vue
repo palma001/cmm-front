@@ -5,7 +5,7 @@
         <q-card-section>
           <div class="text-h6">Nuevo Transacción</div>
         </q-card-section>
-        <q-card-section class="row q-py-sm q-col-gutter-x-sm">
+        <q-card-section class="row q-py-xs q-col-gutter-sm">
           <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
             <q-select
               autocomplete="off"
@@ -55,8 +55,8 @@
             />
           </div>
         </q-card-section>
-        <q-card-section class="row q-py-sm q-col-gutter-x-sm">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+        <q-card-section class="row q-py-xs q-col-gutter-sm">
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
             <q-select
               autocomplete="off"
               use-input
@@ -83,7 +83,7 @@
               </template>
             </q-select>
           </div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
             <q-select
               autocomplete="off"
               use-input
@@ -111,7 +111,7 @@
             </q-select>
           </div>
         </q-card-section>
-        <q-card-section class="row q-py-sm q-col-gutter-x-sm">
+        <q-card-section class="row q-py-xs q-col-gutter-sm">
           <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
             <q-select
               autocomplete="off"
@@ -247,7 +247,7 @@ export default {
         })
     },
     orderSelected () {
-      this.amount = this.paymentOrder.amount
+      this.amount = this.paymentOrder ? this.paymentOrder.amount : 0
     },
     /**
      * All Payment order
@@ -281,6 +281,7 @@ export default {
         date: this.date,
         reference: this.reference,
         payment_order_id: this.paymentOrder.id,
+        beneficiary_id: this.beneficiarySelected.id,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id,
         concept_id: this.concept.id

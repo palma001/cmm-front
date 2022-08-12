@@ -1,6 +1,44 @@
 <template>
   <q-page padding>
-    <q-card>
+    <hooper
+      style="height: 100%"
+      :itemsToShow="2">
+      <slide v-for="bal in balance" :key="bal.name">
+        <q-card :class="bal.transaction_id ? 'bg-teal' : 'bg-secondary'" style="max-width: 150px">
+          <q-card-section class="text-white row">
+            <div class="text-bold col-6">
+              <span v-if="bal.transaction_id">
+                  Ingreso
+              </span>
+              <span v-else>
+                  Egreso
+              </span>
+            </div>
+            <div class="text-bold col-6 text-right">
+              <span class="text-bold">
+                {{ bal.amount }}
+              </span>
+            </div>
+            <!-- <div class="text-caption">
+              Disponible:
+              <br>
+              Actual:
+              <span class="text-bold">
+                {{ account.balances.current }}
+                {{ account.balances.iso_currency_code }}
+              </span>
+            </div> -->
+          </q-card-section>
+        </q-card>
+      </slide>
+      <hooper-navigation slot="hooper-addons"></hooper-navigation>
+    </hooper>
+    <q-scroll-area
+      :thumb-style="thumbStyle"
+      :bar-style="barStyle"
+      style="height: 78vh; width: 100%;"
+      class="q-mt-sm"
+    >
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="egress">
           <q-form @submit="saveCashFlow" @reset="clean" ref="cashFlow">
@@ -131,18 +169,93 @@
             </div>
           </q-form>
         </q-tab-panel>
-
         <q-tab-panel name="entry">
-          <div class="text-h6">Alarms</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          <q-table
+            grid
+            :data="fieldCashFlows"
+            row-key="name"
+            :filter="filter"
+            hide-header
+            :loading="loadingForm"
+            :pagination.sync="pagination"
+          >
+            <template v-slot:top-left>
+            </template>
+            <template v-slot:top>
+              <div class="text-h6" style="width: 30%">
+                Ingresos
+              </div>
+              <q-space/>
+              <q-input outlined dense debounce="300" v-model="filter" placeholder="Buscar" style="width: 70%">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+            <template v-slot:item="props">
+              <q-card class="full-width q-mt-sm">
+                <q-card-section class="row">
+                  <div class="col-6">
+                    <span class="text-subtitle2">{{ props.row.concept.name }}</span>
+                    <br/>
+                    <span class="text-grey">{{ props.row.description }}</span>
+                  </div>
+                  <div class="col-6 text-subtitle2 text-right">
+                    <div>{{ props.row.amount }}</div>
+                    <div>{{ $t(`fieldCashFlow.${props.row.status}`) }}</div>
+                  </div>
+                </q-card-section>
+                <q-separator v-if="props.row.status === 'pending_approval'"/>
+                <q-card-actions align="right" v-if="props.row.status === 'pending_approval'">
+                  <q-btn color="teal" icon="check" dense @click="chageStatus(props.row)"/>
+                </q-card-actions>
+              </q-card>
+            </template>
+          </q-table>
         </q-tab-panel>
-
         <q-tab-panel name="movements">
-          <div class="text-h6">Movies</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          <q-table
+            title="Balance"
+            :data="transactions"
+            :columns="columns"
+            :pagination.sync="pagination"
+            row-key="name"
+            grid
+            grid-header
+            :filter="filterBalance"
+          >
+            <template v-slot:top-right>
+              <q-input outlined dense debounce="300" v-model="filterBalance" placeholder="Buscar">
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </template>
+            <template v-slot:item="props">
+              <q-card class="full-width q-mt-sm" style="font-size: 12px;">
+                <q-card-section class="row q-col-gutter-xs q-pa-sm justify-between">
+                  <div class="col-12">
+                    <span class="text-grey text-right">{{ props.row.created_at }}</span>
+                  </div>
+                  <div class="col-4 text-left">
+                    <span class="text-right text-bold">{{ props.row.description }}</span>
+                  </div>
+                  <div class="col-2 text-right text-bold">
+                    <div v-if="!props.row.transaction_id" class="text-negative">-{{ props.row.amount }}</div>
+                  </div>
+                  <div class="col-2 text-right text-bold">
+                    <div v-if="props.row.transaction_id" class="text-teal">{{ props.row.amount }}</div>
+                  </div>
+                  <div class="col-2 text-right text-bold">
+                    <div class="text-blue">{{ props.row.balance }}</div>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </template>
+          </q-table>
         </q-tab-panel>
       </q-tab-panels>
-    </q-card>
+    </q-scroll-area>
     <q-footer reveal>
       <q-tabs
         v-model="tab"
@@ -178,17 +291,45 @@ import DynamicForm from '../components/DynamicForm.vue'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
+import { Hooper, Slide, Navigation as HooperNavigation } from 'hooper'
+import 'hooper/dist/hooper.css'
 export default {
   // name: 'PageName',
   mixins: [mixins.containerMixin],
   components: {
+    Hooper,
+    Slide,
+    HooperNavigation,
     DynamicForm
   },
   data () {
     return {
+      filterBalance: '',
+      columns: [
+        { name: 'description', align: 'left', label: 'Descripción', field: 'description' },
+        { name: 'debe', classes: 'text-negative', align: 'right', label: 'Debe', field: row => !row.transaction_id ? `-${row.amount}` : null },
+        { name: 'haber', classes: 'text-teal', align: 'right', label: 'Haber', field: row => row.transaction_id ? row.amount : null },
+        { name: 'balance', classes: 'text-blue', align: 'right', label: 'Saldo', field: 'balance' }
+      ],
+      thumbStyle: {
+        right: '4px',
+        borderRadius: '5px',
+        backgroundColor: '#027be3',
+        width: '5px',
+        opacity: 0.75
+      },
+      barStyle: {
+        right: '2px',
+        borderRadius: '9px',
+        backgroundColor: '#027be3',
+        width: '9px',
+        opacity: 0.2
+      },
+      pagination: { rowsPerPage: 100 },
       loadingForm: false,
       beneficiary,
       buttonsActions,
+      filter: '',
       propsPanelEdition,
       addDialogBeneficiary: false,
       images: [],
@@ -196,7 +337,7 @@ export default {
        * Name submenu
        * @type {String}
        */
-      tab: 'egress',
+      tab: 'entry',
       /**
        * Amount cash flow
        * @type {Number}
@@ -236,12 +377,18 @@ export default {
        * Categories cash flow
        * @type {Array}
        */
-      categories: []
+      categories: [],
+      fieldCashFlows: [],
+      transactions: [],
+      balance: []
     }
   },
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
+    this.getFieldCashFlow()
+    this.getTransactions()
+    this.getBalance()
   },
   computed: {
     /**
@@ -250,6 +397,57 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    getBalance () {
+      this.$services.getData(['balance'])
+        .then(({ res }) => {
+          this.balance = res.data
+          console.log(this.balance)
+        })
+    },
+    /**
+     * All Balnce
+     */
+    getTransactions () {
+      this.$services.getData(['field-cash-flows'], {
+        sortBy: 'updated_at',
+        sortOrder: 'desc',
+        dataEqualFilter: {
+          status: 'approved'
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          this.transactions = res.data.data
+        })
+    },
+    chageStatus (data) {
+      data.status = 'approved'
+      this.loadingForm = true
+      this.$services.putData(['field-cash-flows', data.id], data)
+        .then(res => {
+          this.notify(this, 'fieldCashFlow.approvedSuccess', 'positive', 'mood')
+          this.getFieldCashFlow()
+          this.loadingForm = false
+        })
+        .catch(err => {
+          this.notify(this, `fieldCashFlow.${err.message}`, 'negative', 'warning')
+          this.getFieldCashFlow()
+          this.loadingForm = false
+        })
+    },
+    /**
+     * All Categories
+     */
+    getFieldCashFlow () {
+      this.$services.getData(['field-cash-flows'], {
+        sortBy: 'status',
+        sortOrder: 'asc',
+        paginate: false
+      })
+        .then(({ res }) => {
+          this.fieldCashFlows = res.data.data
+        })
+    },
     /**
      * Reset validation
      * @param {Object} ref ref DOM

@@ -240,7 +240,8 @@ export default {
        * User session
        * @type {Object}
        */
-      userSession: null
+      userSession: null,
+      addDialogBeneficiary: false
     }
   },
   created () {
