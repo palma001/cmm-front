@@ -242,8 +242,10 @@ export default {
   },
   // modules
   modules: {
-    guides: 'Guías',
+    'payment-orders': 'Ordenes de pago',
     banks: 'bancos',
+    guides: 'Guías',
+    transactions: 'Transacciones',
     tickets: 'Tickets',
     'cash-flows': 'Flujo de caja',
     rates: 'Tarifa de proveedores',
@@ -304,6 +306,12 @@ export default {
   fieldCashFlow: {
     addSuccessful: '¡Flujo cargado exitosamente!',
     errorAmountImage: 'Las imagenes son requeridas, minimo de imagen: 3'
+  },
+  paymentOrder: {
+    addSuccessful: '¡Orden de pago agregada exitosamente!'
+  },
+  transaction: {
+    addSuccessful: '¡Transferencia cargada exitosamente!'
   },
   coin: {
     newCoin: 'nuevo moneda',

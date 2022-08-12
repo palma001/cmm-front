@@ -380,7 +380,9 @@ export default {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {
-          name: value
+          name: value,
+          last_name: value,
+          document_number: value
         },
         paginate: false
       })
@@ -410,22 +412,3 @@ export default {
   }
 }
 </script>
-...
-<style scoped>
-.file-select > .select-button {
-  padding: 1rem;
-
-  color: white;
-  background-color: #2EA169;
-
-  border-radius: .3rem;
-
-  text-align: center;
-  font-weight: bold;
-}
-
-/* Don't forget to hide the original file input! */
-.file-select > input[type="file"] {
-  display: none;
-}
-</style>
