@@ -224,11 +224,11 @@ export default {
     }
   },
   created () {
-    this.loadingPage()
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.branchOfficeSelected = this[GETTERS.GET_BRANCH_OFFICE]
     this.userSession = this[GETTERS.GET_USER]
     this.role = this[GETTERS.GET_ROLE]
+    this.loadingPage()
   },
   computed: {
     /**
@@ -263,6 +263,7 @@ export default {
      * Loading aplications
      */
     loadingPage () {
+      // this.$router.push({ name: this.role.modules[0].route })
       this.$q.dark.set(SessionStorage.getItem('dark'))
     },
     /**

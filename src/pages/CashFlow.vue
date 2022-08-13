@@ -1,53 +1,62 @@
 <template>
   <q-page padding>
-    <hooper
-      style="height: 100%"
-      :itemsToShow="2">
-      <slide v-for="bal in balance" :key="bal.name">
-        <q-card :class="bal.transaction_id ? 'bg-teal' : 'bg-secondary'" style="max-width: 150px">
-          <q-card-section class="text-white row">
-            <div class="text-bold col-6">
-              <span v-if="bal.transaction_id">
-                  Ingreso
-              </span>
-              <span v-else>
-                  Egreso
-              </span>
-            </div>
-            <div class="text-bold col-6 text-right">
-              <span class="text-bold">
-                {{ bal.amount }}
-              </span>
-            </div>
-            <!-- <div class="text-caption">
-              Disponible:
-              <br>
-              Actual:
-              <span class="text-bold">
-                {{ account.balances.current }}
-                {{ account.balances.iso_currency_code }}
-              </span>
-            </div> -->
-          </q-card-section>
-        </q-card>
-      </slide>
-      <hooper-navigation slot="hooper-addons"></hooper-navigation>
-    </hooper>
+    <q-expansion-item
+      v-model="expanded"
+      v-if="balance"
+      class="shadow-1 overflow-hidden"
+      style="border-radius: 10px"
+      icon="monetization_on"
+      :label="`Balance ${balance.balance}`"
+      header-class="bg-primary text-white"
+      expand-icon-class="text-white"
+    >
+    <q-card>
+      <q-card-section class="q-pa-sm">
+        <hooper
+          style="height: 100%"
+          :itemsToShow="2">
+          <slide v-for="bal in balance.accounts" :key="bal.name">
+            <q-card v-if="bal.amount" :class="bal.status === 'pending_approval' ? 'bg-secondary' : bal.transaction_id ? 'bg-teal' : 'bg-negative'" style="width: 150px">
+              <q-card-section class="text-white row q-pa-sm">
+                <div class="text-bold col-6">
+                  <span v-if="bal.transaction_id">
+                    Ingreso
+                  </span>
+                  <span v-else>
+                    Egreso
+                  </span>
+                  <span style="font-size: 11px;">
+                    {{ $t(`fieldCashFlow.${bal.status}`) }}
+                  </span>
+                </div>
+                <div class="text-bold col-6 text-right">
+                  <span class="text-bold">
+                    {{ bal.amount }}
+                  </span>
+                </div>
+              </q-card-section>
+            </q-card>
+          </slide>
+          <hooper-navigation slot="hooper-addons"></hooper-navigation>
+        </hooper>
+      </q-card-section>
+    </q-card>
+    </q-expansion-item>
     <q-scroll-area
       :thumb-style="thumbStyle"
       :bar-style="barStyle"
-      style="height: 78vh; width: 100%;"
-      class="q-mt-sm"
+      style="height: 66vh; width: 100%;"
+      class="q-mt-xs"
     >
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="egress">
           <q-form @submit="saveCashFlow" @reset="clean" ref="cashFlow">
-            <div class="row q-col-gutter-sm">
+            <div class="row q-gutter-y-xs">
               <div class="col-6">
-                <div class="text-h6">Nuevo Egreso</div>
+                <div class="text-subtitle1 text-bold">Nuevo Egreso</div>
               </div>
               <div class="col-6 text-right">
-                <q-btn icon="add_a_photo" color="teal" @click="takePicture"/>
+                <q-btn icon="add_a_photo"  color="teal" @click="takePicture"/>
               </div>
               <div class="col-12">
                 <q-select
@@ -215,7 +224,6 @@
         </q-tab-panel>
         <q-tab-panel name="movements">
           <q-table
-            title="Balance"
             :data="transactions"
             :columns="columns"
             :pagination.sync="pagination"
@@ -224,8 +232,11 @@
             grid-header
             :filter="filterBalance"
           >
-            <template v-slot:top-right>
-              <q-input outlined dense debounce="300" v-model="filterBalance" placeholder="Buscar">
+            <template v-slot:top>
+              <div class="text-h6" style="width: 30%">
+                Balance
+              </div>
+              <q-input outlined dense debounce="300" v-model="filterBalance" placeholder="Buscar" style="width: 70%">
                 <template v-slot:append>
                   <q-icon name="search" />
                 </template>
@@ -233,21 +244,35 @@
             </template>
             <template v-slot:item="props">
               <q-card class="full-width q-mt-sm" style="font-size: 12px;">
-                <q-card-section class="row q-col-gutter-xs q-pa-sm justify-between">
+                <q-card-section class="row q-pa-sm">
                   <div class="col-12">
-                    <span class="text-grey text-right">{{ props.row.created_at }}</span>
+                    <span class="text-grey text-right" style="font-size: 11px;">
+                      {{ props.row.created_at }}
+                    </span>
                   </div>
-                  <div class="col-4 text-left">
-                    <span class="text-right text-bold">{{ props.row.description }}</span>
+                  <div class="col-5 text-left">
+                    <span class="text-right text-bold">
+                      {{ props.row.concept.name }}
+                    </span>
+                    <br/>
+                    <span class="text-right" style="font-size: 11px;">
+                      {{ props.row.description }}
+                    </span>
+                  </div>
+                  <div class="col-2 text-bold">
+                    <div v-if="!props.row.transaction_id" class="text-negative q-ml-sm">
+                      -{{ props.row.amount }}
+                    </div>
+                  </div>
+                  <div class="col-3 text-bold text-center">
+                    <div v-if="props.row.transaction_id" class="text-teal">
+                      {{ props.row.amount }}
+                    </div>
                   </div>
                   <div class="col-2 text-right text-bold">
-                    <div v-if="!props.row.transaction_id" class="text-negative">-{{ props.row.amount }}</div>
-                  </div>
-                  <div class="col-2 text-right text-bold">
-                    <div v-if="props.row.transaction_id" class="text-teal">{{ props.row.amount }}</div>
-                  </div>
-                  <div class="col-2 text-right text-bold">
-                    <div class="text-blue">{{ props.row.balance }}</div>
+                    <div class="text-blue">
+                      {{ props.row.balance }}
+                    </div>
                   </div>
                 </q-card-section>
               </q-card>
@@ -305,11 +330,12 @@ export default {
   data () {
     return {
       filterBalance: '',
+      expanded: true,
       columns: [
-        { name: 'description', align: 'left', label: 'Descripción', field: 'description' },
-        { name: 'debe', classes: 'text-negative', align: 'right', label: 'Debe', field: row => !row.transaction_id ? `-${row.amount}` : null },
-        { name: 'haber', classes: 'text-teal', align: 'right', label: 'Haber', field: row => row.transaction_id ? row.amount : null },
-        { name: 'balance', classes: 'text-blue', align: 'right', label: 'Saldo', field: 'balance' }
+        { name: 'description', align: 'left', label: 'Descripción' },
+        { name: 'debe', align: 'right', label: 'Debe' },
+        { name: 'haber', align: 'right', label: 'Haber' },
+        { name: 'balance', align: 'right', label: 'Saldo' }
       ],
       thumbStyle: {
         right: '4px',
@@ -380,15 +406,13 @@ export default {
       categories: [],
       fieldCashFlows: [],
       transactions: [],
-      balance: []
+      balance: null
     }
   },
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.getFieldCashFlow()
-    this.getTransactions()
-    this.getBalance()
+    this.update()
   },
   computed: {
     /**
@@ -397,6 +421,17 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Update data
+     */
+    update () {
+      this.getFieldCashFlow()
+      this.getTransactions()
+      this.getBalance()
+    },
+    /**
+     * All Transactions
+     */
     getBalance () {
       this.$services.getData(['balance'])
         .then(({ res }) => {
@@ -405,7 +440,7 @@ export default {
         })
     },
     /**
-     * All Balnce
+     * All Transactions
      */
     getTransactions () {
       this.$services.getData(['field-cash-flows'], {
@@ -420,28 +455,33 @@ export default {
           this.transactions = res.data.data
         })
     },
+    /**
+     * Change status cash
+     * @param {Object} data cash flow
+     */
     chageStatus (data) {
       data.status = 'approved'
       this.loadingForm = true
       this.$services.putData(['field-cash-flows', data.id], data)
         .then(res => {
           this.notify(this, 'fieldCashFlow.approvedSuccess', 'positive', 'mood')
-          this.getFieldCashFlow()
+          this.update()
           this.loadingForm = false
         })
         .catch(err => {
           this.notify(this, `fieldCashFlow.${err.message}`, 'negative', 'warning')
-          this.getFieldCashFlow()
+          this.update()
           this.loadingForm = false
         })
     },
     /**
-     * All Categories
+     * All field cash flow
      */
     getFieldCashFlow () {
       this.$services.getData(['field-cash-flows'], {
         sortBy: 'status',
         sortOrder: 'asc',
+        egress: false,
         paginate: false
       })
         .then(({ res }) => {
@@ -518,6 +558,7 @@ export default {
             this.loadingForm = false
             this.beneficiarySelected = res.data
             this.notify(this, 'fieldCashFlow.addSuccessful', 'positive', 'mood')
+            this.update()
             this.clean()
           })
           .catch(() => {

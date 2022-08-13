@@ -106,6 +106,11 @@ export default {
       this.$services.getData(['sections'])
         .then(({ res }) => {
           this.modules = res.data
+          localStorage.setItem('sections', JSON.stringify(this.modules))
+        })
+        .catch(err => {
+          console.log(err)
+          this.modules = JSON.parse(localStorage.getItem('sections'))
         })
     },
     /**
