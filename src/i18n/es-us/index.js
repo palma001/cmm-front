@@ -9,6 +9,8 @@ export default {
     search: 'buscar',
     noResults: 'sin datos',
     settings: 'Configuración',
+    withoutConnection: 'Sin conexión a internet',
+    connection: 'Conexión restaurada',
     organization: 'organización'
   },
 

@@ -1,7 +1,8 @@
 {
   "appId": "app.cmm.com",
-  "appName": "CMM",
+  "appName": "DBA",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "www"
+  "webDir": "www",
+  "server": {}
 }

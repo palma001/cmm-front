@@ -71,6 +71,7 @@
                   v-model="category"
                   option-label="name"
                   option-value="id"
+                  ref="categories"
                   label="Categoria"
                   :rules="[val => val && val !== null || 'Este campo es requerido']"
                   :options="categories"
@@ -99,6 +100,7 @@
                   option-label="name"
                   option-value="id"
                   label="Concepto"
+                  ref="concepts"
                   :rules="[val => val && val !== null || 'Este campo es requerido']"
                   :options="concepts"
                   @filter="getConcepts"
@@ -124,6 +126,7 @@
                   name="beneficiary"
                   v-model="beneficiarySelected"
                   option-label="name"
+                  ref="beneficiaries"
                   option-value="id"
                   label="Beneficiario"
                   :rules="[val => val && val !== null || 'Este campo es requerido']"
@@ -149,7 +152,10 @@
                   label="Monto"
                   dense
                   type="number"
-                  :rules="[val => val && val !== null || 'Este campo es requerido']"/>
+                  :rules="[
+                    val => val && val !== null && val > 0 || 'Este campo es requerido',
+                    val => balance.balance > val && val > 0 || 'Saldo insuficiente'
+                  ]"/>
               </div>
               <div class="col-12">
                 <q-input
@@ -306,6 +312,9 @@
         @save="save"
       />
     </q-dialog>
+    <q-inner-loading :showing="visibleSync">
+      <q-spinner-oval size="100px" color="primary"/>
+    </q-inner-loading>
   </q-page>
 </template>
 
@@ -318,6 +327,8 @@ import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
 import { Hooper, Slide, Navigation as HooperNavigation } from 'hooper'
 import 'hooper/dist/hooper.css'
+import { Preferences } from '@capacitor/preferences'
+import { Network } from '@capacitor/network'
 export default {
   // name: 'PageName',
   mixins: [mixins.containerMixin],
@@ -331,6 +342,7 @@ export default {
     return {
       filterBalance: '',
       expanded: true,
+      visibleSync: false,
       columns: [
         { name: 'description', align: 'left', label: 'Descripción' },
         { name: 'debe', align: 'right', label: 'Debe' },
@@ -414,6 +426,11 @@ export default {
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.update()
   },
+  mounted () {
+    Network.addListener('networkStatusChange', status => {
+      this.sync(status)
+    })
+  },
   computed: {
     /**
      * Getters Vuex
@@ -422,80 +439,200 @@ export default {
   },
   methods: {
     /**
+     * Sync connection
+     * @param {Obeject} status status connection
+     */
+    sync (status) {
+      if (status.connected) {
+        this.syncChangeStatus()
+        this.syncSaveFieldCashFlow()
+        this.notify(this, 'template.connection', 'positive', 'wifi')
+        this.update()
+      } else {
+        this.notify(this, 'template.withoutConnection', 'negative', 'wifi_off')
+      }
+    },
+    /**
+     * Sync cash flow
+     */
+    async syncSaveFieldCashFlow () {
+      const data = await Preferences.get({ key: 'saveCashFlow' })
+      const valueStorage = JSON.parse(data.value) ?? []
+      this.visibleSync = true
+      valueStorage.forEach((cashFlow, index) => {
+        this.$services.postUpload(['field-cash-flows'], this.modelCashFlow(cashFlow))
+          .then(async ({ res }) => {
+            if (index + 1 === valueStorage.length) {
+              this.notify(this, 'fieldCashFlow.syncAddMassiveSucess', 'positive', 'mood')
+              await Preferences.remove({ key: 'saveCashFlow' })
+              this.update()
+            }
+          })
+          .catch(err => {
+            this.notify(this, `syncStatusSucess.${err.message}`, 'negative', 'warning')
+          })
+      })
+    },
+    /**
+     * Sync entry
+     */
+    async syncChangeStatus () {
+      const data = await Preferences.get({ key: 'changeStatus' })
+      this.visibleSync = true
+      const valueStorage = JSON.parse(data.value)
+      if (valueStorage) {
+        this.$services.postData(['change-status'], {
+          data: valueStorage
+        }).then(async ({ res }) => {
+          this.notify(this, 'fieldCashFlow.syncStatusSucess', 'positive', 'mood')
+          await Preferences.remove({ key: 'changeStatus' })
+          this.update()
+        })
+          .catch(err => {
+            this.notify(this, `syncStatusSucess.${err.message}`, 'negative', 'warning')
+          })
+      }
+    },
+    /**
      * Update data
      */
     update () {
+      this.visibleSync = true
       this.getFieldCashFlow()
       this.getTransactions()
       this.getBalance()
     },
     /**
-     * All Transactions
+     * Get data offline or online
+     * @param {String} entity entity name
+     * @param {Function} callback callback
+     * @param {Function} update callback
      */
-    getBalance () {
-      this.$services.getData(['balance'])
-        .then(({ res }) => {
-          this.balance = res.data
-          console.log(this.balance)
+    async getOffline (entity, callback, update = null, valueFilter = null) {
+      const status = await Network.getStatus()
+      if (status.connected) {
+        callback()
+      } else {
+        this.getListStorage(entity, update, valueFilter)
+      }
+    },
+    /**
+     * Validate cash flow
+     */
+    async validateStateCashFlow () {
+      const data = await Preferences.get({ key: 'changeStatus' })
+      const valueStorage = JSON.parse(data.value) ?? []
+      valueStorage.forEach(storage => {
+        this.fieldCashFlows = this.fieldCashFlows.map(fieldCashFlow => {
+          if (fieldCashFlow.id === storage.id) {
+            fieldCashFlow.status = 'approved'
+          }
+          return fieldCashFlow
         })
+      })
+    },
+    /**
+     * Save offline or online
+     * @param {String} entity entity save
+     * @param {Object} dataSave data save
+     * @param {Function} callback callback
+     */
+    async postOffline (entity, dataSave, callback) {
+      const status = await Network.getStatus()
+      if (status.connected) {
+        callback()
+      } else {
+        const data = await Preferences.get({ key: entity })
+        const valueStorage = JSON.parse(data.value) ?? []
+        valueStorage.push(dataSave)
+        this.saveListStorage(valueStorage, entity)
+        this.validateStateCashFlow()
+        this.clean()
+        this.notify(this, 'fieldCashFlow.addSuccessful', 'positive', 'mood')
+      }
     },
     /**
      * All Transactions
      */
-    getTransactions () {
-      this.$services.getData(['field-cash-flows'], {
-        sortBy: 'updated_at',
-        sortOrder: 'desc',
-        dataEqualFilter: {
-          status: 'approved'
-        },
-        paginate: false
+    async getBalance () {
+      this.getOffline('balance', () => {
+        this.$services.getData(['balance'])
+          .then(({ res }) => {
+            this.balance = res.data
+            this.saveListStorage(res.data, 'balance')
+          })
       })
-        .then(({ res }) => {
-          this.transactions = res.data.data
+    },
+    /**
+     * All Transactions
+     */
+    async getTransactions () {
+      this.getOffline('transactions', () => {
+        this.$services.getData(['field-cash-flows'], {
+          sortBy: 'updated_at',
+          sortOrder: 'desc',
+          dataEqualFilter: {
+            status: 'approved'
+          },
+          paginate: false
         })
+          .then(({ res }) => {
+            this.transactions = res.data.data
+            this.saveListStorage(res.data.data, 'transactions')
+          })
+      })
     },
     /**
      * Change status cash
      * @param {Object} data cash flow
      */
     chageStatus (data) {
-      data.status = 'approved'
-      this.loadingForm = true
-      this.$services.putData(['field-cash-flows', data.id], data)
-        .then(res => {
-          this.notify(this, 'fieldCashFlow.approvedSuccess', 'positive', 'mood')
-          this.update()
-          this.loadingForm = false
+      delete data.status
+      this.postOffline('changeStatus', data, () => {
+        this.loadingForm = true
+        this.$services.putData(['field-cash-flows', data.id], {
+          ...data,
+          status: 'approved'
         })
-        .catch(err => {
-          this.notify(this, `fieldCashFlow.${err.message}`, 'negative', 'warning')
-          this.update()
-          this.loadingForm = false
-        })
+          .then(res => {
+            this.notify(this, 'fieldCashFlow.approvedSuccess', 'positive', 'mood')
+            this.update()
+            this.loadingForm = false
+          })
+          .catch(err => {
+            this.notify(this, `fieldCashFlow.${err.message}`, 'negative', 'warning')
+            this.update()
+            this.loadingForm = false
+          })
+      })
     },
     /**
      * All field cash flow
      */
     getFieldCashFlow () {
-      this.$services.getData(['field-cash-flows'], {
-        sortBy: 'status',
-        sortOrder: 'asc',
-        egress: false,
-        paginate: false
-      })
-        .then(({ res }) => {
-          this.fieldCashFlows = res.data.data
+      this.getOffline('fieldCashFlows', () => {
+        this.$services.getData(['field-cash-flows'], {
+          sortBy: 'status',
+          sortOrder: 'asc',
+          egress: false,
+          paginate: false
         })
+          .then(({ res }) => {
+            this.fieldCashFlows = res.data.data
+            this.saveListStorage(res.data.data, 'fieldCashFlows')
+          })
+      })
     },
     /**
      * Reset validation
      * @param {Object} ref ref DOM
      */
     resetValidations (ref) {
-      setTimeout(() => {
-        ref.resetValidation()
-      }, 100)
+      if (ref) {
+        setTimeout(() => {
+          ref.resetValidation()
+        }, 100)
+      }
     },
     /**
      * Save Beneficiary
@@ -516,6 +653,9 @@ export default {
           this.loadingForm = false
         })
     },
+    /**
+     * Clean formulary
+     */
     clean () {
       this.concept = null
       this.beneficiarySelected = null
@@ -525,6 +665,10 @@ export default {
       this.images = []
       this.resetValidations(this.$refs.cashFlow)
     },
+    /**
+     * Change format
+     * @param {String} dataurl image
+     */
     srcToFile (dataurl) {
       var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n)
       while (n--) {
@@ -532,16 +676,19 @@ export default {
       }
       return new Blob([u8arr], { type: mime })
     },
-    modelCashFlow () {
+    /**
+     * Model save cash flow
+     */
+    modelCashFlow (data) {
       const model = new FormData()
-      this.images.forEach((imge, index) => {
+      data.images.forEach((imge, index) => {
         model.append(`files[${index}]`, this.srcToFile(imge.img), `file-${index}.jpg`)
       })
-      model.append('concept_id', this.concept.id)
-      model.append('beneficiary_id', this.beneficiarySelected.id)
-      model.append('amount', this.amount)
-      model.append('description', this.description)
-      model.append('user_created_id', this.userSession.id)
+      model.append('concept_id', data.concept_id)
+      model.append('beneficiary_id', data.beneficiary_id)
+      model.append('amount', data.amount)
+      model.append('description', data.description)
+      model.append('user_created_id', data.user_created_id)
       model.append('field_id', 1)
       return model
     },
@@ -551,19 +698,29 @@ export default {
      */
     saveCashFlow () {
       if (this.images.length >= 3) {
-        this.loadingForm = true
-        this.$services.postUpload(['field-cash-flows'], this.modelCashFlow())
-          .then(({ res }) => {
-            this.addDialogBeneficiary = false
-            this.loadingForm = false
-            this.beneficiarySelected = res.data
-            this.notify(this, 'fieldCashFlow.addSuccessful', 'positive', 'mood')
-            this.update()
-            this.clean()
-          })
-          .catch(() => {
-            this.loadingForm = false
-          })
+        const data = {
+          images: this.images,
+          concept_id: this.concept.id,
+          beneficiary_id: this.beneficiarySelected.id,
+          amount: this.amount,
+          description: this.description,
+          user_created_id: this.userSession.id,
+          field_id: 1
+        }
+        this.postOffline('saveCashFlow', data, () => {
+          this.loadingForm = true
+          this.$services.postUpload(['field-cash-flows'], this.modelCashFlow(data))
+            .then(({ res }) => {
+              this.loadingForm = false
+              this.beneficiarySelected = res.data
+              this.notify(this, 'fieldCashFlow.addSuccessful', 'positive', 'mood')
+              this.update()
+              this.clean()
+            })
+            .catch(() => {
+              this.loadingForm = false
+            })
+        })
       } else {
         this.notify(this, 'fieldCashFlow.errorAmountImage', 'negative', 'warning')
       }
@@ -578,58 +735,107 @@ export default {
     /**
      * All Categories
      */
-    getCategories (value, update) {
-      this.$services.getData(['categories'], {
-        sortBy: 'id',
-        sortOrder: 'desc',
-        dataSearch: {
-          name: value
-        },
-        paginate: false
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.categories = res.data.data
-          })
+    async getCategories (value, update) {
+      this.getOffline('categories', () => {
+        this.$services.getData(['categories'], {
+          sortBy: 'id',
+          sortOrder: 'desc',
+          dataSearch: {
+            name: value
+          },
+          paginate: false
         })
+          .then(({ res }) => {
+            update(() => {
+              this.categories = res.data.data
+              this.saveListStorage(res.data.data, 'categories')
+            })
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }, update, value)
+    },
+    /**
+     * Save list data in local storage
+     * @param {Array} data save
+     * @param {String} entity name variable
+     */
+    async saveListStorage (data, entity) {
+      await Preferences.set({
+        key: entity,
+        value: JSON.stringify(data)
+      })
+      this.visibleSync = false
+    },
+    /**
+     * Get value in entity
+     * @param {String} entity name entity
+     */
+    async getListStorage (entity, update = null, value) {
+      const data = await Preferences.get({ key: entity })
+      if (update) {
+        const selectData = JSON.parse(data.value)
+        if (value && value === '') {
+          update(() => {
+            this[entity] = selectData
+          })
+          return
+        }
+        update(() => {
+          const needle = value.toLowerCase()
+          this[entity] = selectData.filter(v => v[this.$refs[entity].optionLabel].toLowerCase().indexOf(needle) > -1)
+        })
+      } else {
+        this[entity] = JSON.parse(data.value)
+      }
     },
     /**
      * All Concepts
      */
     getConcepts (value, update) {
-      this.$services.getData(['concepts'], {
-        sortBy: 'id',
-        sortOrder: 'desc',
-        dataSearch: {
-          name: value
-        },
-        paginate: false
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.concepts = res.data
-          })
+      this.getOffline('concepts', () => {
+        this.$services.getData(['concepts'], {
+          sortBy: 'id',
+          sortOrder: 'desc',
+          dataSearch: {
+            name: value
+          },
+          paginate: false
         })
+          .then(({ res }) => {
+            update(() => {
+              this.concepts = res.data
+              this.saveListStorage(res.data, 'concepts')
+            })
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }, update, value)
     },
     /**
      * All Beneficiaries
      */
     getBeneficiaries (value, update) {
-      this.$services.getData(['beneficiaries'], {
-        sortBy: 'id',
-        sortOrder: 'desc',
-        dataSearch: {
-          name: value,
-          last_name: value,
-          document_number: value
-        },
-        paginate: false
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.beneficiaries = res.data
-          })
+      this.getOffline('beneficiaries', () => {
+        this.$services.getData(['beneficiaries'], {
+          sortBy: 'id',
+          sortOrder: 'desc',
+          dataSearch: {
+            name: value,
+            last_name: value,
+            document_number: value
+          },
+          paginate: false
         })
+          .then(({ res }) => {
+            update(() => {
+              this.beneficiaries = res.data
+              this.saveListStorage(res.data, 'beneficiaries')
+            })
+          })
+      }, update, value)
     },
     /**
      * Set Image
