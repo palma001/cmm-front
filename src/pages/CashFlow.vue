@@ -6,7 +6,7 @@
       class="shadow-1 overflow-hidden"
       style="border-radius: 10px"
       icon="monetization_on"
-      :label="`Balance ${balance.balance}`"
+      :label="`Balance ${balanceTotal}`"
       header-class="bg-primary text-white"
       expand-icon-class="text-white"
     >
@@ -50,7 +50,7 @@
     >
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="egress">
-          <q-form @submit="saveCashFlow" @reset="clean" ref="cashFlow">
+          <q-form @submit="saveCashFlow()" @reset="clean" ref="cashFlow">
             <div class="row q-gutter-y-xs">
               <div class="col-6">
                 <div class="text-subtitle1 text-bold">Nuevo Egreso</div>
@@ -152,9 +152,10 @@
                   label="Monto"
                   dense
                   type="number"
+                  @blur="blanceCalculate"
                   :rules="[
                     val => val && val !== null && val > 0 || 'Este campo es requerido',
-                    val => balance.balance > val && val > 0 || 'Saldo insuficiente'
+                    val => val < balanceTotal || 'Saldo insuficiente'
                   ]"/>
               </div>
               <div class="col-12">
@@ -329,6 +330,7 @@ import { Hooper, Slide, Navigation as HooperNavigation } from 'hooper'
 import 'hooper/dist/hooper.css'
 import { Preferences } from '@capacitor/preferences'
 import { Network } from '@capacitor/network'
+import { date } from 'quasar'
 export default {
   // name: 'PageName',
   mixins: [mixins.containerMixin],
@@ -418,6 +420,7 @@ export default {
       categories: [],
       fieldCashFlows: [],
       transactions: [],
+      balanceTotal: 0,
       balance: null
     }
   },
@@ -431,6 +434,12 @@ export default {
       this.sync(status)
     })
   },
+  watch: {
+    async amount () {
+      const balance = await this.getBalanceTotal()
+      this.balanceTotal = (this.balance.balance + balance.entry) - balance.egress
+    }
+  },
   computed: {
     /**
      * Getters Vuex
@@ -438,6 +447,35 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    async getBalanceTotal () {
+      const saveCashFlow = await this.parseJson('saveCashFlow')
+      const changeStatus = await this.parseJson('changeStatus')
+      const egress = this.totalCalculate(saveCashFlow, 'amount')
+      const entry = this.totalCalculate(changeStatus, 'amount')
+      return {
+        egress,
+        entry
+      }
+    },
+    async blanceCalculate () {
+      if (this.balance) {
+        const balance = await this.getBalanceTotal()
+        this.balanceTotal = (this.balance.balance + balance.entry) - (balance.egress + Number(this.amount))
+      }
+    },
+    /**
+     * Calculate entry total
+     */
+    totalCalculate (data, field) {
+      let total = 0
+      if (data.length > 0) {
+        data.forEach(element => {
+          total = Number(total) + Number(element[field])
+          console.log(total, 'total')
+        })
+      }
+      return total
+    },
     /**
      * Sync connection
      * @param {Obeject} status status connection
@@ -445,59 +483,62 @@ export default {
     sync (status) {
       if (status.connected) {
         this.syncChangeStatus()
-        this.syncSaveFieldCashFlow()
         this.notify(this, 'template.connection', 'positive', 'wifi')
-        this.update()
       } else {
         this.notify(this, 'template.withoutConnection', 'negative', 'wifi_off')
       }
     },
     /**
-     * Sync cash flow
+     * Format data
+     * @param {String} name local storage
      */
-    async syncSaveFieldCashFlow () {
-      const data = await Preferences.get({ key: 'saveCashFlow' })
-      const valueStorage = JSON.parse(data.value) ?? []
-      this.visibleSync = true
-      valueStorage.forEach((cashFlow, index) => {
-        this.$services.postUpload(['field-cash-flows'], this.modelCashFlow(cashFlow))
-          .then(async ({ res }) => {
-            if (index + 1 === valueStorage.length) {
-              this.notify(this, 'fieldCashFlow.syncAddMassiveSucess', 'positive', 'mood')
-              await Preferences.remove({ key: 'saveCashFlow' })
-              this.update()
-            }
-          })
-          .catch(err => {
-            this.notify(this, `syncStatusSucess.${err.message}`, 'negative', 'warning')
-          })
+    async parseJson (name) {
+      const data = await Preferences.get({ key: name })
+      return JSON.parse(data.value) ?? []
+    },
+    modelCashFlow () {
+      return {
+        images: this.images,
+        concept_id: this.concept.id,
+        beneficiary_id: this.beneficiarySelected.id,
+        amount: this.amount,
+        balance: this.balanceTotal,
+        description: this.description,
+        user_created_id: this.userSession.id,
+        field_id: 1
+      }
+    },
+    promiseFieldCashFlow (fieldCashFlows) {
+      fieldCashFlows.forEach((fieldCashFlow, index) => {
+        if (index >= fieldCashFlows.length) {
+          return
+        }
+        return new Promise((resolve, reject) => {
+          console.log(fieldCashFlow.transaction_id, 'promise')
+          if (fieldCashFlow.transaction_id) {
+            this.chageStatus(fieldCashFlow)
+          } else {
+            this.saveCashFlow(this.modelCashFlow())
+          }
+          return resolve()
+        })
       })
     },
     /**
      * Sync entry
      */
     async syncChangeStatus () {
-      const data = await Preferences.get({ key: 'changeStatus' })
       this.visibleSync = true
-      const valueStorage = JSON.parse(data.value)
-      if (valueStorage) {
-        this.$services.postData(['change-status'], {
-          data: valueStorage
-        }).then(async ({ res }) => {
-          this.notify(this, 'fieldCashFlow.syncStatusSucess', 'positive', 'mood')
-          await Preferences.remove({ key: 'changeStatus' })
-          this.update()
+      const fieldCashFlows = await this.parseJson('transactionFieldCashFlows')
+      this.promiseFieldCashFlow(fieldCashFlows)
+        .then(() => {
+          this.visibleSync = false
         })
-          .catch(err => {
-            this.notify(this, `syncStatusSucess.${err.message}`, 'negative', 'warning')
-          })
-      }
     },
     /**
      * Update data
      */
     update () {
-      this.visibleSync = true
       this.getFieldCashFlow()
       this.getTransactions()
       this.getBalance()
@@ -520,8 +561,7 @@ export default {
      * Validate cash flow
      */
     async validateStateCashFlow () {
-      const data = await Preferences.get({ key: 'changeStatus' })
-      const valueStorage = JSON.parse(data.value) ?? []
+      const valueStorage = await this.parseJson('transactionFieldCashFlows')
       valueStorage.forEach(storage => {
         this.fieldCashFlows = this.fieldCashFlows.map(fieldCashFlow => {
           if (fieldCashFlow.id === storage.id) {
@@ -542,8 +582,8 @@ export default {
       if (status.connected) {
         callback()
       } else {
-        const data = await Preferences.get({ key: entity })
-        const valueStorage = JSON.parse(data.value) ?? []
+        dataSave.updated_at = date.formatDate(Date(), 'YYYY-MM-DD HH:mm:ss')
+        const valueStorage = await this.parseJson(entity)
         valueStorage.push(dataSave)
         this.saveListStorage(valueStorage, entity)
         this.validateStateCashFlow()
@@ -559,7 +599,9 @@ export default {
         this.$services.getData(['balance'])
           .then(({ res }) => {
             this.balance = res.data
+            this.balanceTotal = res.data.balance
             this.saveListStorage(res.data, 'balance')
+            this.blanceCalculate()
           })
       })
     },
@@ -588,7 +630,9 @@ export default {
      */
     chageStatus (data) {
       delete data.status
-      this.postOffline('changeStatus', data, () => {
+      this.amount = data.amount
+      data.balance = this.balanceTotal
+      this.postOffline('transactionFieldCashFlows', data, () => {
         this.loadingForm = true
         this.$services.putData(['field-cash-flows', data.id], {
           ...data,
@@ -597,6 +641,7 @@ export default {
           .then(res => {
             this.notify(this, 'fieldCashFlow.approvedSuccess', 'positive', 'mood')
             this.update()
+            this.clean()
             this.loadingForm = false
           })
           .catch(err => {
@@ -679,7 +724,7 @@ export default {
     /**
      * Model save cash flow
      */
-    modelCashFlow (data) {
+    modelCashFlowForm (data) {
       const model = new FormData()
       data.images.forEach((imge, index) => {
         model.append(`files[${index}]`, this.srcToFile(imge.img), `file-${index}.jpg`)
@@ -687,8 +732,10 @@ export default {
       model.append('concept_id', data.concept_id)
       model.append('beneficiary_id', data.beneficiary_id)
       model.append('amount', data.amount)
+      model.append('balance', data.balance)
       model.append('description', data.description)
       model.append('user_created_id', data.user_created_id)
+      model.append('updated_at', data.updated_at)
       model.append('field_id', 1)
       return model
     },
@@ -696,20 +743,11 @@ export default {
      * Save Beneficiary
      * @param  {Object}
      */
-    saveCashFlow () {
+    saveCashFlow (data = this.modelCashFlow()) {
       if (this.images.length >= 3) {
-        const data = {
-          images: this.images,
-          concept_id: this.concept.id,
-          beneficiary_id: this.beneficiarySelected.id,
-          amount: this.amount,
-          description: this.description,
-          user_created_id: this.userSession.id,
-          field_id: 1
-        }
-        this.postOffline('saveCashFlow', data, () => {
+        this.postOffline('transactionFieldCashFlows', data, () => {
           this.loadingForm = true
-          this.$services.postUpload(['field-cash-flows'], this.modelCashFlow(data))
+          this.$services.postUpload(['field-cash-flows'], this.modelCashFlowForm(data))
             .then(({ res }) => {
               this.loadingForm = false
               this.beneficiarySelected = res.data

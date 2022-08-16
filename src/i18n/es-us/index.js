@@ -249,7 +249,7 @@ export default {
     guides: 'Guías',
     transactions: 'Transacciones',
     tickets: 'Tickets',
-    'cash-flows': 'Flujo de caja',
+    'field-cash-flows': 'Flujo de caja',
     rates: 'Tarifa de proveedores',
     'provider-types': 'tipos de proveedores',
     actives: 'activos',
