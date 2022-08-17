@@ -2,14 +2,70 @@
   <q-page padding>
     <q-expansion-item
       v-model="expanded"
+      expand-icon-toggle
+      expand-separator
       v-if="balance"
       class="shadow-1 overflow-hidden"
       style="border-radius: 10px"
-      icon="monetization_on"
-      :label="`Balance ${balanceTotal}`"
       header-class="bg-primary text-white"
       expand-icon-class="text-white"
+      dense
     >
+    <template v-slot:header>
+      <q-item-section avatar class="text-white" @click="expanded = !expanded">
+        <q-icon name="attach_money" size="30px"/>
+      </q-item-section>
+      <q-item-section @click="expanded = !expanded">
+        <span class="text-bold">
+          Balance:
+          {{ balanceTotal }}
+        </span>
+        <span style="font-size: 11px;" v-if="field">
+          {{ field.denomination }}
+        </span>
+      </q-item-section>
+      <q-item-section side>
+        <div class="row items-center">
+          <q-btn flat icon="sync_alt" color="white" size="12px" round>
+            <q-popup-edit
+              v-model="field"
+              :validate="val => val !== null"
+              @hide="val => val !== null"
+              @save="update"
+              auto-save
+              v-slot="scope"
+            >
+              <q-select
+                autocomplete="off"
+                use-input
+                dense
+                outlined
+                behavior="menu"
+                input-debounce="20"
+                name="field"
+                v-model.number="scope.value"
+                option-label="denomination"
+                option-value="id"
+                ref="sessionFields"
+                label="Campo"
+                autofocus
+                :options="sessionFields"
+                @filter="filterFields"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </q-popup-edit>
+          </q-btn>
+          <q-btn flat icon="update" color="white" size="12px" round @click="update"/>
+        </div>
+      </q-item-section>
+    </template>
     <q-card>
       <q-card-section class="q-pa-sm">
         <hooper
@@ -45,7 +101,7 @@
     <q-scroll-area
       :thumb-style="thumbStyle"
       :bar-style="barStyle"
-      style="height: 66vh; width: 100%;"
+      style="height: 65vh; width: 100%;"
       class="q-mt-xs"
     >
       <q-tab-panels v-model="tab" animated>
@@ -421,13 +477,15 @@ export default {
       fieldCashFlows: [],
       transactions: [],
       balanceTotal: 0,
-      balance: null
+      balance: null,
+      sessionFields: [],
+      field: null
     }
   },
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
-    this.update()
+    this.getFields()
   },
   mounted () {
     Network.addListener('networkStatusChange', status => {
@@ -447,16 +505,47 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    getFields () {
+      this.$services.getData(['fields'], {
+        dataEqualFilter: {
+          field_supervisor_id: this.userSession.id
+        }
+      })
+        .then(({ res }) => {
+          this.field = res.data[0]
+          this.update()
+        })
+    },
+    filterFields (value, update) {
+      this.$services.getData(['fields'], {
+        dataSearch: {
+          denomination: value
+        },
+        dataEqualFilter: {
+          field_supervisor_id: this.userSession.id
+        }
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.sessionFields = res.data
+          })
+        })
+    },
+    /**
+     * Calculate balnce storage
+     */
     async getBalanceTotal () {
-      const saveCashFlow = await this.parseJson('saveCashFlow')
-      const changeStatus = await this.parseJson('changeStatus')
-      const egress = this.totalCalculate(saveCashFlow, 'amount')
-      const entry = this.totalCalculate(changeStatus, 'amount')
+      const transactionFieldCashFlows = await this.parseJson('transactionFieldCashFlows')
+      const egress = this.totalCalculate(transactionFieldCashFlows, 'amount', 'egress')
+      const entry = this.totalCalculate(transactionFieldCashFlows, 'amount', 'entry')
       return {
         egress,
         entry
       }
     },
+    /**
+     * Calculate balnce storage
+     */
     async blanceCalculate () {
       if (this.balance) {
         const balance = await this.getBalanceTotal()
@@ -466,12 +555,16 @@ export default {
     /**
      * Calculate entry total
      */
-    totalCalculate (data, field) {
+    totalCalculate (data, field, type) {
       let total = 0
       if (data.length > 0) {
         data.forEach(element => {
-          total = Number(total) + Number(element[field])
-          console.log(total, 'total')
+          if (type === 'egress' && !element.transaction_id) {
+            total = Number(total) + Number(element[field])
+          }
+          if (type === 'entry' && element.transaction_id) {
+            total = Number(total) + Number(element[field])
+          }
         })
       }
       return total
@@ -496,33 +589,20 @@ export default {
       const data = await Preferences.get({ key: name })
       return JSON.parse(data.value) ?? []
     },
+    /**
+     * Model cash flow
+     */
     modelCashFlow () {
       return {
         images: this.images,
         concept_id: this.concept.id,
         beneficiary_id: this.beneficiarySelected.id,
         amount: this.amount,
-        balance: this.balanceTotal,
         description: this.description,
         user_created_id: this.userSession.id,
-        field_id: 1
+        date: date.formatDate(Date(), 'YYYY-MM-DD HH:mm:ss'),
+        field_id: this.field.id
       }
-    },
-    promiseFieldCashFlow (fieldCashFlows) {
-      fieldCashFlows.forEach((fieldCashFlow, index) => {
-        if (index >= fieldCashFlows.length) {
-          return
-        }
-        return new Promise((resolve, reject) => {
-          console.log(fieldCashFlow.transaction_id, 'promise')
-          if (fieldCashFlow.transaction_id) {
-            this.chageStatus(fieldCashFlow)
-          } else {
-            this.saveCashFlow(this.modelCashFlow())
-          }
-          return resolve()
-        })
-      })
     },
     /**
      * Sync entry
@@ -530,8 +610,16 @@ export default {
     async syncChangeStatus () {
       this.visibleSync = true
       const fieldCashFlows = await this.parseJson('transactionFieldCashFlows')
-      this.promiseFieldCashFlow(fieldCashFlows)
-        .then(() => {
+      this.$services.postUpload(['change-status'], {
+        data: fieldCashFlows
+      })
+        .then(async () => {
+          await Preferences.remove({ key: 'transactionFieldCashFlows' })
+          this.update()
+          this.visibleSync = false
+        })
+        .catch((err) => {
+          console.log(err)
           this.visibleSync = false
         })
     },
@@ -582,26 +670,33 @@ export default {
       if (status.connected) {
         callback()
       } else {
-        dataSave.updated_at = date.formatDate(Date(), 'YYYY-MM-DD HH:mm:ss')
-        const valueStorage = await this.parseJson(entity)
-        valueStorage.push(dataSave)
-        this.saveListStorage(valueStorage, entity)
-        this.validateStateCashFlow()
-        this.clean()
-        this.notify(this, 'fieldCashFlow.addSuccessful', 'positive', 'mood')
+        this.visibleSync = true
+        setTimeout(async () => {
+          const valueStorage = await this.parseJson(entity)
+          valueStorage.push(dataSave)
+          this.saveListStorage(valueStorage, entity)
+          this.validateStateCashFlow()
+          this.clean()
+          this.notify(this, 'fieldCashFlow.addSuccessful', 'positive', 'mood')
+          this.visibleSync = false
+        }, 1000)
       }
     },
     /**
      * All Transactions
      */
     async getBalance () {
+      this.visibleSync = true
       this.getOffline('balance', () => {
-        this.$services.getData(['balance'])
+        this.$services.getData(['balance'], {
+          field_id: this.field.id
+        })
           .then(({ res }) => {
             this.balance = res.data
             this.balanceTotal = res.data.balance
             this.saveListStorage(res.data, 'balance')
             this.blanceCalculate()
+            this.visibleSync = false
           })
       })
     },
@@ -611,10 +706,11 @@ export default {
     async getTransactions () {
       this.getOffline('transactions', () => {
         this.$services.getData(['field-cash-flows'], {
-          sortBy: 'updated_at',
+          sortBy: 'date',
           sortOrder: 'desc',
           dataEqualFilter: {
-            status: 'approved'
+            status: 'approved',
+            field_id: this.field.id
           },
           paginate: false
         })
@@ -629,9 +725,7 @@ export default {
      * @param {Object} data cash flow
      */
     chageStatus (data) {
-      delete data.status
-      this.amount = data.amount
-      data.balance = this.balanceTotal
+      data.date = data.date ?? date.formatDate(Date(), 'YYYY-MM-DD HH:mm:ss')
       this.postOffline('transactionFieldCashFlows', data, () => {
         this.loadingForm = true
         this.$services.putData(['field-cash-flows', data.id], {
@@ -660,6 +754,9 @@ export default {
           sortBy: 'status',
           sortOrder: 'asc',
           egress: false,
+          dataEqualFilter: {
+            field_id: this.field.id
+          },
           paginate: false
         })
           .then(({ res }) => {
@@ -722,32 +819,14 @@ export default {
       return new Blob([u8arr], { type: mime })
     },
     /**
-     * Model save cash flow
-     */
-    modelCashFlowForm (data) {
-      const model = new FormData()
-      data.images.forEach((imge, index) => {
-        model.append(`files[${index}]`, this.srcToFile(imge.img), `file-${index}.jpg`)
-      })
-      model.append('concept_id', data.concept_id)
-      model.append('beneficiary_id', data.beneficiary_id)
-      model.append('amount', data.amount)
-      model.append('balance', data.balance)
-      model.append('description', data.description)
-      model.append('user_created_id', data.user_created_id)
-      model.append('updated_at', data.updated_at)
-      model.append('field_id', 1)
-      return model
-    },
-    /**
      * Save Beneficiary
      * @param  {Object}
      */
     saveCashFlow (data = this.modelCashFlow()) {
-      if (this.images.length >= 3) {
+      if (data.images.length >= 3) {
         this.postOffline('transactionFieldCashFlows', data, () => {
           this.loadingForm = true
-          this.$services.postUpload(['field-cash-flows'], this.modelCashFlowForm(data))
+          this.$services.postUpload(['field-cash-flows'], data)
             .then(({ res }) => {
               this.loadingForm = false
               this.beneficiarySelected = res.data
@@ -804,7 +883,6 @@ export default {
         key: entity,
         value: JSON.stringify(data)
       })
-      this.visibleSync = false
     },
     /**
      * Get value in entity
