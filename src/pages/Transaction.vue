@@ -247,7 +247,7 @@ export default {
         })
     },
     orderSelected () {
-      this.amount = this.paymentOrder ? this.paymentOrder.amount : 0
+      this.amount = this.paymentOrder ? this.paymentOrder.pending : 0
     },
     /**
      * All Payment order

@@ -163,7 +163,7 @@ const routes = [
       },
       {
         path: 'cash-flows',
-        name: 'CashFlow',
+        name: 'FieldCashFlow',
         component: () => import('src/pages/CashFlow.vue'),
         beforeEnter: validationSessionUnit
       },

@@ -142,6 +142,33 @@
                   </template>
                 </q-select>
               </div>
+              <div class="col-12" v-if="category && category.name === 'Costo'">
+                <q-select
+                  autocomplete="off"
+                  use-input
+                  dense
+                  outlined
+                  clearable
+                  behavior="menu"
+                  input-debounce="20"
+                  name="guide"
+                  v-model="guide"
+                  option-label="name"
+                  option-value="id"
+                  label="Guia"
+                  ref="guides"
+                  :options="guides"
+                  @filter="getGuides"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
               <div class="col-12">
                 <q-select
                   autocomplete="off"
@@ -398,6 +425,8 @@ export default {
   },
   data () {
     return {
+      guide: null,
+      guides: [],
       filterBalance: '',
       expanded: true,
       visibleSync: false,
@@ -905,6 +934,36 @@ export default {
       } else {
         this[entity] = JSON.parse(data.value)
       }
+    },
+    /**
+     * All Guides
+     */
+    getGuides (value, update) {
+      this.getOffline('guides', () => {
+        this.$services.getData(['guides'], {
+          sortBy: 'id',
+          sortOrder: 'desc',
+          dataSearch: {
+            serie_number: value,
+            start_date: value,
+            deadline: value,
+            origin_address: value,
+            destination_address: value,
+            material: value,
+            code_runpa: value
+          },
+          paginate: false
+        })
+          .then(({ res }) => {
+            update(() => {
+              this.guides = res.data
+              this.saveListStorage(res.data, 'guides')
+            })
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }, update, value)
     },
     /**
      * All Concepts
