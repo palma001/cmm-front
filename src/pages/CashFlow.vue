@@ -508,13 +508,14 @@ export default {
       balanceTotal: 0,
       balance: null,
       sessionFields: [],
-      field: null
+      field: {}
     }
   },
   created () {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.getFields()
+    this.update()
   },
   mounted () {
     Network.addListener('networkStatusChange', status => {
@@ -525,6 +526,9 @@ export default {
     async amount () {
       const balance = await this.getBalanceTotal()
       this.balanceTotal = (this.balance.balance + balance.entry) - balance.egress
+    },
+    field () {
+      this.update()
     }
   },
   computed: {
@@ -535,30 +539,36 @@ export default {
   },
   methods: {
     getFields () {
-      this.$services.getData(['fields'], {
-        dataEqualFilter: {
-          field_supervisor_id: this.userSession.id
-        }
-      })
-        .then(({ res }) => {
-          this.field = res.data[0]
-          this.update()
+      this.getOffline('field', () => {
+        this.$services.getData(['fields'], {
+          dataEqualFilter: {
+            field_supervisor_id: this.userSession.id
+          }
         })
+          .then(({ res }) => {
+            this.field = res.data[0]
+            this.saveListStorage(this.field, 'field')
+            this.update()
+          })
+      })
     },
     filterFields (value, update) {
-      this.$services.getData(['fields'], {
-        dataSearch: {
-          denomination: value
-        },
-        dataEqualFilter: {
-          field_supervisor_id: this.userSession.id
-        }
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.sessionFields = res.data
-          })
+      this.getOffline('fields', () => {
+        this.$services.getData(['fields'], {
+          dataSearch: {
+            denomination: value
+          },
+          dataEqualFilter: {
+            field_supervisor_id: this.userSession.id
+          }
         })
+          .then(({ res }) => {
+            update(() => {
+              this.sessionFields = res.data
+              this.saveListStorage(res.data, 'sessionFields')
+            })
+          })
+      }, update, value)
     },
     /**
      * Calculate balnce storage
@@ -655,7 +665,7 @@ export default {
     /**
      * Update data
      */
-    update () {
+    async update () {
       this.getFieldCashFlow()
       this.getTransactions()
       this.getBalance()

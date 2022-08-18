@@ -1,10 +1,12 @@
 <template>
   <q-page padding>
     <q-card>
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Nuevo Orden de Pago</div>
+        <q-space />
+        <q-btn icon="list"  color="primary"/>
+      </q-card-section>
       <q-form @submit="savePaymentOrder" @reset="clean" ref="paymentOrder">
-        <q-card-section>
-          <div class="text-h6">Nuevo Orden de Pago</div>
-        </q-card-section>
         <q-card-section>
           <div class="row q-col-gutter-sm">
             <div class="col-xs-12 col-sm-4 col-md-6 col-lg-4 col-xl-4">
