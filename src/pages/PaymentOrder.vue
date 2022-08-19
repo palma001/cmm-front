@@ -171,12 +171,37 @@
         @save="save"
       />
     </q-dialog>
+    <q-dialog
+      position="right"
+      v-model="dialogListPaymentOrder"
+    >
+      <q-card>
+        <q-card-section>
+          <data-table
+            title="list"
+            module="paymentOrder"
+            searchable
+            action
+            :column="paymentOrderConfig"
+            :data="data"
+            :loading="loadingTable"
+            :buttonsActions="buttonsActions"
+            :optionPagination="optionPagination"
+            @view-details="viewDetails"
+            @search-data="searchData"
+            @on-load-data="loadData"
+            @delete="deleteData"
+          />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
 import DynamicForm from '../components/DynamicForm.vue'
 import { GETTERS } from '../store/module-login/name.js'
+import { paymentOrderConfig, buttonsActions, propsPanelEdition } from '../config-file/paymentOrder/paymentOrderConfig.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
 export default {
@@ -187,10 +212,14 @@ export default {
   },
   data () {
     return {
+      paymentOrderConfig,
+      buttonsActions,
+      propsPanelEdition,
       loadingForm: false,
       paymentTypeDynamics: [],
       paymentTypeDynamic: null,
       paymentDate: null,
+      dialogListPaymentOrder: false,
       paymentTypes: [
         {
           label: 'Anticipo a contrato',
@@ -243,7 +272,17 @@ export default {
        * @type {Object}
        */
       userSession: null,
-      addDialogBeneficiary: false
+      addDialogBeneficiary: false,
+      /**
+       * Status loading table
+       * @type {Boolean}
+       */
+      loadingTable: false,
+      /**
+       * Data of table
+       * @type {Array}
+       */
+      data: []
     }
   },
   created () {
@@ -256,6 +295,61 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Set data dialog edition
+     * @param  {Object} data selected
+     */
+    viewDetails (data) {
+      this.editDialog = true
+      this.propsPanelEdition.data = data
+      this.selectedData = data
+    },
+    /**
+     * Search EgressType
+     * @param  {Object}
+     */
+    searchData (data) {
+      for (const dataSearch in this.params.dataSearch) {
+        this.params.dataSearch[dataSearch] = data
+      }
+      this.params.page = 1
+      this.getPaymentOrders()
+    },
+    /**
+     * Load data sorting
+     * @param  {Object}
+     */
+    loadData (data) {
+      this.params.page = data.page
+      this.params.sortBy = data.sortBy ?? this.params.sortBy
+      this.params.sortOrder = data.sortOrder
+      this.params.perPage = data.rowsPerPage
+      this.optionPagination = data
+      this.getPaymentOrders(this.params)
+    },
+    /**
+     * Delete data
+     * @param {Object} data data selected
+     */
+    deleteData (data) {
+      this.$q.dialog({
+        title: 'Confirmación',
+        message: '¿Desea eliminar la tipo organización?',
+        cancel: {
+          label: 'Cancelar',
+          color: 'negative'
+        },
+        persistent: true,
+        ok: {
+          label: 'Aceptar',
+          color: 'primary'
+        }
+      }).onOk(async () => {
+        await this.$services.deleteData(['payment-orders', data.id])
+        this.notify(this, 'paymentOrder.deleteSuccessful', 'positive', 'mood')
+        this.getPaymentOrders()
+      })
+    },
     /**
      * Reset validation
      * @param {Object} ref ref DOM
