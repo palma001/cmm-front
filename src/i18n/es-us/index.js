@@ -454,6 +454,7 @@ export default {
     name: 'nombre'
   },
   field: {
+    contract_number: 'N° Contrato',
     newOrganization: 'nuevo campo',
     address: 'dirección',
     acronym: 'acronimo',

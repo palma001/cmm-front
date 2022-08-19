@@ -79,6 +79,43 @@ export const fieldConfig = [
       },
       {
         tabulated: {
+          name: 'contract_number',
+          align: 'left',
+          field: row => row.contract_number,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'contract_number',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'organization',
           align: 'left',
           field: row => row.organization.name,
@@ -216,17 +253,24 @@ export const fieldConfig = [
 */
 export const buttonsActions = [
   {
-    color: 'primary',
-    icon: 'edit',
+    color: 'teal',
+    icon: 'visibility',
     size: 'sm',
     event: 'view-details'
+  },
+  {
+    color: 'secondary',
+    icon: 'edit',
+    size: 'sm',
+    event: 'edit',
+    class: 'q-ml-xs'
   },
   {
     color: 'negative',
     icon: 'delete',
     size: 'sm',
     event: 'delete',
-    class: 'q-ml-sm'
+    class: 'q-ml-xs'
   }
 ]
 

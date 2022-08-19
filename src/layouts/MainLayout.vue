@@ -4,7 +4,7 @@
       titleApp="DBA"
       titleMenu="Opciones"
       :data="modules"
-      @logout="logout"
+      @logout="session('logout')"
     />
     <q-dialog v-model="dialogSession" position="top" seamless persistent>
       <q-card>
@@ -37,6 +37,7 @@ export default {
        * @type {Array} data menu
        */
       modules: [],
+      typeLogout: 'refresh',
       loading: false
     }
   },
@@ -58,12 +59,13 @@ export default {
   },
   watch: {
     dialogSession () {
-      console.log(this[GETTERS.GET_TOKEN])
-      setTimeout(() => {
-        if (this[GETTERS.GET_TOKEN] === null || this[GETTERS.GET_TOKEN] === 'null') {
-          this.logout()
-        }
-      }, 10000)
+      if (this.typeLogout !== 'logout') {
+        setTimeout(() => {
+          if (this[GETTERS.GET_TOKEN] === null || this[GETTERS.GET_TOKEN] === 'null') {
+            this.logout()
+          }
+        }, 10000)
+      }
     }
   },
   methods: {
@@ -86,6 +88,7 @@ export default {
       switch (data) {
         case 'logout':
           this.logout()
+          this.typeLogout = data
           break
         default:
           await this[ACTIONS.REFRESH_TOKEN]({ self: this, refreshToken: this[GETTERS.GET_REFRESH_TOKEN] })

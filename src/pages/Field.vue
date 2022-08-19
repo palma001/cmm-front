@@ -32,6 +32,7 @@
           :buttonsActions="buttonsActions"
           :optionPagination="optionPagination"
           @view-details="viewDetails"
+          @edit="edit"
           @search-data="searchData"
           @on-load-data="loadData"
           @delete="deleteData"
@@ -67,6 +68,209 @@
         @save="save"
       />
     </q-dialog>
+    <q-dialog
+      maximized
+      full-height
+      v-model="dialogFieldDetails"
+    >
+      <q-layout view="hHh Lpr lff" :class="this.$q.dark.isActive ? 'bg-dark' : 'bg-white'">
+        <q-header elevated class="bg-primary">
+          <q-toolbar>
+            <q-toolbar-title>
+              <div class="text-subtitle2"> Campo: {{ field.denomination }} </div>
+            </q-toolbar-title>
+            <q-btn flat @click="dialogFieldDetails = false" round dense icon="close" />
+          </q-toolbar>
+        </q-header>
+        <q-page-container>
+          <q-card square>
+            <q-card-section class="q-pa-sm">
+              <q-expansion-item
+                v-if="balance"
+                v-model="expanded"
+                expand-icon-toggle
+                expand-separator
+                class="shadow-1 overflow-hidden"
+                style="border-radius: 10px"
+                header-class="bg-teal text-white"
+                expand-icon-class="text-white"
+                dense
+              >
+                <template v-slot:header>
+                  <q-item-section avatar class="text-white" @click="expanded = !expanded">
+                    <q-icon name="attach_money" size="30px"/>
+                  </q-item-section>
+                  <q-item-section @click="expanded = !expanded">
+                    <span class="text-bold">
+                      Balance:
+                      {{ balanceTotal }}
+                    </span>
+                  </q-item-section>
+                  <q-item-section side>
+                    <div class="row items-center">
+                      <q-btn
+                        flat
+                        round
+                        color="white"
+                        :icon="drawerLeft ? 'filter_alt_off' : 'filter_alt'"
+                        @click="drawerLeft = !drawerLeft"
+                      />
+                      <q-btn flat icon="update" color="white" size="12px" round @click="viewDetails(field)"/>
+                    </div>
+                  </q-item-section>
+                </template>
+                <div class="row q-pa-sm q-col-gutter-sm">
+                  <div v-for="bal in balance.accounts" :key="bal.name" class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
+                    <q-card
+                      v-if="bal.amount"
+                      :class="bal.status === 'pending_approval' ? 'bg-secondary' : bal.transaction_id ? 'bg-teal' : 'bg-negative'"
+                      style="max-width: 200px"
+                    >
+                      <q-card-section class="text-white row q-pa-sm">
+                        <div class="text-bold col-6">
+                          <span v-if="bal.transaction_id">
+                            Ingreso
+                          </span>
+                          <span v-else>
+                            Egreso
+                          </span>
+                          <span style="font-size: 11px;">
+                            {{ $t(`fieldCashFlow.${bal.status}`) }}
+                          </span>
+                        </div>
+                        <div class="text-bold col-6 text-right">
+                          <span class="text-bold">
+                            {{ bal.amount }}
+                          </span>
+                        </div>
+                      </q-card-section>
+                    </q-card>
+                  </div>
+                </div>
+              </q-expansion-item>
+            </q-card-section>
+            <q-card-section>
+              <q-scroll-area
+                :thumb-style="thumbStyle"
+                :bar-style="barStyle"
+                style="height: 567px; width: 100%;"
+                class="q-mt-xs"
+              >
+                <q-table
+                  :data="transactions"
+                  :columns="cashFlowColumns"
+                  :pagination.sync="pagination"
+                  class="q-px-md"
+                  row-key="name"
+                  grid-header
+                  :filter="filterBalance"
+                >
+                  <template v-slot:top>
+                    <div class="text-h6" style="width: 30%">
+                      Balance
+                    </div>
+                    <q-space/>
+                    <q-input outlined dense debounce="300" v-model="filterBalance" placeholder="Buscar" style="width: 40%">
+                      <template v-slot:append>
+                        <q-icon name="search" />
+                      </template>
+                    </q-input>
+                  </template>
+                  <template v-slot:item="props">
+                    <q-card class="full-width q-mt-sm" style="font-size: 12px;">
+                      <q-card-section class="row q-pa-sm">
+                        <div class="col-12">
+                          <span class="text-grey text-right" style="font-size: 11px;">
+                            {{ props.row.created_at }}
+                          </span>
+                        </div>
+                        <div class="col-5 text-left">
+                          <span class="text-right text-bold">
+                            {{ props.row.concept.name }}
+                          </span>
+                          <br/>
+                          <span class="text-right" style="font-size: 11px;">
+                            {{ props.row.description }}
+                          </span>
+                        </div>
+                        <div class="col-2 text-bold text-right">
+                          <div v-if="!props.row.transaction_id" class="text-negative q-ml-sm">
+                            -{{ props.row.amount }}
+                          </div>
+                        </div>
+                        <div class="col-3 text-bold text-right">
+                          <div v-if="props.row.transaction_id" class="text-teal">
+                            {{ props.row.amount }}
+                          </div>
+                        </div>
+                        <div class="col-2 text-right text-bold">
+                          <div class="text-blue">
+                            {{ props.row.balance }}
+                          </div>
+                        </div>
+                      </q-card-section>
+                    </q-card>
+                  </template>
+                </q-table>
+              </q-scroll-area>
+            </q-card-section>
+            <q-inner-loading :showing="visibleSync">
+              <q-spinner-oval size="100px" color="primary"/>
+            </q-inner-loading>
+          </q-card>
+        </q-page-container>
+        <q-drawer
+          v-model="drawerLeft"
+          :width="350"
+          :breakpoint="700"
+          side="right"
+          elevated
+          show-if-above
+        >
+          <q-scroll-area class="fit">
+            <div class="q-pa-sm">
+              <q-card>
+                <q-card-section class="row items-center q-pb-none">
+                  <div class="text-h6">Filtros</div>
+                  <q-space />
+                  <q-btn icon="close" flat round dense @click="drawerLeft = false" />
+                </q-card-section>
+                <q-card-section class="q-gutter-sm">
+                  <q-select
+                    autocomplete="off"
+                    use-input
+                    hide-selected
+                    fill-input
+                    dense
+                    outlined
+                    behavior="menu"
+                    input-debounce="0"
+                    v-model="field"
+                    option-label="denomination"
+                    option-value="id"
+                    label="Campo"
+                    autofocus
+                    :options="listFields"
+                    @filter="filterFields"
+                    @input="viewDetails(field)"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">
+                          No results
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                  <q-input class="q-mt-md" type="date" outlined v-model="from" hint="Desde" dense clearable @input="viewDetails(field)"/>
+                  <q-input type="date" outlined v-model="to" hint="Hasta" dense clearable @input="viewDetails(field)"/>
+                </q-card-section>
+              </q-card>
+            </div>
+          </q-scroll-area>
+        </q-drawer>
+      </q-layout>
+    </q-dialog>
   </q-page>
 </template>
 <script>
@@ -77,6 +281,7 @@ import { fieldConfig, buttonsActions, propsPanelEdition, fieldServices } from '.
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
+import { date } from 'quasar'
 export default {
   mixins: [mixins.containerMixin],
   components: {
@@ -86,6 +291,40 @@ export default {
   },
   data () {
     return {
+      drawerLeft: true,
+      balance: null,
+      expanded: true,
+      visibleSync: false,
+      listFields: [],
+      field: {},
+      from: date.formatDate(date.startOfDate(Date(), 'month'), 'YYYY-MM-DD'),
+      to: date.formatDate(Date(), 'YYYY-MM-DD'),
+      pagination: { rowsPerPage: 10 },
+      thumbStyle: {
+        right: '4px',
+        borderRadius: '5px',
+        backgroundColor: '#4A235A',
+        width: '5px',
+        opacity: 0.75
+      },
+      barStyle: {
+        right: '2px',
+        borderRadius: '9px',
+        backgroundColor: '#4A235A',
+        width: '9px',
+        opacity: 0.2
+      },
+      cashFlowColumns: [
+        { name: 'created_at', align: 'left', label: 'Fecha', field: 'created_at' },
+        { name: 'description', align: 'left', label: 'Descripción', field: 'description' },
+        { name: 'beneficiary', align: 'left', label: 'Beneficiario', field: row => `${row.beneficiary.name} ${row.beneficiary.last_name}` },
+        { name: 'concept', align: 'left', label: 'Concepto', field: row => row.concept.name },
+        { name: 'debe', align: 'right', label: 'Debe', classes: 'text-negative', field: row => !row.transaction_id ? row.amount : '-', format: (val, row) => `-${val}` },
+        { name: 'haber', align: 'right', label: 'Haber', classes: 'text-teal', field: row => row.transaction_id ? row.amount : '-' },
+        { name: 'balance', align: 'right', label: 'Saldo', field: 'balance', classes: 'text-blue' }
+      ],
+      filterBalance: '',
+      dialogFieldDetails: false,
       fieldServices,
       /**
        * Table Buttons
@@ -102,11 +341,6 @@ export default {
        * @type {Boolean}
        */
       loadingForm: false,
-      /**
-       * Selected data
-       * @type {Object}
-       */
-      selectedData: null,
       /**
        * Options pagination
        * @type {Object}
@@ -128,8 +362,11 @@ export default {
         sortOrder: 'desc',
         perPage: 1,
         dataSearch: {
-          name: '',
-          description: ''
+          denomination: '',
+          contract_number: '',
+          address: '',
+          'organization.name': '',
+          acronym: ''
         }
       },
       /**
@@ -156,7 +393,9 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      transactions: [],
+      balanceTotal: 0
     }
   },
   created () {
@@ -172,13 +411,67 @@ export default {
   },
   methods: {
     /**
+     * All field cash flow
+     */
+    getFieldCashFlow (data) {
+      this.$services.getData(['field-cash-flows'], {
+        sortBy: 'date',
+        sortOrder: 'desc',
+        dateFilter: {
+          field: 'created_at',
+          to: this.to,
+          from: this.from
+        },
+        dataEqualFilter: {
+          status: 'approved',
+          field_id: data.id
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          this.transactions = res.data.data
+          this.visibleSync = false
+        })
+        .catch((err) => {
+          console.log(err)
+          this.visibleSync = false
+        })
+    },
+    /**
+     * All Transactions
+     */
+    async getBalance (data) {
+      this.$services.getData(['balance'], {
+        field_id: data.id
+      })
+        .then(({ res }) => {
+          this.balance = res.data
+          this.balanceTotal = res.data.balance
+        })
+        .catch((err) => {
+          console.log(err)
+          this.visibleSync = false
+        })
+    },
+    /**
      * Set data dialog edition
      * @param  {Object} data selected
      */
     viewDetails (data) {
+      this.dialogFieldDetails = true
+      this.visibleSync = true
+      this.field = data
+      this.getFieldCashFlow(data)
+      this.getBalance(data)
+    },
+    /**
+     * Set data dialog edition
+     * @param  {Object} data selected
+     */
+    edit (data) {
       this.editDialog = true
       this.propsPanelEdition.data = data
-      this.selectedData = data
+      this.field = data
     },
     /**
      * Delete data
@@ -224,7 +517,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getFields()
+      this.getFields(this.params)
     },
     /**
      * Update Coin
@@ -233,7 +526,7 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['fields', this.selectedData.id], data)
+      this.$services.putData(['fields', this.field.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
@@ -265,7 +558,26 @@ export default {
         })
     },
     /**
-     * Get all EgressType
+     * Selecte data
+     */
+    filterFields (value, update) {
+      this.$services.getData(['fields'], {
+        dataSearch: {
+          denomination: value,
+          contract_number: value,
+          address: value,
+          'organization.name': value,
+          acronym: value
+        }
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.listFields = res.data
+          })
+        })
+    },
+    /**
+     * Get all Fields
      */
     getFields (params = this.params) {
       this.loadingTable = true
