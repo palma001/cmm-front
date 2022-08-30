@@ -56,62 +56,6 @@
           </div>
         </q-card-section>
         <q-card-section class="row q-py-xs q-col-gutter-sm">
-          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-            <q-select
-              autocomplete="off"
-              use-input
-              dense
-              outlined
-              clearable
-              behavior="menu"
-              input-debounce="20"
-              name="category"
-              v-model="category"
-              option-label="name"
-              option-value="id"
-              label="Categoria"
-              :rules="[val => val && val !== null || 'Este campo es requerido']"
-              :options="categories"
-              @filter="getCategories"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-            <q-select
-              autocomplete="off"
-              use-input
-              dense
-              outlined
-              clearable
-              behavior="menu"
-              input-debounce="20"
-              name="concept"
-              v-model="concept"
-              option-label="name"
-              option-value="id"
-              label="Concepto"
-              :rules="[val => val && val !== null || 'Este campo es requerido']"
-              :options="concepts"
-              @filter="getConcepts"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
-        </q-card-section>
-        <q-card-section class="row q-py-xs q-col-gutter-sm">
           <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
             <q-select
               autocomplete="off"
@@ -192,12 +136,7 @@ export default {
       addDialogBeneficiary: false,
       reference: null,
       amount: null,
-      userSession: null,
-      categories: [],
-      category: null,
-      concepts: [],
-      concept: null
-
+      userSession: null
     }
   },
   created () {
@@ -210,42 +149,6 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
-    /**
-     * All Categories
-     */
-    getCategories (value, update) {
-      this.$services.getData(['categories'], {
-        sortBy: 'id',
-        sortOrder: 'desc',
-        dataSearch: {
-          name: value
-        },
-        paginate: false
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.categories = res.data.data
-          })
-        })
-    },
-    /**
-     * All Concepts
-     */
-    getConcepts (value, update) {
-      this.$services.getData(['concepts'], {
-        sortBy: 'id',
-        sortOrder: 'desc',
-        dataSearch: {
-          name: value
-        },
-        paginate: false
-      })
-        .then(({ res }) => {
-          update(() => {
-            this.concepts = res.data
-          })
-        })
-    },
     orderSelected () {
       this.amount = this.paymentOrder ? this.paymentOrder.pending : 0
     },
@@ -283,8 +186,7 @@ export default {
         payment_order_id: this.paymentOrder.id,
         beneficiary_id: this.beneficiarySelected.id,
         user_created_id: this.userSession.id,
-        user_updated_id: this.userSession.id,
-        concept_id: this.concept.id
+        user_updated_id: this.userSession.id
       }
     },
     saveTransaction () {

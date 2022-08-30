@@ -90,8 +90,89 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-xs-12 col-sm-4 col-md-6 col-lg-4 col-xl-4">
-              <q-select outlined v-model="paymentType" :options="paymentTypes" label="Tipo de Pago" dense/>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-select
+                autocomplete="off"
+                use-input
+                dense
+                outlined
+                clearable
+                behavior="menu"
+                input-debounce="20"
+                name="category"
+                v-model="category"
+                option-label="name"
+                option-value="id"
+                label="Categoria"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="categories"
+                @filter="getCategories"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-select
+                autocomplete="off"
+                use-input
+                dense
+                outlined
+                clearable
+                behavior="menu"
+                input-debounce="20"
+                name="conceptType"
+                v-model="conceptType"
+                option-label="name"
+                option-value="id"
+                label="Tipos de conceptos"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="conceptTypes"
+                @filter="getConceptTypes"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-select
+                autocomplete="off"
+                use-input
+                dense
+                outlined
+                clearable
+                behavior="menu"
+                input-debounce="20"
+                name="concept"
+                v-model="concept"
+                option-label="name"
+                option-value="id"
+                label="Concepto"
+                :rules="[val => val && val !== null || 'Este campo es requerido']"
+                :options="concepts"
+                @filter="getConcepts"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      No results
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <q-select outlined v-model="paymentType" :options="paymentTypes" label="Tipo de beneficiario" dense/>
             </div>
             <div class="col-xs-12 col-sm-4 col-md-6 col-lg-4 col-xl-4" v-if="paymentType">
               <q-select
@@ -104,6 +185,7 @@
                 input-debounce="20"
                 name="paymentTypeDynamic"
                 v-model="paymentTypeDynamic"
+                hint="Beneficiario"
                 :option-label="paymentType.fieldLabel"
                 :option-value="paymentType.fieldValue"
                 :label="paymentType.fieldName"
@@ -212,22 +294,53 @@ export default {
   },
   data () {
     return {
+      optionPagination: {},
       paymentOrderConfig,
       buttonsActions,
       propsPanelEdition,
       loadingForm: false,
       paymentTypeDynamics: [],
       paymentTypeDynamic: null,
+      categories: [],
+      category: null,
+      conceptTypes: [],
+      conceptType: null,
+      concepts: [],
+      concept: null,
       paymentDate: null,
       dialogListPaymentOrder: false,
       paymentTypes: [
         {
-          label: 'Anticipo a contrato',
+          label: 'Contrato',
           value: 'App\\Models\\Field',
           fieldName: 'Contrato',
           fieldValue: 'id',
           fieldLabel: 'denomination',
           endPoint: 'fields'
+        },
+        {
+          label: 'Proveedor',
+          value: 'App\\Models\\Provider',
+          fieldName: 'Proveedores',
+          fieldValue: 'id',
+          fieldLabel: 'name',
+          endPoint: 'providers'
+        },
+        {
+          label: 'Personal',
+          value: 'App\\Models\\Personal',
+          fieldName: 'Personal',
+          fieldValue: 'id',
+          fieldLabel: 'name',
+          endPoint: 'personals'
+        },
+        {
+          label: 'Cliente',
+          value: 'App\\Models\\Client',
+          fieldName: 'Cliente',
+          fieldValue: 'id',
+          fieldLabel: 'name',
+          endPoint: 'clients'
         }
       ],
       paymentType: null,
@@ -288,6 +401,11 @@ export default {
   created () {
     this.userSession = this[GETTERS.GET_USER]
   },
+  watch: {
+    paymentType () {
+      this.paymentTypeDynamic = null
+    }
+  },
   computed: {
     /**
      * Getters Vuex
@@ -295,6 +413,66 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * All concept types
+     */
+    getConceptTypes (value, update) {
+      this.$services.getData(['concept-types'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: value
+        },
+        dataEqualFilter: {
+          category_id: this.category.id
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.conceptTypes = res.data
+          })
+        })
+    },
+    /**
+     * All Categories
+     */
+    getCategories (value, update) {
+      this.$services.getData(['categories'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: value
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.categories = res.data.data
+          })
+        })
+    },
+    /**
+     * All Concepts
+     */
+    getConcepts (value, update) {
+      this.$services.getData(['concepts'], {
+        sortBy: 'id',
+        sortOrder: 'desc',
+        dataSearch: {
+          name: value
+        },
+        dataEqualFilter: {
+          concept_type_id: this.conceptType.id
+        },
+        paginate: false
+      })
+        .then(({ res }) => {
+          update(() => {
+            this.concepts = res.data
+          })
+        })
+    },
     /**
      * Set data dialog edition
      * @param  {Object} data selected
@@ -408,6 +586,7 @@ export default {
         entity_id: this.entity.id,
         coin_id: this.coin.id,
         payment_date: this.paymentDate,
+        concept_id: this.concept.id,
         user_created_id: this.userSession.id
       }
     },
@@ -460,7 +639,7 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.paymentTypeDynamics = res.data
+            this.paymentTypeDynamics = res.data.data ?? res.data
           })
         })
     },

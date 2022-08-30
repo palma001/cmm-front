@@ -1,5 +1,5 @@
 
-export const organizationConfig = [
+export const paymentOrderConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
