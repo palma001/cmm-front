@@ -88,7 +88,7 @@ export const setRelationalData = (
             data,
             dataConfig
           )
-          callback(res.data, toRelationalData)
+          callback(data, toRelationalData)
         })
     })
   }

@@ -4,7 +4,7 @@
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">Nuevo Orden de Pago</div>
         <q-space />
-        <q-btn icon="list"  color="primary"/>
+        <q-btn icon="list"  color="primary" @click="dialogListPaymentOrder = true"/>
       </q-card-section>
       <q-form @submit="savePaymentOrder" @reset="clean" ref="paymentOrder">
         <q-card-section>
@@ -255,15 +255,38 @@
     </q-dialog>
     <q-dialog
       position="right"
+      persistent
+      full-height
+      v-model="editDialog"
+    >
+      <dynamic-form-edition
+        module="paymentOrder"
+        :propsPanelEdition="propsPanelEdition"
+        :config="paymentOrderConfig"
+        :loading="loadingForm"
+        @cancel="editDialog = false"
+        @update="update"
+        @depends="depends"
+      />
+    </q-dialog>
+    <q-dialog
       v-model="dialogListPaymentOrder"
+      maximized
     >
       <q-card>
+        <q-bar class="bg-primary">
+          <q-space />
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+          </q-btn>
+        </q-bar>
         <q-card-section>
           <data-table
             title="list"
             module="paymentOrder"
             searchable
             action
+            activeVisibleColumn
             :column="paymentOrderConfig"
             :data="data"
             :loading="loadingTable"
@@ -282,19 +305,36 @@
 
 <script>
 import DynamicForm from '../components/DynamicForm.vue'
+import DataTable from '../components/DataTable.vue'
 import { GETTERS } from '../store/module-login/name.js'
-import { paymentOrderConfig, buttonsActions, propsPanelEdition } from '../config-file/paymentOrder/paymentOrderConfig.js'
+import { paymentOrderConfig, buttonsActions, propsPanelEdition, paymentOrderServices } from '../config-file/paymentOrder/paymentOrderConfig.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
+import DynamicFormEdition from '../components/DynamicFormEdition.vue'
+
 export default {
   // name: 'PageName',
   mixins: [mixins.containerMixin],
   components: {
-    DynamicForm
+    DynamicForm,
+    DataTable,
+    DynamicFormEdition
   },
   data () {
     return {
-      optionPagination: {},
+      /**
+       * Options pagination
+       * @type {Object}
+       */
+      optionPagination: {
+        rowsPerPage: 20,
+        rowsNumber: 20,
+        paginate: true,
+        sortBy: 'id',
+        sortOrder: 'desc'
+      },
+      editDialog: false,
+      paymentOrderServices,
       paymentOrderConfig,
       buttonsActions,
       propsPanelEdition,
@@ -341,9 +381,33 @@ export default {
           fieldValue: 'id',
           fieldLabel: 'name',
           endPoint: 'clients'
+        },
+        {
+          label: 'Oficina',
+          value: 'App\\Models\\BranchOffice',
+          fieldName: 'Oficina',
+          fieldValue: 'id',
+          fieldLabel: 'name',
+          endPoint: 'branch-offices'
         }
       ],
       paymentType: null,
+      /**
+       * Params search
+       * @type {Object}
+       */
+      params: {
+        paginated: true,
+        sortBy: 'id',
+        sortOrder: 'desc',
+        perPage: 1,
+        dataSearch: {
+          description: '',
+          amount: '',
+          'concept.name': '',
+          'entity.name': ''
+        }
+      },
       amount: 0,
       /**
        * Operation type selected cash flow
@@ -395,11 +459,17 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: []
+      data: [],
+      listStatus: {
+        approved: 'Aprobado',
+        pending_approval: 'Pendiente por aprobado',
+        canceled: 'Cancelado'
+      }
     }
   },
   created () {
     this.userSession = this[GETTERS.GET_USER]
+    this.setRelationalData(this.paymentOrderServices, [], this)
   },
   watch: {
     paymentType () {
@@ -413,6 +483,30 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    update (data) {
+      console.log(data)
+    },
+    /**
+     * Selected dependency
+     * @param {Object} data data selected
+     * @param {String} propTag tag selected
+    */
+    depends (data, propTags) {
+      this.paymentOrderServices.relationalData.map(service => {
+        propTags.forEach(propTag => {
+          if (service.targetPropTag === propTag) {
+            service.services = [data.api]
+            console.log(data, propTags)
+          }
+        })
+        return service
+      }).filter(service => {
+        propTags.forEach(propTag => {
+          return service.targetPropTag === propTag
+        })
+      })
+      this.setRelationalData(this.paymentOrderServices, [], this)
+    },
     /**
      * All concept types
      */
@@ -490,8 +584,9 @@ export default {
       for (const dataSearch in this.params.dataSearch) {
         this.params.dataSearch[dataSearch] = data
       }
+      console.log(data)
       this.params.page = 1
-      this.getPaymentOrders()
+      this.getPaymentOrders(this.params)
     },
     /**
      * Load data sorting
@@ -512,7 +607,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar la tipo organización?',
+        message: '¿Desea eliminar la orden de pago?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -525,7 +620,7 @@ export default {
       }).onOk(async () => {
         await this.$services.deleteData(['payment-orders', data.id])
         this.notify(this, 'paymentOrder.deleteSuccessful', 'positive', 'mood')
-        this.getPaymentOrders()
+        this.getPaymentOrders(this.params)
       })
     },
     /**
@@ -677,6 +772,29 @@ export default {
           update(() => {
             this.coins = res.data
           })
+        })
+    },
+    /**
+     * All Coins
+     */
+    getPaymentOrders (params = this.params) {
+      this.loadingTable = true
+      this.$services.getData(['payment-orders'], params)
+        .then(({ res }) => {
+          this.data = res.data.data.map(paymentOrder => {
+            const ownerableType = this.paymentTypes.find(paymentType => paymentType.value === paymentOrder.ownerable_type)
+            paymentOrder.ownerable_type = ownerableType ? ownerableType.label : ownerableType
+            paymentOrder.status = this.listStatus[paymentOrder.status]
+            return paymentOrder
+          })
+          this.optionPagination.rowsNumber = res.data.meta.total
+          this.loadingTable = false
+        })
+        .catch(err => {
+          console.log(err)
+          this.data = []
+          this.loadingTable = false
+          this.optionPagination.rowsNumber = 0
         })
     }
   }

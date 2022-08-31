@@ -314,7 +314,27 @@ export default {
     canceled: 'Cancelado'
   },
   paymentOrder: {
-    addSuccessful: '¡Orden de pago agregada exitosamente!'
+    addSuccessful: '¡Orden de pago agregada exitosamente!',
+    amount: 'Monto',
+    description: 'descripción',
+    list: 'Ordenes de pago',
+    status: 'Estado',
+    ownerable_type: 'Tipo de beneficiario',
+    payment_date: 'Fecha',
+    pending: 'Por pagar',
+    coin_id: 'Moneda',
+    entity_id: 'Entidad',
+    ownerable_id: 'Beneficiario',
+    operation_type_id: 'Tipo de operación',
+    concept_id: 'Concepto',
+    coin: 'Moneda',
+    entity: 'Entidad',
+    ownerable: 'Beneficiario',
+    operation_type: 'Tipo de operación',
+    concept: 'Concepto',
+    update: 'Modificar',
+    reset: 'Limpiar',
+    cancel: 'Cancelar'
   },
   transaction: {
     addSuccessful: '¡Transferencia cargada exitosamente!'
