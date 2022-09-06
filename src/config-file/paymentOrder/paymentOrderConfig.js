@@ -47,13 +47,13 @@ export const paymentOrderConfig = [
         tabulated: {
           name: 'ownerable_type',
           align: 'left',
-          field: row => row.ownerable_type,
+          field: row => row.ownerable_type_label,
           sortable: true,
           visible: true,
           visibleColumn: true
         },
         actionable: {
-          propTag: 'ownerable_type',
+          propTag: 'ownerable_type_label',
           addible: true,
           editable: true,
           sync: true,
@@ -152,11 +152,15 @@ export const paymentOrderConfig = [
             name: 'b-search-select',
             props: {
               data: [],
+              queryParams: {
+                paginate: false
+              },
               dataValue: 'id',
-              dataLabel: 'full_name',
+              dataLabel: 'name',
               behavior: 'menu',
               dense: true,
               clearable: true,
+              sync: true,
               outlined: true
             },
             class: {
@@ -276,8 +280,8 @@ export const paymentOrderConfig = [
         },
         actionable: {
           propTag: 'status',
-          addible: true,
-          editable: true,
+          addible: false,
+          editable: false,
           filterable: true,
           type: 'String',
           visibleLabel: true,
@@ -459,7 +463,7 @@ export const paymentOrderConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
+              type: 'textarea',
               dense: true,
               outlined: true
             },
@@ -607,6 +611,7 @@ export const relationalDataConfiguration = [
     entity: 'ownerable',
     services: ['providers'],
     propData: 'data',
+    sync: true,
     petitionParams: {
       paginate: false
     }

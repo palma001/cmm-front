@@ -315,6 +315,8 @@ export default {
   },
   paymentOrder: {
     addSuccessful: '¡Orden de pago agregada exitosamente!',
+    editSuccessful: '¡Orden de pago editada exitosamente!',
+    deleteSuccessful: '¡Orden de pago eliminada exitosamente!',
     amount: 'Monto',
     description: 'descripción',
     list: 'Ordenes de pago',

@@ -483,8 +483,25 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Update PaymnetOrder
+     * @param  {Object}
+     */
     update (data) {
-      console.log(data)
+      data.user_updated_id = this.userSession.id
+      data.ownerable_type = data.ownerable_type_label_id ?? data.ownerable_type
+      delete data.status
+      this.loadingForm = true
+      this.$services.putData(['payment-orders', data.id], data)
+        .then(({ res }) => {
+          this.editDialog = false
+          this.loadingForm = false
+          this.getPaymentOrders(this.params)
+          this.notify(this, 'paymentOrder.editSuccessful', 'positive', 'mood')
+        })
+        .catch(() => {
+          this.loadingForm = false
+        })
     },
     /**
      * Selected dependency
@@ -496,16 +513,18 @@ export default {
         propTags.forEach(propTag => {
           if (service.targetPropTag === propTag) {
             service.services = [data.api]
-            console.log(data, propTags)
+            this.assignRelationalData(
+              this.paymentOrderConfig,
+              service.targetPropTag,
+              service.propData,
+              [],
+              service,
+              data
+            )
           }
         })
         return service
-      }).filter(service => {
-        propTags.forEach(propTag => {
-          return service.targetPropTag === propTag
-        })
       })
-      this.setRelationalData(this.paymentOrderServices, [], this)
     },
     /**
      * All concept types
@@ -574,6 +593,7 @@ export default {
     viewDetails (data) {
       this.editDialog = true
       this.propsPanelEdition.data = data
+      console.log(data)
       this.selectedData = data
     },
     /**
@@ -783,7 +803,7 @@ export default {
         .then(({ res }) => {
           this.data = res.data.data.map(paymentOrder => {
             const ownerableType = this.paymentTypes.find(paymentType => paymentType.value === paymentOrder.ownerable_type)
-            paymentOrder.ownerable_type = ownerableType ? ownerableType.label : ownerableType
+            paymentOrder.ownerable_type_label = ownerableType ? ownerableType.label : ownerableType
             paymentOrder.status = this.listStatus[paymentOrder.status]
             return paymentOrder
           })

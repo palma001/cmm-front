@@ -92,7 +92,7 @@
                 expand-separator
                 class="shadow-1 overflow-hidden"
                 style="border-radius: 10px"
-                header-class="bg-teal text-white"
+                header-class="bg-blue-10 text-white"
                 expand-icon-class="text-white"
                 dense
               >
@@ -204,7 +204,7 @@
                           </div>
                         </div>
                         <div class="col-2 text-right text-bold">
-                          <div class="text-blue">
+                          <div class="bg-blue-10">
                             {{ props.row.balance }}
                           </div>
                         </div>
