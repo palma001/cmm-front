@@ -142,6 +142,33 @@
                   </template>
                 </q-select>
               </div>
+              <div class="col-12">
+                <q-select
+                  autocomplete="off"
+                  use-input
+                  dense
+                  outlined
+                  clearable
+                  behavior="menu"
+                  input-debounce="20"
+                  name="conceptType"
+                  v-model="conceptType"
+                  option-label="name"
+                  option-value="id"
+                  label="Tipos de conceptos"
+                  :rules="[val => val && val !== null || 'Este campo es requerido']"
+                  :options="conceptTypes"
+                  @filter="getConceptTypes"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
               <div class="col-12" v-if="category && category.name === 'Costo'">
                 <q-select
                   autocomplete="off"
@@ -508,7 +535,9 @@ export default {
       balanceTotal: 0,
       balance: null,
       sessionFields: [],
-      field: {}
+      field: {},
+      conceptTypes: [],
+      conceptType: null
     }
   },
   created () {
@@ -538,6 +567,30 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * All concept types
+     */
+    getConceptTypes (value, update) {
+      this.getOffline('conceptTypes', () => {
+        this.$services.getData(['concept-types'], {
+          sortBy: 'id',
+          sortOrder: 'desc',
+          dataSearch: {
+            name: value
+          },
+          dataEqualFilter: {
+            category_id: this.category.id
+          },
+          paginate: false
+        })
+          .then(({ res }) => {
+            update(() => {
+              this.conceptTypes = res.data
+              this.saveListStorage(res.data, 'conceptTypes')
+            })
+          })
+      }, update, value)
+    },
     getFields () {
       this.getOffline('field', () => {
         this.$services.getData(['fields'], {
@@ -985,6 +1038,9 @@ export default {
           sortOrder: 'desc',
           dataSearch: {
             name: value
+          },
+          dataEqualFilter: {
+            concept_type_id: this.conceptType.id
           },
           paginate: false
         })
