@@ -11,7 +11,9 @@ module.exports = function (/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
-
+    bin: {
+      linuxAndroidStudio: '/snap/android-studio/current/android-studio/bin/studio.sh'
+    },
     // https://quasar.dev/quasar-cli/prefetch-feature
     // preFetch: true,
 

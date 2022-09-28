@@ -268,17 +268,6 @@
                     val => val < balanceTotal || 'Saldo insuficiente'
                   ]"/>
               </div>
-              <div class="col-12">
-                <q-input
-                  type="textarea"
-                  outlined
-                  v-model="description"
-                  label="Descripción"
-                  dense
-                  autogrow
-                  :rules="[val => val && val !== null || 'Este campo es requerido']"
-                />
-              </div>
               <div class="col-6" v-for="(image, index) in images" :key="image.id">
                 <q-img
                   :src="image.img"
@@ -387,7 +376,7 @@
                     </div>
                   </div>
                   <div class="col-2 text-right text-bold">
-                    <div class="bg-blue-10">
+                    <div class="text-blue-10">
                       {{ props.row.balance }}
                     </div>
                   </div>
@@ -440,6 +429,7 @@ import { Hooper, Slide, Navigation as HooperNavigation } from 'hooper'
 import 'hooper/dist/hooper.css'
 import { Preferences } from '@capacitor/preferences'
 import { Network } from '@capacitor/network'
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
 import { date } from 'quasar'
 export default {
   // name: 'PageName',
@@ -501,11 +491,6 @@ export default {
        */
       category: null,
       /**
-       * Description cash flow
-       * @type {String}
-       */
-      description: null,
-      /**
        * Concept selected cash flow
        * @type {Object}
        */
@@ -545,6 +530,7 @@ export default {
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.getFields()
     this.update()
+    this.setDataSelect()
   },
   mounted () {
     Network.addListener('networkStatusChange', status => {
@@ -567,6 +553,33 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    async setDataSelect () {
+      try {
+        const params = {
+          sortBy: 'id',
+          sortOrder: 'desc',
+          paginate: false
+        }
+        const contegories = await this.$services.getData(['categories'], params)
+        const concepts = await this.$services.getData(['concepts'], params)
+        const conceptTypes = await this.$services.getData(['concept-types'], params)
+        console.log(contegories, concepts, conceptTypes)
+        this.writeFile(contegories.res.data.data, 'contegories')
+        this.writeFile(conceptTypes.res.data, 'conceptTypes')
+        this.writeFile(concepts.res.data, 'concepts')
+      } catch (error) {
+        console.log(error.message)
+      }
+    },
+    async writeFile (data, nameFile) {
+      await Filesystem.writeFile({
+        path: `${process.env.PATH_MOBILE}/${nameFile}.json`,
+        data: JSON.stringify(data),
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+        recursive: true
+      })
+    },
     /**
      * All concept types
      */
@@ -586,7 +599,6 @@ export default {
           .then(({ res }) => {
             update(() => {
               this.conceptTypes = res.data
-              this.saveListStorage(res.data, 'conceptTypes')
             })
           })
       }, update, value)
@@ -690,7 +702,6 @@ export default {
         concept_id: this.concept.id,
         beneficiary_id: this.beneficiarySelected.id,
         amount: this.amount,
-        description: this.description,
         user_created_id: this.userSession.id,
         date: date.formatDate(Date(), 'YYYY-MM-DD HH:mm:ss'),
         field_id: this.field.id
@@ -786,7 +797,6 @@ export default {
           .then(({ res }) => {
             this.balance = res.data
             this.balanceTotal = res.data.balance
-            this.saveListStorage(res.data, 'balance')
             this.blanceCalculate()
             this.visibleSync = false
           })
@@ -853,7 +863,6 @@ export default {
         })
           .then(({ res }) => {
             this.fieldCashFlows = res.data.data
-            this.saveListStorage(res.data.data, 'fieldCashFlows')
           })
       })
     },
@@ -957,7 +966,6 @@ export default {
           .then(({ res }) => {
             update(() => {
               this.categories = res.data.data
-              this.saveListStorage(res.data.data, 'categories')
             })
           })
           .catch(err => {
@@ -1083,7 +1091,7 @@ export default {
      */
     async takePicture () {
       const image = await Camera.getPhoto({
-        quality: 100,
+        quality: 50,
         allowEditing: true,
         webUseInput: true,
         promptLabelHeader: 'Seleccionar imagen',
