@@ -176,7 +176,7 @@ export const fieldConfig = [
             props: {
               data: [],
               dataValue: 'id',
-              dataLabel: 'name',
+              dataLabel: 'full_name',
               behavior: 'menu',
               dense: true,
               clearable: true,

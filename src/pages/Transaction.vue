@@ -67,7 +67,7 @@
               input-debounce="20"
               name="beneficiary"
               v-model="beneficiarySelected"
-              option-label="name"
+              option-label="full_name"
               option-value="id"
               label="Beneficiario"
               :rules="[val => val && val !== null || 'Este campo es requerido']"

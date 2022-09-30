@@ -153,6 +153,7 @@
                   input-debounce="20"
                   name="conceptType"
                   v-model="conceptType"
+                  ref="conceptTypes"
                   option-label="name"
                   option-value="id"
                   label="Tipos de conceptos"
@@ -235,7 +236,7 @@
                   input-debounce="20"
                   name="beneficiary"
                   v-model="beneficiarySelected"
-                  option-label="name"
+                  option-label="full_name"
                   ref="beneficiaries"
                   option-value="id"
                   label="Beneficiario"
@@ -427,9 +428,8 @@ import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
 import { Hooper, Slide, Navigation as HooperNavigation } from 'hooper'
 import 'hooper/dist/hooper.css'
-import { Preferences } from '@capacitor/preferences'
-import { Network } from '@capacitor/network'
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem'
+import { Network } from '@capacitor/network'
 import { date } from 'quasar'
 export default {
   // name: 'PageName',
@@ -529,15 +529,20 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.getFields()
-    this.update()
+    this.syncChangeStatus()
     this.setDataSelect()
+    this.$root.$on('networkStatus', this.sync)
   },
-  mounted () {
-    Network.addListener('networkStatusChange', status => {
-      this.sync(status)
-    })
+  beforeDestroy () {
+    this.$root.$off('networkStatus', this.sync)
   },
   watch: {
+    category (data) {
+      this.conceptTypes = this.parseJson('conceptTypes').filter(conceptType => conceptType.category_id === data.id)
+    },
+    concepts (data) {
+      this.concepts = data.filter(conceptType => conceptType.concept_type_id === this.conceptType.id)
+    },
     async amount () {
       const balance = await this.getBalanceTotal()
       this.balanceTotal = (this.balance.balance + balance.entry) - balance.egress
@@ -553,32 +558,60 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
-    async setDataSelect () {
+    async saveDataMobile (services, nameFile) {
       try {
-        const params = {
+        const { res } = await this.$services.getData([services], {
           sortBy: 'id',
           sortOrder: 'desc',
           paginate: false
-        }
-        const contegories = await this.$services.getData(['categories'], params)
-        const concepts = await this.$services.getData(['concepts'], params)
-        const conceptTypes = await this.$services.getData(['concept-types'], params)
-        console.log(contegories, concepts, conceptTypes)
-        this.writeFile(contegories.res.data.data, 'contegories')
-        this.writeFile(conceptTypes.res.data, 'conceptTypes')
-        this.writeFile(concepts.res.data, 'concepts')
+        })
+        const dataRes = res.data.data ?? res.data
+        this.writeFile(dataRes, nameFile)
       } catch (error) {
         console.log(error.message)
       }
     },
+    /**
+     * Set data in mobile
+     */
+    async setDataSelect () {
+      this.saveDataMobile('categories', 'categories')
+      this.saveDataMobile('concept-types', 'conceptTypes')
+      this.saveDataMobile('concepts', 'concepts')
+      this.saveDataMobile('beneficiaries', 'beneficiaries')
+    },
+    /**
+     * Write file in phone
+     * @param {Array} data data save
+     * @param {String} nameFile name file
+     */
     async writeFile (data, nameFile) {
-      await Filesystem.writeFile({
-        path: `${process.env.PATH_MOBILE}/${nameFile}.json`,
-        data: JSON.stringify(data),
-        directory: Directory.Documents,
-        encoding: Encoding.UTF8,
-        recursive: true
-      })
+      try {
+        await Filesystem.writeFile({
+          path: `${process.env.PATH_MOBILE}/${nameFile}.json`,
+          data: JSON.stringify(data),
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8,
+          recursive: true
+        })
+      } catch (error) {
+        console.log(error.message, nameFile)
+      }
+    },
+    /**
+     * Read data file
+     * @param {String} nameFile name file
+     */
+    async readFile (nameFile) {
+      try {
+        return await Filesystem.readFile({
+          path: `${process.env.PATH_MOBILE}/${nameFile}.json`,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8
+        })
+      } catch (error) {
+        console.log(error.message, nameFile)
+      }
     },
     /**
      * All concept types
@@ -603,6 +636,9 @@ export default {
           })
       }, update, value)
     },
+    /**
+     * Get fields data
+     */
     getFields () {
       this.getOffline('field', () => {
         this.$services.getData(['fields'], {
@@ -617,6 +653,11 @@ export default {
           })
       })
     },
+    /**
+     * Filter fields
+     * @param {String} value value filter
+     * @param {Callback} update state select
+     */
     filterFields (value, update) {
       this.getOffline('fields', () => {
         this.$services.getData(['fields'], {
@@ -639,13 +680,17 @@ export default {
      * Calculate balnce storage
      */
     async getBalanceTotal () {
-      const transactionFieldCashFlows = await this.parseJson('transactionFieldCashFlows')
-      const egress = this.totalCalculate(transactionFieldCashFlows, 'amount', 'egress')
-      const entry = this.totalCalculate(transactionFieldCashFlows, 'amount', 'entry')
-      return {
-        egress,
-        entry
+      try {
+        const transactionFieldCashFlows = await this.parseJson('transactionFieldCashFlows')
+        if (transactionFieldCashFlows) {
+          const egress = this.totalCalculate(transactionFieldCashFlows, 'amount', 'egress')
+          const entry = this.totalCalculate(transactionFieldCashFlows, 'amount', 'entry')
+          return { egress, entry }
+        }
+      } catch (error) {
+        console.log(error.message)
       }
+      return { egress: 0, entry: 0 }
     },
     /**
      * Calculate balnce storage
@@ -690,8 +735,13 @@ export default {
      * @param {String} name local storage
      */
     async parseJson (name) {
-      const data = await Preferences.get({ key: name })
-      return JSON.parse(data.value) ?? []
+      try {
+        const { data } = await this.readFile(name)
+        return JSON.parse(data) ?? []
+      } catch (error) {
+        console.log(error.message)
+      }
+      return []
     },
     /**
      * Model cash flow
@@ -711,20 +761,18 @@ export default {
      * Sync entry
      */
     async syncChangeStatus () {
-      this.visibleSync = true
-      const fieldCashFlows = await this.parseJson('transactionFieldCashFlows')
-      this.$services.postUpload(['change-status'], {
-        data: fieldCashFlows
-      })
-        .then(async () => {
-          await Preferences.remove({ key: 'transactionFieldCashFlows' })
-          this.update()
-          this.visibleSync = false
-        })
-        .catch((err) => {
-          console.log(err)
-          this.visibleSync = false
-        })
+      try {
+        this.visibleSync = true
+        const fieldCashFlows = await this.parseJson('transactionFieldCashFlows')
+        await this.$services.postUpload(['change-status'], { data: fieldCashFlows })
+        await this.writeFile([], 'transactionFieldCashFlows')
+        this.update()
+        this.visibleSync = false
+      } catch (error) {
+        console.log(error.message)
+        this.visibleSync = false
+        this.update()
+      }
     },
     /**
      * Update data
@@ -797,7 +845,12 @@ export default {
           .then(({ res }) => {
             this.balance = res.data
             this.balanceTotal = res.data.balance
+            this.saveListStorage(res.data, 'balance')
             this.blanceCalculate()
+            this.visibleSync = false
+          })
+          .catch(err => {
+            console.log(err.message)
             this.visibleSync = false
           })
       })
@@ -863,6 +916,7 @@ export default {
         })
           .then(({ res }) => {
             this.fieldCashFlows = res.data.data
+            this.saveListStorage(res.data.data, 'fieldCashFlows')
           })
       })
     },
@@ -979,19 +1033,16 @@ export default {
      * @param {String} entity name variable
      */
     async saveListStorage (data, entity) {
-      await Preferences.set({
-        key: entity,
-        value: JSON.stringify(data)
-      })
+      await this.writeFile(data, entity)
     },
     /**
      * Get value in entity
      * @param {String} entity name entity
      */
     async getListStorage (entity, update = null, value) {
-      const data = await Preferences.get({ key: entity })
+      const { data } = await this.readFile(entity)
       if (update) {
-        const selectData = JSON.parse(data.value)
+        const selectData = JSON.parse(data)
         if (value && value === '') {
           update(() => {
             this[entity] = selectData
@@ -1003,7 +1054,7 @@ export default {
           this[entity] = selectData.filter(v => v[this.$refs[entity].optionLabel].toLowerCase().indexOf(needle) > -1)
         })
       } else {
-        this[entity] = JSON.parse(data.value)
+        this[entity] = JSON.parse(data)
       }
     },
     /**
@@ -1081,7 +1132,6 @@ export default {
           .then(({ res }) => {
             update(() => {
               this.beneficiaries = res.data
-              this.saveListStorage(res.data, 'beneficiaries')
             })
           })
       }, update, value)
@@ -1090,9 +1140,10 @@ export default {
      * Set Image
      */
     async takePicture () {
+      Network.removeAllListeners()
       const image = await Camera.getPhoto({
         quality: 50,
-        allowEditing: true,
+        allowEditing: false,
         webUseInput: true,
         promptLabelHeader: 'Seleccionar imagen',
         promptLabelPhoto: 'Abrir galería',

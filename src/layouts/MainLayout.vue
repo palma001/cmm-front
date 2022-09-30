@@ -26,6 +26,8 @@
 import LayoutComponent from 'components/LayoutComponent.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { ACTIONS, GETTERS } from '../store/module-login/name.js'
+import { Network } from '@capacitor/network'
+import { App } from '@capacitor/app'
 export default {
   name: 'MainLayout',
   components: { LayoutComponent },
@@ -41,12 +43,11 @@ export default {
       loading: false
     }
   },
-
   created () {
     this.getAllModules()
+    this.loadStatusApp()
     // this.loadCron()
   },
-
   computed: {
     /**
      * Getters Vuex
@@ -77,6 +78,20 @@ export default {
         },
         job: this.location,
         condition: this.validateSession
+      })
+    },
+    loadStatusApp () {
+      Network.addListener('networkStatusChange', status => {
+        this.$root.$emit('networkStatus', status)
+      })
+      App.addListener('appStateChange', async ({ isActive }) => {
+        if (!isActive) {
+          await Network.removeAllListeners()
+        } else {
+          Network.addListener('networkStatusChange', status => {
+            this.$root.$emit('networkStatus', status)
+          })
+        }
       })
     },
     /**

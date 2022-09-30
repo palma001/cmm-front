@@ -153,7 +153,7 @@
               <q-scroll-area
                 :thumb-style="thumbStyle"
                 :bar-style="barStyle"
-                style="height: 567px; width: 100%;"
+                style="height: 77vh; width: 100%;"
                 class="q-mt-xs"
               >
                 <q-table
@@ -187,10 +187,6 @@
                         <div class="col-5 text-left">
                           <span class="text-right text-bold">
                             {{ props.row.concept.name }}
-                          </span>
-                          <br/>
-                          <span class="text-right" style="font-size: 11px;">
-                            {{ props.row.description }}
                           </span>
                         </div>
                         <div class="col-2 text-bold text-right">
@@ -316,12 +312,11 @@ export default {
       },
       cashFlowColumns: [
         { name: 'created_at', align: 'left', label: 'Fecha', field: 'created_at' },
-        { name: 'description', align: 'left', label: 'Descripción', field: 'description' },
         { name: 'beneficiary', align: 'left', label: 'Beneficiario', field: row => `${row.beneficiary.name} ${row.beneficiary.last_name}` },
         { name: 'concept', align: 'left', label: 'Concepto', field: row => row.concept.name },
         { name: 'debe', align: 'right', label: 'Debe', classes: 'text-negative', field: row => !row.transaction_id ? row.amount : '-', format: (val, row) => `-${val}` },
         { name: 'haber', align: 'right', label: 'Haber', classes: 'text-teal', field: row => row.transaction_id ? row.amount : '-' },
-        { name: 'balance', align: 'right', label: 'Saldo', field: 'balance', classes: 'text-blue' }
+        { name: 'balance', align: 'right', label: 'Saldo', field: 'balance', classes: 'text-blue text-bold' }
       ],
       filterBalance: '',
       dialogFieldDetails: false,
