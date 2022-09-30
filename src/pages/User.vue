@@ -195,7 +195,7 @@ export default {
      */
     save (data) {
       data.user_created_id = this.userSession.id
-      data.roles = this.modelRole(data)
+      data.roles = this.modelRole(data.roles)
       this.loadingForm = true
       this.$services.postData(['users'], data)
         .then(({ res }) => {
@@ -208,12 +208,12 @@ export default {
         })
     },
     modelRole (data) {
-      return [
-        {
+      return data.map(role => {
+        return {
           branch_office_id: 1,
-          role_id: data.roles_id ?? data.role.id
+          role_id: role.roles_id ?? role.id
         }
-      ]
+      })
     },
     /**
      * Update Branch Office
@@ -221,7 +221,7 @@ export default {
      */
     update (data) {
       data.user_updated_id = this.userSession.id
-      data.roles = this.modelRole(data)
+      data.roles = this.modelRole(data.roles)
       this.loadingForm = true
       this.$services.putData(['users', this.selectedData.id], data)
         .then(({ res }) => {

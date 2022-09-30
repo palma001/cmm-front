@@ -23,7 +23,7 @@ export default {
     last_name: 'apellido',
     document_number: 'número de identificación',
     document_type: 'tipo de documento',
-    phone: 'número de teléfono',
+    phone_number: 'número de teléfono',
     email: 'correo',
     reset: 'Limpiar',
     cancel: 'Cancelar',
