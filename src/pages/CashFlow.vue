@@ -158,7 +158,7 @@
                   option-value="id"
                   label="Tipos de conceptos"
                   :rules="[val => val && val !== null || 'Este campo es requerido']"
-                  :options="conceptTypes"
+                  :options="conceptTypesComputed"
                   @filter="getConceptTypes"
                 >
                   <template v-slot:no-option>
@@ -213,7 +213,7 @@
                   label="Concepto"
                   ref="concepts"
                   :rules="[val => val && val !== null || 'Este campo es requerido']"
-                  :options="concepts"
+                  :options="conceptsComputed"
                   @filter="getConcepts"
                 >
                   <template v-slot:no-option>
@@ -537,12 +537,6 @@ export default {
     this.$root.$off('networkStatus', this.sync)
   },
   watch: {
-    category (data) {
-      this.conceptTypes = this.parseJson('conceptTypes').filter(conceptType => conceptType.category_id === data.id)
-    },
-    concepts (data) {
-      this.concepts = data.filter(conceptType => conceptType.concept_type_id === this.conceptType.id)
-    },
     async amount () {
       const balance = await this.getBalanceTotal()
       this.balanceTotal = (this.balance.balance + balance.entry) - balance.egress
@@ -552,6 +546,12 @@ export default {
     }
   },
   computed: {
+    conceptTypesComputed () {
+      return this.conceptTypes.filter(conceptType => conceptType.category_id === this.category.id)
+    },
+    conceptsComputed () {
+      return this.concepts.filter(conceptType => conceptType.concept_type_id === this.conceptType.id)
+    },
     /**
      * Getters Vuex
      */

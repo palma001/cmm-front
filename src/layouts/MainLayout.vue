@@ -1,7 +1,6 @@
 <template>
   <div>
     <LayoutComponent
-      titleApp="DBA"
       titleMenu="Opciones"
       :data="modules"
       @logout="session('logout')"

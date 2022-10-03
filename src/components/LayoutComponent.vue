@@ -11,7 +11,82 @@
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
         <q-separator dark vertical inset />
-        <q-toolbar-title>{{ titleApp }}</q-toolbar-title>
+        <q-toolbar-title>
+          {{ ucwords($t(`modules.${titleApp}`)) }}
+          <q-tooltip :offset="[10, 10]">
+            {{ ucwords($t(`modules.${titleApp}`)) }}
+          </q-tooltip>
+        </q-toolbar-title>
+        <q-btn
+          flat
+          dense
+          round
+          icon="notifications"
+          aria-label="dark_mode"
+          class="q-mr-sm q-ml-sm"
+          @click="getNotifications"
+        >
+          <q-tooltip :offset="[10, 10]">
+            Notificaciones
+          </q-tooltip>
+          <q-popup-proxy>
+            <q-card>
+              <q-card-section class="q-pa-none">
+                <q-item>
+                  <q-item-section>
+                    <q-toolbar-title>
+                      Notificaciones
+                    </q-toolbar-title>
+                  </q-item-section>
+                  <q-item-section top side>
+                    <q-btn flat icon="more_vert" round>
+                      <q-menu max-width="300px">
+                        <q-list dense style="width: 250px;">
+                          <q-item clickable v-ripple>
+                            <q-item-section thumbnail>
+                              <q-avatar icon="check" />
+                            </q-item-section>
+                            <q-item-section>
+                              <q-item-label>
+                                Marcar todas como leídas
+                              </q-item-label>
+                            </q-item-section>
+                          </q-item>
+                          <q-item clickable v-ripple>
+                            <q-item-section thumbnail>
+                              <q-avatar icon="list" />
+                            </q-item-section>
+                            <q-item-section>
+                              <q-item-label>
+                                Abrir notificaciones
+                              </q-item-label>
+                            </q-item-section>
+                          </q-item>
+                        </q-list>
+                      </q-menu>
+                    </q-btn>
+                  </q-item-section>
+                </q-item>
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <q-item v-for="notification in notifications" :key="notification.id">
+                  <q-item-section class="q-px-xs">
+                    <q-item-label>
+                      {{ notification.data.title }}
+                    </q-item-label>
+                    <q-item-label caption lines="2">
+                      {{ notification.data.description }}
+                    </q-item-label>
+                  </q-item-section>
+                  <q-item-section top side :class="notification.read_at ? '' : 'text-secondary'">
+                    <q-item-label>{{ ucwords(notification.diffForHumans) }}</q-item-label>
+                    <q-icon size="md" name="circle_notifications"/>
+                  </q-item-section>
+                </q-item>
+              </q-card-section>
+            </q-card>
+          </q-popup-proxy>
+        </q-btn>
         <q-btn
           flat
           dense
@@ -22,7 +97,7 @@
           @click="darkMode"
         >
           <q-tooltip :offset="[10, 10]">
-            {{ this.$q.dark.isActive ? 'Light Mode' : 'Dark Mode' }}
+            {{ this.$q.dark.isActive ? 'Modo claro' : 'Modo oscuro' }}
           </q-tooltip>
         </q-btn>
         <q-separator dark vertical inset />
@@ -116,7 +191,7 @@
                 <q-item-section avatar v-if="list.icon" class="q-ml-sm">
                   <q-icon :name="list.icon" />
                 </q-item-section>
-                <q-item-section @click="changeRoute(list.route)">
+                <q-item-section @click="changeRoute(list.route, list.name)">
                   <q-item-label>
                     {{ ucwords($t(`modules.${list.name}`)) }}
                   </q-item-label>
@@ -148,16 +223,6 @@ export default {
   name: 'LayoutComponent',
   mixins: [mixins.containerMixin],
   props: {
-
-    /**
-     * Title component
-     *
-     * @type {String} data content
-     */
-    titleApp: {
-      type: String,
-      required: true
-    },
     /**
      * Title component
      *
@@ -185,6 +250,7 @@ export default {
       branchOffices: [],
       userSession: null,
       role: null,
+      notifications: [],
       contentStyle: {
         backgroundColor: 'rgba(0,0,0,0.02)',
         color: '#555'
@@ -204,6 +270,7 @@ export default {
       dataMenu: [],
       active: true,
       visibleLoading: false,
+      titleApp: null,
       route: '',
       /**
        * Status menu
@@ -229,6 +296,7 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.role = this[GETTERS.GET_ROLE]
     this.loadingPage()
+    this.getNotifications()
   },
   computed: {
     /**
@@ -245,6 +313,13 @@ export default {
         })[0]
       }
       return false
+    },
+    getNotifications () {
+      this.$services.getData(['notifications'])
+        .then(({ res }) => {
+          console.log(res.data)
+          this.notifications = res.data
+        })
     },
     /**
      * Emit event logout
@@ -265,14 +340,16 @@ export default {
     loadingPage () {
       // this.$router.push({ name: this.role.modules[0].route })
       this.$q.dark.set(SessionStorage.getItem('dark'))
+      this.titleApp = this.role.modules.find(module => module.route === this.$route.name).name
     },
     /**
      * Change route
      * @param  {String} data name route
      */
-    changeRoute (data) {
+    changeRoute (data, listName) {
       this.$router.push({ name: data })
       this.route = data
+      this.titleApp = listName
     },
     /**
      * Validate divice
