@@ -296,6 +296,7 @@
             @search-data="searchData"
             @on-load-data="loadData"
             @delete="deleteData"
+            @changeStatus="changeStatus"
           />
         </q-card-section>
       </q-card>
@@ -459,12 +460,7 @@ export default {
        * Data of table
        * @type {Array}
        */
-      data: [],
-      listStatus: {
-        approved: 'Aprobado',
-        pending_approval: 'Pendiente por aprobado',
-        canceled: 'Cancelado'
-      }
+      data: []
     }
   },
   created () {
@@ -483,6 +479,10 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    changeStatus (data) {
+      data.status = data.status === 'approved' ? 'pending_approval' : 'approved'
+      this.update(data)
+    },
     /**
      * Update PaymnetOrder
      * @param  {Object}
@@ -490,7 +490,6 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       data.ownerable_type = data.ownerable_type_label_id ?? data.ownerable_type
-      delete data.status
       this.loadingForm = true
       this.$services.putData(['payment-orders', data.id], data)
         .then(({ res }) => {
@@ -682,6 +681,9 @@ export default {
       this.operationType = null
       this.paymentType = null
       this.paymentTypeDynamic = null
+      this.concept = null
+      this.conceptType = null
+      this.category = null
       this.paymentDate = null
       this.images = []
       this.resetValidations(this.$refs.paymentOrder)
@@ -804,7 +806,6 @@ export default {
           this.data = res.data.data.map(paymentOrder => {
             const ownerableType = this.paymentTypes.find(paymentType => paymentType.value === paymentOrder.ownerable_type)
             paymentOrder.ownerable_type_label = ownerableType ? ownerableType.label : ownerableType
-            paymentOrder.status = this.listStatus[paymentOrder.status]
             return paymentOrder
           })
           this.optionPagination.rowsNumber = res.data.meta.total

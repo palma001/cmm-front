@@ -59,13 +59,15 @@ export const buttonsActions = [
     color: 'primary',
     icon: 'edit',
     size: 'sm',
-    event: 'view-details'
+    event: 'view-details',
+    visible: true
   },
   {
     color: 'negative',
     icon: 'delete',
     size: 'sm',
     event: 'delete',
+    visible: true,
     class: 'q-ml-sm'
   }
 ]

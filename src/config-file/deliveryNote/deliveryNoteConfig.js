@@ -638,6 +638,7 @@ export const buttonsActions = [
     icon: 'print',
     size: 'sm',
     event: 'view-details',
+    visible: true,
     class: 'q-ml-xs'
   }
 ]

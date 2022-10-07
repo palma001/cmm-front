@@ -26,11 +26,12 @@
           class="q-mr-sm q-ml-sm"
           @click="getNotifications"
         >
+          <q-badge color="secondary" floating>{{ notifications.length }}</q-badge>
           <q-tooltip :offset="[10, 10]">
             Notificaciones
           </q-tooltip>
           <q-popup-proxy>
-            <q-card>
+            <q-card v-if="notifications.length > 0">
               <q-card-section class="q-pa-none">
                 <q-item>
                   <q-item-section>
@@ -83,6 +84,11 @@
                     <q-icon size="md" name="circle_notifications"/>
                   </q-item-section>
                 </q-item>
+              </q-card-section>
+            </q-card>
+            <q-card v-else>
+              <q-card-section>
+                Sin Notificaciones
               </q-card-section>
             </q-card>
           </q-popup-proxy>
@@ -297,6 +303,11 @@ export default {
     this.role = this[GETTERS.GET_ROLE]
     this.loadingPage()
     this.getNotifications()
+    this.$echo.channel('send-message')
+      .listen('message', (payload) => {
+        console.log(payload)
+        alert(payload)
+      })
   },
   computed: {
     /**
@@ -317,7 +328,6 @@ export default {
     getNotifications () {
       this.$services.getData(['notifications'])
         .then(({ res }) => {
-          console.log(res.data)
           this.notifications = res.data
         })
     },

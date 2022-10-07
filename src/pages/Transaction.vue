@@ -2,8 +2,8 @@
   <q-page padding>
     <q-card>
       <q-form @submit="saveTransaction" @reset="clean" ref="transaction">
-        <q-card-section>
-          <div class="text-h6">Nuevo Transacción</div>
+        <q-card-section class="q-py-sm">
+          <div class="text-h6">Nueva Transacción</div>
         </q-card-section>
         <q-card-section class="row q-py-xs q-col-gutter-sm">
           <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4">
@@ -66,13 +66,13 @@
               behavior="menu"
               input-debounce="20"
               name="beneficiary"
-              v-model="beneficiarySelected"
+              v-model="responsable"
               option-label="full_name"
               option-value="id"
-              label="Beneficiario"
+              label="Responsable"
               :rules="[val => val && val !== null || 'Este campo es requerido']"
-              :options="beneficiaries"
-              @filter="getBeneficiaries"
+              :options="responsables"
+              @filter="getresponsables"
             >
               <template v-slot:no-option>
                 <q-item>
@@ -104,31 +104,63 @@
             />
           </div>
         </q-card-section>
-        <q-card-actions align="right">
+        <q-card-actions align="right" class="q-pa-sm">
           <q-btn icon="clear" color="negative" label="Limpiar" type="reset"/>
           <q-btn icon="save" color="primary" label="Guardar" type="submit" :loading="loadingForm"/>
         </q-card-actions>
       </q-form>
     </q-card>
+    <div class="q-mt-xs">
+      <data-table
+        title="list"
+        module="transaction"
+        searchable
+        action
+        activeVisibleColumn
+        :column="transactionConfig"
+        :data="data"
+        :loading="loadingTable"
+        :buttonsActions="buttonsActions"
+        :optionPagination="optionPagination"
+        @search-data="searchData"
+        @on-load-data="loadData"
+      />
+    </div>
   </q-page>
 </template>
 
 <script>
 import { GETTERS } from '../store/module-login/name.js'
-import { beneficiary, buttonsActions, propsPanelEdition } from '../config-file/beneficiary/beneficiaryConfig.js'
+import DataTable from '../components/DataTable.vue'
+import { beneficiary } from '../config-file/beneficiary/beneficiaryConfig.js'
+import { transactionConfig, buttonsActions } from '../config-file/transaction/transactionConfig.js'
 import { mapGetters } from 'vuex'
 import { mixins } from '../mixins'
 export default {
   // name: 'PageName',
   mixins: [mixins.containerMixin],
+  components: {
+    DataTable
+  },
   data () {
     return {
+      /**
+       * Options pagination
+       * @type {Object}
+       */
+      optionPagination: {
+        rowsPerPage: 10,
+        rowsNumber: 10,
+        paginate: true,
+        sortBy: 'id',
+        sortOrder: 'desc'
+      },
       beneficiary,
+      transactionConfig,
       loadingForm: false,
       buttonsActions,
-      beneficiaries: [],
-      beneficiarySelected: null,
-      propsPanelEdition,
+      responsables: [],
+      responsable: null,
       paymentOrders: [],
       paymentOrder: null,
       date: null,
@@ -136,7 +168,23 @@ export default {
       addDialogBeneficiary: false,
       reference: null,
       amount: null,
-      userSession: null
+      userSession: null,
+      data: [],
+      loadingTable: false,
+      /**
+       * Params search
+       * @type {Object}
+       */
+      params: {
+        paginated: true,
+        sortBy: 'id',
+        sortOrder: 'desc',
+        perPage: 1,
+        dataSearch: {
+          description: '',
+          amount: ''
+        }
+      }
     }
   },
   created () {
@@ -149,6 +197,30 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    /**
+     * Search EgressType
+     * @param  {Object}
+     */
+    searchData (data) {
+      for (const dataSearch in this.params.dataSearch) {
+        this.params.dataSearch[dataSearch] = data
+      }
+      console.log(data)
+      this.params.page = 1
+      this.getTransactions(this.params)
+    },
+    /**
+     * Load data sorting
+     * @param  {Object}
+     */
+    loadData (data) {
+      this.params.page = data.page
+      this.params.sortBy = data.sortBy ?? this.params.sortBy
+      this.params.sortOrder = data.sortOrder
+      this.params.perPage = data.rowsPerPage
+      this.optionPagination = data
+      this.getTransactions(this.params)
+    },
     orderSelected () {
       this.amount = this.paymentOrder ? this.paymentOrder.pending : 0
     },
@@ -169,7 +241,7 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.paymentOrders = res.data.data
+            this.paymentOrders = res.data.data.filter(paymentOrder => paymentOrder.pending > 0)
           })
         })
     },
@@ -184,7 +256,7 @@ export default {
         date: this.date,
         reference: this.reference,
         payment_order_id: this.paymentOrder.id,
-        beneficiary_id: this.beneficiarySelected.id,
+        responsable_id: this.responsable.id,
         user_created_id: this.userSession.id,
         user_updated_id: this.userSession.id
       }
@@ -196,6 +268,7 @@ export default {
           this.loadingForm = false
           this.notify(this, 'transaction.addSuccessful', 'positive', 'mood')
           this.clean()
+          this.getTransactions(this.params)
         })
         .catch((err) => {
           this.loadingForm = false
@@ -211,16 +284,16 @@ export default {
       this.amount = 0
       this.category = null
       this.concept = null
-      this.beneficiarySelected = null
+      this.responsable = null
       this.reference = null
       this.description = null
       this.resetValidations(this.$refs.transaction)
     },
     /**
-     * All Beneficiaries
+     * All responsables
      */
-    getBeneficiaries (value, update) {
-      this.$services.getData(['beneficiaries'], {
+    getresponsables (value, update) {
+      this.$services.getData(['responsables'], {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {
@@ -232,8 +305,26 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.beneficiaries = res.data
+            this.responsables = res.data
           })
+        })
+    },
+    /**
+     * All Transactions
+     */
+    getTransactions (params = this.params) {
+      this.loadingTable = true
+      this.$services.getData(['transactions'], params)
+        .then(({ res }) => {
+          this.data = res.data.data
+          this.optionPagination.rowsNumber = res.data.meta.total
+          this.loadingTable = false
+        })
+        .catch(err => {
+          console.log(err)
+          this.data = []
+          this.loadingTable = false
+          this.optionPagination.rowsNumber = 0
         })
     },
     /**

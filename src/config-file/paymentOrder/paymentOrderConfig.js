@@ -23,7 +23,7 @@ export const paymentOrderConfig = [
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
+              type: 'date',
               dense: true,
               outlined: true
             },
@@ -156,7 +156,7 @@ export const paymentOrderConfig = [
                 paginate: false
               },
               dataValue: 'id',
-              dataLabel: 'name',
+              dataLabel: 'full_name',
               behavior: 'menu',
               dense: true,
               clearable: true,
@@ -273,7 +273,7 @@ export const paymentOrderConfig = [
         tabulated: {
           name: 'status',
           align: 'left',
-          field: row => row.status,
+          field: row => listStatus[row.status],
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -499,17 +499,39 @@ export const paymentOrderConfig = [
 */
 export const buttonsActions = [
   {
+    color: row => {
+      if (row.status === 'approved') {
+        return 'secondary'
+      }
+      return 'positive'
+    },
+    icon: row => {
+      if (row.status === 'approved') {
+        return 'restore'
+      }
+      return 'check'
+    },
+    visible: row => {
+      return row.pending === row.amount
+    },
+    size: 'sm',
+    event: 'changeStatus'
+  },
+  {
     color: 'primary',
     icon: 'edit',
     size: 'sm',
-    event: 'view-details'
+    event: 'view-details',
+    visible: true,
+    class: 'q-ml-sm'
   },
   {
     color: 'negative',
     icon: 'delete',
     size: 'sm',
+    class: 'q-ml-sm',
     event: 'delete',
-    class: 'q-ml-sm'
+    visible: true
   }
 ]
 
@@ -623,4 +645,10 @@ export const paymentOrderServices = {
   config: paymentOrderConfig,
   propData: 'data',
   relationalData: relationalDataConfiguration
+}
+
+const listStatus = {
+  approved: 'Aprobado',
+  pending_approval: 'Por aprobar',
+  canceled: 'Cancelado'
 }

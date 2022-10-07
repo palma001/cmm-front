@@ -25,6 +25,7 @@ module.exports = function (/* ctx */) {
       'i18n',
       'services',
       'vue2GoogleMaps',
+      'vueEchoLaravel',
       // 'socket',
       'barcodeScanner',
       'vee-validate',

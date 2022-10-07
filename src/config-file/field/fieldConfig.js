@@ -256,12 +256,14 @@ export const buttonsActions = [
     color: 'teal',
     icon: 'visibility',
     size: 'sm',
-    event: 'view-details'
+    event: 'view-details',
+    visible: true
   },
   {
     color: 'secondary',
     icon: 'edit',
     size: 'sm',
+    visible: true,
     event: 'edit',
     class: 'q-ml-xs'
   },
@@ -270,6 +272,7 @@ export const buttonsActions = [
     icon: 'delete',
     size: 'sm',
     event: 'delete',
+    visible: true,
     class: 'q-ml-xs'
   }
 ]

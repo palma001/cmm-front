@@ -547,10 +547,16 @@ export default {
   },
   computed: {
     conceptTypesComputed () {
-      return this.conceptTypes.filter(conceptType => conceptType.category_id === this.category.id)
+      if (this.category) {
+        return this.conceptTypes.filter(conceptType => conceptType.category_id === this.category.id)
+      }
+      return []
     },
     conceptsComputed () {
-      return this.concepts.filter(conceptType => conceptType.concept_type_id === this.conceptType.id)
+      if (this.conceptType) {
+        return this.concepts.filter(conceptType => conceptType.concept_type_id === this.conceptType.id)
+      }
+      return []
     },
     /**
      * Getters Vuex
@@ -958,6 +964,7 @@ export default {
       this.beneficiarySelected = null
       this.amount = 0
       this.description = null
+      this.conceptType = null
       this.category = null
       this.images = []
       this.resetValidations(this.$refs.cashFlow)
