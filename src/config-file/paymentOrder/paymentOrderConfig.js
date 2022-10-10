@@ -1,272 +1,31 @@
-export const guideConfig = [
+
+export const paymentOrderConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'provider',
+          name: 'payment_date',
           align: 'left',
-          field: row => row.provider.name,
+          field: row => row.payment_date,
           sortable: true,
           visible: true,
           visibleColumn: true
         },
         actionable: {
-          propTag: 'provider',
+          propTag: 'payment_date',
           addible: true,
           editable: true,
+          filterable: true,
           type: 'String',
           visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            events: [{
-              nameEvents: 'depends',
-              affected: ['vehicle', 'driver', 'trailer']
-            }],
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              dense: true,
-              sync: true,
-              clearable: true,
-              outlined: true,
-              services: ['providers'],
-              queryParams: {
-                search: {
-                  name: null,
-                  document_number: null
-                },
-                paginate: false
-              }
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'vehicle',
-          align: 'left',
-          field: row => row.vehicle.full_name,
-          sortable: true,
-          visible: true,
-          visibleColumn: true
-        },
-        actionable: {
-          propTag: 'vehicle',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              services: ['vehicles'],
-              data: [],
-              sync: true,
-              dataValue: 'id',
-              dataLabel: 'full_name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true,
-              queryParams: {
-                search: {
-                  plate: null,
-                  brand: null
-                },
-                paginate: false
-              }
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'trailer',
-          align: 'left',
-          field: row => row.trailer.full_name,
-          sortable: true,
-          visible: true,
-          visibleColumn: true
-        },
-        actionable: {
-          propTag: 'trailer',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'full_name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'driver',
-          align: 'left',
-          field: row => row.driver.full_name,
-          sortable: true,
-          visible: true,
-          visibleColumn: true
-        },
-        actionable: {
-          propTag: 'driver',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'full_name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'client',
-          align: 'left',
-          field: row => row.client.full_name,
-          sortable: true,
-          visible: true,
-          visibleColumn: true
-        },
-        actionable: {
-          propTag: 'client',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'start_date',
-          align: 'left',
-          field: row => row.start_date,
-          sortable: true,
-          visible: true,
-          visibleColumn: true
-        },
-        actionable: {
-          propTag: 'start_date',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: false,
           component: {
             name: 'b-input',
             props: {
               type: 'date',
               dense: true,
-              outlined: true,
-              hint: 'start_date'
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -286,104 +45,71 @@ export const guideConfig = [
       },
       {
         tabulated: {
-          name: 'deadline',
+          name: 'ownerable_type',
           align: 'left',
-          field: row => row.deadline,
+          field: row => row.ownerable_type_label,
           sortable: true,
           visible: true,
           visibleColumn: true
         },
         actionable: {
-          propTag: 'deadline',
+          propTag: 'ownerable_type_label',
           addible: true,
           editable: true,
-          type: 'String',
-          visibleLabel: false,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'date',
-              dense: true,
-              outlined: true,
-              hint: 'deadline'
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'q-mt-sm': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'weight',
-          align: 'left',
-          field: row => `${row.weight} ${row.unit_of_measurement.acronym}`,
-          sortable: true,
-          visible: true,
-          visibleColumn: true
-        },
-        actionable: {
-          propTag: 'weight',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'number',
-              dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'q-mt-sm': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'unit_of_measurement',
-          align: 'left',
-          field: row => `${row.unit_of_measurement.name}(${row.unit_of_measurement.acronym})`,
-          sortable: true,
-          visible: false,
-          visibleColumn: false
-        },
-        actionable: {
-          propTag: 'unit_of_measurement',
-          addible: true,
-          editable: true,
+          sync: true,
           type: 'String',
           visibleLabel: true,
           component: {
             name: 'b-search-select',
+            events: [{
+              nameEvents: 'depends',
+              affected: ['ownerable']
+            }],
             props: {
-              data: [],
+              data: [
+                {
+                  name: 'Contrato',
+                  id: 'App\\Models\\Field',
+                  fieldName: 'Contrato',
+                  fieldValue: 'id',
+                  fieldLabel: 'denomination',
+                  api: 'fields'
+                },
+                {
+                  name: 'Proveedor',
+                  id: 'App\\Models\\Provider',
+                  fieldName: 'Proveedores',
+                  fieldValue: 'id',
+                  fieldLabel: 'name',
+                  api: 'providers'
+                },
+                {
+                  name: 'Personal',
+                  id: 'App\\Models\\Personal',
+                  fieldName: 'Personal',
+                  fieldValue: 'id',
+                  fieldLabel: 'name',
+                  api: 'personals'
+                },
+                {
+                  name: 'Cliente',
+                  id: 'App\\Models\\Client',
+                  fieldName: 'Cliente',
+                  fieldValue: 'id',
+                  fieldLabel: 'name',
+                  api: 'clients'
+                },
+                {
+                  name: 'Oficina',
+                  id: 'App\\Models\\BranchOffice',
+                  fieldName: 'Oficina',
+                  fieldValue: 'id',
+                  fieldLabel: 'name',
+                  api: 'branch-offices'
+                }
+              ],
               dataValue: 'id',
-              dataLabel: 'full_name',
+              dataLabel: 'name',
               behavior: 'menu',
               dense: true,
               clearable: true,
@@ -409,17 +135,281 @@ export const guideConfig = [
       },
       {
         tabulated: {
-          name: 'code_runpa',
+          name: 'ownerable_id',
           align: 'left',
-          field: row => row.code_runpa,
+          field: row => row.ownerable.full_name,
           sortable: true,
           visible: true,
           visibleColumn: true
         },
         actionable: {
-          propTag: 'code_runpa',
+          propTag: 'ownerable',
           addible: true,
           editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              queryParams: {
+                paginate: false
+              },
+              dataValue: 'id',
+              dataLabel: 'full_name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              sync: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'operation_type_id',
+          align: 'left',
+          field: row => row.operation_type.name,
+          sortable: true,
+          visible: true,
+          visibleColumn: false
+        },
+        actionable: {
+          propTag: 'operation_type',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'concept_id',
+          align: 'left',
+          field: row => row.concept.name,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'concept',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'status',
+          align: 'left',
+          field: row => listStatus[row.status],
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'status',
+          addible: false,
+          editable: false,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true,
+              align: 'right'
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'coin_id',
+          align: 'left',
+          field: row => row.coin.name,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'coin',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'entity_id',
+          align: 'left',
+          field: row => row.entity.name,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'entity',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-search-select',
+            props: {
+              data: [],
+              dataValue: 'id',
+              dataLabel: 'name',
+              behavior: 'menu',
+              dense: true,
+              clearable: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'amount',
+          align: 'right',
+          field: row => row.amount,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'amount',
+          addible: true,
+          editable: true,
+          filterable: true,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -432,45 +422,6 @@ export const guideConfig = [
             class: {
               'col-xs-12': true,
               'col-sm-12': true,
-              'col-md-12': true,
-              'q-mt-sm': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'origin_address',
-          align: 'left',
-          field: row => row.origin_address,
-          sortable: true,
-          visible: true,
-          visibleColumn: false
-        },
-        actionable: {
-          propTag: 'origin_address',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'textarea',
-              dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
               'col-md-12': true
             },
             directives: [
@@ -486,54 +437,27 @@ export const guideConfig = [
       },
       {
         tabulated: {
-          name: 'destination_address',
-          align: 'left',
-          field: row => row.destination_address,
-          sortable: true,
+          name: 'pending',
+          align: 'right',
+          field: row => row.pending,
+          sortable: false,
           visible: true,
-          visibleColumn: false
-        },
-        actionable: {
-          propTag: 'destination_address',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-input',
-            props: {
-              type: 'textarea',
-              dense: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
+          visibleColumn: true
         }
       },
       {
         tabulated: {
-          name: 'material',
+          name: 'description',
           align: 'left',
-          field: row => row.material,
+          field: row => row.description,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'material',
+          propTag: 'description',
           addible: true,
           editable: true,
+          filterable: true,
           type: 'String',
           visibleLabel: true,
           component: {
@@ -553,35 +477,6 @@ export const guideConfig = [
                 name: 'validate',
                 value: {
                   required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'documents',
-          align: 'center',
-          visible: true,
-          visibleColumn: true,
-          button: {
-            label: 'documents',
-            color: 'secondary',
-            type: 'dropdown',
-            icon: 'receipt',
-            push: true,
-            splits: true,
-            size: 'sm',
-            options: [
-              {
-                label: 'swornDeclaration',
-                event: 'swornDeclaration',
-                avatar: {
-                  icon: 'receipt',
-                  color: 'secondary',
-                  textColor: 'white',
-                  size: 'md'
                 }
               }
             ]
@@ -604,19 +499,39 @@ export const guideConfig = [
 */
 export const buttonsActions = [
   {
+    color: row => {
+      if (row.status === 'approved') {
+        return 'secondary'
+      }
+      return 'positive'
+    },
+    icon: row => {
+      if (row.status === 'approved') {
+        return 'restore'
+      }
+      return 'check'
+    },
+    visible: row => {
+      return row.pending === row.amount
+    },
+    size: 'sm',
+    event: 'changeStatus'
+  },
+  {
     color: 'primary',
     icon: 'edit',
     size: 'sm',
     event: 'view-details',
-    visible: true
+    visible: true,
+    class: 'q-ml-sm'
   },
   {
     color: 'negative',
     icon: 'delete',
     size: 'sm',
+    class: 'q-ml-sm',
     event: 'delete',
-    visible: true,
-    class: 'q-ml-sm'
+    visible: true
   }
 ]
 
@@ -676,63 +591,64 @@ export const propsPanelEdition = {
     }
   ]
 }
-
 export const relationalDataConfiguration = [
   {
-    targetPropTag: 'material_supplier',
-    entity: 'material_supplier',
+    targetPropTag: 'entity',
+    entity: 'entity',
+    services: ['entities'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'concept',
+    entity: 'concept',
+    services: ['concepts'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'coin',
+    entity: 'coin',
+    services: ['coins'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'operation_type',
+    entity: 'operation_type',
+    services: ['operation-types'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'ownerable',
+    entity: 'ownerable',
     services: ['providers'],
     propData: 'data',
-    sync: true
-  },
-  {
-    targetPropTag: 'vehicle',
-    entity: 'vehicle',
-    services: ['vehicles'],
-    propData: 'data',
-    sync: true
-  },
-  {
-    targetPropTag: 'client',
-    entity: 'client',
-    services: ['clients'],
-    propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
-  },
-  {
-    targetPropTag: 'unit_of_measurement',
-    entity: 'unit_of_measurement',
-    services: ['unit-of-measurements'],
-    propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
-  },
-  {
-    targetPropTag: 'trailer',
-    entity: 'trailer',
-    services: ['trailers'],
-    propData: 'data',
-    petitionParams: {
-      paginate: false
-    }
-  },
-  {
-    targetPropTag: 'driver',
-    entity: 'driver',
-    services: ['drivers'],
-    propData: 'data',
+    sync: true,
     petitionParams: {
       paginate: false
     }
   }
 ]
 
-export const guideServices = {
+export const paymentOrderServices = {
   props: propsPanelEdition,
-  config: guideConfig,
+  config: paymentOrderConfig,
   propData: 'data',
   relationalData: relationalDataConfiguration
+}
+
+const listStatus = {
+  approved: 'Aprobado',
+  pending_approval: 'Por aprobar',
+  canceled: 'Cancelado'
 }

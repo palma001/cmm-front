@@ -4,8 +4,10 @@ import mockData from '../../mockData/services'
 
 export default async ({ Vue, app }) => {
   Vue.use(services, {
-    baseUrl: process.env.API
-    // baseUrl: 'http://mercado.tranjr.com/api/'
+    // baseUrl: process.env.API
+    // baseUrl: 'http://backdba.qbitsinc.com/api/'
+    baseUrl: 'http://192.168.0.110:8000/api/'
+
   })
 
   Vue.use(nodeServices, {

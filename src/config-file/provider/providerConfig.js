@@ -42,6 +42,43 @@ export const provider = [
       },
       {
         tabulated: {
+          name: 'serie_number',
+          align: 'left',
+          field: row => row.serie_number,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'serie_number',
+          addible: true,
+          editable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'name',
           align: 'left',
           field: row => row.name,
@@ -171,13 +208,15 @@ export const buttonsActions = [
     color: 'primary',
     icon: 'edit',
     size: 'sm',
-    event: 'view-details'
+    event: 'view-details',
+    visible: true
   },
   {
     color: 'negative',
     icon: 'delete',
     size: 'sm',
     event: 'delete',
+    visible: true,
     class: 'q-ml-sm'
   }
 ]

@@ -367,6 +367,9 @@ export default {
                         self.objectToBind[propTag] = value
                         if (prop.actionable.component.events) {
                           prop.actionable.component.events.forEach(event => {
+                            event.affected.forEach(effected => {
+                              self.objectToBind[effected] = null
+                            })
                             self.$emit(event.nameEvents, value, event.affected)
                           })
                         }

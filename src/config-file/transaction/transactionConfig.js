@@ -1,31 +1,30 @@
-export const providerRateConfig = [
+
+export const transactionConfig = [
   {
     classTag: 'infoUsers',
     index: 0,
     children: [
       {
         tabulated: {
-          name: 'provider',
+          name: 'date',
           align: 'left',
-          field: row => row.provider.name,
+          field: row => row.date,
           sortable: true,
-          visible: true
+          visible: true,
+          visibleColumn: true
         },
         actionable: {
-          propTag: 'provider',
+          propTag: 'date',
           addible: true,
           editable: true,
+          filterable: true,
           type: 'String',
           visibleLabel: true,
           component: {
-            name: 'b-search-select',
+            name: 'b-input',
             props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
+              type: 'date',
               dense: true,
-              clearable: true,
               outlined: true
             },
             class: {
@@ -50,18 +49,20 @@ export const providerRateConfig = [
           align: 'left',
           field: row => row.description,
           sortable: true,
-          visible: true
+          visible: true,
+          visibleColumn: true
         },
         actionable: {
           propTag: 'description',
           addible: true,
           editable: true,
+          filterable: true,
           type: 'String',
           visibleLabel: true,
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
+              type: 'date',
               dense: true,
               outlined: true
             },
@@ -83,22 +84,24 @@ export const providerRateConfig = [
       },
       {
         tabulated: {
-          name: 'rate',
-          align: 'right',
-          field: row => row.rate,
-          sortable: true,
-          visible: true
+          name: 'full_description',
+          align: 'left',
+          field: row => row.full_description,
+          sortable: false,
+          visible: true,
+          visibleColumn: true
         },
         actionable: {
-          propTag: 'rate',
+          propTag: 'full_description',
           addible: true,
           editable: true,
+          filterable: true,
           type: 'String',
           visibleLabel: true,
           component: {
             name: 'b-input',
             props: {
-              type: 'text',
+              type: 'date',
               dense: true,
               outlined: true
             },
@@ -120,22 +123,147 @@ export const providerRateConfig = [
       },
       {
         tabulated: {
-          name: 'coin',
-          align: 'right',
-          field: row => `${row.coin.name} (${row.coin.symbol})`,
-          sortable: true,
-          visible: true
+          name: 'beneficiary',
+          align: 'left',
+          field: row => row.payment_order.ownerable.full_name,
+          sortable: false,
+          visible: true,
+          visibleColumn: true
         },
         actionable: {
-          propTag: 'coin',
+          propTag: 'beneficiary',
           addible: true,
           editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'date',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'reference',
+          align: 'left',
+          field: row => row.reference,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'reference',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'date',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'amount',
+          align: 'right',
+          field: row => row.amount,
+          sortable: true,
+          visible: true,
+          visibleColumn: true
+        },
+        actionable: {
+          propTag: 'amount',
+          addible: true,
+          editable: true,
+          sync: true,
           type: 'String',
           visibleLabel: true,
           component: {
             name: 'b-search-select',
+            events: [{
+              nameEvents: 'depends',
+              affected: ['ownerable']
+            }],
             props: {
-              data: [],
+              data: [
+                {
+                  name: 'Contrato',
+                  id: 'App\\Models\\Field',
+                  fieldName: 'Contrato',
+                  fieldValue: 'id',
+                  fieldLabel: 'denomination',
+                  api: 'fields'
+                },
+                {
+                  name: 'Proveedor',
+                  id: 'App\\Models\\Provider',
+                  fieldName: 'Proveedores',
+                  fieldValue: 'id',
+                  fieldLabel: 'name',
+                  api: 'providers'
+                },
+                {
+                  name: 'Personal',
+                  id: 'App\\Models\\Personal',
+                  fieldName: 'Personal',
+                  fieldValue: 'id',
+                  fieldLabel: 'name',
+                  api: 'personals'
+                },
+                {
+                  name: 'Cliente',
+                  id: 'App\\Models\\Client',
+                  fieldName: 'Cliente',
+                  fieldValue: 'id',
+                  fieldLabel: 'name',
+                  api: 'clients'
+                },
+                {
+                  name: 'Oficina',
+                  id: 'App\\Models\\BranchOffice',
+                  fieldName: 'Oficina',
+                  fieldValue: 'id',
+                  fieldLabel: 'name',
+                  api: 'branch-offices'
+                }
+              ],
               dataValue: 'id',
               dataLabel: 'name',
               behavior: 'menu',
@@ -146,48 +274,9 @@ export const providerRateConfig = [
             class: {
               'col-xs-12': true,
               'col-sm-12': true,
-              'col-md-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
-          name: 'unit_of_measurement',
-          align: 'right',
-          field: row => `${row.unit_of_measurement.name} (${row.unit_of_measurement.acronym})`,
-          sortable: true,
-          visible: true
-        },
-        actionable: {
-          propTag: 'unit_of_measurement',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true
+              'col-md-12': true,
+              'col-lg-12': true,
+              'col-xl-12': true
             },
             directives: [
               {
@@ -216,19 +305,39 @@ export const providerRateConfig = [
 */
 export const buttonsActions = [
   {
+    color: row => {
+      if (row.status === 'approved') {
+        return 'secondary'
+      }
+      return 'positive'
+    },
+    icon: row => {
+      if (row.status === 'approved') {
+        return 'restore'
+      }
+      return 'check'
+    },
+    visible: row => {
+      return row.pending === row.amount
+    },
+    size: 'sm',
+    event: 'changeStatus'
+  },
+  {
     color: 'primary',
     icon: 'edit',
     size: 'sm',
     event: 'view-details',
-    visible: true
+    visible: true,
+    class: 'q-ml-sm'
   },
   {
     color: 'negative',
     icon: 'delete',
     size: 'sm',
+    class: 'q-ml-sm',
     event: 'delete',
-    visible: true,
-    class: 'q-ml-sm'
+    visible: true
   }
 ]
 
@@ -290,6 +399,24 @@ export const propsPanelEdition = {
 }
 export const relationalDataConfiguration = [
   {
+    targetPropTag: 'entity',
+    entity: 'entity',
+    services: ['entities'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
+    targetPropTag: 'concept',
+    entity: 'concept',
+    services: ['concepts'],
+    propData: 'data',
+    petitionParams: {
+      paginate: false
+    }
+  },
+  {
     targetPropTag: 'coin',
     entity: 'coin',
     services: ['coins'],
@@ -299,28 +426,35 @@ export const relationalDataConfiguration = [
     }
   },
   {
-    targetPropTag: 'unit_of_measurement',
-    entity: 'unit_of_measurement',
-    services: ['unit-of-measurements'],
+    targetPropTag: 'operation_type',
+    entity: 'operation_type',
+    services: ['operation-types'],
     propData: 'data',
     petitionParams: {
       paginate: false
     }
   },
   {
-    targetPropTag: 'provider',
-    entity: 'provider',
+    targetPropTag: 'ownerable',
+    entity: 'ownerable',
     services: ['providers'],
     propData: 'data',
+    sync: true,
     petitionParams: {
       paginate: false
     }
   }
 ]
 
-export const providerRateServices = {
+export const paymentOrderServices = {
   props: propsPanelEdition,
-  config: providerRateConfig,
+  config: transactionConfig,
   propData: 'data',
   relationalData: relationalDataConfiguration
 }
+
+// const listStatus = {
+//   approved: 'Aprobado',
+//   pending_approval: 'Por aprobar',
+//   canceled: 'Cancelado'
+// }

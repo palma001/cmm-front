@@ -1,10 +1,10 @@
 {
-  "appId": "app.cmm.com",
-  "appName": "CMM",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "www",
-  "server": {
-    "url": "http://192.168.0.108:8080"
-  }
+	"appId": "app.cmm.com",
+	"appName": "DBA",
+	"bundledWebRuntime": false,
+	"npmClient": "npm",
+	"webDir": "www",
+	"server": {
+		"url": "http://192.168.0.110:8080"
+	}
 }

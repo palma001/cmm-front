@@ -47,7 +47,7 @@ export const ucwords = function (value) {
  * @param {String} propData
  * @param {Array} list
  */
-function assignRelationalData (currentDataConfig, propTag, propData, list, dataConfig) {
+export const assignRelationalData = (currentDataConfig, propTag, propData, list, dataConfig, data = null) => {
   currentDataConfig.forEach(config => {
     config.children.forEach(child => {
       if (child.actionable && child.actionable.propTag === propTag) {
@@ -57,6 +57,11 @@ function assignRelationalData (currentDataConfig, propTag, propData, list, dataC
           if (child.actionable.component.props.queryParams && dataConfig.petitionParams) {
             const params = Object.assign(child.actionable.component.props.queryParams, dataConfig.petitionParams)
             child.actionable.component.props.queryParams = params
+            child.actionable.component.props.services = dataConfig.services
+            if (data) {
+              child.actionable.component.props.dataLabel = data.fieldLabel
+              child.actionable.component.props.dataValue = data.fieldValue
+            }
           }
         }
       }
@@ -88,7 +93,7 @@ export const setRelationalData = (
             data,
             dataConfig
           )
-          callback(res.data, toRelationalData)
+          callback(data, toRelationalData)
         })
     })
   }
@@ -130,6 +135,7 @@ export const methods = {
   translateEntity,
   translateLabel,
   setRelationalData,
+  assignRelationalData,
   ucwords,
   can,
   notify,

@@ -21,7 +21,8 @@ export const userConfig = [
             name: 'b-input',
             props: {
               type: 'text',
-              dense: true
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -48,7 +49,7 @@ export const userConfig = [
           visible: true
         },
         actionable: {
-          propTag: 'role',
+          propTag: 'roles',
           addible: true,
           editable: true,
           type: 'String',
@@ -56,11 +57,13 @@ export const userConfig = [
           component: {
             name: 'b-search-select',
             props: {
+              multiple: true,
               data: [],
               dataValue: 'id',
               dataLabel: 'name',
               behavior: 'menu',
               dense: true,
+              outlined: true,
               clearable: true
             },
             class: {
@@ -101,6 +104,7 @@ export const userConfig = [
               dataLabel: 'name',
               behavior: 'menu',
               dense: true,
+              outlined: true,
               clearable: true
             },
             class: {
@@ -121,14 +125,14 @@ export const userConfig = [
       },
       {
         tabulated: {
-          name: 'phone',
+          name: 'phone_number',
           align: 'left',
           field: row => row.phone_number,
           sortable: true,
           visible: true
         },
         actionable: {
-          propTag: 'phone',
+          propTag: 'phone_number',
           addible: true,
           editable: true,
           type: 'String',
@@ -137,7 +141,8 @@ export const userConfig = [
             name: 'b-input',
             props: {
               type: 'text',
-              dense: true
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -173,7 +178,8 @@ export const userConfig = [
             name: 'b-input',
             props: {
               type: 'email',
-              dense: true
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -203,7 +209,8 @@ export const userConfig = [
             name: 'b-input',
             props: {
               type: 'password',
-              dense: true
+              dense: true,
+              outlined: true
             },
             class: {
               'col-xs-12': true,
@@ -307,8 +314,8 @@ export const propsPanelEdition = {
 
 export const relationalDataConfiguration = [
   {
-    targetPropTag: 'role',
-    entity: 'role',
+    targetPropTag: 'roles',
+    entity: 'roles',
     services: ['roles'],
     propData: 'data',
     petitionParams: {

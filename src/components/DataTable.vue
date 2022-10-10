@@ -151,9 +151,10 @@
               v-for="buttonAction in buttonsActions"
               :key="buttonAction.id"
               :size="buttonAction.size"
-              :color="buttonAction.color"
-              :icon="buttonAction.icon"
+              :color="typeof buttonAction.color === 'string' ? buttonAction.color : buttonAction.color(props.row)"
+              :icon="typeof buttonAction.icon === 'string' ? buttonAction.icon : buttonAction.icon(props.row)"
               :class="buttonAction.class"
+              v-show="typeof buttonAction.visible === 'function' ? buttonAction.visible(props.row) : buttonAction.visible"
               @click="emitEvent(buttonAction.event, props.row)"
             >
               <q-tooltip v-if="buttonAction.tooltip">
@@ -188,7 +189,8 @@ export default {
             color: 'primary',
             icon: 'fullscreen',
             size: 'sm',
-            event: 'view-details'
+            event: 'view-details',
+            visible: true
           }
         ]
       }

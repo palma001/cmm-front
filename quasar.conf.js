@@ -11,7 +11,9 @@ module.exports = function (/* ctx */) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
-
+    bin: {
+      linuxAndroidStudio: '/snap/android-studio/current/android-studio/bin/studio.sh'
+    },
     // https://quasar.dev/quasar-cli/prefetch-feature
     // preFetch: true,
 
@@ -23,6 +25,7 @@ module.exports = function (/* ctx */) {
       'i18n',
       'services',
       'vue2GoogleMaps',
+      'vueEchoLaravel',
       // 'socket',
       'barcodeScanner',
       'vee-validate',
