@@ -312,7 +312,7 @@ export default {
       },
       cashFlowColumns: [
         { name: 'created_at', align: 'left', label: 'Fecha', field: 'created_at' },
-        { name: 'beneficiary', align: 'left', label: 'Beneficiario', field: row => `${row.beneficiary.name} ${row.beneficiary.last_name}` },
+        { name: 'beneficiary', align: 'left', label: 'Beneficiario', field: row => row.beneficiary ? `${row.beneficiary.name} ${row.beneficiary.last_name}` : '-' },
         { name: 'concept', align: 'left', label: 'Concepto', field: row => row.concept.name },
         { name: 'debe', align: 'right', label: 'Debe', classes: 'text-negative', field: row => !row.transaction_id ? row.amount : '-', format: (val, row) => `-${val}` },
         { name: 'haber', align: 'right', label: 'Haber', classes: 'text-teal', field: row => row.transaction_id ? row.amount : '-' },

@@ -64,7 +64,7 @@ export const guideConfig = [
         tabulated: {
           name: 'vehicle',
           align: 'left',
-          field: row => row.vehicle.full_name,
+          field: row => row.vehicle,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -117,7 +117,7 @@ export const guideConfig = [
         tabulated: {
           name: 'trailer',
           align: 'left',
-          field: row => row.trailer.full_name,
+          field: row => row.trailer,
           sortable: true,
           visible: true,
           visibleColumn: true
@@ -161,7 +161,7 @@ export const guideConfig = [
         tabulated: {
           name: 'driver',
           align: 'left',
-          field: row => row.driver.full_name,
+          field: row => row.driver,
           sortable: true,
           visible: true,
           visibleColumn: true

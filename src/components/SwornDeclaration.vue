@@ -4,11 +4,11 @@
       <tr style="position: relative;">
         <td rowspan="5" colspan="6" style="border:1px solid #808080;">
           <span style="position:absolute; left:2px; top:10px; width:80px; height:53px">
-            <img width="80" height="53" :src="`img/${data.material_supplier.logo}`" name="CuadroTexto 4">
+            <img width="80" height="53" src="img/cmm-logo" name="CuadroTexto 4">
           </span>
           <span class="text-center text-bold" style="font-size: 9px; position:absolute; left:2px; top:68px; width:80px; height:53px">
             Rif: <br>
-            {{ data.material_supplier.document_number }}
+            J-545454
           </span>
         </td>
         <td colspan="14" class="x19" style="border-right:1px solid #808080; white-space:normal; word-wrap:break-word;">
@@ -41,8 +41,8 @@
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
       <tr height="20" style="mso-height-source:userset;height:15pt">
-        <td colspan="21" height="18" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:13.5pt;">{{ data.material_supplier.name }}</td>
-        <td colspan="9" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.material_supplier.document_number }}</td>
+        <td colspan="21" height="18" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;height:13.5pt;">Luis Palma</td>
+        <td colspan="9" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">26720270</td>
         <td colspan="41" class="x17" style="mso-ignore:colspan;"></td>
       </tr>
       <tr height="17" style="mso-height-source:userset;height:12.75pt">
@@ -51,8 +51,8 @@
         <td colspan="9" class="x64" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">CEDULA</td>
       </tr>
       <tr>
-        <td colspan="17" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">&nbsp;{{ data.driver.name }}</td>
-        <td colspan="9" class="x65" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.driver.document_number }}</td>
+        <td colspan="17" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">&nbsp;Ramon</td>
+        <td colspan="9" class="x65" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">26720741</td>
       </tr>
       <tr>
         <td class="x26"></td>
@@ -63,16 +63,16 @@
       </tr>
       <tr>
         <td class="x26" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Vehículo</td>
-        <td colspan="6" class="x50" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.vehicle.model }}</td>
-        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.vehicle.plate }}</td>
-        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.vehicle.color }}</td>
-        <td colspan="12" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.vehicle.brand }}</td>
+        <td colspan="6" class="x50" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Mack</td>
+        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">A0154554</td>
+        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Negro</td>
+        <td colspan="12" class="x27" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Mack</td>
       </tr>
       <tr>
         <td class="x26" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Batea</td>
-        <td colspan="6" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.model }}</td>
-        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.plate }}</td>
-        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.trailer.color }}</td>
+        <td colspan="6" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Mack</td>
+        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">A0154558</td>
+        <td colspan="6" class="x30" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Blanco</td>
         <td colspan="6" class="x26 text-bold" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">Peso</td>
         <td colspan="6" class="x67" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">{{ data.weight }} {{ data.unit_of_measurement.acronym }}.</td>
       </tr>
@@ -159,10 +159,10 @@
           Pasaporte Panama: PA0715590
         </td>
         <td colspan="10" rowspan="3" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
-          <img width="150" height="56" :src="`img/${data.material_supplier.signature}`" name="Imagen 3">
+          <img width="150" height="56" src="img/cmm-firma.png" name="Imagen 3">
         </td>
         <td colspan="10" rowspan="3" class="x38" style="border-right:1px solid #808080;border-bottom:1px solid #808080;">
-          <img width="130" height="56" :src="`img/${data.material_supplier.seal}`" name="CuadroTexto 4">
+          <img width="130" height="56" src="img/cmm-sello.jpg" name="CuadroTexto 4">
         </td>
       </tr>
       <tr style="mso-height-source:userset;height:12.75pt">
