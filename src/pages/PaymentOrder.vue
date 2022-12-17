@@ -45,14 +45,14 @@
                 clearable
                 behavior="menu"
                 input-debounce="20"
-                name="operationType"
-                v-model="operationType"
+                name="paymentMethod"
+                v-model="paymentMethod"
                 option-label="name"
                 option-value="id"
-                label="Tipo de operación"
+                label="Metodo de pago"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="operationTypes"
-                @filter="getOperationTypes"
+                :options="paymentMethods"
+                @filter="getPaymentMethods"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -414,7 +414,7 @@ export default {
        * Operation type selected cash flow
        * @type {Object}
        */
-      operationType: null,
+      paymentMethod: null,
       /**
        * Description cash flow
        * @type {String}
@@ -441,10 +441,10 @@ export default {
        */
       coins: [],
       /**
-       * OperationTypes cash flow
+       * paymentMethods cash flow
        * @type {Array}
        */
-      operationTypes: [],
+      paymentMethods: [],
       /**
        * User session
        * @type {Object}
@@ -678,7 +678,7 @@ export default {
       this.coins = null
       this.amount = 0
       this.description = null
-      this.operationType = null
+      this.paymentMethod = null
       this.paymentType = null
       this.paymentTypeDynamic = null
       this.concept = null
@@ -697,8 +697,10 @@ export default {
         description: this.description,
         status: 'pending_approval',
         amount: this.amount,
-        operation_type_id: this.operationType.id,
+        payment_method_id: this.paymentMethod.id,
         ownerable_id: this.paymentTypeDynamic.id,
+        organization_id: 1,
+        branch_office_id: 1,
         ownerable_type: this.paymentType.value,
         entity_id: this.entity.id,
         coin_id: this.coin.id,
@@ -706,6 +708,21 @@ export default {
         concept_id: this.concept.id,
         user_created_id: this.userSession.id
       }
+    },
+    setNotify (data) {
+      var channel = this.$ably.channels.get('Notify')
+      channel.attach(err => {
+        if (err) {
+          return console.error('Error attaching to the channel')
+        }
+        console.log('We are now attached to the channel')
+        channel.presence.enter(data.data, (err) => {
+          if (err) {
+            return console.error('Error entering presence')
+          }
+          console.log('We are now successfully present')
+        })
+      })
     },
     /**
      * Save Beneficiary
@@ -718,6 +735,7 @@ export default {
           this.loadingForm = false
           this.notify(this, 'paymentOrder.addSuccessful', 'positive', 'mood')
           this.clean()
+          this.setNotify(res)
         })
         .catch((err) => {
           this.loadingForm = false
@@ -725,10 +743,10 @@ export default {
         })
     },
     /**
-     * All OperationTypes
+     * All paymentMethods
      */
-    getOperationTypes (value, update) {
-      this.$services.getData(['operation-types'], {
+    getPaymentMethods (value, update) {
+      this.$services.getData(['payment-methods'], {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {
@@ -738,7 +756,7 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.operationTypes = res.data
+            this.paymentMethods = res.data
           })
         })
     },

@@ -302,12 +302,7 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.role = this[GETTERS.GET_ROLE]
     this.loadingPage()
-    this.getNotifications()
-    this.$echo.channel('send-message')
-      .listen('message', (payload) => {
-        console.log(payload)
-        alert(payload)
-      })
+    this.getNotify()
   },
   computed: {
     /**
@@ -316,6 +311,21 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_ROLE, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    getNotify () {
+      const channel = this.$ably.channels.get('Notify')
+      channel.presence.subscribe('update', (presenceMsg) => {
+        console.log(presenceMsg)
+        console.log('Received a ' + presenceMsg.action + ' from ' + presenceMsg.clientId)
+        channel.presence.get((err, members) => {
+          console.log(members, err)
+          members.map(mem => { console.log(mem) })
+          console.log(
+            'There are now ' + members.length + ' clients present on this channel'
+          )
+          this.getNotifications()
+        })
+      })
+    },
     validateRole (roles = []) {
       const rol = this[GETTERS.GET_ROLE]
       if (roles && roles.length > 0 && rol) {

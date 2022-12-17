@@ -183,15 +183,15 @@ export const paymentOrderConfig = [
       },
       {
         tabulated: {
-          name: 'operation_type_id',
+          name: 'payment_method_id',
           align: 'left',
-          field: row => row.operation_type.name,
+          field: row => row.payment_method.name,
           sortable: true,
           visible: true,
           visibleColumn: false
         },
         actionable: {
-          propTag: 'operation_type',
+          propTag: 'payment_method',
           addible: true,
           editable: true,
           type: 'String',
@@ -620,9 +620,9 @@ export const relationalDataConfiguration = [
     }
   },
   {
-    targetPropTag: 'operation_type',
-    entity: 'operation_type',
-    services: ['operation-types'],
+    targetPropTag: 'payment_method',
+    entity: 'payment_method',
+    services: ['payment-methods'],
     propData: 'data',
     petitionParams: {
       paginate: false
