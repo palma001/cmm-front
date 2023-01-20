@@ -422,6 +422,102 @@ export const organizationConfig = [
         }
       },
       {
+        actionable: {
+          propTag: 'seal',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'File',
+          visibleLabel: false,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'file',
+              dense: true,
+              outlined: true,
+              hint: 'seal'
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        actionable: {
+          propTag: 'signature',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'File',
+          visibleLabel: false,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'file',
+              dense: true,
+              outlined: true,
+              hint: 'signature'
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        actionable: {
+          propTag: 'logo',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'File',
+          visibleLabel: false,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'file',
+              dense: true,
+              outlined: true,
+              hint: 'logo'
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
         tabulated: {
           name: 'description',
           align: 'left',

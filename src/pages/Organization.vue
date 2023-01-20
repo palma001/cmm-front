@@ -196,7 +196,6 @@ export default {
   },
   methods: {
     filter (data) {
-      console.log(data)
       this.params.dataFilter = data
       this.getOrganizations(this.params)
     },
@@ -245,6 +244,30 @@ export default {
       this.getOrganizations(this.params)
     },
     /**
+     * Model product
+     * @param {Object} data product
+     */
+    modelFormData (data, put = false) {
+      const formData = new FormData()
+      data.user_created_id = this.userSession.id
+      if (put) {
+        formData.append('_method', 'put')
+      }
+      formData.append('logo', data.logo[0])
+      formData.append('signature', data.signature[0])
+      formData.append('seal', data.seal[0])
+      for (const key in data) {
+        if (Object.hasOwnProperty.call(data, key)) {
+          const element = data[key]
+          console.log(element, typeof element)
+          if (typeof element !== 'object') {
+            formData.append(key, element)
+          }
+        }
+      }
+      return formData
+    },
+    /**
      * Search EgressType
      * @param  {Object}
      */
@@ -262,7 +285,8 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['organizations', this.selectedData.id], data)
+      console.log(data)
+      this.$services.postUpload(['organizations', this.selectedData.id], this.modelFormData(data, true))
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false

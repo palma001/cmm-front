@@ -341,7 +341,9 @@ export default {
             confi.children.map(prop => {
               if (prop.actionable && prop.actionable.editable) {
                 const propTag = prop.actionable.propTag
-                prop.actionable.component.props.value = self.objectToBind[propTag] !== undefined ? self.objectToBind[propTag] : self.propsPanelEdition.data[propTag]
+                if (prop.actionable.type !== 'File') {
+                  prop.actionable.component.props.value = self.objectToBind[propTag] !== undefined ? self.objectToBind[propTag] : self.propsPanelEdition.data[propTag]
+                }
                 if (prop.actionable.visibleLabel) {
                   prop.actionable.component.props.label = prop.actionable.visibleLabel ? self.ucwords(self.$t(`${self.module}.${propTag}`)) : ''
                 }
