@@ -43,6 +43,482 @@ export const organizationConfig = [
       },
       {
         tabulated: {
+          name: 'document_type',
+          align: 'left',
+          field: row => row.document_type,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'document_type',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'document_number',
+          align: 'left',
+          field: row => row.document_number,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'document_number',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'code_runpa',
+          align: 'left',
+          field: row => row.code_runpa,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'code_runpa',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'phone_number',
+          align: 'left',
+          field: row => row.phone_number,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'phone_number',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'email',
+          align: 'left',
+          field: row => row.email,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'email',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'nationality_legal_representative',
+          align: 'left',
+          field: row => row.nationality_legal_representative,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'nationality_legal_representative',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'document_type_legal_representative',
+          align: 'left',
+          field: row => row.document_type_legal_representative,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'document_type_legal_representative',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'document_number_legal_representative',
+          align: 'left',
+          field: row => row.document_number_legal_representative,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'document_number_legal_representative',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'name_legal_representative',
+          align: 'left',
+          field: row => row.name_legal_representative,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'name_legal_representative',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'text',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
+          name: 'address',
+          align: 'left',
+          field: row => row.address,
+          sortable: true,
+          visible: true
+        },
+        actionable: {
+          propTag: 'address',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'String',
+          visibleLabel: true,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'textarea',
+              dense: true,
+              outlined: true
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        actionable: {
+          propTag: 'seal',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'File',
+          visibleLabel: false,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'file',
+              dense: true,
+              outlined: true,
+              hint: 'seal'
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        actionable: {
+          propTag: 'signature',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'File',
+          visibleLabel: false,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'file',
+              dense: true,
+              outlined: true,
+              hint: 'signature'
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        actionable: {
+          propTag: 'logo',
+          addible: true,
+          editable: true,
+          filterable: true,
+          type: 'File',
+          visibleLabel: false,
+          component: {
+            name: 'b-input',
+            props: {
+              type: 'file',
+              dense: true,
+              outlined: true,
+              hint: 'logo'
+            },
+            class: {
+              'col-xs-12': true,
+              'col-sm-12': true,
+              'col-md-12': true
+            },
+            directives: [
+              {
+                name: 'validate',
+                value: {
+                  required: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        tabulated: {
           name: 'description',
           align: 'left',
           field: row => row.description,
