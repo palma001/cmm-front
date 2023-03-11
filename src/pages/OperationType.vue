@@ -5,7 +5,7 @@
         <q-btn
           color="primary"
           icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('operationType.add')"
+          :label="$q.screen.lt.sm ? '' : $t('paymentMethod.add')"
           @click="addDialog = true"
         >
           <q-tooltip
@@ -15,7 +15,7 @@
             v-if="$q.screen.lt.sm"
           >
             {{
-              ucwords($t('operationType.add'))
+              ucwords($t('paymentMethod.add'))
             }}
           </q-tooltip>
       </q-btn>
@@ -23,10 +23,10 @@
       <div class="col-12">
         <data-table
           title="list"
-          module="operationType"
+          module="paymentMethod"
           searchable
           action
-          :column="operationTypeConfig"
+          :column="paymentMethodConfig"
           :data="data"
           :loading="loadingTable"
           :buttonsActions="buttonsActions"
@@ -45,9 +45,9 @@
       v-model="editDialog"
     >
       <dynamic-form-edition
-        module="operationType"
+        module="paymentMethod"
         :propsPanelEdition="propsPanelEdition"
-        :config="operationTypeConfig"
+        :config="paymentMethodConfig"
         :loading="loadingForm"
         @cancel="editDialog = false"
         @update="update"
@@ -60,8 +60,8 @@
       v-model="addDialog"
     >
       <dynamic-form
-        module="operationType"
-        :config="operationTypeConfig"
+        module="paymentMethod"
+        :config="paymentMethodConfig"
         :loading="loadingForm"
         @cancel="addDialog = false"
         @save="save"
@@ -73,7 +73,7 @@
 import DataTable from '../components/DataTable.vue'
 import DynamicForm from '../components/DynamicForm.vue'
 import DynamicFormEdition from '../components/DynamicFormEdition.vue'
-import { operationTypeConfig, buttonsActions, propsPanelEdition } from '../config-file/operationType/operationTypeConfig.js'
+import { paymentMethodConfig, buttonsActions, propsPanelEdition } from '../config-file/paymentMethod/paymentMethodConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
 import { mapGetters } from 'vuex'
@@ -140,7 +140,7 @@ export default {
        * File config module
        * @type {Object}
        */
-      operationTypeConfig,
+      paymentMethodConfig,
       /**
        * Open edit dialog
        * @type {Boolean}
@@ -185,7 +185,7 @@ export default {
     deleteData (data) {
       this.$q.dialog({
         title: 'Confirmación',
-        message: '¿Desea eliminar la tipo de operación?',
+        message: '¿Desea eliminar la metodo de pago?',
         cancel: {
           label: 'Cancelar',
           color: 'negative'
@@ -196,9 +196,9 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['operation-types', data.id])
-        this.notify(this, 'operationType.deleteSuccessful', 'positive', 'mood')
-        this.getCoins()
+        await this.$services.deleteData(['payment-methods', data.id])
+        this.notify(this, 'paymentMethod.deleteSuccessful', 'positive', 'mood')
+        this.getPaymentMethods()
       })
     },
     /**
@@ -211,7 +211,7 @@ export default {
       this.params.sortOrder = data.sortOrder
       this.params.perPage = data.rowsPerPage
       this.optionPagination = data
-      this.getCoins(this.params)
+      this.getPaymentMethods(this.params)
     },
     /**
      * Search EgressType
@@ -222,7 +222,7 @@ export default {
         this.params.dataSearch[dataSearch] = data
       }
       this.params.page = 1
-      this.getCoins()
+      this.getPaymentMethods()
     },
     /**
      * Update Coin
@@ -231,12 +231,12 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['operation-types', this.selectedData.id], data)
+      this.$services.putData(['payment-methods', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
-          this.getCoins(this.params)
-          this.notify(this, 'operationType.editSuccessful', 'positive', 'mood')
+          this.getPaymentMethods(this.params)
+          this.notify(this, 'paymentMethod.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -249,12 +249,12 @@ export default {
     save (data) {
       data.user_created_id = this.userSession.id
       this.loadingForm = true
-      this.$services.postData(['operation-types'], data)
+      this.$services.postData(['payment-methods'], data)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
-          this.getCoins(this.params)
-          this.notify(this, 'operationType.addSuccessful', 'positive', 'mood')
+          this.getPaymentMethods(this.params)
+          this.notify(this, 'paymentMethod.addSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -263,9 +263,9 @@ export default {
     /**
      * Get all EgressType
      */
-    getCoins (params = this.params) {
+    getPaymentMethods (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['operation-types'], params)
+      this.$services.getData(['payment-methods'], params)
         .then(({ res }) => {
           this.data = res.data.data
           this.optionPagination.rowsNumber = res.data.total

@@ -1,78 +1,34 @@
 <template>
   <q-page padding>
-    <div class="row q-gutter-y-sm">
-      <div class="col-12 text-right">
+    <q-table
+      :data="rows"
+      :columns="tableColumns"
+      :row-key="row => row.id"
+      :pagination="true"
+      :rows-per-page-options="[10, 20, 30]"
+      :filter="search"
+      :loading="loading"
+      :expand-template="expand"
+    >
+      <template v-slot:body-cell-expand="{ row, isOpen }">
         <q-btn
-          color="primary"
-          icon="add_circle"
-          :label="$q.screen.lt.sm ? '' : $t('concept.add')"
-          @click="addDialog = true"
-        >
-          <q-tooltip
-            anchor="center right"
-            self="center left"
-            :offset="[10, 10]"
-            v-if="$q.screen.lt.sm"
-          >
-            {{
-              ucwords($t('concept.add'))
-            }}
-          </q-tooltip>
-      </q-btn>
-      </div>
-      <div class="col-12">
-        <data-table
-          title="list"
-          module="concept"
-          searchable
-          action
-          :column="conceptConfig"
-          :data="data"
-          :loading="loadingTable"
-          :buttonsActions="buttonsActions"
-          :optionPagination="optionPagination"
-          @view-details="viewDetails"
-          @search-data="searchData"
-          @on-load-data="loadData"
-          @delete="deleteData"
+          dense
+          round
+          icon="arrow_drop_down"
+          :rotate="isOpen ? 180 : 0"
+          @click.native="toggleExpand(row)"
         />
-      </div>
-    </div>
-    <q-dialog
-      position="right"
-      persistent
-      full-height
-      v-model="editDialog"
-    >
-      <dynamic-form-edition
-        module="concept"
-        :propsPanelEdition="propsPanelEdition"
-        :config="conceptConfig"
-        :loading="loadingForm"
-        @cancel="editDialog = false"
-        @update="update"
-      />
-    </q-dialog>
-    <q-dialog
-      position="right"
-      persistent
-      full-height
-      v-model="addDialog"
-    >
-      <dynamic-form
-        module="concept"
-        :config="conceptConfig"
-        :loading="loadingForm"
-        @cancel="addDialog = false"
-        @save="save"
-      />
-    </q-dialog>
+      </template>
+      <template v-slot:body-cell-description="{ row }">
+        <span>{{ row.description }}</span>
+      </template>
+    </q-table>
   </q-page>
 </template>
 <script>
-import DataTable from '../components/DataTable.vue'
-import DynamicForm from '../components/DynamicForm.vue'
-import DynamicFormEdition from '../components/DynamicFormEdition.vue'
+// import DataTable from '../components/DataTable.vue'
+// import DynamicForm from '../components/DynamicForm.vue'
+// import DynamicFormEdition from '../components/DynamicFormEdition.vue'
 import { conceptConfig, buttonsActions, propsPanelEdition, conceptServices } from '../config-file/concept/conceptConfig.js'
 import { mixins } from '../mixins'
 import { GETTERS } from '../store/module-login/name.js'
@@ -80,12 +36,33 @@ import { mapGetters } from 'vuex'
 export default {
   mixins: [mixins.containerMixin],
   components: {
-    DataTable,
-    DynamicForm,
-    DynamicFormEdition
+    // DataTable,
+    // DynamicForm,
+    // DynamicFormEdition
   },
   data () {
     return {
+      rows: [], // Datos de las cuentas contables
+      tableColumns: [
+        {
+          name: 'code',
+          required: true,
+          label: 'Código',
+          align: 'left',
+          field: 'code',
+          sortable: true
+        },
+        {
+          name: 'name',
+          required: true,
+          label: 'Descripción',
+          align: 'left',
+          field: 'name',
+          sortable: true
+        }
+      ],
+      search: '',
+      loading: false,
       conceptServices,
       /**
        * Table Buttons
@@ -163,6 +140,7 @@ export default {
     this.userSession = this[GETTERS.GET_USER]
     this.branchOffice = this[GETTERS.GET_BRANCH_OFFICE]
     this.setRelationalData(this.conceptServices, [], this)
+    this.getConcepts()
   },
   computed: {
     /**
@@ -171,6 +149,9 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    toggleExpand (row) {
+      this.$refs.table.toggleRow(row)
+    },
     /**
      * Set data dialog edition
      * @param  {Object} data selected
@@ -198,7 +179,7 @@ export default {
           color: 'primary'
         }
       }).onOk(async () => {
-        await this.$services.deleteData(['concepts', data.id])
+        await this.$services.deleteData(['chart-of-accounts', data.id])
         this.notify(this, 'concept.deleteSuccessful', 'positive', 'mood')
         this.getConcepts()
       })
@@ -233,7 +214,7 @@ export default {
     update (data) {
       data.user_updated_id = this.userSession.id
       this.loadingForm = true
-      this.$services.putData(['concepts', this.selectedData.id], data)
+      this.$services.putData(['chart-of-accounts', this.selectedData.id], data)
         .then(({ res }) => {
           this.editDialog = false
           this.loadingForm = false
@@ -251,7 +232,7 @@ export default {
     save (data) {
       data.user_created_id = this.userSession.id
       this.loadingForm = true
-      this.$services.postData(['concepts'], data)
+      this.$services.postData(['chart-of-accounts'], data)
         .then(({ res }) => {
           this.addDialog = false
           this.loadingForm = false
@@ -262,14 +243,32 @@ export default {
           this.loadingForm = false
         })
     },
+    flattenTreeData (data) {
+      const result = []
+      const flatten = (account, level) => {
+        const row = { ...account }
+        row.level = level
+        result.push(row)
+        if (account.children) {
+          for (const child of account.children) {
+            flatten(child, level + 1)
+          }
+        }
+      }
+      for (const account of data) {
+        flatten(account, 0)
+      }
+      return result
+    },
     /**
      * Get all EgressType
      */
     getConcepts (params = this.params) {
       this.loadingTable = true
-      this.$services.getData(['concepts'], params)
+      this.$services.getData(['chart-of-accounts'])
         .then(({ res }) => {
-          this.data = res.data.data
+          this.rows = this.flattenTreeData(res.data)
+          console.log(this.rows)
           this.optionPagination.rowsNumber = res.data.total
           this.loadingTable = false
         })

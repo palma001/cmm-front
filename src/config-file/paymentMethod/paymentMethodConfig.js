@@ -1,4 +1,4 @@
-export const operationTypeConfig = [
+export const paymentMethodConfig = [
   {
     classTag: 'infoUsers',
     index: 0,

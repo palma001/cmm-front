@@ -544,7 +544,7 @@ export default {
     cancel: 'cancelar',
     name: 'nombre'
   },
-  operationType: {
+  paymentMethod: {
     newOperationType: 'nuevo tipo de operacion',
     add: 'agregar tipo de operacion',
     update: 'Modificar',

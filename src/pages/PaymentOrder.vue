@@ -45,14 +45,14 @@
                 clearable
                 behavior="menu"
                 input-debounce="20"
-                name="operationType"
-                v-model="operationType"
+                name="paymentMethod"
+                v-model="paymentMethod"
                 option-label="name"
                 option-value="id"
                 label="Tipo de operación"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="operationTypes"
-                @filter="getOperationTypes"
+                :options="paymentMethods"
+                @filter="getPaymentMethods"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -99,63 +99,9 @@
                 clearable
                 behavior="menu"
                 input-debounce="20"
-                name="category"
-                v-model="category"
-                option-label="name"
-                option-value="id"
-                label="Categoria"
-                :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="categories"
-                @filter="getCategories"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-              <q-select
-                autocomplete="off"
-                use-input
-                dense
-                outlined
-                clearable
-                behavior="menu"
-                input-debounce="20"
-                name="conceptType"
-                v-model="conceptType"
-                option-label="name"
-                option-value="id"
-                label="Tipos de conceptos"
-                :rules="[val => val && val !== null || 'Este campo es requerido']"
-                :options="conceptTypes"
-                @filter="getConceptTypes"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      No results
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-            </div>
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-              <q-select
-                autocomplete="off"
-                use-input
-                dense
-                outlined
-                clearable
-                behavior="menu"
-                input-debounce="20"
                 name="concept"
                 v-model="concept"
-                option-label="name"
+                :option-label="row => `${row.code} ${row.name}`"
                 option-value="id"
                 label="Concepto"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
@@ -414,7 +360,7 @@ export default {
        * Operation type selected cash flow
        * @type {Object}
        */
-      operationType: null,
+      paymentMethod: null,
       /**
        * Description cash flow
        * @type {String}
@@ -444,7 +390,7 @@ export default {
        * OperationTypes cash flow
        * @type {Array}
        */
-      operationTypes: [],
+      paymentMethods: [],
       /**
        * User session
        * @type {Object}
@@ -564,24 +510,39 @@ export default {
           })
         })
     },
+    flattenTreeData (data) {
+      const result = []
+      const flatten = (account, level) => {
+        const row = { ...account }
+        row.level = level
+        result.push(row)
+        if (account.children) {
+          for (const child of account.children) {
+            flatten(child, level + 1)
+          }
+        }
+      }
+      for (const account of data) {
+        flatten(account, 0)
+      }
+      return result
+    },
     /**
      * All Concepts
      */
     getConcepts (value, update) {
-      this.$services.getData(['concepts'], {
-        sortBy: 'id',
-        sortOrder: 'desc',
+      this.$services.getData(['chart-of-accounts'], {
+        sortBy: 'code',
+        sortOrder: 'asc',
         dataSearch: {
-          name: value
-        },
-        dataEqualFilter: {
-          concept_type_id: this.conceptType.id
+          name: value,
+          code: value
         },
         paginate: false
       })
         .then(({ res }) => {
           update(() => {
-            this.concepts = res.data
+            this.concepts = this.flattenTreeData(res.data)
           })
         })
     },
@@ -678,7 +639,7 @@ export default {
       this.coins = null
       this.amount = 0
       this.description = null
-      this.operationType = null
+      this.paymentMethod = null
       this.paymentType = null
       this.paymentTypeDynamic = null
       this.concept = null
@@ -697,7 +658,7 @@ export default {
         description: this.description,
         status: 'pending_approval',
         amount: this.amount,
-        operation_type_id: this.operationType.id,
+        operation_type_id: this.paymentMethod.id,
         ownerable_id: this.paymentTypeDynamic.id,
         ownerable_type: this.paymentType.value,
         entity_id: this.entity.id,
@@ -727,8 +688,8 @@ export default {
     /**
      * All OperationTypes
      */
-    getOperationTypes (value, update) {
-      this.$services.getData(['operation-types'], {
+    getPaymentMethods (value, update) {
+      this.$services.getData(['payment-methods'], {
         sortBy: 'id',
         sortOrder: 'desc',
         dataSearch: {
@@ -738,7 +699,7 @@ export default {
       })
         .then(({ res }) => {
           update(() => {
-            this.operationTypes = res.data
+            this.paymentMethods = res.data
           })
         })
     },

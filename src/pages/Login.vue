@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-center q-mt-xl">
+  <div class="flex flex-center" style="height: 100vh">
     <q-card flat class="my-card" style="width: 500px; max-width: 80vw;">
       <q-card-section class="bg-primary text-white">
         <div class="text-h6">Iniciar sesión</div>
