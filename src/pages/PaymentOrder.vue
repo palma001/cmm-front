@@ -49,7 +49,7 @@
                 v-model="paymentMethod"
                 option-label="name"
                 option-value="id"
-                label="Tipo de operación"
+                label="Metodo de pago"
                 :rules="[val => val && val !== null || 'Este campo es requerido']"
                 :options="paymentMethods"
                 @filter="getPaymentMethods"
@@ -658,7 +658,7 @@ export default {
         description: this.description,
         status: 'pending_approval',
         amount: this.amount,
-        operation_type_id: this.paymentMethod.id,
+        payment_method_id: this.paymentMethod.id,
         ownerable_id: this.paymentTypeDynamic.id,
         ownerable_type: this.paymentType.value,
         entity_id: this.entity.id,
