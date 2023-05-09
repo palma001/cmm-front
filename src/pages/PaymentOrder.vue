@@ -425,6 +425,16 @@ export default {
     ...mapGetters([GETTERS.GET_USER, GETTERS.GET_BRANCH_OFFICE])
   },
   methods: {
+    notify (title, color, icon) {
+      this.$q.notify({
+        message: title,
+        color,
+        icon,
+        actions: [
+          { label: 'Cerrar', color: 'white', handler: () => { /* ... */ } }
+        ]
+      })
+    },
     changeStatus (data) {
       data.status = data.status === 'approved' ? 'pending_approval' : 'approved'
       this.update(data)
@@ -442,7 +452,7 @@ export default {
           this.editDialog = false
           this.loadingForm = false
           this.getPaymentOrders(this.params)
-          this.notify(this, 'paymentOrder.editSuccessful', 'positive', 'mood')
+          this.notify('paymentOrder.editSuccessful', 'positive', 'mood')
         })
         .catch(() => {
           this.loadingForm = false
@@ -486,9 +496,9 @@ export default {
         },
         paginate: false
       })
-        .then(({ res }) => {
+        .then(({ data }) => {
           update(() => {
-            this.conceptTypes = res.data
+            this.conceptTypes = data
           })
         })
     },

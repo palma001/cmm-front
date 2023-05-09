@@ -354,50 +354,6 @@ export const paymentOrderConfig = [
       },
       {
         tabulated: {
-          name: 'entity_id',
-          align: 'left',
-          field: row => row.entity.name,
-          sortable: true,
-          visible: true,
-          visibleColumn: true
-        },
-        actionable: {
-          propTag: 'entity',
-          addible: true,
-          editable: true,
-          type: 'String',
-          visibleLabel: true,
-          component: {
-            name: 'b-search-select',
-            props: {
-              data: [],
-              dataValue: 'id',
-              dataLabel: 'name',
-              behavior: 'menu',
-              dense: true,
-              clearable: true,
-              outlined: true
-            },
-            class: {
-              'col-xs-12': true,
-              'col-sm-12': true,
-              'col-md-12': true,
-              'col-lg-12': true,
-              'col-xl-12': true
-            },
-            directives: [
-              {
-                name: 'validate',
-                value: {
-                  required: true
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        tabulated: {
           name: 'amount',
           align: 'right',
           field: row => row.amount,
